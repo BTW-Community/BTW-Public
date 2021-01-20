@@ -38,6 +38,16 @@ A note from FlowerChild about licensing:
 
 > You are free to modify and redistribute portions of BTW and its code as you wish, but I (FlowerChild) would appreciate acknowledgment if you do so. Keep in mind however that parts of BTW may be based on modified versions of Mojang's code and assets, and it is left to anyone redistributing portions of BTW to make sure they are appropriately considering Mojang's intellectual property and licensing as well.
 
+## How do I obtain the source code?
+
+- [Download Minecraft Coder Pack (MCP) for 1.5.2](http://www.mediafire.com/file/95vlzp1a4n4wjqw/mcp751.zip/file)
+- Download the source code for a specific version from the releases page
+- Unpack the source code in a folder
+- Put mcp751.zip in this folder
+- Run `gradlew.bat` (Windows) or `./gradlew` (Shell) 
+
+This will take a few minutes and place the source code in the `mcp/src` folder.
+
 ## A Note About Compatibility
 
 Because of the extremely large scope of Better than Wolves, it is monumentally unlikely for any mods not explicitly designed for Better than Wolves to be compatible. Due to the polished and self-contained design of BTW though, I personally don't think that's a bad thing as it creates a more curated experience for the player.
