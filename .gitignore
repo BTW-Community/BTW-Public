@@ -1,0 +1,12 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore IDEA folder
+.idea
+
+# Ignore source folder
+/src
+
+# Ignore MCP
+/mcp
+mcp751.zip
