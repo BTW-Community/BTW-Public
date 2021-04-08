@@ -1,0 +1,14 @@
+--- a/minecraft_server/net/minecraft/src/TileEntitySkull.java
++++ b/minecraft_server/net/minecraft/src/TileEntitySkull.java
+@@ -79,4 +79,11 @@
+     {
+         return this.extraType;
+     }
++    
++    // FCMOD: Code added
++    public int GetSkullRotationServerSafe()
++    {
++    	return this.skullRotation;
+ }
++    // END FCMOD
++}

@@ -1,0 +1,13 @@
+--- a/minecraft_server/net/minecraft/src/ISaveHandler.java
++++ b/minecraft_server/net/minecraft/src/ISaveHandler.java
+@@ -45,4 +45,10 @@
+      * Returns the name of the directory where world information is saved.
+      */
+     String getWorldDirectoryName();
++
++    // FCMOD: Added
++    public void LoadModSpecificData( WorldServer world );
++    
++    public void SaveModSpecificData( WorldServer world );
++    // END FCMOD
+ }

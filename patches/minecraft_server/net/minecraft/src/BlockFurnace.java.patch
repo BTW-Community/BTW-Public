@@ -1,0 +1,55 @@
+--- a/minecraft_server/net/minecraft/src/BlockFurnace.java
++++ b/minecraft_server/net/minecraft/src/BlockFurnace.java
+@@ -10,13 +10,21 @@
+     private final Random furnaceRand = new Random();
+ 
+     /** True if this is an active furnace, false if idle */
++    // FCMOD: Changed to protected
++    /*
+     private final boolean isActive;
++    */
++    protected final boolean isActive;
++    // END FCMOD
+ 
+     /**
+      * This flag is used to prevent the furnace inventory to be dropped upon block removal, is used internally when the
+      * furnace block changes from idle to active and vice-versa.
+      */
+-    private static boolean keepFurnaceInventory = false;
++    // FCMOD: Changed
++    //private static boolean keepFurnaceInventory = false;
++    protected static boolean keepFurnaceInventory = false;
++    // END FCMOD
+ 
+     protected BlockFurnace(int par1, boolean par2)
+     {
+@@ -103,7 +111,12 @@
+     /**
+      * Update which block ID the furnace is using depending on whether or not it is burning
+      */
++    // FCMOD: Changed
++    /*
+     public static void updateFurnaceBlockState(boolean par0, World par1World, int par2, int par3, int par4)
++    */
++    public void updateFurnaceBlockState(boolean par0, World par1World, int par2, int par3, int par4, boolean bHasContents)
++    // END FCMOD
+     {
+         int var5 = par1World.getBlockMetadata(par2, par3, par4);
+         TileEntity var6 = par1World.getBlockTileEntity(par2, par3, par4);
+@@ -119,6 +132,16 @@
+         }
+ 
+         keepFurnaceInventory = false;
++        // FCMOD: Code added
++        if ( !bHasContents )
++        {
++        	var5 = var5 & 7;
++        }
++        else
++        {
++        	var5 = var5 | 8;
++        }
++        // END FCMOD        
+         par1World.setBlockMetadata(par2, par3, par4, var5, 2);
+ 
+         if (var6 != null)

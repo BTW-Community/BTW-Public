@@ -1,0 +1,13 @@
+--- a/minecraft_server/net/minecraft/src/EnumAction.java
++++ b/minecraft_server/net/minecraft/src/EnumAction.java
+@@ -6,5 +6,9 @@
+     eat,
+     drink,
+     block,
+-    bow;
++    // FCMOD: Changed
++    //bow;
++    bow,
++    miscUse;
++    // END FCMOD
+ }

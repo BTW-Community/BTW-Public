@@ -1,0 +1,8 @@
+--- a/minecraft_server/net/minecraft/src/EntityWitherSkull.java
++++ b/minecraft_server/net/minecraft/src/EntityWitherSkull.java
+@@ -1,3 +1,5 @@
++// FCMOD: Class changes deprecated 10/20/2018
++
+ package net.minecraft.src;
+ 
+ public class EntityWitherSkull extends EntityFireball

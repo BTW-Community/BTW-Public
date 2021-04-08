@@ -1,0 +1,127 @@
+--- a/minecraft_server/net/minecraft/src/AxisAlignedBB.java
++++ b/minecraft_server/net/minecraft/src/AxisAlignedBB.java
+@@ -1,6 +1,11 @@
+ package net.minecraft.src;
+ 
+-public class AxisAlignedBB
++import java.util.List;
++
++// FCMOD: Changed
++//public class AxisAlignedBB
++public class AxisAlignedBB extends FCUtilsPrimitiveGeometric
++// END FCMOD
+ {
+     /** ThreadLocal AABBPool */
+     private static final ThreadLocal theAABBLocalPool = new AABBLocalPool();
+@@ -475,4 +480,111 @@
+     {
+         return "box[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]";
+     }
++    
++    // FCMOD: Added New
++	/**
++	 * Yaws the box around the J axis. Assumes that the box's initial facing is along the negative K axis (facing 2)
++	 */
++    @Override
++	public void RotateAroundJToFacing( int iFacing )
++    {
++		if ( iFacing > 2 )
++		{
++	    	if ( iFacing == 5 ) // i + 1
++	    	{
++	        	setBounds( 1.0D - maxZ, minY, 1.0D - maxX, 1.0D - minZ, maxY, 1.0D - minX );
+ }
++	    	else if ( iFacing == 4 ) // i - 1
++	    	{
++	        	setBounds( minZ, minY, minX, maxZ, maxY, maxX );
++	    	}
++	    	else // if ( iFacing == 3 ) // k + 1
++	    	{
++	        	setBounds( 1.0D - maxX, minY, 1.0D - maxZ, 1.0D - minX, maxY, 1.0D - minZ );
++	    	}
++		}    	
++    }
++	
++	/**
++	 * "Tilts" the box towards the desired facing.  Takes the up vector and either yaws or rolls it towards the specified axis.
++	 */	
++    @Override
++	public void TiltToFacingAlongJ( int iFacing )
++    {
++    	double newMinX, newMinY, newMinZ, newMaxX, newMaxY, newMaxZ;
++    	
++		if ( iFacing == 0 ) // j - 1
++		{
++			// rotating around k axis here to point downwards
++			
++	    	setBounds( 1D - maxX, 1D - maxY, minZ, 1D - minX, 1D - minY, maxZ );
++		}
++		else if ( iFacing == 2 ) // k - 1
++		{
++			setBounds( minX, minZ, 1D - maxY, maxX, maxZ, 1D - minY );
++		}			
++		else if ( iFacing == 3 ) // k + 1
++		{
++			setBounds( minX, 1D - maxZ, minY, maxX, 1D - minZ, maxY );
++		}
++		else if ( iFacing == 4 ) // i - 1
++		{
++			setBounds( 1D - maxY, minX, minZ, 1D - minY, maxX, maxZ );
++		}			
++		else if ( iFacing == 5 ) // i + 1
++		{
++			setBounds( minY, 1D - maxX, minZ, maxY, 1D - minX, maxZ );
++		}			
++    }
++
++    @Override
++	public void Translate( double dDeltaX, double dDeltaY, double dDeltaZ )
++    {
++    	offset( dDeltaX, dDeltaY, dDeltaZ );
++    }
++    
++    @Override
++	public void AddToRayTrace( FCUtilsRayTraceVsComplexBlock rayTrace )
++    {
++    	rayTrace.AddBoxWithLocalCoordsToIntersectionList( minX, minY, minZ, maxX, maxY, maxZ );
++    }
++	
++    @Override
++	public AxisAlignedBB MakeTemporaryCopy()
++	{
++		return getAABBPool().getAABB( minX, minY, minZ, maxX, maxY, maxZ );
++	}
++	
++    @Override
++    public void AddIntersectingBoxesToCollisionList( World world, int i, int j, int k, AxisAlignedBB boxToIntersect, List collisionList )
++    {
++    	AxisAlignedBB offsetBox = MakeTemporaryCopy().offset( i, j, k );
++    	
++    	offsetBox.AddToListIfIntersects( boxToIntersect, collisionList );
++    }
++	
++    //------------- Class Specific Methods ------------//	
++    
++    public void ExpandToInclude( AxisAlignedBB box )
++    {
++    	minX = Math.min( minX, box.minX );
++    	maxX = Math.max( maxX, box.maxX );
++    	
++    	minY = Math.min( minY, box.minY );
++    	maxY = Math.max( maxY, box.maxY );
++    	
++    	minZ = Math.min( minZ, box.minZ );
++    	maxZ = Math.max( maxZ, box.maxZ );
++    }
++    
++    public void AddToListIfIntersects( AxisAlignedBB intersectingBox, List list )
++    {
++    	if ( intersectsWith( intersectingBox ) )
++    	{
++    		list.add( this );
++    	}
++    }
++	
++	//----------- Client Side Functionality -----------//
++    // END FCMOD
++}

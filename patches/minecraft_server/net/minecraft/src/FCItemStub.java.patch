@@ -1,0 +1,21 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCItemStub.java
+@@ -0,0 +1,18 @@
++//FCMOD
++
++package net.minecraft.src;
++
++public class FCItemStub extends Item
++{
++    public FCItemStub( int iItemID )
++    {
++        super( iItemID );        
++        
++        setCreativeTab( null );
++    }
++    
++    //------------- Class Specific Methods ------------//
++    
++	//------------ Client Side Functionality ----------//
++}
++    

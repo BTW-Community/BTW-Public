@@ -1,0 +1,14 @@
+--- a/minecraft/net/minecraft/src/TextureStitched.java
++++ b/minecraft/net/minecraft/src/TextureStitched.java
+@@ -233,4 +233,11 @@
+             this.listAnimationTuples = var2;
+         }
+     }
++    
++    // FCMOD: Code added
++    public boolean IsProcedurallyAnimated()
++    {
++    	return false;
+ }
++    // END FCMOD
++}

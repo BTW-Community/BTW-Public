@@ -1,0 +1,56 @@
+--- a/minecraft_server/net/minecraft/src/SlotCrafting.java
++++ b/minecraft_server/net/minecraft/src/SlotCrafting.java
+@@ -112,10 +112,43 @@
+ 
+             if (var4 != null)
+             {
++            	// FCMOD: Added            	
++            	var4.getItem().OnUsedInCrafting( var4.getItemDamage(), par1EntityPlayer, 
++            		par2ItemStack );
++            	
++            	if ( !var4.getItem().IsConsumedInCrafting() )
++            	{
++            		continue;
++            	}
++            	else if ( var4.getItem().IsDamagedInCrafting() )
++            	{
++            		if ( var4.getItemDamage() >= var4.getMaxDamage() - 1 )
++            		{
++            			var4.getItem().OnBrokenInCrafting( par1EntityPlayer );
++            			
++                        craftMatrix.decrStackSize(var3, 1);
++            		}
++            		else
++            		{
++            			var4.getItem().OnDamagedInCrafting( par1EntityPlayer );
++            			
++            			var4.damageItem( 1, par1EntityPlayer );
++            		}
++
++            		continue;
++            	}            	
++        		// END FCMOD
+                 this.craftMatrix.decrStackSize(var3, 1);
+ 
+                 if (var4.getItem().hasContainerItem())
+                 {
++                    // FCMOD: Code added
++                    if ( par2ItemStack.getItem().DoesConsumeContainerItemWhenCrafted( var4.getItem().getContainerItem() ) )
++                    {
++                    	continue;
++                    }
++                    // END FCMOD
++
+                     ItemStack var5 = new ItemStack(var4.getItem().getContainerItem());
+ 
+                     if (!var4.getItem().doesContainerItemLeaveCraftingGrid(var4) || !this.thePlayer.inventory.addItemStackToInventory(var5))
+@@ -132,5 +165,9 @@
+                 }
+             }
+         }
++        
++        // FCMOD: Code added
++        par1EntityPlayer.m_iTimesCraftedThisTick++;
++        // END FCMOD
+     }
+ }

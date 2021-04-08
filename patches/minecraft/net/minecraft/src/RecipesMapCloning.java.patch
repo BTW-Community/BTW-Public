@@ -1,0 +1,21 @@
+--- a/minecraft/net/minecraft/src/RecipesMapCloning.java
++++ b/minecraft/net/minecraft/src/RecipesMapCloning.java
+@@ -104,4 +104,18 @@
+     {
+         return null;
+     }
++    
++    // FCMOD: Function added
++    @Override
++    public boolean matches( IRecipe recipe )
++    {
++    	return false;
+ }
++    
++    @Override
++    public boolean HasSecondaryOutput()
++    {
++    	return false;
++    }
++    // END FCMOD
++}

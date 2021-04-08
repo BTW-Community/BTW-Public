@@ -1,0 +1,35 @@
+--- a/minecraft_server/net/minecraft/src/TileEntity.java
++++ b/minecraft_server/net/minecraft/src/TileEntity.java
+@@ -36,7 +36,12 @@
+     /**
+      * Adds a new two-way mapping between the class and its string name in both hashmaps.
+      */
++    // FCMOD: Code change
++    /*
+     private static void addMapping(Class par0Class, String par1Str)
++    */
++    public static void addMapping(Class par0Class, String par1Str)
++    // END FCMOD
+     {
+         if (nameToClassMap.containsKey(par1Str))
+         {
+@@ -267,4 +272,19 @@
+         addMapping(TileEntityHopper.class, "Hopper");
+         addMapping(TileEntityComparator.class, "Comparator");
+     }
++    
++    // FCMOD: Code added
++    public static void ReplaceVanillaMapping( Class vanillaClass, Class newClass, String name )
++    {
++    	removeTileEntityMapping( vanillaClass, name );
++    	
++    	addMapping( newClass, name );
+ }
++    
++    public static void removeTileEntityMapping( Class className, String sTileEntityName )
++    {
++        nameToClassMap.remove( sTileEntityName );
++        classToNameMap.remove( className );
++    }
++    // END FCMOD
++}

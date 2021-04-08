@@ -1,0 +1,74 @@
+--- a/minecraft/net/minecraft/src/EntityVillager.java
++++ b/minecraft/net/minecraft/src/EntityVillager.java
+@@ -1,3 +1,5 @@
++// FCMOD: Note that in the server version of this file, I've renamed functions to match the client
++
+ package net.minecraft.src;
+ 
+ import java.util.Collections;
+@@ -17,28 +19,25 @@
+     private EntityPlayer buyingPlayer;
+ 
+     /** Initialises the MerchantRecipeList.java */
+-    private MerchantRecipeList buyingList;
++    // FCMOD: Changed
++    //private MerchantRecipeList buyingList;
++    protected MerchantRecipeList buyingList;
++    // END FCMOD
++    
+     private int timeUntilReset;
+ 
+     /** addDefaultEquipmentAndRecipies is called if this is true */
+     private boolean needsInitilization;
++    
+     private int wealth;
+ 
+     /** Last player to trade with this villager, used for aggressivity. */
+     private String lastBuyingPlayer;
++    
+     private boolean field_82190_bM;
+     private float field_82191_bN;
+ 
+-    /**
+-     * a villagers recipe list is intialized off this list ; the 2 params are min/max amount they will trade for 1
+-     * emerald
+-     */
+     private static final Map villagerStockList = new HashMap();
+-
+-    /**
+-     * Selling list of Blacksmith items. negative numbers mean 1 emerald for n items, positive numbers are n emeralds
+-     * for 1 item
+-     */
+     private static final Map blacksmithSellingList = new HashMap();
+ 
+     public EntityVillager(World par1World)
+@@ -492,6 +491,7 @@
+                 addBlacksmithItem(var2, Item.expBottle.itemID, this.rand, this.func_82188_j(0.2F));
+                 addBlacksmithItem(var2, Item.redstone.itemID, this.rand, this.func_82188_j(0.4F));
+                 addBlacksmithItem(var2, Block.glowStone.blockID, this.rand, this.func_82188_j(0.3F));
++            	
+                 int[] var3 = new int[] {Item.swordIron.itemID, Item.swordDiamond.itemID, Item.plateIron.itemID, Item.plateDiamond.itemID, Item.axeIron.itemID, Item.axeDiamond.itemID, Item.pickaxeIron.itemID, Item.pickaxeDiamond.itemID};
+                 int[] var4 = var3;
+                 int var5 = var3.length;
+@@ -756,4 +756,21 @@
+         blacksmithSellingList.put(Integer.valueOf(Item.eyeOfEnder.itemID), new Tuple(Integer.valueOf(7), Integer.valueOf(11)));
+         blacksmithSellingList.put(Integer.valueOf(Item.arrow.itemID), new Tuple(Integer.valueOf(-12), Integer.valueOf(-8)));
+     }
++    
++    // FCMOD: Added to satisfy IMerchant
++    public int GetCurrentTradeLevel() 
++    {
++    	return 0;
+ }
++    
++    public int GetCurrentTradeXP()
++    {
++    	return 0;
++    }
++    
++    public int GetCurrentTradeMaxXP()
++    {
++    	return 0;
++    }
++    // END FCMOD
++}

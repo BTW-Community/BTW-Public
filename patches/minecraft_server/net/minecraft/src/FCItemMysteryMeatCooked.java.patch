@@ -1,0 +1,16 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCItemMysteryMeatCooked.java
+@@ -0,0 +1,13 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCItemMysteryMeatCooked extends ItemFood
++{
++	public FCItemMysteryMeatCooked( int iItemID )
++	{
++		super( iItemID, 5, 0.25F, true, false );
++		
++		setUnlocalizedName( "fcItemMysteryMeatCooked" );		
++	}
++}

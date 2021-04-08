@@ -1,0 +1,380 @@
+--- a/minecraft_server/net/minecraft/src/Container.java
++++ b/minecraft_server/net/minecraft/src/Container.java
+@@ -225,8 +225,8 @@
+         else
+         {
+             Slot var16;
+-            int var19;
+-            ItemStack var22;
++            int var21;
++            ItemStack var23;
+ 
+             if ((par3 == 0 || par3 == 1) && (par2 == 0 || par2 == 1))
+             {
+@@ -288,7 +288,7 @@
+                     if (var16 != null)
+                     {
+                         var17 = var16.getStack();
+-                        ItemStack var20 = var6.getItemStack();
++                        ItemStack var19 = var6.getItemStack();
+ 
+                         if (var17 != null)
+                         {
+@@ -297,18 +297,18 @@
+ 
+                         if (var17 == null)
+                         {
+-                            if (var20 != null && var16.isItemValid(var20))
++                            if (var19 != null && var16.isItemValid(var19))
+                             {
+-                                var19 = par2 == 0 ? var20.stackSize : 1;
++                                var21 = par2 == 0 ? var19.stackSize : 1;
+ 
+-                                if (var19 > var16.getSlotStackLimit())
++                                if (var21 > var16.getSlotStackLimit())
+                                 {
+-                                    var19 = var16.getSlotStackLimit();
++                                    var21 = var16.getSlotStackLimit();
+                                 }
+ 
+-                                var16.putStack(var20.splitStack(var19));
++                                var16.putStack(var19.splitStack(var21));
+ 
+-                                if (var20.stackSize == 0)
++                                if (var19.stackSize == 0)
+                                 {
+                                     var6.setItemStack((ItemStack)null);
+                                 }
+@@ -316,11 +316,11 @@
+                         }
+                         else if (var16.canTakeStack(par4EntityPlayer))
+                         {
+-                            if (var20 == null)
++                            if (var19 == null)
+                             {
+-                                var19 = par2 == 0 ? var17.stackSize : (var17.stackSize + 1) / 2;
+-                                var22 = var16.decrStackSize(var19);
+-                                var6.setItemStack(var22);
++                                var21 = par2 == 0 ? var17.stackSize : (var17.stackSize + 1) / 2;
++                                var23 = var16.decrStackSize(var21);
++                                var6.setItemStack(var23);
+ 
+                                 if (var17.stackSize == 0)
+                                 {
+@@ -329,45 +329,45 @@
+ 
+                                 var16.onPickupFromSlot(par4EntityPlayer, var6.getItemStack());
+                             }
+-                            else if (var16.isItemValid(var20))
++                            else if (var16.isItemValid(var19))
+                             {
+-                                if (var17.itemID == var20.itemID && var17.getItemDamage() == var20.getItemDamage() && ItemStack.areItemStackTagsEqual(var17, var20))
++                                if (var17.itemID == var19.itemID && var17.getItemDamage() == var19.getItemDamage() && ItemStack.areItemStackTagsEqual(var17, var19))
+                                 {
+-                                    var19 = par2 == 0 ? var20.stackSize : 1;
++                                    var21 = par2 == 0 ? var19.stackSize : 1;
+ 
+-                                    if (var19 > var16.getSlotStackLimit() - var17.stackSize)
++                                    if (var21 > var16.getSlotStackLimit() - var17.stackSize)
+                                     {
+-                                        var19 = var16.getSlotStackLimit() - var17.stackSize;
++                                        var21 = var16.getSlotStackLimit() - var17.stackSize;
+                                     }
+ 
+-                                    if (var19 > var20.getMaxStackSize() - var17.stackSize)
++                                    if (var21 > var19.getMaxStackSize() - var17.stackSize)
+                                     {
+-                                        var19 = var20.getMaxStackSize() - var17.stackSize;
++                                        var21 = var19.getMaxStackSize() - var17.stackSize;
+                                     }
+ 
+-                                    var20.splitStack(var19);
++                                    var19.splitStack(var21);
+ 
+-                                    if (var20.stackSize == 0)
++                                    if (var19.stackSize == 0)
+                                     {
+                                         var6.setItemStack((ItemStack)null);
+                                     }
+ 
+-                                    var17.stackSize += var19;
++                                    var17.stackSize += var21;
+                                 }
+-                                else if (var20.stackSize <= var16.getSlotStackLimit())
++                                else if (var19.stackSize <= var16.getSlotStackLimit())
+                                 {
+-                                    var16.putStack(var20);
++                                    var16.putStack(var19);
+                                     var6.setItemStack(var17);
+                                 }
+                             }
+-                            else if (var17.itemID == var20.itemID && var20.getMaxStackSize() > 1 && (!var17.getHasSubtypes() || var17.getItemDamage() == var20.getItemDamage()) && ItemStack.areItemStackTagsEqual(var17, var20))
++                            else if (var17.itemID == var19.itemID && var19.getMaxStackSize() > 1 && (!var17.getHasSubtypes() || var17.getItemDamage() == var19.getItemDamage()) && ItemStack.areItemStackTagsEqual(var17, var19))
+                             {
+-                                var19 = var17.stackSize;
++                                var21 = var17.stackSize;
+ 
+-                                if (var19 > 0 && var19 + var20.stackSize <= var20.getMaxStackSize())
++                                if (var21 > 0 && var21 + var19.stackSize <= var19.getMaxStackSize())
+                                 {
+-                                    var20.stackSize += var19;
+-                                    var17 = var16.decrStackSize(var19);
++                                    var19.stackSize += var21;
++                                    var17 = var16.decrStackSize(var21);
+ 
+                                     if (var17.stackSize == 0)
+                                     {
+@@ -391,34 +391,34 @@
+                 {
+                     var17 = var6.getStackInSlot(par2);
+                     boolean var18 = var17 == null || var16.inventory == var6 && var16.isItemValid(var17);
+-                    var19 = -1;
++                    var21 = -1;
+ 
+                     if (!var18)
+                     {
+-                        var19 = var6.getFirstEmptyStack();
+-                        var18 |= var19 > -1;
++                        var21 = var6.getFirstEmptyStack();
++                        var18 |= var21 > -1;
+                     }
+ 
+                     if (var16.getHasStack() && var18)
+                     {
+-                        var22 = var16.getStack();
+-                        var6.setInventorySlotContents(par2, var22.copy());
++                        var23 = var16.getStack();
++                        var6.setInventorySlotContents(par2, var23.copy());
+ 
+                         if ((var16.inventory != var6 || !var16.isItemValid(var17)) && var17 != null)
+                         {
+-                            if (var19 > -1)
++                            if (var21 > -1)
+                             {
+                                 var6.addItemStackToInventory(var17);
+-                                var16.decrStackSize(var22.stackSize);
++                                var16.decrStackSize(var23.stackSize);
+                                 var16.putStack((ItemStack)null);
+-                                var16.onPickupFromSlot(par4EntityPlayer, var22);
++                                var16.onPickupFromSlot(par4EntityPlayer, var23);
+                             }
+                         }
+                         else
+                         {
+-                            var16.decrStackSize(var22.stackSize);
++                            var16.decrStackSize(var23.stackSize);
+                             var16.putStack(var17);
+-                            var16.onPickupFromSlot(par4EntityPlayer, var22);
++                            var16.onPickupFromSlot(par4EntityPlayer, var23);
+                         }
+                     }
+                     else if (!var16.getHasStack() && var17 != null && var16.isItemValid(var17))
+@@ -458,15 +458,15 @@
+                 if (var17 != null && (var16 == null || !var16.getHasStack() || !var16.canTakeStack(par4EntityPlayer)))
+                 {
+                     var9 = par2 == 0 ? 0 : this.inventorySlots.size() - 1;
+-                    var19 = par2 == 0 ? 1 : -1;
++                    var21 = par2 == 0 ? 1 : -1;
+ 
+-                    for (int var21 = 0; var21 < 2; ++var21)
++                    for (int var20 = 0; var20 < 2; ++var20)
+                     {
+-                        for (int var23 = var9; var23 >= 0 && var23 < this.inventorySlots.size() && var17.stackSize < var17.getMaxStackSize(); var23 += var19)
++                        for (int var22 = var9; var22 >= 0 && var22 < this.inventorySlots.size() && var17.stackSize < var17.getMaxStackSize(); var22 += var21)
+                         {
+-                            Slot var24 = (Slot)this.inventorySlots.get(var23);
++                            Slot var24 = (Slot)this.inventorySlots.get(var22);
+ 
+-                            if (var24.getHasStack() && func_94527_a(var24, var17, true) && var24.canTakeStack(par4EntityPlayer) && this.func_94530_a(var17, var24) && (var21 != 0 || var24.getStack().stackSize != var24.getStack().getMaxStackSize()))
++                            if (var24.getHasStack() && func_94527_a(var24, var17, true) && var24.canTakeStack(par4EntityPlayer) && this.func_94530_a(var17, var24) && (var20 != 0 || var24.getStack().stackSize != var24.getStack().getMaxStackSize()))
+                             {
+                                 int var14 = Math.min(var17.getMaxStackSize() - var17.stackSize, var24.getStack().stackSize);
+                                 ItemStack var15 = var24.decrStackSize(var14);
+@@ -558,6 +558,8 @@
+     /**
+      * merges provided ItemStack with the first avaliable one in the container/player inventory
+      */
++    // FCMOD: Removed and replaced later
++    /*
+     protected boolean mergeItemStack(ItemStack par1ItemStack, int par2, int par3, boolean par4)
+     {
+         boolean var5 = false;
+@@ -647,6 +649,8 @@
+ 
+         return var5;
+     }
++    */
++    // END FCMOD
+ 
+     public static int func_94529_b(int par0)
+     {
+@@ -728,4 +732,169 @@
+             return MathHelper.floor_float(var2 * 14.0F) + (var1 > 0 ? 1 : 0);
+         }
+     }
++    
++    // FCMOD: Added
++    protected boolean mergeItemStack( ItemStack stackSource, int iSlotDestFirst, int iSlotDestCap, boolean bFavorHotbar )
++    {
++    	// test of specific player inv size shouldn't be necessary, but serves as a sanity check
++    	
++    	if ( bFavorHotbar && iSlotDestCap - iSlotDestFirst == 36 )
++    	{
++        	// favor the hotbar from left to right, then the main inventory, whereas vanilla
++    		// just reverses the order from last slot of hotbar to first of inv.
++    		
++        	return MergeItemStackFavoringHotbar( stackSource, iSlotDestFirst, iSlotDestCap );
+ }
++    	else
++    	{    	
++    		return mergeItemStack( stackSource, iSlotDestFirst, iSlotDestCap );
++    	}
++    }
++    
++	protected boolean mergeItemStack( ItemStack stackSource, int iSlotDestFirst, int iSlotDestCap )
++	{
++	    boolean bMerged = false;
++	    
++	    if ( stackSource.isStackable() )
++	    {
++	    	// look for destination stacks already containing the same item type
++	    	
++		    for ( int iTempSlot = iSlotDestFirst; 
++		    	iTempSlot < iSlotDestCap && stackSource.stackSize > 0; iTempSlot++ )
++	        {
++		    	bMerged |= AttemptToMergeWithSlot( stackSource, iTempSlot );
++	        }
++	    }
++	
++	    if ( stackSource.stackSize > 0 )
++	    {
++	    	// look for empty destination stacks
++	    	
++		    for ( int iTempSlot = iSlotDestFirst; 
++	    		iTempSlot < iSlotDestCap && stackSource.stackSize > 0; iTempSlot++ )
++	        {	
++		    	bMerged |= AttemptToMergeWithSlotIfEmpty( stackSource, iTempSlot );
++	        }
++	    }
++	
++	    return bMerged;
++	}
++    
++	protected boolean MergeItemStackFavoringHotbar( ItemStack stackSource, int iSlotDestFirst, int iSlotDestCap )
++	{
++	    boolean bMerged = false;
++
++	    if ( stackSource.isStackable() )
++	    {
++	    	// look for destination stacks already containing the same item type
++	    	
++		    for ( int iTempSlot = iSlotDestCap - 9; 
++		    	iTempSlot < iSlotDestCap && stackSource.stackSize > 0; iTempSlot++ )
++	        {
++		    	bMerged |= AttemptToMergeWithSlot( stackSource, iTempSlot );
++	        }
++		    
++		    for ( int iTempSlot = iSlotDestFirst; 
++	    		iTempSlot < iSlotDestCap - 9 && stackSource.stackSize > 0; iTempSlot++ )
++		    {
++		    	bMerged |= AttemptToMergeWithSlot( stackSource, iTempSlot );
++	        }
++	    }
++	
++	    if ( stackSource.stackSize > 0 )
++	    {
++	    	// look for empty destination stacks
++	    	
++		    for ( int iTempSlot = iSlotDestCap - 9; 
++	    		iTempSlot < iSlotDestCap && stackSource.stackSize > 0; iTempSlot++ )
++	        {	
++		    	bMerged |= AttemptToMergeWithSlotIfEmpty( stackSource, iTempSlot );
++	        }
++	    	
++		    for ( int iTempSlot = iSlotDestFirst; 
++    			iTempSlot < iSlotDestCap - 9 && stackSource.stackSize > 0; iTempSlot++ )
++	        {	
++		    	bMerged |= AttemptToMergeWithSlotIfEmpty( stackSource, iTempSlot );
++	        }
++	    }
++	
++	    return bMerged;
++	}
++    
++    protected boolean AttemptToMergeWithSlot( ItemStack stackSource, int iTempSlot )
++    {
++        Slot tempDestSlot = (Slot)inventorySlots.get( iTempSlot );
++        ItemStack tempDestStack = tempDestSlot.getStack();
++
++        if ( tempDestStack != null && tempDestStack.itemID == stackSource.itemID && 
++        	( !stackSource.getHasSubtypes() || 
++    		stackSource.getItemDamage() == tempDestStack.getItemDamage() ) && 
++    		ItemStack.areItemStackTagsEqual( stackSource, tempDestStack ) )
++        {
++            int iDestStackSize = tempDestStack.stackSize + stackSource.stackSize;
++            int iMaxStackSize = stackSource.getMaxStackSize();
++            
++            if ( tempDestSlot.getSlotStackLimit() < iMaxStackSize )
++            {
++            	iMaxStackSize = tempDestSlot.getSlotStackLimit();
++            }
++
++            if ( tempDestStack.stackSize < iMaxStackSize )
++            {
++                if ( iDestStackSize <= iMaxStackSize )
++                {
++                    stackSource.stackSize = 0;
++                    tempDestStack.stackSize = iDestStackSize;
++                }
++                else
++                {
++                    stackSource.stackSize -= iMaxStackSize - tempDestStack.stackSize;
++                    tempDestStack.stackSize = iMaxStackSize;
++                }
++                
++                tempDestSlot.onSlotChanged();
++                
++                return true;
++            }
++        }
++        
++        return false;
++    }
++    
++    protected boolean AttemptToMergeWithSlotIfEmpty( ItemStack stackSource, int iTempSlot )
++    {
++    	boolean bReturnValue = false;
++    	
++        Slot tempDestSlot = (Slot)inventorySlots.get(iTempSlot);
++        ItemStack tempDestStack = tempDestSlot.getStack();
++
++        if ( tempDestStack == null )
++        {
++            int iMaxStackSize = stackSource.getMaxStackSize();
++            
++            if ( tempDestSlot.getSlotStackLimit() < iMaxStackSize )
++            {
++            	iMaxStackSize = tempDestSlot.getSlotStackLimit();
++            }
++
++            if ( stackSource.stackSize <= iMaxStackSize )
++            {
++                tempDestSlot.putStack( stackSource.copy() );
++                stackSource.stackSize = 0;
++            }
++            else
++            {
++                tempDestSlot.putStack( stackSource.copy() );
++                stackSource.stackSize -= iMaxStackSize;
++                tempDestSlot.getStack().stackSize = iMaxStackSize;
++            }
++            
++            tempDestSlot.onSlotChanged();
++            
++            return true;
++        }
++        
++        return false;
++    }
++    // END FCMOD
++}

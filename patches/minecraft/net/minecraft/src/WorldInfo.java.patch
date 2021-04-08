@@ -1,0 +1,152 @@
+--- a/minecraft/net/minecraft/src/WorldInfo.java
++++ b/minecraft/net/minecraft/src/WorldInfo.java
+@@ -166,6 +166,10 @@
+         {
+             this.theGameRules.readGameRulesFromNBT(par1NBTTagCompound.getCompoundTag("GameRules"));
+         }
++        
++        // FCMOD: Code added
++        LoadModInfoFromNBT( par1NBTTagCompound );
++        // END FCMOD
+     }
+ 
+     public WorldInfo(WorldSettings par1WorldSettings, String par2Str)
+@@ -213,6 +217,9 @@
+         this.allowCommands = par1WorldInfo.allowCommands;
+         this.initialized = par1WorldInfo.initialized;
+         this.theGameRules = par1WorldInfo.theGameRules;
++        // FCMOD: Code added
++        CopyModInfo( par1WorldInfo );
++        // END FCMOD        
+     }
+ 
+     /**
+@@ -261,6 +268,10 @@
+         par1NBTTagCompound.setBoolean("initialized", this.initialized);
+         par1NBTTagCompound.setCompoundTag("GameRules", this.theGameRules.writeGameRulesToNBT());
+ 
++        // FCMOD: Code added
++        SaveModInfoToNBT( par1NBTTagCompound );
++        // END FCMOD
++
+         if (par2NBTTagCompound != null)
+         {
+             par1NBTTagCompound.setCompoundTag("Player", par2NBTTagCompound);
+@@ -325,6 +336,10 @@
+         return this.playerTag;
+     }
+ 
++	/** 
++	 * FCNOTE: Be careful calling this function as it can return unexpected results in derived worlds
++	 * You normally want to use world.provider.dimensionId instead
++	 */
+     public int getDimension()
+     {
+         return this.dimension;
+@@ -669,4 +684,106 @@
+     {
+         return par0WorldInfo.allowCommands;
+     }
++
++    // FCMOD: Code added
++    private InventoryEnderChest m_globalEnderChestInventory = new InventoryEnderChest();
++    
++    public boolean m_bPreviouslyRaining = false;
++    public boolean m_bPreviouslyThundering = false;
++    
++    private boolean m_bHasNetherBeenAccessed = false;
++    private boolean m_bHasWitherBeenSummoned = false;
++    private boolean m_bHasEndDimensionBeenAccessed = false;
++
++    public InventoryEnderChest GetGlobalEnderChestInventory()
++    {
++    	return m_globalEnderChestInventory;
+ }
++    
++    private void LoadModInfoFromNBT( NBTTagCompound par1NBTTagCompound )
++    {
++	    if ( par1NBTTagCompound.hasKey( "FCEnderItems" ) )
++	    {
++	        NBTTagList nbttaglist1 = par1NBTTagCompound.getTagList( "FCEnderItems" );
++	        
++	    	m_globalEnderChestInventory.loadInventoryFromNBT( nbttaglist1 );
++	    }
++	    
++	    if ( par1NBTTagCompound.hasKey( "FCNetherAccessed" ) )
++	    {
++	    	m_bHasNetherBeenAccessed = par1NBTTagCompound.getBoolean( "FCNetherAccessed" ); 
++	    }
++	    	
++	    if ( par1NBTTagCompound.hasKey( "FCWitherSummoned" ) )
++	    {
++	    	m_bHasWitherBeenSummoned = par1NBTTagCompound.getBoolean( "FCWitherSummoned" ); 
++	    }
++	    	
++	    if ( par1NBTTagCompound.hasKey( "FCEndAccessed" ) )
++	    {
++	    	m_bHasEndDimensionBeenAccessed = par1NBTTagCompound.getBoolean( "FCEndAccessed" ); 
++	    }
++	    	
++	    m_bPreviouslyRaining = raining;
++	    m_bPreviouslyThundering = thundering;
++    }
++    
++    private void SaveModInfoToNBT( NBTTagCompound par1NBTTagCompound )
++    {
++	    if ( m_globalEnderChestInventory != null )
++	    {
++	    	par1NBTTagCompound.setTag( "FCEnderItems", m_globalEnderChestInventory.saveInventoryToNBT() );
++	    }
++	    
++        par1NBTTagCompound.setBoolean( "FCNetherAccessed", m_bHasNetherBeenAccessed );	    
++        par1NBTTagCompound.setBoolean( "FCWitherSummoned", m_bHasWitherBeenSummoned );	    
++        par1NBTTagCompound.setBoolean( "FCEndAccessed", m_bHasEndDimensionBeenAccessed );	    
++    }
++    
++    private void CopyModInfo(WorldInfo par1WorldInfo)
++    {
++	    if ( par1WorldInfo.m_globalEnderChestInventory != null )
++	    {
++	        m_globalEnderChestInventory = par1WorldInfo.m_globalEnderChestInventory;
++	    }
++	    
++	    m_bHasNetherBeenAccessed = par1WorldInfo.m_bHasNetherBeenAccessed;
++	    m_bHasWitherBeenSummoned = par1WorldInfo.m_bHasWitherBeenSummoned;
++	    m_bHasEndDimensionBeenAccessed = par1WorldInfo.m_bHasEndDimensionBeenAccessed;
++	    
++	    m_bPreviouslyRaining = raining;
++	    m_bPreviouslyThundering = thundering;
++    }
++    
++    public boolean HasNetherBeenAccessed()
++    {
++    	return m_bHasNetherBeenAccessed;
++    }
++    
++    public void SetNetherBeenAccessed()
++    {
++    	m_bHasNetherBeenAccessed = true;
++    }
++    
++    public boolean HasWitherBeenSummoned()
++    {
++    	return m_bHasWitherBeenSummoned;
++    }
++    
++    public void SetWitherHasBeenSummoned()
++    {
++    	m_bHasWitherBeenSummoned = true;
++    }
++    
++    public boolean HasEndDimensionBeenAccessed()
++    {
++    	return m_bHasEndDimensionBeenAccessed;
++    }
++    
++    public void SetEndDimensionHasBeenAccessed()
++    {
++    	m_bHasEndDimensionBeenAccessed = true;
++    }
++    
++    // END FCMOD
++}

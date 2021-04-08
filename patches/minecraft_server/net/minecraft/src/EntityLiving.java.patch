@@ -1,0 +1,1251 @@
+--- a/minecraft_server/net/minecraft/src/EntityLiving.java
++++ b/minecraft_server/net/minecraft/src/EntityLiving.java
+@@ -12,16 +12,36 @@
+      * An array of probabilities that determines whether a random enchantment should be added to the held item. Indexed
+      * by difficulty.
+      */
++	// FCMOD: Changed to unify accross difficulty levels and to adjust for balance
++	/*
+     private static final float[] enchantmentProbability = new float[] {0.0F, 0.0F, 0.1F, 0.2F};
++    */
++    private static final float[] enchantmentProbability = new float[] {0.05F, 0.05F, 0.05F, 0.05F};
++    // END FCMOD
+ 
+     /** Probability to get enchanted armor */
++	// FCMOD: Changed to unify accross difficulty levels and to adjust for balance
++	/*
+     private static final float[] armorEnchantmentProbability = new float[] {0.0F, 0.0F, 0.25F, 0.5F};
++    */
++    private static final float[] armorEnchantmentProbability = new float[] {0.05F, 0.05F, 0.05F, 0.05F};
++    // END FCMOD
+ 
+     /** Probability to get armor */
++	// FCMOD: Changed to unify accross difficulty levels and to adjust for balance
++    /*
+     private static final float[] armorProbability = new float[] {0.0F, 0.0F, 0.05F, 0.07F};
++    */
++    private static final float[] armorProbability = new float[] {0.0025F, 0.0025F, 0.0025F, 0.0025F};
++    // END FCMOD
+ 
+     /** Probability to pick up loot */
++	// FCMOD: Changed to unify accross difficulty levels and to adjust for balance
++    /*
+     public static final float[] pickUpLootProability = new float[] {0.0F, 0.1F, 0.15F, 0.45F};
++    */
++    public static final float[] pickUpLootProability = new float[] {0.15F, 0.15F, 0.15F, 0.15F};
++    // END FCMOD
+     public int maxHurtResistantTime = 20;
+     public float field_70769_ao;
+     public float field_70770_ap;
+@@ -97,10 +117,15 @@
+     public float prevCameraPitch;
+     public float cameraPitch;
+ 
++    // FCMOD: Changed for clarity with Entity.isDead.
++    /*
++    protected boolean dead = false;
++    */
+     /**
+-     * This gets set on entity death, but never used. Looks like a duplicate of isDead
++     * Tells if a creature has shed its mortal coil.  Entity.isDead is whether an entity is flagged to be removed from the game
+      */
+-    protected boolean dead = false;
++    protected boolean isLivingDead = false;
++    // END FCMOD
+ 
+     /** The experience points the Entity gives. */
+     protected int experienceValue;
+@@ -125,8 +150,14 @@
+     protected int recentlyHit = 0;
+ 
+     /** is only being set, has no uses as of MC 1.1 */
++    // FCMOD: Changed to public
++    /*
+     private EntityLiving entityLivingToAttack = null;
+     private int revengeTimer = 0;
++    */
++    public EntityLiving entityLivingToAttack = null;
++    public int revengeTimer = 0;
++    // END FCMOD
+     private EntityLiving lastAttackingEntity = null;
+     public int arrowHitTimer = 0;
+     protected HashMap activePotionsMap = new HashMap();
+@@ -241,6 +272,10 @@
+         }
+ 
+         this.stepHeight = 0.5F;
++        
++        // FCMOD: Code added to prevent all living sounds playing very rapidly as entities are loaded (was particularly noticeable with ghasts)
++        livingSoundTime = -getTalkInterval();
++        // END FCMOD
+     }
+ 
+     protected int func_96121_ay()
+@@ -328,8 +363,11 @@
+ 
+     public boolean attackEntityAsMob(Entity par1Entity)
+     {
+-        this.setLastAttackingEntity(par1Entity);
+-        return false;
++        // FCMOD: Changed
++        //this.setLastAttackingEntity(par1Entity);
++        //return false;
++        return MeleeAttack( par1Entity );
++        // END FCMOD
+     }
+ 
+     /**
+@@ -344,7 +382,14 @@
+      * Sets the active target the Task system uses for tracking
+      */
+     public void setAttackTarget(EntityLiving par1EntityLiving)
++    // FCMOD: Added to allow calling this method directly regardless of class hierarchy
+     {
++    	EntityLivingSetAttackTarget(par1EntityLiving);
++    }
++    
++    protected void EntityLivingSetAttackTarget(EntityLiving par1EntityLiving)
++    // END FCMOD
++    {
+         this.attackTarget = par1EntityLiving;
+     }
+ 
+@@ -353,7 +398,12 @@
+      */
+     public boolean canAttackClass(Class par1Class)
+     {
++    	// FCMOD: Changed
++    	/*
+         return EntityCreeper.class != par1Class && EntityGhast.class != par1Class;
++        */
++        return FCEntityCreeper.class != par1Class && FCEntityGhast.class != par1Class;
++        // END FCMOD
+     }
+ 
+     /**
+@@ -456,10 +506,14 @@
+     /**
+      * returns true if the entity provided in the argument can be seen. (Raytrace)
+      */
++	// FCMOD: Code removed and replaced later so that entities can be seen through blocks that don't stop movement
++	/*
+     public boolean canEntityBeSeen(Entity par1Entity)
+     {
+         return this.worldObj.rayTraceBlocks(this.worldObj.getWorldVec3Pool().getVecFromPool(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), this.worldObj.getWorldVec3Pool().getVecFromPool(par1Entity.posX, par1Entity.posY + (double)par1Entity.getEyeHeight(), par1Entity.posZ)) == null;
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Returns true if other Entities should be prevented from moving through this Entity.
+@@ -553,7 +607,12 @@
+         }
+         else
+         {
++        	// FCMOD: Code change for players to recover air gradually
++        	/*
+             this.setAir(300);
++            */
++        	RecoverAirSupply();
++        	// END FCMOD
+         }
+ 
+         this.prevCameraPitch = this.cameraPitch;
+@@ -608,6 +667,13 @@
+             }
+         }
+ 
++        // FCMOD: Added to prevent problems with the AI sometimes going into limbo due to dead targets 
++        if ( attackTarget != null && !attackTarget.isEntityAlive() )
++        {
++    		setAttackTarget( null );
++        }
++        // END FCMOD
++
+         this.updatePotionEffects();
+         this.field_70763_ax = this.field_70764_aw;
+         this.prevRenderYawOffset = this.renderYawOffset;
+@@ -639,7 +705,18 @@
+                     this.worldObj.spawnEntityInWorld(new EntityXPOrb(this.worldObj, this.posX, this.posY, this.posZ, var2));
+                 }
+             }
++            // FCMOD: Code added to spawn Dragon Orbs when the creature is not killed by a player
++            else if (!worldObj.isRemote && !isChild())
++	        {
++            	int iExperienceDropped = getExperiencePoints(attackingPlayer);
+ 
++            	if ( iExperienceDropped > 0 )
++            	{
++            		worldObj.spawnEntityInWorld(new EntityXPOrb(worldObj, posX, posY, posZ, getExperiencePoints(attackingPlayer), true ) );
++            	}
++	        }
++	        // END FCMOD
++
+             this.setDead();
+ 
+             for (var1 = 0; var1 < 20; ++var1)
+@@ -933,6 +1010,12 @@
+             }
+             else
+             {
++            	// FCMOD: Code added
++            	if ( par1DamageSource == FCDamageSourceCustom.m_DamageSourceChoppingBlock )
++        		{
++            		m_iRecentlyOnChoppingBlockCountdown = m_iOnChoppingBlockMaxCountdown;
++            	}
++            	// END FCMOD
+                 if ((par1DamageSource == DamageSource.anvil || par1DamageSource == DamageSource.fallingBlock) && this.getEquipmentInSlot(4) != null)
+                 {
+                     this.getEquipmentInSlot(4).damageItem(par2 * 4 + this.rand.nextInt(par2 * 2), this);
+@@ -1009,6 +1092,9 @@
+                         }
+ 
+                         this.attackedAtYaw = (float)(Math.atan2(var7, var9) * 180.0D / Math.PI) - this.rotationYaw;
++                        // FCMOD: Added to limit knockback with crappy weapons
++                        if ( par2 > 1 || var4.isSprinting() )
++                    	// END FCMOD
+                         this.knockBack(var4, par2, var9, var7);
+                     }
+                     else
+@@ -1184,7 +1270,10 @@
+     {
+         this.isAirBorne = true;
+         float var7 = MathHelper.sqrt_double(par3 * par3 + par5 * par5);
+-        float var8 = 0.4F;
++        // FCMOD: Changed
++        //float var8 = 0.4F;
++        float var8 = KnockbackMagnitude();
++        // END FCMOD
+         this.motionX /= 2.0D;
+         this.motionY /= 2.0D;
+         this.motionZ /= 2.0D;
+@@ -1201,6 +1290,8 @@
+     /**
+      * Called when the mob's health reaches 0.
+      */
++    // FCMOD: Function removed and replaced by custom one below
++    /*
+     public void onDeath(DamageSource par1DamageSource)
+     {
+         Entity var2 = par1DamageSource.getEntity();
+@@ -1246,6 +1337,8 @@
+ 
+         this.worldObj.setEntityState(this, (byte)3);
+     }
++    */
++    // END FCMOD
+ 
+     protected void dropRareDrop(int par1) {}
+ 
+@@ -1253,7 +1346,14 @@
+      * Drop 0-2 items of this living's type
+      */
+     protected void dropFewItems(boolean par1, int par2)
++    // FCMOD: Added to alow calling this method directly regardless of class hierarchy
+     {
++    	EntityLivingDropFewItems( par1, par2 );
++    }
++    
++    protected void EntityLivingDropFewItems(boolean par1, int par2)
++    // END FCMOD
++    {
+         int var3 = this.getDropItemId();
+ 
+         if (var3 > 0)
+@@ -1284,7 +1384,14 @@
+      * Called when the mob is falling. Calculates and applies fall damage.
+      */
+     protected void fall(float par1)
++    // FCMOD: Added to alow calling this method directly regardless of class hierarchy
+     {
++    	EntityLivingFall(par1);
++    }
++    
++    protected void EntityLivingFall(float par1)
++    // END FCMOD
++    {
+         super.fall(par1);
+         int var2 = MathHelper.ceiling_float_int(par1 - 3.0F);
+ 
+@@ -1327,6 +1434,12 @@
+             this.motionZ *= 0.800000011920929D;
+             this.motionY -= 0.02D;
+ 
++            // FCMOD: Code added to apply move penalties in water
++            float fModifier = GetSwimmingHorizontalModifier();
++            motionX *= fModifier;
++            motionZ *= fModifier;
++            // END FCMOD
++
+             if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6000000238418579D - this.posY + var9, this.motionZ))
+             {
+                 this.motionY = 0.30000001192092896D;
+@@ -1353,12 +1466,25 @@
+ 
+             if (this.onGround)
+             {
++            	// FCMOD: Changed
++            	/*
+                 var3 = 0.54600006F;
+                 int var4 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ));
++                */
++            	var3 = GetDefaultSlipperinessOnGround();
++                int var4 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), 
++                	MathHelper.floor_double(this.boundingBox.minY - 0.25F), // reduced from full block offset above to not slip on partial blocks like slabs 
++                	MathHelper.floor_double(this.posZ));
++            	// END FCMOD
+ 
+                 if (var4 > 0)
+                 {
++                	// FCMOD: Changed
++                	/*
+                     var3 = Block.blocksList[var4].slipperiness * 0.91F;
++                    */
++                	var3 = GetSlipperinessRelativeToBlock( var4 ) * 0.91F;
++                	// END FCMOD
+                 }
+             }
+ 
+@@ -1388,12 +1514,25 @@
+ 
+             if (this.onGround)
+             {
++            	// FCMOD: Changed
++            	/*
+                 var3 = 0.54600006F;
+                 int var6 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.boundingBox.minY) - 1, MathHelper.floor_double(this.posZ));
++                */
++            	var3 = GetDefaultSlipperinessOnGround();
++                int var6 = this.worldObj.getBlockId(MathHelper.floor_double(this.posX), 
++                	MathHelper.floor_double(this.boundingBox.minY - 0.25F), // reduced from full block offset above to not slip on partial blocks like slabs 
++                	MathHelper.floor_double(this.posZ));
++            	// END FCMOD
+ 
+                 if (var6 > 0)
+                 {
++                	// FCMOD: Changed
++                	/*
+                     var3 = Block.blocksList[var6].slipperiness * 0.91F;
++                    */
++                	var3 = GetSlipperinessRelativeToBlock( var6 );
++                	// END FCMOD
+                 }
+             }
+ 
+@@ -1434,6 +1573,10 @@
+                 {
+                     this.motionY = 0.0D;
+                 }
++                // FCMOD: Code added to apply move penalties on ladders                
++                float fModifier = GetLadderVerticalMovementModifier();
++                motionY *= fModifier;
++                // END FCMOD
+             }
+ 
+             this.moveEntity(this.motionX, this.motionY, this.motionZ);
+@@ -1466,21 +1609,23 @@
+ 
+         this.prevLimbYaw = this.limbYaw;
+         var9 = this.posX - this.prevPosX;
+-        double var11 = this.posZ - this.prevPosZ;
+-        float var12 = MathHelper.sqrt_double(var9 * var9 + var11 * var11) * 4.0F;
++        double var12 = this.posZ - this.prevPosZ;
++        float var11 = MathHelper.sqrt_double(var9 * var9 + var12 * var12) * 4.0F;
+ 
+-        if (var12 > 1.0F)
++        if (var11 > 1.0F)
+         {
+-            var12 = 1.0F;
++            var11 = 1.0F;
+         }
+ 
+-        this.limbYaw += (var12 - this.limbYaw) * 0.4F;
++        this.limbYaw += (var11 - this.limbYaw) * 0.4F;
+         this.limbSwing += this.limbYaw;
+     }
+ 
+     /**
+      * returns true if this entity is by a ladder, false otherwise
+      */
++    // FCMOD: Removed and replaced later
++    /*
+     public boolean isOnLadder()
+     {
+         int var1 = MathHelper.floor_double(this.posX);
+@@ -1489,6 +1634,8 @@
+         int var4 = this.worldObj.getBlockId(var1, var2, var3);
+         return var4 == Block.ladder.blockID || var4 == Block.vine.blockID;
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * (abstract) Protected helper method to write subclass entity data to NBT.
+@@ -1637,7 +1784,14 @@
+      * use this to react to sunlight and start to burn.
+      */
+     public void onLivingUpdate()
++    // FCMOD: Added to alow calling this method directly regardless of class hierarchy
+     {
++    	EntityLivingOnLivingUpdate();
++    }
++    
++    protected void EntityLivingOnLivingUpdate()
++    // END FCMOD
++    {
+         if (this.jumpTicks > 0)
+         {
+             --this.jumpTicks;
+@@ -1708,9 +1862,19 @@
+ 
+         if (this.isJumping)
+         {
++        	// FCMOD: Line change
++        	/*
+             if (!this.isInWater() && !this.handleLavaMovement())
++            */
++            if ( ( !this.isInWater() && !this.handleLavaMovement() ) || !CanSwim() )
++        	// END FCMOD
+             {
++            	// FCMOD: Changed
++            	/*
+                 if (this.onGround && this.jumpTicks == 0)
++                */
++                if ( CanJump() && ( onGround || CanJumpMidWater() ) && this.jumpTicks == 0)
++        		// END FCMOD            		
+                 {
+                     this.jump();
+                     this.jumpTicks = 10;
+@@ -1746,7 +1910,12 @@
+         this.worldObj.theProfiler.endSection();
+         this.worldObj.theProfiler.startSection("looting");
+ 
++        // FCMOD: Changed for "isLivingDead"
++        /*
+         if (!this.worldObj.isRemote && this.canPickUpLoot() && !this.dead && this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"))
++        */
++        if (!this.worldObj.isRemote && this.canPickUpLoot() && !isLivingDead && this.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing"))
++        // END FCMOD
+         {
+             List var2 = this.worldObj.getEntitiesWithinAABB(EntityItem.class, this.boundingBox.expand(1.0D, 0.0D, 1.0D));
+             Iterator var12 = var2.iterator();
+@@ -1835,6 +2004,9 @@
+         }
+ 
+         this.worldObj.theProfiler.endSection();
++        // FCMOD: Added
++        ModSpecificOnLivingUpdate();
++        // END FCMOD
+     }
+ 
+     protected void func_85033_bc()
+@@ -1870,6 +2042,7 @@
+ 
+     /**
+      * Returns whether the entity is in a local (client) world
++     * FCNOTE: This is horribly named.  For everything other than EntityPlayerSP, this returns true if !world.isRemote
+      */
+     protected boolean isClientWorld()
+     {
+@@ -1901,7 +2074,12 @@
+             this.motionY += (double)((float)(this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F);
+         }
+ 
++        // FCMOD: Changed to avoid jump exploit in shallow water while weighted
++		/*
+         if (this.isSprinting())
++		*/
++        if (isSprinting() && !isInWater())
++    	// END FCMOD
+         {
+             float var1 = this.rotationYaw * 0.017453292F;
+             this.motionX -= (double)(MathHelper.sin(var1) * 0.2F);
+@@ -1922,6 +2100,8 @@
+     /**
+      * Makes the entity despawn if requirements are reached
+      */
++    // FCMOD: Removed and replaced
++    /*
+     protected void despawnEntity()
+     {
+         if (!this.persistenceRequired)
+@@ -1951,9 +2131,18 @@
+             }
+         }
+     }
++    */
++    // END FCMOD
+ 
+     protected void updateAITasks()
++    // FCMOD: Added to allow calling this method directly regardless of class hierarchy
+     {
++    	EntityLivingUpdateAITasks();
++    }
++    
++    protected void EntityLivingUpdateAITasks()
++    // END FCMOD
++    {
+         ++this.entityAge;
+         this.worldObj.theProfiler.startSection("checkDespawn");
+         this.despawnEntity();
+@@ -2258,6 +2447,12 @@
+ 
+         if (var12 > 0)
+         {
++            // FCMOD: Code added to not display potion particles if all effects come from beacons        
++            if ( HasOnlyAmbientPotionEffects( activePotionsMap.values() ) )
++            {
++            	return;
++            }
++            // END FCMOD
+             boolean var4 = false;
+ 
+             if (!this.isInvisible())
+@@ -2346,6 +2541,8 @@
+ 
+     public boolean isPotionApplicable(PotionEffect par1PotionEffect)
+     {
++    	// FCMOD: Code removed to get rid of undead special casing on potion use
++    	/*
+         if (this.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD)
+         {
+             int var2 = par1PotionEffect.getPotionID();
+@@ -2355,6 +2552,8 @@
+                 return false;
+             }
+         }
++        */
++    	// END FCMOD
+ 
+         return true;
+     }
+@@ -2399,6 +2598,8 @@
+      * This method returns a value to be applied directly to entity speed, this factor is less than 1 when a slowdown
+      * potion effect is applied, more than 1 when a haste potion effect is applied and 2 for fleeing entities.
+      */
++    // FCMOD: Function removed and replaced later
++    /*
+     public float getSpeedModifier()
+     {
+         float var1 = 1.0F;
+@@ -2420,6 +2621,8 @@
+ 
+         return var1;
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Sets the position of the entity and updates the 'last' variables
+@@ -2473,6 +2676,8 @@
+         }
+         else
+         {
++        	// FCTODO: As far as I can tell, the following code can never be anything other than zero unless health is greater than max health (which shouldn't happen), 
++        	// and thus has no effect.  Figure out what's going on here and if difficulty actually impacts anything.
+             int var1 = (int)((float)this.health - (float)this.getMaxHealth() * 0.33F);
+             var1 -= (3 - this.worldObj.difficultySetting) * 4;
+ 
+@@ -2537,6 +2742,9 @@
+                 if (!var5 && var4.isItemStackDamageable())
+                 {
+                     int var6 = Math.max(var4.getMaxDamage() - 25, 1);
++                    // FCMOD: Code added to provide a better range on damage
++                    var6 = Math.max( (int)((float)var4.getMaxDamage() * 0.95F), 1);
++                    // END FCMOD
+                     int var7 = var4.getMaxDamage() - this.rand.nextInt(this.rand.nextInt(var6) + 1);
+ 
+                     if (var7 > var6)
+@@ -2561,12 +2769,23 @@
+      * Makes entity wear random armor based on difficulty
+      */
+     protected void addRandomArmor()
++    // FCMOD: Added to alow calling this method directly regardless of class hierarchy
+     {
++    	EntityLivingAddRandomArmor();
++    }
++    
++    protected void EntityLivingAddRandomArmor()
++    // END FCMOD
++    {
+         if (this.rand.nextFloat() < armorProbability[this.worldObj.difficultySetting])
+         {
+             int var1 = this.rand.nextInt(2);
+             float var2 = this.worldObj.difficultySetting == 3 ? 0.1F : 0.25F;
+ 
++            // FCMOD: Code added to make armor drop rate equal on all difficulty levels
++            var2 = 0.1F;
++            // END FCMOD
++
+             if (this.rand.nextFloat() < 0.095F)
+             {
+                 ++var1;
+@@ -2598,6 +2817,10 @@
+                     if (var5 != null)
+                     {
+                         this.setCurrentItemOrArmor(var3 + 1, new ItemStack(var5));
++                        
++                        // FCMOD: Code added to increase armor drop on mobs
++                        equipmentDropChances[var3 + 1] = 0.75F;
++                        // END FCMOD
+                     }
+                 }
+             }
+@@ -2663,6 +2886,8 @@
+     /**
+      * Params: Armor slot, Item tier
+      */
++    // FCMOD: Function removed and replaced by custom one below
++    /*
+     public static Item getArmorItemForSlot(int par0, int par1)
+     {
+         switch (par0)
+@@ -2759,12 +2984,19 @@
+                 return null;
+         }
+     }
++    */
++    // END FCMOD
+ 
+     protected void func_82162_bC()
+     {
+         if (this.getHeldItem() != null && this.rand.nextFloat() < enchantmentProbability[this.worldObj.difficultySetting])
+         {
++        	// FCMOD: Code change to make enchant strength on mob drops uniform accross difficulty levels
++        	/*
+             EnchantmentHelper.addRandomEnchantment(this.rand, this.getHeldItem(), 5 + this.worldObj.difficultySetting * this.rand.nextInt(6));
++            */
++            EnchantmentHelper.addRandomEnchantment(this.rand, this.getHeldItem(), 7 * this.rand.nextInt(6));
++        	// END FCMOD
+         }
+ 
+         for (int var1 = 0; var1 < 4; ++var1)
+@@ -2773,7 +3005,12 @@
+ 
+             if (var2 != null && this.rand.nextFloat() < armorEnchantmentProbability[this.worldObj.difficultySetting])
+             {
++            	// FCMOD: Code change to make enchant strength on mob drops uniform accross difficulty levels
++            	/*
+                 EnchantmentHelper.addRandomEnchantment(this.rand, var2, 5 + this.worldObj.difficultySetting * this.rand.nextInt(6));
++                */
++                EnchantmentHelper.addRandomEnchantment(this.rand, var2, 7 * this.rand.nextInt(6));
++            	// END FCMOD
+             }
+         }
+     }
+@@ -2781,6 +3018,10 @@
+     /**
+      * Initialize this creature.
+      */
++    /**
++     * FCNOTE: this function is only called when creatures spawn into the world, NOT
++     * when they are birthed or loaded.
++     */
+     public void initCreature() {}
+ 
+     /**
+@@ -2887,8 +3128,603 @@
+         this.canPickUpLoot = par1;
+     }
+ 
+-    public boolean func_104002_bU()
++    // FCMOD: Changed for clarity
++    //public boolean func_104002_bU()
++    public boolean GetIsPersistent()
++    // END FCMOD
+     {
+         return this.persistenceRequired;
+     }
++
++    // FCMOD: Added New
++    private int m_iRecentlyOnChoppingBlockCountdown = 0;
++    
++    public static final int m_iOnChoppingBlockMaxCountdown = 40;
++    
++    public boolean isOnLadder()
++    {
++        int i = MathHelper.floor_double( posX );
++        int j = MathHelper.floor_double( boundingBox.minY );
++        int k = MathHelper.floor_double( posZ );
++        
++        Block block = Block.blocksList[worldObj.getBlockId( i, j, k )];
++        
++    	return block != null && block.IsBlockClimbable( worldObj, i, j, k );  
+ }
++    
++    protected void ModSpecificOnLivingUpdate()
++    {
++    	if ( m_iRecentlyOnChoppingBlockCountdown > 0 )
++    	{
++    		m_iRecentlyOnChoppingBlockCountdown--;
++    	}
++    }    
++    
++    public float getSpeedModifier()
++    {
++        float fMoveSpeed = 1.0F;
++
++        if (this.isPotionActive(Potion.moveSlowdown))
++        {
++            fMoveSpeed *= 1.0F - 0.15F * (float)(this.getActivePotionEffect(Potion.moveSlowdown).getAmplifier() + 1);
++        }
++
++        if ( onGround && IsAffectedByMovementModifiers() )
++        {
++        	int iGroundI = MathHelper.floor_double( posX );
++        	int iGroundJ = MathHelper.floor_double( posY - 0.03D - (double)yOffset ); // same calc used for step sound
++        	int iGroundK = MathHelper.floor_double( posZ );
++        	
++        	if ( FCUtilsWorld.IsGroundCoverOnBlock( worldObj, iGroundI, iGroundJ, iGroundK ) )
++        	{
++        		fMoveSpeed *= 0.8F;
++        	}
++        	
++        	Block blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];
++        	
++        	if ( blockOn == null || blockOn.getCollisionBoundingBoxFromPool( worldObj, iGroundI, iGroundJ, iGroundK ) == null )
++        	{
++        		float fHalfWidth = width / 2F;
++        		
++        		// block we are standing on directly is air or has no collision box.  Check the horizontal extents of our box for a movement modifier
++
++        		int iCenterGroundI = iGroundI;
++        		
++        		iGroundI = MathHelper.floor_double( posX + fHalfWidth );	        		
++	        	blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];
++	        	
++	        	if ( blockOn == null || blockOn.getCollisionBoundingBoxFromPool( worldObj, iGroundI, iGroundJ, iGroundK ) == null )
++	        	{
++	        		iGroundI = MathHelper.floor_double( posX - fHalfWidth );
++		        	blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];
++		        	
++		        	if ( blockOn == null || blockOn.getCollisionBoundingBoxFromPool( worldObj, iGroundI, iGroundJ, iGroundK ) == null )
++		        	{
++		        		iGroundI = iCenterGroundI;
++		        		
++		        		iGroundK = MathHelper.floor_double( posZ + fHalfWidth );
++			        	blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];
++			        	
++			        	if ( blockOn == null || blockOn.getCollisionBoundingBoxFromPool( worldObj, iGroundI, iGroundJ, iGroundK ) == null )
++			        	{
++			        		iGroundK = MathHelper.floor_double( posZ - fHalfWidth );
++				        	blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];					        	
++			        	}
++		        	}
++	        	}	        	
++        	}
++        	
++        	if ( blockOn != null )
++        	{
++        		fMoveSpeed *= blockOn.GetMovementModifier( worldObj, iGroundI, iGroundJ, iGroundK );        		
++        	}
++        	
++        	fMoveSpeed *= GetLandMovementModifier();
++        }
++        
++        if ( fMoveSpeed < 0.0F)
++        {
++            fMoveSpeed = 0.0F;
++        }
++
++        return fMoveSpeed;
++    }
++    
++    protected float GetHealthAndExhaustionModifier()
++    {
++    	return 1.0F;
++    }
++    
++    protected float GetSwimmingHorizontalModifier()
++    {
++    	return GetHealthAndExhaustionModifier();
++    }
++    
++    protected float GetLandMovementModifier()
++    {
++    	return GetHealthAndExhaustionModifier();
++    }
++    
++    protected float GetLadderVerticalMovementModifier()
++    {
++    	return GetHealthAndExhaustionModifier();
++    }
++    
++    public static Item getArmorItemForSlot(int par0, int par1)
++    {
++        switch (par0)
++        {
++            case 4:
++            	
++                if ( par1 == 4 )
++                {
++                    return Item.helmetChain;
++                }
++                else
++                {
++                    return Item.helmetIron;
++                }
++
++            case 3:
++
++                if (par1 == 4)
++                {
++                    return Item.plateChain;
++                }
++                else
++                {
++                    return Item.plateIron;
++                }
++
++            case 2:
++
++                if (par1 == 4)
++                {
++                    return Item.legsChain;
++                }
++                else
++                {
++                    return Item.legsIron;
++                }
++
++            case 1:
++
++                if (par1 == 4)
++                {
++                    return Item.bootsChain;
++                }
++                else
++                {
++                    return Item.bootsIron;
++                }
++
++            default:
++            	
++                return null;
++        }
++    }
++    
++    public void onDeath( DamageSource source )
++    {
++    	EntityLivingOnDeath( source );
++    }
++    
++    public void EntityLivingOnDeath( DamageSource source )
++    {
++        EntityLiving killCreditedEntity = this.func_94060_bK();
++
++        if (this.scoreValue >= 0 && killCreditedEntity != null)
++        {
++            killCreditedEntity.addToPlayerScore(this, this.scoreValue);
++        }
++
++        Entity sourceEntity = source.getEntity();
++
++        if ( sourceEntity != null )
++        {
++            sourceEntity.onKillEntity( this );
++        }
++
++        isLivingDead = true;
++
++        if ( !worldObj.isRemote )
++        {
++            if ( !isChild() && worldObj.getGameRules().getGameRuleBooleanValue( "doMobLoot" ) )
++            {
++                int iLootingModifier = GetAmbientLootingModifier();
++
++                if ( sourceEntity instanceof EntityPlayer )
++                {
++                    int iPlayerLootingModifier = EnchantmentHelper.getLootingModifier((EntityLiving)sourceEntity);
++                    
++                    if ( iPlayerLootingModifier > iLootingModifier )
++                    {
++                    	iLootingModifier = iPlayerLootingModifier;
++                    }
++                }
++
++                dropFewItems( true, iLootingModifier);
++                dropEquipment( true, iLootingModifier);
++                
++                CheckForRareDrop( source, iLootingModifier );
++
++                CheckForHeadDrop( source, iLootingModifier );
++                
++            	if ( worldObj.getWorldInfo().getGameType() != EnumGameType.CREATIVE )
++            	{
++            		CheckForScrollDrop();
++            	}
++            }
++        }
++
++        this.worldObj.setEntityState(this, (byte)3);
++    }
++
++    protected void CheckForRareDrop( DamageSource source, int iLootingModifier )
++    {
++        int iChance = rand.nextInt(800) - ( iLootingModifier * 4 );
++
++        if ( iChance < 5 )
++        {
++            dropRareDrop( iChance <= 0 ? 1 : 0 );
++        }        
++    }
++    
++    public void CheckForScrollDrop()
++    {
++    }
++    
++    protected void CheckForHeadDrop( DamageSource source, int iLootingModifier )
++    {
++        Entity sourceEntity = source.getEntity();
++
++        int iHeadChance = rand.nextInt(200);
++        
++        if ( sourceEntity instanceof EntityPlayer )
++        {
++            iHeadChance -= iLootingModifier;
++            
++        	if ( ((EntityPlayer)sourceEntity).getHeldItem() != null && 
++        		((EntityPlayer)sourceEntity).getHeldItem().getItem().itemID == FCBetterThanWolves.fcItemBattleAxe.itemID )
++        	{
++        		iHeadChance = iHeadChance >> 2;
++    		}
++		}
++        else if ( source == FCDamageSourceCustom.m_DamageSourceChoppingBlock || m_iRecentlyOnChoppingBlockCountdown > 0 )
++        {
++    		iHeadChance = iHeadChance >> 2;
++        }
++        
++        if ( iHeadChance < 5 )
++        {
++            dropHead();
++        }   
++    }
++    
++    protected int GetAmbientLootingModifier()
++    {
++    	int iLocI = MathHelper.floor_double( posX );
++    	int iLocJ = MathHelper.floor_double( posY );
++    	int iLocK = MathHelper.floor_double( posZ );
++    	
++    	return worldObj.GetAmbientLootingEffectAtLocation( iLocI, iLocJ, iLocK );
++    }
++    
++    protected void dropHead()
++    {
++    }
++    
++    public boolean CanJump()
++    {
++    	return true;
++    }
++    
++    public boolean CanSwim()
++    {
++    	return !isWeighted();
++    }
++    
++    public boolean isWeighted()
++    {
++		int iWeight = GetWornArmorWeight();
++		
++		if ( iWeight >= 10 )
++		{
++			return true;
++		}
++		
++    	return IsWeightedByHeadCrab();
++    }
++    
++    protected boolean IsWeightedByHeadCrab()
++    {
++    	return HasHeadCrabbedSquid();
++    }
++    
++    @Override
++    public void OnFlungBySquidTentacle( FCEntitySquid squid )
++    {
++    	// doesn't call attackEntityFrom() by default so that monsters remain chill about it and don't attack back
++    	
++        playSound( getHurtSound(), getSoundVolume(), getSoundPitch() );        
++    }
++    
++    @Override
++    public void OnHeadCrabbedBySquid( FCEntitySquid squid )
++    {
++    	// doesn't call attackEntityFrom() by default so that monsters remain chill about it and don't attack back
++    	
++        playSound( getHurtSound(), getSoundVolume(), getSoundPitch() );        
++    }
++    
++	protected int GetWornArmorWeight()
++	{
++		int iWeight = 0;
++		
++		for ( int iTempSlot = 0; iTempSlot < 4; iTempSlot++ )
++		{
++			ItemStack tempStack = this.getCurrentArmor( iTempSlot );
++			
++			if ( tempStack != null )
++			{
++				iWeight += tempStack.getItem().GetWeightWhenWorn();
++			}
++		}
++        
++		return iWeight;
++	}
++	
++    private boolean HasOnlyAmbientPotionEffects( Collection effectCollection )
++    {    	
++        if ( effectCollection != null && !effectCollection.isEmpty() )
++        {
++            Iterator effectIterator = effectCollection.iterator();
++
++            while (effectIterator.hasNext())
++            {
++                PotionEffect tempEffect = (PotionEffect)effectIterator.next();
++                
++                if ( !tempEffect.getIsAmbient() )
++                {
++                	return false;
++                }
++            }
++            
++        	return true;
++        }
++        
++    	return false;
++    }
++    
++    public void SpawnerInitCreature()
++    {
++    	initCreature();
++    }
++    
++    /** Initialize state variables which may affect ability to spawn, such as bounding box size */
++    public void PreInitCreature() {}
++    
++    public boolean canEntityBeSeen( Entity entity )
++    {
++    	// Vanilla code replaced so that entities can be seen through blocks that don't stop movement
++    	
++        return worldObj.rayTraceBlocks_do_do( 
++        	worldObj.getWorldVec3Pool().getVecFromPool( posX, posY + (double)getEyeHeight(), posZ ), 
++        	worldObj.getWorldVec3Pool().getVecFromPool( entity.posX, entity.posY + 
++    		(double)entity.getEyeHeight(), entity.posZ ), false, true ) == null;
++    }
++    
++    public boolean CanEntityCenterOfMassBeSeen( Entity entity )
++    {
++    	// Same as above, but to other entities' center rather than eye to eye
++    	
++        return worldObj.rayTraceBlocks_do_do( 
++        	worldObj.getWorldVec3Pool().getVecFromPool( posX, posY + (double)getEyeHeight(), posZ ), 
++        	worldObj.getWorldVec3Pool().getVecFromPool( entity.posX, entity.posY + 
++    		( entity.height / 2F ), entity.posZ ), false, true ) == null;
++    }
++    
++    protected void RecoverAirSupply()
++    {
++		setAir(300);		
++    }
++    
++    public void SetPersistent( boolean bPersistant )
++    {
++    	persistenceRequired = bPersistant;
++    }
++    
++    @Override
++    public boolean DoesEntityApplyToSpawnCap()
++    {
++    	// entities with persistance set do not apply to the spawn cap
++    	
++    	return !GetIsPersistent();
++    }
++    
++    @Override
++	public void OutOfUpdateRangeUpdate()
++	{
++    	despawnEntity();
++	}
++	
++	public float GetDefaultSlipperinessOnGround()
++    {
++        return 0.54600006F;
++    }
++    
++	public float GetSlipperinessRelativeToBlock( int iBlockID )
++	{
++    	return Block.blocksList[iBlockID].slipperiness  * 0.91F;
++	}
++	
++	public boolean CanJumpMidWater()
++	{
++		return false;
++	}
++	
++	public void OnClimbWhileSwimming()
++	{
++	}
++	
++    protected void despawnEntity()
++    {
++    	// FCCHUNK: Decide on updates around original spawn
++        if ( !persistenceRequired && canDespawn() )
++        {
++        	int iChunkX = MathHelper.floor_double( posX / 16D ); 
++    		int iChunkZ = MathHelper.floor_double( posZ / 16D );
++    		
++    		if ( !worldObj.IsChunkActive( iChunkX, iChunkZ ) )
++    		{
++        		setDead();    			
++    		}
++    		else
++    		{
++	            EntityPlayer closestPlayer = worldObj.getClosestPlayerToEntity( this, 
++	            	MinDistFromPlayerForDespawn() );
++	        	
++	            if ( closestPlayer != null )
++	            {
++                	// don't despawn creatures close to a player
++                	
++                    entityAge = 0;
++	            }	
++	            else if ( entityAge > 600 && rand.nextInt( 800 ) == 0 ) 
++	            {
++	                setDead();
++	            }
++    		}
++        }
++        else
++        {
++            entityAge = 0;
++        }
++    }
++    
++    protected double MinDistFromPlayerForDespawn()
++    {
++    	return 32D;
++    }
++    
++    protected boolean IsInsideSpawnAreaAroundPlayer( EntityPlayer player )
++    {
++    	return IsInsideSpawnAreaAroundChunk( 
++    		MathHelper.floor_double( player.posX / 16D ), 
++    		MathHelper.floor_double( player.posZ / 16D ) ); 
++    }
++    
++    protected boolean IsInsideSpawnAreaAroundOriginalSpawn()
++    {
++    	return worldObj.provider.dimensionId == 0 && 
++    		IsInsideSpawnAreaAroundChunk( worldObj.worldInfo.getSpawnX() >> 4,
++    			worldObj.worldInfo.getSpawnZ() >> 4 );
++    }
++    
++    protected boolean IsInsideSpawnAreaAroundChunk( int iChunkX, int iChunkZ )
++    {
++        int iValidRange = worldObj.GetMobSpawnRangeInChunks();
++        
++        int iEntityChunkX = MathHelper.floor_double( posX / 16D );
++        int iDeltaX = iChunkX - iEntityChunkX;
++        
++        if ( iDeltaX >= -iValidRange && iDeltaX <= iValidRange )
++        {
++	        int iEntityChunkZ = MathHelper.floor_double( posZ / 16D );
++	        int iDeltaZ = iChunkZ - iEntityChunkZ;
++	        
++	        if ( iDeltaZ >= -iValidRange && iDeltaZ <= iValidRange )
++	        {
++	        	return true;
++	        }
++        }   
++                    
++        return false;
++    }
++    
++    @Override
++    public boolean AttractsLightning()
++    {
++    	return true;
++    }
++    
++    public int GetMeleeAttackStrength( Entity target )
++    {
++    	return 2;
++    }
++    
++    public boolean MeleeAttack( Entity target )
++    {
++        setLastAttackingEntity( target );
++        
++        int iStrength = GetMeleeAttackStrength( target );
++
++        if ( isPotionActive( Potion.damageBoost ) )
++        {
++            iStrength += 3 << getActivePotionEffect( Potion.damageBoost ).getAmplifier();
++        }
++
++        if ( isPotionActive( Potion.weakness ) )
++        {
++            iStrength -= 2 << getActivePotionEffect( Potion.weakness ).getAmplifier();
++        }
++
++        int iKnockback = 0;
++
++        if ( target instanceof EntityLiving )
++        {
++            iStrength += EnchantmentHelper.getEnchantmentModifierLiving( this, 
++            	(EntityLiving)target );
++            
++            iKnockback += EnchantmentHelper.getKnockbackModifier( this, (EntityLiving)target );
++        }
++
++        boolean bAttackSuccess = target.attackEntityFrom( DamageSource.causeMobDamage( this ), 
++        	iStrength );
++
++        if ( bAttackSuccess )
++        {
++            if ( iKnockback > 0 )
++            {
++                target.addVelocity( 
++                	-MathHelper.sin( rotationYaw * (float)Math.PI / 180F ) * iKnockback * 0.5F, 
++                	0.1D, 
++                	MathHelper.cos( rotationYaw * (float)Math.PI / 180F ) * iKnockback * 0.5F );
++                
++                motionX *= 0.6D;
++                motionZ *= 0.6D;
++            }
++
++            int iFireModifier = EnchantmentHelper.getFireAspectModifier( this );
++
++            if ( iFireModifier > 0 )
++            {
++                target.setFire( iFireModifier * 4 );
++            }
++            else if ( isBurning() && rand.nextFloat() < 0.6F )
++            {
++                target.setFire( 4 );
++            }
++
++            if ( target instanceof EntityLiving )
++            {
++                EnchantmentThorns.func_92096_a(this, (EntityLiving)target, rand);
++            }
++        }
++
++        return bAttackSuccess;
++    }
++    
++    public float KnockbackMagnitude()
++    {
++    	return 0.4F;
++    }
++    
++    static public boolean InstallationIntegrityTest()
++    {
++    	return true;
++    }
++    
++	//----------- Client Side Functionality -----------//
++    // END FCMOD
++}

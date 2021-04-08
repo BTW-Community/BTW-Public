@@ -1,0 +1,72 @@
+--- a/minecraft_server/net/minecraft/src/EntityList.java
++++ b/minecraft_server/net/minecraft/src/EntityList.java
+@@ -27,7 +27,12 @@
+     /**
+      * adds a mapping between Entity classes and both a string representation and an ID
+      */
++    // FCMOD: Code change
++    /*
+     private static void addMapping(Class par0Class, String par1Str, int par2)
++    */
++    public static void addMapping(Class par0Class, String par1Str, int par2)
++    // END FCMOD
+     {
+         stringToClassMapping.put(par1Str, par0Class);
+         classToStringMapping.put(par0Class, par1Str);
+@@ -241,4 +246,56 @@
+         addMapping(EntityVillager.class, "Villager", 120, 5651507, 12422002);
+         addMapping(EntityEnderCrystal.class, "EnderCrystal", 200);
+     }
++    
++    // FCMOD: Added    
++    public static void AddMapping( Class entityClass, String sName, int iID )
++    {
++    	addMapping( entityClass, sName, iID );
+ }
++    
++    public static boolean RemoveMapping( String sName, boolean bRemoveEgg )
++    {
++    	Integer iID = (Integer)stringToIDMapping.get( sName );
++    		
++    	if ( iID != null )
++    	{
++	    	Class mappedClass = (Class)IDtoClassMapping.get( Integer.valueOf( iID ) );
++	    	
++	    	if ( mappedClass != null )
++	    	{
++	    		stringToClassMapping.remove( sName );
++	    		classToStringMapping.remove( mappedClass );
++	    		IDtoClassMapping.remove( iID );
++	    		classToIDMapping.remove( mappedClass );
++	    		stringToIDMapping.remove( sName );
++	    		
++	    		if ( bRemoveEgg )
++	    		{
++		    		// may or may not have an egg, but this is a safe operation
++	    			
++	    			entityEggs.remove( iID );
++	    		}
++	    		
++	    		return true;
++	    	}
++    	}
++    	
++    	return false;
++    }
++    
++    public static boolean ReplaceExistingMapping( Class newClass, String sName )
++    {    	
++    	Integer iID = (Integer)stringToIDMapping.get( sName );
++		
++    	if ( iID != null )
++    	{
++    		if ( RemoveMapping( sName, false ) ) // egg mapping intentionally left in place
++    		{    		
++    			addMapping( newClass, sName, iID );
++    		}
++    	}
++    	
++    	return false;
++    }
++    // END FCMOD
++}

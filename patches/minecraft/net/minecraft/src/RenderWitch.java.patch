@@ -1,0 +1,16 @@
+--- a/minecraft/net/minecraft/src/RenderWitch.java
++++ b/minecraft/net/minecraft/src/RenderWitch.java
+@@ -53,7 +53,13 @@
+             this.field_82414_a.field_82898_f.postRender(0.0625F);
+             GL11.glTranslatef(-0.0625F, 0.53125F, 0.21875F);
+ 
++            // FCMOD: Change
++            /*
+             if (var4.itemID < 256 && RenderBlocks.renderItemIn3d(Block.blocksList[var4.itemID].getRenderType()))
++            */
++            if ( var4.itemID < 4096 && Block.blocksList[var4.itemID] != null && 
++            	Block.blocksList[var4.itemID].DoesItemRenderAsBlock( var4.getItemDamage() ) )
++            // END FCMOD
+             {
+                 var5 = 0.5F;
+                 GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);

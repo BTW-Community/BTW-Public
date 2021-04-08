@@ -1,0 +1,215 @@
+--- a/minecraft_server/net/minecraft/src/Vec3.java
++++ b/minecraft_server/net/minecraft/src/Vec3.java
+@@ -60,6 +60,13 @@
+         return this;
+     }
+ 
++    // FCMOD: Added (server only) to duplicate client functionality
++    public Vec3 subtract(Vec3 par1Vec3)
++    {
++        return this.myVec3LocalPool.getVecFromPool(par1Vec3.xCoord - this.xCoord, par1Vec3.yCoord - this.yCoord, par1Vec3.zCoord - this.zCoord);
++    }    
++    // END FCMOD
++    
+     /**
+      * Normalizes the vector to a length of 1 (except if it is the zero vector)
+      */
+@@ -74,6 +81,13 @@
+         return this.xCoord * par1Vec3.xCoord + this.yCoord * par1Vec3.yCoord + this.zCoord * par1Vec3.zCoord;
+     }
+ 
++    // FCMOD: Added (server only) to duplicate client functionality
++    public Vec3 crossProduct(Vec3 par1Vec3)
++    {
++        return this.myVec3LocalPool.getVecFromPool(this.yCoord * par1Vec3.zCoord - this.zCoord * par1Vec3.yCoord, this.zCoord * par1Vec3.xCoord - this.xCoord * par1Vec3.zCoord, this.xCoord * par1Vec3.yCoord - this.yCoord * par1Vec3.xCoord);
++    }
++    // END FCMOD
++    
+     /**
+      * Adds the specified x,y,z vector components to this vector and returns the resulting vector. Does not change this
+      * vector.
+@@ -221,4 +235,184 @@
+         this.yCoord = var6;
+         this.zCoord = var8;
+     }
++    
++    // FCMOD: Added
++    public static Vec3 createVectorHelper( Vec3 copyVector )
++    {
++        return new Vec3( fakePool, copyVector.xCoord, copyVector.yCoord, copyVector.zCoord );
+ }
++    
++	/**
++	 * Yaws the vector around the J axis. Assumes that initial facing is along the negative K axis (facing 2)
++	 */
++	public void RotateAsBlockPosAroundJToFacing( int iFacing )
++    {
++		if ( iFacing > 2 )
++		{
++	    	if ( iFacing == 5 ) // i + 1
++	    	{
++	    		double tempZ = xCoord;
++	    		
++	    		xCoord = 1D - zCoord;
++	    		zCoord = tempZ;
++	    	}
++	    	else if ( iFacing == 4 ) // i - 1
++	    	{
++	    		double tempZ = 1D - xCoord;
++	    		
++	    		xCoord = zCoord;
++	    		zCoord = tempZ;
++	    	}
++	    	else // if ( iFacing == 3 ) // k + 1
++	    	{
++	    		xCoord = 1D - xCoord;
++	    		zCoord = 1D - zCoord;
++	    	}
++		}    	
++    }
++	
++	/**
++	 * Yaws the vector around the J axis. Assumes that initial facing is along the negative K axis (facing 2)
++	 */
++	public void RotateAsVectorAroundJToFacing( int iFacing )
++    {
++		if ( iFacing > 2 )
++		{
++	    	if ( iFacing == 5 ) // i + 1
++	    	{
++	    		double tempZ = xCoord;
++	    		
++	    		xCoord = -zCoord;
++	    		zCoord = tempZ;
++	    	}
++	    	else if ( iFacing == 4 ) // i - 1
++	    	{
++	    		double tempZ = -xCoord;
++	    		
++	    		xCoord = zCoord;
++	    		zCoord = tempZ;
++	    	}
++	    	else // if ( iFacing == 3 ) // k + 1
++	    	{
++	    		xCoord = -xCoord;
++	    		zCoord = -zCoord;
++	    	}
++		}    	
++    }
++	
++	/**
++	 * "Tilts" the vector towards the desired facingas if it's a local coordinate internal to a block.  Takes the up vector and either yaws or rolls it towards the specified axis.
++	 */	
++	public void TiltAsBlockPosToFacingAlongJ( int iFacing )
++	{
++		if ( iFacing == 0 ) // j - 1
++		{
++			// rotating around k axis here to point downwards
++			
++			yCoord = 1D - yCoord;
++			xCoord = 1D - xCoord;
++		}
++		else if ( iFacing == 2 ) // k - 1
++		{
++			double tempZ = 1D - yCoord;
++			
++			yCoord = zCoord;
++			zCoord = tempZ;
++		}			
++		else if ( iFacing == 3 ) // k + 1
++		{
++			double tempZ = yCoord;
++			
++			yCoord = 1D - zCoord;
++			zCoord = tempZ;
++		}
++		else if ( iFacing == 4 ) // i - 1
++		{
++			double tempY = xCoord;
++			
++			xCoord = 1D - yCoord;
++			yCoord = tempY;
++		}			
++		else if ( iFacing == 5 ) // i + 1
++		{
++			double tempY = 1D - xCoord;
++			
++			xCoord = yCoord;
++			yCoord = tempY;
++		}			
++	}
++	
++	/**
++	 * "Tilts" the vector towards the desired facing as if it's a local coordinate internal to a block.  Takes the up vector and either yaws or rolls it towards the specified axis.
++	 */	
++	public void TiltAsVectorToFacingAlongJ( int iFacing )
++	{
++		if ( iFacing == 0 ) // j - 1
++		{
++			// rotating around k axis here to point downwards
++			
++			yCoord = -yCoord;
++			xCoord = -xCoord;
++		}
++		else if ( iFacing == 2 ) // k - 1
++		{
++			double tempZ = -yCoord;
++			
++			yCoord = zCoord;
++			zCoord = tempZ;
++		}			
++		else if ( iFacing == 3 ) // k + 1
++		{
++			double tempZ = yCoord;
++			
++			yCoord = -zCoord;
++			zCoord = tempZ;
++		}
++		else if ( iFacing == 4 ) // i - 1
++		{
++			double tempY = xCoord;
++			
++			xCoord = -yCoord;
++			yCoord = tempY;
++		}			
++		else if ( iFacing == 5 ) // i + 1
++		{
++			double tempY = -xCoord;
++			
++			xCoord = yCoord;
++			yCoord = tempY;
++		}			
++	}
++	
++	/**
++	 * Alternate name for clarity
++	 */
++    public final Vec3 SubtractFrom( Vec3 vec )
++    {
++    	return subtract( vec );    	
++    }
++    
++    public Vec3 AddVector( Vec3 vec )
++    {
++        return myVec3LocalPool.getVecFromPool( xCoord + vec.xCoord, yCoord + vec.yCoord, zCoord + vec.zCoord );
++    }
++    
++    public void Scale( double dScale )
++    {
++    	xCoord *= dScale;
++    	yCoord *= dScale;
++    	zCoord *= dScale;
++    }
++    
++    /**
++     * Only considers the x and z components
++     */
++    public double DistanceSquareFlat( Vec3 toVec )
++    {
++        double dDeltaX = toVec.xCoord - xCoord;
++        double dDeltaZ = toVec.zCoord - zCoord;
++        
++        return dDeltaX * dDeltaX + dDeltaZ * dDeltaZ;
++    }
++    // END FCMOD
++}

@@ -1,0 +1,24 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCItemBlockLeaves.java
+@@ -0,0 +1,21 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCItemBlockLeaves extends ItemBlock
++{
++    public FCItemBlockLeaves( int iItemID )
++    {
++        super( iItemID );
++        
++        setMaxDamage( 0 );
++        setHasSubtypes( true );
++    }
++
++    @Override
++    public int getMetadata( int iItemDamage )
++    {
++        return iItemDamage | 4;
++    }
++
++}

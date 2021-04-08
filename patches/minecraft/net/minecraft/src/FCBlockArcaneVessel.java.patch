@@ -1,0 +1,178 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockArcaneVessel.java
+@@ -0,0 +1,174 @@
++// FCMOD
++
++package net.minecraft.src;
++
++import java.util.List;
++import java.util.Random;
++
++public class FCBlockArcaneVessel extends FCBlockVessel
++{
++    public FCBlockArcaneVessel( int iBlockID )
++    {
++        super( iBlockID, Material.iron );
++        
++        setHardness( 3.5F );
++        setResistance( 10F );    	
++    	SetPicksEffectiveOn( true );
++        
++        setStepSound( soundMetalFootstep );
++        
++        setUnlocalizedName( "fcBlockArcaneVessel" );        
++    }
++
++	@Override
++    public TileEntity createNewTileEntity( World world )
++    {
++        return new FCTileEntityArcaneVessel();
++    }
++    
++	@Override
++    public void breakBlock( World world, int i, int j, int k, int iBlockID, int iMetadata )
++    {
++        TileEntity tileEnt = world.getBlockTileEntity( i, j, k );
++        
++        if ( tileEnt != null && ( tileEnt instanceof FCTileEntityArcaneVessel ) )
++        {
++            FCTileEntityArcaneVessel vesselEnt = (FCTileEntityArcaneVessel)tileEnt;
++            
++            vesselEnt.EjectContentsOnBlockBreak();
++        }
++
++        super.breakBlock( world, i, j, k, iBlockID, iMetadata );
++    }
++
++	@Override
++    public void onEntityCollidedWithBlock( World world, int i, int j, int k, Entity entity )
++    {
++		// don't collect items on the client, as it's dependent on the state of the inventory
++		
++		if ( !world.isRemote )
++		{
++			if ( entity instanceof EntityXPOrb )
++			{
++				OnEntityXPOrbCollidedWithBlock( world, i, j, k, (EntityXPOrb)entity );			
++			}
++		}		
++    }
++	
++    private void OnEntityXPOrbCollidedWithBlock( World world, int i, int j, int k, EntityXPOrb entityXPOrb )
++    {
++        if ( entityXPOrb.isDead )
++        {
++        	return;
++        }
++        
++        if ( GetMechanicallyPoweredFlag( world, i, j, k ) )
++        {
++        	// tilted blocks can't collect
++        	
++        	return;
++        }
++        
++        // check if item is within the collection zone
++    	
++        final float fVesselHeight = 1F;
++        
++    	AxisAlignedBB collectionZone = AxisAlignedBB.getAABBPool().getAABB( (float)i, (float)j + fVesselHeight, (float)k, 
++				(float)(i + 1), (float)j + fVesselHeight + 0.05F, (float)(k + 1) );
++    	
++    	if ( entityXPOrb.boundingBox.intersectsWith( collectionZone ) )
++    	{    	
++        	boolean bSwallowed = false;
++        	
++        	TileEntity tileEnt = world.getBlockTileEntity( i, j, k );
++        	
++        	if ( tileEnt != null && ( tileEnt instanceof FCTileEntityArcaneVessel ) )
++        	{
++	            FCTileEntityArcaneVessel vesselTileEnt = (FCTileEntityArcaneVessel)tileEnt;
++	
++	        	if ( vesselTileEnt.AttemptToSwallowXPOrb( world, i, j, k, entityXPOrb ) )
++	        	{
++			        world.playAuxSFX( FCBetterThanWolves.m_iItemCollectionPopSoundAuxFXID, i, j, k, 0 );							        
++	        	}
++        	}
++    	}
++    }
++    
++    //------------- Class Specific Methods -------------//
++    
++	//----------- Client Side Functionality -----------//
++	
++	private Icon m_IconContents;
++	
++	@Override
++    public void registerIcons( IconRegister register )
++    {
++        Icon sideIcon = register.registerIcon( "fcBlockVessel_side" );
++        
++        blockIcon = sideIcon; // for hit effects
++        
++        m_IconWideBandBySideArray[0] = m_IconCenterColumnBySideArray[0] = register.registerIcon( "fcBlockVessel_bottom" );
++        
++        m_IconCenterColumnBySideArray[1] = register.registerIcon( "fcBlockVessel_top" );
++        m_IconWideBandBySideArray[1] = register.registerIcon( "fcBlockVesselWideBand_top" );
++        
++        m_IconWideBandBySideArray[2] = m_IconCenterColumnBySideArray[2] = sideIcon;
++        m_IconWideBandBySideArray[3] = m_IconCenterColumnBySideArray[3] = sideIcon;
++        m_IconWideBandBySideArray[4] = m_IconCenterColumnBySideArray[4] = sideIcon;
++        m_IconWideBandBySideArray[5] = m_IconCenterColumnBySideArray[5] = sideIcon;
++        
++        m_IconInteriorBySideArray[0] = m_IconWideBandBySideArray[0]; 
++        m_IconInteriorBySideArray[1] = m_IconWideBandBySideArray[0]; 
++        m_IconInteriorBySideArray[2] = m_IconWideBandBySideArray[0]; 
++        m_IconInteriorBySideArray[3] = m_IconWideBandBySideArray[0]; 
++        m_IconInteriorBySideArray[4] = m_IconWideBandBySideArray[0]; 
++        m_IconInteriorBySideArray[5] = m_IconWideBandBySideArray[0];
++        
++		m_IconContents = register.registerIcon( "fcBlockVessel_xp", new FCClientTextureVesselXP( "fcBlockVessel_xp" ) );
++    }
++	
++	//------------- Custom Renderer ------------//
++	
++    @Override
++    public boolean RenderBlock( RenderBlocks renderBlocks, int i, int j, int k )
++    {
++    	super.RenderBlock( renderBlocks, i, j, k );
++    	
++    	IBlockAccess blockAccess = renderBlocks.blockAccess;
++    	
++    	if ( GetFacing( blockAccess, i, j, k ) == 1 )
++    	{
++	        // render contents if upright
++	        
++    		TileEntity tileEntity = blockAccess.getBlockTileEntity( i, j, k );
++    		
++    		if ( tileEntity instanceof FCTileEntityArcaneVessel )
++    		{
++    			FCTileEntityArcaneVessel vesselEntity = (FCTileEntityArcaneVessel)tileEntity;
++    	        
++    	        int iContainedExperience = vesselEntity.GetVisualExperienceLevel();
++    	        
++    	        if ( iContainedExperience > 0 )
++    	        {
++		        	float fHeightRatio = (float)iContainedExperience / (float)FCTileEntityArcaneVessel.m_iMaxVisualExperienceLevel;
++		        	
++		            float fBottom = 3.0F / 16F;
++		            
++		            float fTop = fBottom + ( 1.0F / 16F ) + 
++		            	( ( ( 1.0F - ( 2.0F / 16.0F ) ) - ( fBottom + ( 1.0F / 16F ) ) ) * fHeightRatio );
++		
++		            renderBlocks.setRenderBounds( 0.125F, fBottom, 0.125F, 
++	    	    		0.875F, fTop, 0.875F );
++	            
++		            Tessellator tesselator = Tessellator.instance;
++		            
++		            tesselator.setBrightness( 240 );
++		            
++		            renderBlocks.renderFaceYPos( this, (double)i, (double)j, (double)k, m_IconContents );		            
++    	        }
++    		}
++    	}
++    	
++    	return true;
++    }
++}
+\ No newline at end of file

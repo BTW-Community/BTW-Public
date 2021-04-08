@@ -1,0 +1,13 @@
+--- a/minecraft_server/net/minecraft/src/EntityPig.java
++++ b/minecraft_server/net/minecraft/src/EntityPig.java
+@@ -1,5 +1,10 @@
++// FCMOD: Class changes deprecated 07/23/2018
++
+ package net.minecraft.src;
+ 
++import java.util.Iterator;
++import java.util.List;
++
+ public class EntityPig extends EntityAnimal
+ {
+     /** AI task for player control. */

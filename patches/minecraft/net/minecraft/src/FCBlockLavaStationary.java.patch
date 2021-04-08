@@ -1,0 +1,153 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockLavaStationary.java
+@@ -0,0 +1,150 @@
++// FCMOD
++
++package net.minecraft.src;
++
++import java.util.Random;
++
++public class FCBlockLavaStationary extends BlockStationary
++{
++    protected FCBlockLavaStationary( int iBlockID, Material material )
++    {
++        super( iBlockID, material );
++    }
++    
++    @Override
++    public boolean CanPathThroughBlock( IBlockAccess blockAccess, int i, int j, int k, Entity entity, PathFinder pathFinder )
++    {
++    	return entity.handleLavaMovement();
++    }
++    
++    @Override
++    public int GetWeightOnPathBlocked( IBlockAccess blockAccess, int i, int j, int k )
++    {
++    	return -2;
++    }
++    
++    @Override
++    public boolean GetDoesFireDamageToEntities( World world, int i, int j, int k )
++    {
++    	return true;
++    }
++    
++    @Override
++    public boolean GetCanBlockLightItemOnFire( IBlockAccess blockAccess, int i, int j, int k )
++    {
++    	return true;
++    }
++    
++    @Override
++    public void updateTick( World world, int i, int j, int k, Random rand )
++    {
++    	CheckForDirectSetOnFireToNeighborsInContact( world, i, j, k );
++    	
++        CheckForStartingFiresAroundLava( world, i, j, k, rand );
++    }
++
++    //------------- Class Specific Methods ------------//    
++    
++    private boolean CanBlockMaterialBurn( World world, int i, int j, int k )
++    {
++        return world.getBlockMaterial( i, j, k ).getCanBurn();
++    }
++	
++    private void CheckForDirectSetOnFireToNeighborsInContact( World world, int i, int j, int k )
++    {
++    	CheckForDirectSetOnFire( world, i, j - 1, k );
++    	
++    	CheckForDirectSetOnFire( world, i - 1, j, k );
++    	CheckForDirectSetOnFire( world, i + 1, j, k );
++    	
++    	CheckForDirectSetOnFire( world, i, j, k - 1 );
++    	CheckForDirectSetOnFire( world, i, j, k + 1 );
++    }
++    
++    private void CheckForDirectSetOnFire( World world, int i, int j, int k )
++    {
++        Block tempBlock = Block.blocksList[world.getBlockId( i, j, k )];
++        	
++        if ( tempBlock != null && tempBlock.GetCanBeSetOnFireDirectly( world, i, j, k ) )
++        {
++        	tempBlock.SetOnFireDirectly( world, i, j, k );
++        }
++    }
++    
++    private void CheckForStartingFiresAroundLava( World world, int i, int j, int k, Random rand )
++    {
++    	// the below duplicates fire starting ability of lava in BlockStationary.updateTick(), 
++    	// and adds ability for blocks to be set on fire directly
++    	
++        int iNumAttempts = rand.nextInt(3);
++
++        if ( iNumAttempts != 0 )
++        {
++	        for ( int iTempCount = 0; iTempCount < iNumAttempts; ++iTempCount )
++	        {
++	            i += rand.nextInt(3) - 1;
++	            ++j;
++	            k += rand.nextInt(3) - 1;
++	            
++	            int iTempBlockID = world.getBlockId( i, j, k );
++	            Block tempBlock = Block.blocksList[iTempBlockID];
++	
++	            if ( tempBlock == null || tempBlock.IsAirBlock() )
++	            {
++	                if ( CanBlockMaterialBurn( world, i - 1, j, k ) || CanBlockMaterialBurn( world, i + 1, j, k ) || 
++	                	CanBlockMaterialBurn( world, i, j, k - 1 ) || CanBlockMaterialBurn( world, i, j, k + 1 ) || 
++	                	CanBlockMaterialBurn( world, i, j - 1, k ) || CanBlockMaterialBurn( world, i, j + 1, k ) )
++	                {
++	                    world.setBlock(i, j, k, Block.fire.blockID);
++	                    
++	                    return;
++	                }
++	            }
++	            else if ( tempBlock.GetCanBeSetOnFireDirectly( world, i, j, k ) )
++	            {
++	            	tempBlock.SetOnFireDirectly( world, i, j, k );
++	            	
++	            	break;
++	            	
++	            }
++	            else if ( tempBlock.blockMaterial.blocksMovement() )
++	            {
++	                return;
++	            }
++	        }
++        }
++        else
++        {
++        	// I think this is actually a bug with vanilla, as it seems to start fires on the same layer as the first in the above,
++        	// but its intent seams to be to start fires on the same level as the lava block.  Won't fix as I don't
++        	// want to burn people's builds.
++        	
++        	// it may be this code is intended to just up the chances of blocks immediately neigboring burning
++        	
++            int iSourceI = i;
++            int iSourceK = k;
++
++            for (int var9 = 0; var9 < 3; ++var9)
++            {
++                i = iSourceI + rand.nextInt(3) - 1;
++                k = iSourceK + rand.nextInt(3) - 1;
++
++                if (world.isAirBlock(i, j + 1, k) && this.CanBlockMaterialBurn(world, i, j, k))
++                {
++                    world.setBlock(i, j + 1, k, Block.fire.blockID);
++                }
++                else
++                {
++                	Block tempBlock= Block.blocksList[world.getBlockId( i, j, k )];
++                	
++                	if ( tempBlock != null && tempBlock.GetCanBeSetOnFireDirectly( world, i, j, k ) )
++    	            {
++    	            	tempBlock.SetOnFireDirectly( world, i, j, k );    	            	
++    	            }
++                }
++            }
++        }        
++    }
++    
++	//----------- Client Side Functionality -----------//
++}  

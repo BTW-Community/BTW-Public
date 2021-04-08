@@ -1,0 +1,41 @@
+--- a/minecraft/net/minecraft/src/WorldGenHugeTrees.java
++++ b/minecraft/net/minecraft/src/WorldGenHugeTrees.java
+@@ -185,6 +185,13 @@
+                         }
+                     }
+ 
++                    // FCMOD: Added
++                    AttemptToPlaceStump( par1World, par3, par4, par5 );
++                    AttemptToPlaceStump( par1World, par3, par4, par5 + 1 );
++                    AttemptToPlaceStump( par1World, par3 + 1, par4, par5 );
++                    AttemptToPlaceStump( par1World, par3 + 1, par4, par5 + 1 );
++                    // END FCMOD
++
+                     return true;
+                 }
+                 else
+@@ -199,6 +206,24 @@
+         }
+     }
+ 
++    // FCMOD: Added
++    private void AttemptToPlaceStump( World world, int i, int j, int k )
++    {
++        int iTrunkBlockId = world.getBlockId( i, j, k );
++        
++        if ( iTrunkBlockId == Block.wood.blockID )
++        {
++        	int iTrunkMetadata = world.getBlockMetadata( i, j, k );
++        	
++        	if ( iTrunkMetadata == woodMetadata )
++        	{
++        		// set the metadata instead of the whole block to prevent a breakBlock() call forcing surrounding leaves to update and decay
++        		world.setBlockMetadataWithClient( i, j, k, iTrunkMetadata | 12 ); 
++        	}
++        }
++    }
++    // END FCMOD
++    
+     private void growLeaves(World par1World, int par2, int par3, int par4, int par5, Random par6Random)
+     {
+         byte var7 = 2;

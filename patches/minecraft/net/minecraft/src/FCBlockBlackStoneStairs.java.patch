@@ -1,0 +1,16 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockBlackStoneStairs.java
+@@ -0,0 +1,13 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCBlockBlackStoneStairs extends FCBlockStairs
++{
++    protected FCBlockBlackStoneStairs( int iBlockID )
++    {
++    	super( iBlockID, blockNetherQuartz, 0 );
++    	
++    	setUnlocalizedName( "stairsQuartz" );
++    }
++}

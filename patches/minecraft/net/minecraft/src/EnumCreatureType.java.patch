@@ -1,0 +1,15 @@
+--- a/minecraft/net/minecraft/src/EnumCreatureType.java
++++ b/minecraft/net/minecraft/src/EnumCreatureType.java
+@@ -2,7 +2,11 @@
+ 
+ public enum EnumCreatureType
+ {
+-    monster(IMob.class, 70, Material.air, false, false),
++	// FCMOD: Changed to increase mob cap to compensate for rectangular instead of spherical despawn
++	// volume causing decreased mob density	
++    //monster(IMob.class, 70, Material.air, false, false),
++    monster( IMob.class, 90, Material.air, false, false ),
++	// END FCMOD
+     creature(EntityAnimal.class, 10, Material.air, true, true),
+     ambient(EntityAmbientCreature.class, 15, Material.air, true, false),
+     waterCreature(EntityWaterMob.class, 5, Material.water, true, false);

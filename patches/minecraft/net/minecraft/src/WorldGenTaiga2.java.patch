@@ -1,0 +1,37 @@
+--- a/minecraft/net/minecraft/src/WorldGenTaiga2.java
++++ b/minecraft/net/minecraft/src/WorldGenTaiga2.java
+@@ -72,8 +72,8 @@
+                     var21 = par2Random.nextInt(2);
+                     var13 = 1;
+                     byte var22 = 0;
+-                    int var16;
+                     int var17;
++                    int var16;
+ 
+                     for (var15 = 0; var15 <= var8; ++var15)
+                     {
+@@ -123,6 +123,24 @@
+                         }
+                     }
+ 
++                    // FCMOD: Added                    
++                    if ( var6 > 2 ) // only tree with trunks 3 blocks or higher generate trunks
++                    {
++                        int iTrunkBlockId = par1World.getBlockId( par3, par4, par5 );
++                        
++                        if ( iTrunkBlockId == Block.wood.blockID )
++                        {
++                        	int iTrunkMetadata = par1World.getBlockMetadata( par3, par4, par5 );
++                        	
++                        	if ( iTrunkMetadata == 1 )
++                        	{
++                        		// set the metadata instead of the whole block to prevent a breakBlock() call forcing surrounding leaves to update and decay
++                        		par1World.setBlockMetadataWithClient( par3, par4, par5, iTrunkMetadata | 12 ); 
++                        	}
++                        }
++                    }                    
++                    // END FCMOD
++                    
+                     return true;
+                 }
+                 else

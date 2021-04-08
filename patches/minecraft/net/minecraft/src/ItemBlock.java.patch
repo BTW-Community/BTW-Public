@@ -1,0 +1,192 @@
+--- a/minecraft/net/minecraft/src/ItemBlock.java
++++ b/minecraft/net/minecraft/src/ItemBlock.java
+@@ -2,7 +2,10 @@
+ 
+ import java.util.List;
+ 
+-public class ItemBlock extends Item
++// FCMOD: Changed
++//public class ItemBlock extends Item
++public class ItemBlock extends FCItemPlacesAsBlock
++// END FCMOD
+ {
+     /** The block ID of the Block associated with this ItemBlock */
+     private int blockID;
+@@ -42,6 +45,8 @@
+      * Callback for item usage. If the item does something special on right clicking, he will have one of those. Return
+      * True if something happen and false if it don't. This is for ITEMS, not BLOCKS
+      */
++    // FCMOD: Removed and replaced in parent class
++    /*
+     public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
+     {
+         int var11 = par3World.getBlockId(par4, par5, par6);
+@@ -120,10 +125,14 @@
+             return false;
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Returns true if the given ItemBlock can be placed on the given side of the given block position.
+      */
++    // FCMOD: Removed and replaced in parent class (client only)
++    /*
+     public boolean canPlaceItemBlockOnSide(World par1World, int par2, int par3, int par4, int par5, EntityPlayer par6EntityPlayer, ItemStack par7ItemStack)
+     {
+         int var8 = par1World.getBlockId(par2, par3, par4);
+@@ -167,6 +176,8 @@
+ 
+         return par1World.canPlaceEntityOnSide(this.getBlockID(), par2, par3, par4, false, par5, (Entity)null, par7ItemStack);
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have
+@@ -210,4 +221,144 @@
+             this.field_94588_b = par1IconRegister.registerIcon(var2);
+         }
+     }
++    
++    // FCMOD: Added New
++    private boolean m_bHasOldNamePrefix = false;
++    
++    @Override
++    public float GetBuoyancy( int iItemDamage )
++    {
++    	return Block.blocksList[blockID].GetBuoyancy( iItemDamage );
+ }
++    
++    @Override
++    public Item SetBuoyancy( float fBuoyancy )
++    {
++    	Block.blocksList[blockID].SetBuoyancy( fBuoyancy );
++    	
++    	return super.SetBuoyancy( fBuoyancy );
++    }
++    
++    @Override
++    public boolean IsPistonPackable( ItemStack stack )
++    {
++    	return Block.blocksList[blockID].IsPistonPackable( stack );
++    }
++    
++    @Override
++    public int GetRequiredItemCountToPistonPack( ItemStack stack )
++    {
++    	return Block.blocksList[blockID].GetRequiredItemCountToPistonPack( stack );
++    }
++    
++    @Override
++    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
++    {
++    	return Block.blocksList[blockID].GetResultingBlockIDOnPistonPack( stack );
++    }
++    
++    @Override
++    public int GetResultingBlockMetadataOnPistonPack( ItemStack stack )
++    {
++    	return Block.blocksList[blockID].GetResultingBlockMetadataOnPistonPack( stack );
++    }
++
++    @Override
++    public int GetFurnaceBurnTime( int iItemDamage )
++    {
++    	return Block.blocksList[blockID].GetFurnaceBurnTime( iItemDamage );
++    }
++    
++    @Override
++    public Item SetFurnaceBurnTime( int iBurnTime )
++    {
++    	Block.blocksList[blockID].SetFurnaceBurnTime( iBurnTime );
++    	
++    	return super.SetFurnaceBurnTime( iBurnTime );
++    }
++    
++    @Override
++    public int GetHerbivoreFoodValue( int iItemDamage )
++    {
++    	return Block.blocksList[blockID].GetHerbivoreItemFoodValue( iItemDamage );
++    }
++    
++    @Override
++    public Item SetHerbivoreFoodValue( int iFoodValue )
++    {
++    	Block.blocksList[blockID].SetHerbivoreItemFoodValue( iFoodValue );
++    	
++    	return super.SetHerbivoreFoodValue( iFoodValue );
++    }
++    
++    @Override
++    public int GetChickenFoodValue( int iItemDamage )
++    {
++    	return Block.blocksList[blockID].GetChickenItemFoodValue( iItemDamage );
++    }
++    
++    @Override
++    public Item SetChickenFoodValue( int iFoodValue )
++    {
++    	Block.blocksList[blockID].SetChickenItemFoodValue( iFoodValue );
++    	
++    	return super.SetChickenFoodValue( iFoodValue );
++    }
++    
++    @Override
++    public int GetPigFoodValue( int iItemDamage )
++    {
++    	return Block.blocksList[blockID].GetPigItemFoodValue( iItemDamage );
++    }
++    
++    @Override
++    public Item SetPigFoodValue( int iFoodValue )
++    {
++    	Block.blocksList[blockID].SetPigItemFoodValue( iFoodValue );
++    	
++    	return super.SetPigFoodValue( iFoodValue );
++    }
++    
++    @Override
++    public boolean IsIncineratedInCrucible()
++    {
++    	return Block.blocksList[blockID].IsIncineratedInCrucible();
++    }
++    
++    @Override
++    public FCItemPlacesAsBlock SetAssociatedBlockID( int iBlockID )
++    {
++    	blockID = iBlockID;
++    	
++    	return super.SetAssociatedBlockID( iBlockID );
++    }
++    
++    @Override
++    public boolean CanItemPassIfFilter( ItemStack filteredItem )
++    {
++    	return Block.blocksList[blockID].CanItemPassIfFilter( filteredItem );
++    }
++    
++    @Override
++    public int GetFilterableProperties( ItemStack stack )
++    {
++    	return Block.blocksList[blockID].GetFilterableProperties( stack );
++    }
++    
++    @Override
++    public boolean CanTransformItemIfFilter( ItemStack filteredItem )
++    {
++    	return Block.blocksList[blockID].CanTransformItemIfFilter( filteredItem );
++    }
++    
++    //------------- Class Specific Methods ------------//
++    
++	//----------- Client Side Functionality -----------//
++    
++    @Override
++    public Icon GetHopperFilterIcon()
++    {
++    	return Block.blocksList[blockID].GetHopperFilterIcon();
++    }
++    // END FCMOD
++}

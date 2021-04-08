@@ -1,0 +1,26 @@
+--- a/minecraft/net/minecraft/src/EntityAIFollowParent.java
++++ b/minecraft/net/minecraft/src/EntityAIFollowParent.java
+@@ -15,6 +15,10 @@
+     {
+         this.childAnimal = par1EntityAnimal;
+         this.field_75347_c = par2;
++        
++        // FCMOD: Added
++        setMutexBits( 1 );
++        // END FCMOD
+     }
+ 
+     /**
+@@ -70,6 +74,12 @@
+      */
+     public boolean continueExecuting()
+     {
++    	// FCMOD: Added to prevent adult children from following their parents
++    	if ( !childAnimal.isChild() )
++    	{
++    		return false;
++    	}
++    	// FCMOD
+         if (!this.parentAnimal.isEntityAlive())
+         {
+             return false;

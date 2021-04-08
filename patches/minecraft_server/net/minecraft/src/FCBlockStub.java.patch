@@ -1,0 +1,17 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCBlockStub.java
+@@ -0,0 +1,14 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCBlockStub extends Block
++{
++    private final IBehaviorDispenseItem dropperDefaultBehaviour = new BehaviorDefaultDispenseItem();
++
++    protected FCBlockStub(int par1)
++    {
++        super( par1, Material.rock );
++    }
++    
++}

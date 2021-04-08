@@ -1,0 +1,27 @@
+--- a/minecraft_server/net/minecraft/src/ComponentVillageTorch.java
++++ b/minecraft_server/net/minecraft/src/ComponentVillageTorch.java
+@@ -42,11 +42,24 @@
+         this.placeBlockAtCurrentPosition(par1World, Block.fence.blockID, 0, 1, 0, 0, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.fence.blockID, 0, 1, 1, 0, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.fence.blockID, 0, 1, 2, 0, par3StructureBoundingBox);
++        // FCMOD: Code change
++        /*
+         this.placeBlockAtCurrentPosition(par1World, Block.cloth.blockID, 15, 1, 3, 0, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.torchWood.blockID, 0, 0, 3, 0, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.torchWood.blockID, 0, 1, 3, 1, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.torchWood.blockID, 0, 2, 3, 0, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.torchWood.blockID, 0, 1, 3, -1, par3StructureBoundingBox);
++        */
++        this.placeBlockAtCurrentPosition(par1World, Block.planks.blockID, 1, 1, 3, 0, par3StructureBoundingBox);
++        
++        if ( startPiece.GetAbandonmentLevel( par1World ) <= 1 )
++        {
++            this.placeBlockAtCurrentPosition(par1World, FCBetterThanWolves.fcBlockTorchFiniteUnlit.blockID, 8, 0, 3, 0, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, FCBetterThanWolves.fcBlockTorchFiniteUnlit.blockID, 8, 1, 3, 1, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, FCBetterThanWolves.fcBlockTorchFiniteUnlit.blockID, 8, 2, 3, 0, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, FCBetterThanWolves.fcBlockTorchFiniteUnlit.blockID, 8, 1, 3, -1, par3StructureBoundingBox);
++        }
++        // END FCMOD        
+         return true;
+     }
+ }

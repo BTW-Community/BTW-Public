@@ -1,0 +1,242 @@
+--- a/minecraft_server/net/minecraft/src/PathFinder.java
++++ b/minecraft_server/net/minecraft/src/PathFinder.java
+@@ -54,6 +54,8 @@
+     /**
+      * Internal implementation of creating a path from an entity to a point
+      */
++    // FCMOD: Removed and replaced
++    /*
+     private PathEntity createEntityPathTo(Entity par1Entity, double par2, double par4, double par6, float par8)
+     {
+         this.path.clearPath();
+@@ -85,6 +87,8 @@
+         this.isPathingInWater = var9;
+         return var14;
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Adds a path from start to end and returns the whole path (args: unused, start, end, unused, maxDistance)
+@@ -280,11 +284,17 @@
+      */
+     public int getVerticalOffset(Entity par1Entity, int par2, int par3, int par4, PathPoint par5PathPoint)
+     {
++    	// FCMOD: Code changed to call custom function
++    	/*
+         return func_82565_a(par1Entity, par2, par3, par4, par5PathPoint, this.isPathingInWater, this.isMovementBlockAllowed, this.isWoddenDoorAllowed);
++        */
++    	return GetPathWeightAtLocation( par1Entity, par2, par3, par4, par5PathPoint );
++    	// END FCMOD
+     }
+ 
+     public static int func_82565_a(Entity par0Entity, int par1, int par2, int par3, PathPoint par4PathPoint, boolean par5, boolean par6, boolean par7)
+     {
++    	// FCNOTE: *Mostly* dead code.  The mod prevents it being called above, but it's still called from EntityAIControlledByPlayer 
+         boolean var8 = false;
+ 
+         for (int var9 = par1; var9 < par1 + par4PathPoint.xCoord; ++var9)
+@@ -303,7 +313,10 @@
+                         }
+                         else if (var12 != Block.waterMoving.blockID && var12 != Block.waterStill.blockID)
+                         {
+-                            if (!par7 && var12 == Block.doorWood.blockID)
++                        	// FCMOD: Changed
++                            //if (!par7 && var12 == Block.doorWood.blockID)
++                            if (!par7 && ( var12 == Block.doorWood.blockID || var12 == FCBetterThanWolves.fcBlockDoorWood.blockID ) )
++                        	// END FCMOD
+                             {
+                                 return 0;
+                             }
+@@ -321,6 +334,7 @@
+                         Block var13 = Block.blocksList[var12];
+                         int var14 = var13.getRenderType();
+ 
++                        // FCNOTE: 9 is the render type of BlockRailBase
+                         if (par0Entity.worldObj.blockGetRenderType(var9, var10, var11) == 9)
+                         {
+                             int var18 = MathHelper.floor_double(par0Entity.posX);
+@@ -334,6 +348,7 @@
+                         }
+                         else if (!var13.getBlocksMovement(par0Entity.worldObj, var9, var10, var11) && (!par6 || var12 != Block.doorWood.blockID))
+                         {
++                        	// FCNOTE: 11 is the render type of BlockFence, 32 is that of BlockWall
+                             if (var14 == 11 || var12 == Block.fenceGate.blockID || var14 == 32)
+                             {
+                                 return -3;
+@@ -389,4 +404,175 @@
+ 
+         return new PathEntity(var5);
+     }
++    
++    // FCMOD: Added New
++    public int GetPathWeightAtLocation( Entity entity, int i, int j, int k, PathPoint pathPoint )
++    {
++    	boolean bAvoidsWater = isPathingInWater;
++    	boolean bPathThroughClosedWoodDoor = isMovementBlockAllowed;
++    	boolean bPathThroughOpenWoodDoor = isWoddenDoorAllowed;
++    	
++    	// this is pathfinding's inner loop, and has been rewritten to optimize
++    	
++    	World world = entity.worldObj;
++        int iReturnWeight = 1;
++        
++        int iMaxI = i + pathPoint.xCoord;
++        int iMaxJ = j + pathPoint.yCoord;
++        int iMaxK = k + pathPoint.zCoord;
++
++        for ( int iTempI = i; iTempI < iMaxI; ++iTempI )
++        {
++            for ( int iTempJ = j; iTempJ < iMaxJ; ++iTempJ )
++            {
++                for ( int iTempK = k; iTempK < iMaxK; ++iTempK )
++                {
++                    int iTempBlockID = world.getBlockId( iTempI, iTempJ, iTempK );
++
++                    if ( iTempBlockID > 0 )
++                    {
++                        Block tempBlock = Block.blocksList[iTempBlockID];
++
++                        if ( !tempBlock.CanPathThroughBlock( world, iTempI, iTempJ, iTempK, entity, this ) )
++                        {                        	
++                        	return tempBlock.GetWeightOnPathBlocked( world, iTempI, iTempJ, iTempK );
+ }
++                        else
++                        {
++                        	iReturnWeight = tempBlock.AdjustPathWeightOnNotBlocked( iReturnWeight );
++                        }
++                    }
++                }
++            }
++        }
++
++        return iReturnWeight;
++    }
++    
++    public boolean CanPathThroughClosedWoodDoor()
++    {
++    	return isMovementBlockAllowed;
++    }
++    
++    public boolean CanPathThroughOpenWoodDoor()
++    {
++    	return isWoddenDoorAllowed;
++    }
++    
++    public boolean CanPathThroughWater()
++    {
++    	return !isPathingInWater; // member variable is misnamed
++    }
++    
++    private PathEntity createEntityPathTo( Entity entity, double dDestX, double dDestY, 
++    	double dDestZ, float fTolerance )
++    {
++        path.clearPath();
++        pointMap.clearMap();
++        
++        boolean bTempPathingInWater = isPathingInWater; // not sure what's up with how this is used
++        
++        int iIStart = MathHelper.floor_double( entity.boundingBox.minX );
++        int iJStart = MathHelper.floor_double( entity.boundingBox.minY + 0.5D );        
++        int iKStart = MathHelper.floor_double( entity.boundingBox.minZ );
++        
++        if ( canEntityDrown && entity.isInWater() )
++        {
++            iJStart = (int)entity.boundingBox.minY;
++
++            for ( int iTempBlockID = worldMap.getBlockId( MathHelper.floor_double( entity.posX ), 
++            	iJStart, MathHelper.floor_double( entity.posZ ) ); 
++            	iTempBlockID == Block.waterMoving.blockID || 
++            	iTempBlockID == Block.waterStill.blockID; 
++            	iTempBlockID = worldMap.getBlockId( MathHelper.floor_double( entity.posX ), 
++        		iJStart, MathHelper.floor_double( entity.posZ ) ) )
++            {
++                ++iJStart;
++            }
++
++            bTempPathingInWater = isPathingInWater;
++            
++            isPathingInWater = false;
++        }        
++        else if ( ShouldOffsetPositionIfPathingOutOfBlock( iIStart, iJStart, iKStart, entity ) )
++		{
++    		// smaller entities can get stuck on fence corners and such.  This bit
++        	// offsets the start point for pathing to open neighboring blocks.
++        	// Intentionally uses horizontal center of entity to determine offset.
++
++    		double dPartialX = entity.posX - (double)iIStart;
++    		
++    		int iIOffset = iIStart + ( dPartialX < 0.5 ? -1: 1 );
++
++        	if ( !CanPathThroughBlock( iIOffset, iJStart, iKStart, entity ) )
++    		{
++        		double dPartialZ = entity.posZ - (double)iKStart;	            		
++        		
++        		int iKOffset = iKStart + ( dPartialZ < 0.5 ? -1: 1 );
++        		
++            	if ( !CanPathThroughBlock( iIStart, iJStart, iKOffset, entity ) )
++        		{
++            		if ( CanPathThroughBlock( iIOffset, iJStart, iKOffset, entity ) )
++            		{
++                		iIStart = iIOffset;
++                		iKStart = iKOffset;
++            		}
++        		}
++            	else
++            	{
++            		iKStart = iKOffset;
++            	}
++    		}
++        	else
++        	{
++        		iIStart = iIOffset;
++        	}
++        }
++
++        PathPoint startPoint = openPoint( iIStart, iJStart, iKStart ); 
++        
++        PathPoint endPoint = openPoint( 
++        	MathHelper.floor_double( dDestX - ( entity.width / 2F ) ), 
++        	MathHelper.floor_double( dDestY ), 
++        	MathHelper.floor_double( dDestZ - ( entity.width / 2F ) ) );
++        
++        PathPoint spaceNeeded = new PathPoint( MathHelper.floor_float( entity.width + 1F ), 
++        	MathHelper.floor_float( entity.height + 1F ), 
++        	MathHelper.floor_float( entity.width + 1F ) );
++        
++        PathEntity path = addToPath( entity, startPoint, endPoint, spaceNeeded, fTolerance );
++        
++        isPathingInWater = bTempPathingInWater;
++        
++        return path;
++    }
++    
++    private boolean ShouldOffsetPositionIfPathingOutOfBlock( int i, int j, int k, Entity entity )
++    {
++        int iStartBlockID = worldMap.getBlockId( i, j, k );
++
++        if ( iStartBlockID > 0 )
++        {
++	        Block startBlock = Block.blocksList[iStartBlockID];
++	    	
++	        return startBlock.ShouldOffsetPositionIfPathingOutOf( worldMap, i, j, k, entity, this );
++        }
++        
++        return false;
++    }
++    
++    private boolean CanPathThroughBlock( int i, int j, int k, Entity entity )
++    {
++        int iStartBlockID = worldMap.getBlockId( i, j, k );
++
++        if ( iStartBlockID > 0 )
++        {
++	        Block startBlock = Block.blocksList[iStartBlockID];
++	    	
++	        return startBlock.CanPathThroughBlock( worldMap, i, j, k, entity, this );
++        }
++        
++        return true;
++    }
++    // END FCMOD
++}

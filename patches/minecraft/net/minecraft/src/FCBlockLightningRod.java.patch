@@ -1,0 +1,21 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockLightningRod.java
+@@ -0,0 +1,17 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCBlockLightningRod extends FCBlockSpike
++{
++    public FCBlockLightningRod( int iBlockID )
++    {
++        super( iBlockID );
++        
++        setUnlocalizedName( "fcBlockLightningRod" );
++    }
++    
++	//------------- Class Specific Methods ------------//
++	
++	//----------- Client Side Functionality -----------//
++}
+\ No newline at end of file

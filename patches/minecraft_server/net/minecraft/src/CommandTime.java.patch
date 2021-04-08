@@ -1,0 +1,23 @@
+--- a/minecraft_server/net/minecraft/src/CommandTime.java
++++ b/minecraft_server/net/minecraft/src/CommandTime.java
+@@ -57,7 +57,20 @@
+                 return;
+             }
+         }
++        // FCMOD: Code added to display time
++        else
++        {
++	    	par1ICommandSender.sendChatToPlayer( (new StringBuilder()).append( "\247e"). // yellow text
++            	append("Current Overworld Time: " ).
++            	append( Long.valueOf( MinecraftServer.getServer().worldServers[0].getWorldTime() ) ).
++            	append( " Total Overworld Time: " ).
++            	append( Long.valueOf( MinecraftServer.getServer().worldServers[0].getTotalWorldTime() ) ).
++            	toString() );            	
+ 
++            return;
++        }
++        // END FCMOD
++
+         throw new WrongUsageException("commands.time.usage", new Object[0]);
+     }
+ 

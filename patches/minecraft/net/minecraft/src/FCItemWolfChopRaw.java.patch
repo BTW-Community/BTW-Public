@@ -1,0 +1,24 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCItemWolfChopRaw.java
+@@ -0,0 +1,21 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCItemWolfChopRaw extends FCItemFood
++{
++	public FCItemWolfChopRaw( int iItemID )
++	{
++		super( iItemID, 4, 0.25F, false, "fcItemWolfChopRaw", true );
++		
++		SetStandardFoodPoisoningEffect();
++	}
++
++	//----------- Client Side Functionality -----------//
++	
++	@Override
++    public void registerIcons( IconRegister register )
++    {
++        itemIcon = register.registerIcon("porkchopRaw");
++    }
++}

@@ -1,0 +1,48 @@
+--- a/minecraft/net/minecraft/src/EntityTracker.java
++++ b/minecraft/net/minecraft/src/EntityTracker.java
+@@ -44,6 +44,17 @@
+                 }
+             }
+         }
++        // FCMOD: Code added
++        else if ( par1Entity instanceof FCIEntityPacketHandler )
++        {
++        	FCIEntityPacketHandler fcEntity = (FCIEntityPacketHandler)par1Entity;
++        	
++        	// client
++            addEntityToTracker( par1Entity, fcEntity.GetTrackerViewDistance(), fcEntity.GetTrackerUpdateFrequency(), fcEntity.GetTrackMotion() );
++            // server
++            //trackEntity( par1Entity, fcEntity.GetTrackerViewDistance(), fcEntity.GetTrackerUpdateFrequency(), fcEntity.GetTrackMotion() );
++        }
++        // END FCMOD
+         else if (par1Entity instanceof EntityFishHook)
+         {
+             this.addEntityToTracker(par1Entity, 64, 5, true);
+@@ -100,15 +111,24 @@
+         {
+             this.addEntityToTracker(par1Entity, 80, 3, true);
+         }
+-        else if (par1Entity instanceof EntitySquid)
++        // FCMOD: Changed
++        //else if (par1Entity instanceof EntitySquid)
++        else if ( par1Entity instanceof FCEntitySquid )
++    	// END FCMOD
+         {
+             this.addEntityToTracker(par1Entity, 64, 3, true);
+         }
+-        else if (par1Entity instanceof EntityWither)
++        // FCMOD: Changed
++        //else if (par1Entity instanceof EntityWither)
++        else if ( par1Entity instanceof FCEntityWither )
++    	// END FCMOD
+         {
+             this.addEntityToTracker(par1Entity, 80, 3, false);
+         }
+-        else if (par1Entity instanceof EntityBat)
++        // FCMOD: Changed
++        //else if (par1Entity instanceof EntityBat)
++        else if ( par1Entity instanceof FCEntityBat )
++    	// END FCMOD
+         {
+             this.addEntityToTracker(par1Entity, 80, 3, false);
+         }

@@ -1,0 +1,79 @@
+--- a/minecraft/net/minecraft/src/ChunkProviderServer.java
++++ b/minecraft/net/minecraft/src/ChunkProviderServer.java
+@@ -46,16 +46,30 @@
+      * marks chunk for unload by "unload100OldestChunks"  if there is no spawn point, or if the center of the chunk is
+      * outside 200 blocks (x or z) of the spawn
+      */
++    // FCMOD: Added (server only) to provide alias to match client naming
++    /*
++    public void unloadChunksIfNotNearSpawn( int par1, int par2 )
++    {
++        dropChunk( par1, par2 );
++    }
++    */
++    // END FCMOD
+     public void unloadChunksIfNotNearSpawn(int par1, int par2)
+     {
+         if (this.worldObj.provider.canRespawnHere())
+         {
++        	// FCCHUNK: Decide on updates around original spawn
++        	// FCMOD: Changed
++        	/*
+             ChunkCoordinates var3 = this.worldObj.getSpawnPoint();
+             int var4 = par1 * 16 + 8 - var3.posX;
+             int var5 = par2 * 16 + 8 - var3.posZ;
+             short var6 = 128;
+ 
+             if (var4 < -var6 || var4 > var6 || var5 < -var6 || var5 > var6)
++            */
++        	if ( !IsSpawnChunk( par1, par2 ) )
++        	// END FCMOD
+             {
+                 this.chunksToUnload.add(Long.valueOf(ChunkCoordIntPair.chunkXZ2Int(par1, par2)));
+             }
+@@ -346,4 +360,45 @@
+     }
+ 
+     public void recreateStructures(int par1, int par2) {}
++    
++    // FCMOD: Added
++    IChunkProvider GetCurrentProvider()
++    {
++    	// client
++    	return currentChunkProvider;
++    	// server
++    	//return serverChunkGenerator;
+ }
++    
++	protected boolean IsSpawnChunk( int iChunkX, int iChunkZ )
++	{
++		if ( worldObj.provider.canRespawnHere() )
++		{
++		    ChunkCoordinates var3 = this.worldObj.getSpawnPoint();
++		    
++		    // uses the same math as addPlayer in PlayerManager for consistent results
++		    
++		    int iSpawnChunkX = worldObj.worldInfo.getSpawnX() >> 4;
++		    int iSpawnChunkZ = worldObj.worldInfo.getSpawnZ() >> 4;
++		    
++		    int iChunkViewDistance = 
++		    	worldObj.getMinecraftServer().getConfigurationManager().getViewDistance(); 
++	
++		    return iChunkX >= iSpawnChunkX - iChunkViewDistance &&
++		    	iChunkX <= iSpawnChunkX + iChunkViewDistance &&
++			    iChunkZ >= iSpawnChunkZ - iChunkViewDistance &&
++		    	iChunkZ <= iSpawnChunkZ + iChunkViewDistance;
++		}
++		
++		return false;
++	}
++	
++    public void ForceAddToChunksToUnload( int iChunkX, int iChunkZ )
++    {
++    	// client
++        chunksToUnload.add( Long.valueOf( ChunkCoordIntPair.chunkXZ2Int( iChunkX, iChunkZ ) ) );
++    	// server
++    	//droppedChunksSet.add( Long.valueOf( ChunkCoordIntPair.chunkXZ2Int( iChunkX, iChunkZ ) ) );
++    }
++    // END FCMOD
++}

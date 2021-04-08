@@ -1,0 +1,16 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCBlockSandstoneSidingAndCornerAndDecorative.java
+@@ -0,0 +1,12 @@
++//FCMOD
++
++package net.minecraft.src;
++
++public class FCBlockSandstoneSidingAndCornerAndDecorative extends FCBlockSidingAndCornerAndDecorative
++{
++	protected FCBlockSandstoneSidingAndCornerAndDecorative( int iBlockID )
++	{
++		super( iBlockID, Material.rock, "fcBlockDecorativeSandstone_top", 0.8F, 1.34F, Block.soundStoneFootstep, "fcSandstoneSiding" );
++	}
++	
++}
+\ No newline at end of file

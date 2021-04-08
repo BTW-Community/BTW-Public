@@ -1,0 +1,54 @@
+--- a/minecraft_server/net/minecraft/src/EntitySilverfish.java
++++ b/minecraft_server/net/minecraft/src/EntitySilverfish.java
+@@ -177,7 +177,16 @@
+ 
+                 if (BlockSilverfish.getPosingIdByMetadata(var5))
+                 {
++                	// FCMOD: Code change
++                	/*
+                     this.worldObj.setBlock(var1 + Facing.offsetsXForSide[var9], var2 + Facing.offsetsYForSide[var9], var3 + Facing.offsetsZForSide[var9], Block.silverfish.blockID, BlockSilverfish.getMetadataForBlockType(var5), 3);
++                    */
++                	int iNewBlockMetadata = FCBlockSilverfish.GetMetadataConversionOnInfest( var5, 
++                		worldObj.getBlockMetadata( var1 + Facing.offsetsXForSide[var9], var2 + Facing.offsetsYForSide[var9], var3 + Facing.offsetsZForSide[var9] ) );
++                	
++                    worldObj.setBlock(var1 + Facing.offsetsXForSide[var9], var2 + Facing.offsetsYForSide[var9], var3 + Facing.offsetsZForSide[var9], 
++                    	Block.silverfish.blockID, iNewBlockMetadata, 3);
++                	// END FCMOD
+                     this.spawnExplosionParticle();
+                     this.setDead();
+                 }
+@@ -241,4 +250,34 @@
+     {
+         return EnumCreatureAttribute.ARTHROPOD;
+     }
++    
++    // FCMOD: Code added
++    @Override
++    protected void dropFewItems( boolean bKilledByPlayer, int iLootingModifier )
++    {
++    	if ( worldObj.provider.dimensionId == 1 )
++    	{
++	        int iDropChance = this.rand.nextInt( 5 ) - 3 + iLootingModifier;
++	
++	        if ( iDropChance > 0 )
++	        {
++	            dropItem( Item.clay.itemID, 1 );
+ }
++    	}
++    }
++    
++    @Override
++    public void CheckForScrollDrop()
++    {    	
++    	if ( worldObj.provider.dimensionId == 1 )
++    	{
++	    	if ( rand.nextInt( 1000 ) == 0 )
++	    	{
++	    		ItemStack itemstack = new ItemStack( FCBetterThanWolves.fcItemArcaneScroll, 1, Enchantment.efficiency.effectId );
++	            
++	            entityDropItem(itemstack, 0.0F);
++	    	}
++    	}
++    }    
++    // END FCMOD
++}

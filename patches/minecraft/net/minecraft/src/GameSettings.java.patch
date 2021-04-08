@@ -1,0 +1,30 @@
+--- a/minecraft/net/minecraft/src/GameSettings.java
++++ b/minecraft/net/minecraft/src/GameSettings.java
+@@ -328,7 +328,13 @@
+         if (par1EnumOptions == EnumOptions.DIFFICULTY)
+         {
+             this.difficulty = this.difficulty + par2 & 3;
++            // FCMOD: Code added to eliminate peaceful & easy (client only)
++            if ( difficulty < 2 )
++            {
++            	difficulty = 2;
+         }
++            // END FCMOD
++        }
+ 
+         if (par1EnumOptions == EnumOptions.GRAPHICS)
+         {
+@@ -585,7 +591,13 @@
+                     if (var3[0].equals("difficulty"))
+                     {
+                         this.difficulty = Integer.parseInt(var3[1]);
++                        // FCMOD: Code added to remove peaceful and easy (client only)
++                        if ( difficulty < 2 )
++                        {
++                        	difficulty = 2;
+                     }
++                        // END FCMOD
++                    }
+ 
+                     if (var3[0].equals("fancyGraphics"))
+                     {

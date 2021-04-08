@@ -1,0 +1,19 @@
+--- a/minecraft/net/minecraft/src/CreativeTabs.java
++++ b/minecraft/net/minecraft/src/CreativeTabs.java
+@@ -135,6 +135,8 @@
+ 
+     public void func_92116_a(List par1List, EnumEnchantmentType ... par2ArrayOfEnumEnchantmentType)
+     {
++    	// FCMOD: Client only.  Code removed to disable enchanted books in creative inv
++    	/*
+         Enchantment[] var3 = Enchantment.enchantmentsList;
+         int var4 = var3.length;
+ 
+@@ -160,5 +162,7 @@
+                 }
+             }
+         }
++        */
++    	// END FCMOD
+     }
+ }

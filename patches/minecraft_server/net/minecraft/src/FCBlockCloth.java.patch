@@ -1,0 +1,24 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCBlockCloth.java
+@@ -0,0 +1,21 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCBlockCloth extends BlockCloth
++{
++    public FCBlockCloth()
++    {
++        super();
++        
++        setHardness( 0.8F );
++        
++        SetBuoyant();
++        
++		SetFireProperties( FCEnumFlammability.CLOTH );
++		
++		setStepSound( soundClothFootstep );
++		
++		setUnlocalizedName( "cloth" );		
++    }
++}

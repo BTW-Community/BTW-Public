@@ -1,0 +1,179 @@
+--- a/minecraft/net/minecraft/src/BlockFluid.java
++++ b/minecraft/net/minecraft/src/BlockFluid.java
+@@ -11,7 +11,10 @@
+         super(par1, par2Material);
+         float var3 = 0.0F;
+         float var4 = 0.0F;
+-        this.setBlockBounds(0.0F + var4, 0.0F + var3, 0.0F + var4, 1.0F + var4, 1.0F + var3, 1.0F + var4);
++        // FCMOD: Changed
++        //this.setBlockBounds(0.0F + var4, 0.0F + var3, 0.0F + var4, 1.0F + var4, 1.0F + var3, 1.0F + var4);
++        InitBlockBounds(0.0F + var4, 0.0F + var3, 0.0F + var4, 1.0F + var4, 1.0F + var3, 1.0F + var4);
++        // END FCMOD
+         this.setTickRandomly(true);
+     }
+ 
+@@ -148,11 +151,15 @@
+      * Returns true if the given side of this block type should be rendered, if the adjacent block is at the given
+      * coordinates.  Args: blockAccess, x, y, z, side
+      */
++	// FCMOD: Code removed and replaced later.  Client only
++    /*
+     public boolean shouldSideBeRendered(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5)
+     {
+         Material var6 = par1IBlockAccess.getBlockMaterial(par2, par3, par4);
+         return var6 == this.blockMaterial ? false : (par5 == 1 ? true : (var6 == Material.ice ? false : super.shouldSideBeRendered(par1IBlockAccess, par2, par3, par4, par5)));
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Returns a bounding box from the pool of bounding boxes (this means this box can change after the pool has been
+@@ -190,6 +197,8 @@
+     /**
+      * Returns a vector indicating the direction and intensity of fluid flow.
+      */
++    // FCMOD: Code removed and replaced later
++    /*
+     private Vec3 getFlowVector(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
+     {
+         Vec3 var5 = par1IBlockAccess.getWorldVec3Pool().getVecFromPool(0.0D, 0.0D, 0.0D);
+@@ -296,6 +305,8 @@
+         var5 = var5.normalize();
+         return var5;
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Can add to the passed in vector for a movement vector to be applied to the entity. Args: x, y, z, entity, vec3d
+@@ -459,8 +470,8 @@
+         }
+ 
+         double var21;
+-        double var22;
+         double var23;
++        double var22;
+ 
+         if (this.blockMaterial == Material.lava && par1World.getBlockMaterial(par2, par3 + 1, par4) == Material.air && !par1World.isBlockOpaqueCube(par2, par3 + 1, par4))
+         {
+@@ -579,7 +590,11 @@
+                     }
+                     else if (var6 <= 4)
+                     {
+-                        par1World.setBlock(par2, par3, par4, Block.cobblestone.blockID);
++                    	// FCMOD: Changed
++                        //par1World.setBlock(par2, par3, par4, Block.cobblestone.blockID);
++                        par1World.setBlock( par2, par3, par4, 
++                        	FCBetterThanWolves.fcBlockLavaPillow.blockID );
++                        // END FCMOD
+                     }
+ 
+                     this.triggerLavaMixEffects(par1World, par2, par3, par4);
+@@ -621,4 +636,107 @@
+     {
+         return par0Str == "water" ? Block.waterMoving.theIcon[0] : (par0Str == "water_flow" ? Block.waterMoving.theIcon[1] : (par0Str == "lava" ? Block.lavaMoving.theIcon[0] : (par0Str == "lava_flow" ? Block.lavaMoving.theIcon[1] : null)));
+     }
++    
++    // FCMOD: Added New
++    @Override
++    public boolean GetCanBlockBeIncinerated( World world, int i, int j, int k )
++    {
++    	return false;
+ }
++    
++    @Override
++    public ItemStack GetStackRetrievedByBlockDispenser( World world, int i, int j, int k )
++    {	 
++    	return null; // can't be picked up
++    }
++    
++    //------------- Class Specific Methods ------------//
++    
++    private Vec3 AddFlowVectorAtTarget( IBlockAccess iBlockAccess, int i, int j, int k, int iFlowDecay, int iTempI, int iTempK, Vec3 flowVec )
++    {
++        int iTempDecay = getEffectiveFlowDecay( iBlockAccess, iTempI, j, iTempK );
++
++        if ( iTempDecay < 0 )
++        {
++            if (!iBlockAccess.getBlockMaterial(iTempI, j, iTempK).blocksMovement())
++            {
++                iTempDecay = this.getEffectiveFlowDecay(iBlockAccess, iTempI, j - 1, iTempK);
++
++                if (iTempDecay >= 0)
++                {
++                    int iDeltaDecay = iTempDecay - (iFlowDecay - 8);
++                    return flowVec.addVector((double)((iTempI - i) * iDeltaDecay), 0D, (double)((iTempK - k) * iDeltaDecay));
++                }
++            }
++        }
++        else if (iTempDecay >= 0)
++        {
++            int iDeltaDecay = iTempDecay - iFlowDecay;
++            return flowVec.addVector((double)((iTempI - i) * iDeltaDecay), 0D, (double)((iTempK - k) * iDeltaDecay));
++        }
++        
++        return flowVec;
++    }
++    
++    private Vec3 getFlowVector( IBlockAccess iBlockAccess, int i, int j, int k )
++    {
++    	// optomized vanilla function
++    	
++        Vec3 flowVec = iBlockAccess.getWorldVec3Pool().getVecFromPool(0.0D, 0.0D, 0.0D);
++        
++        int iFlowDecay = getEffectiveFlowDecay( iBlockAccess, i, j, k );
++
++        flowVec = AddFlowVectorAtTarget( iBlockAccess, i, j, k, iFlowDecay, i - 1, k, flowVec );
++        flowVec = AddFlowVectorAtTarget( iBlockAccess, i, j, k, iFlowDecay, i, k - 1, flowVec );
++        flowVec = AddFlowVectorAtTarget( iBlockAccess, i, j, k, iFlowDecay, i + 1, k, flowVec );
++        flowVec = AddFlowVectorAtTarget( iBlockAccess, i, j, k, iFlowDecay, i, k + 1, flowVec );
++                
++        if (iBlockAccess.getBlockMetadata(i, j, k) >= 8)
++        {
++            if ( this.isBlockSolid(iBlockAccess, i, j, k - 1, 2)
++            || this.isBlockSolid(iBlockAccess, i, j, k + 1, 3)
++            || this.isBlockSolid(iBlockAccess, i - 1, j, k, 4)
++            || this.isBlockSolid(iBlockAccess, i + 1, j, k, 5)
++            || this.isBlockSolid(iBlockAccess, i, j + 1, k - 1, 2)
++            || this.isBlockSolid(iBlockAccess, i, j + 1, k + 1, 3)
++            || this.isBlockSolid(iBlockAccess, i - 1, j + 1, k, 4)
++            || this.isBlockSolid(iBlockAccess, i + 1, j + 1, k, 5) )
++            {
++                flowVec = flowVec.normalize().addVector(0.0D, -6.0D, 0.0D);
++            }
++        }
++
++        flowVec = flowVec.normalize();
++        
++        return flowVec;
++    }
++    
++	//----------- Client Side Functionality -----------//
++    
++    public static boolean bIsAnySideBeingRendered; // temporary state tracking variable used by rendering    
++    
++    @Override
++    public boolean shouldSideBeRendered( IBlockAccess blockAccess, int i, int j, int k, int iSide )
++    {
++        Material material = blockAccess.getBlockMaterial( i, j, k );
++        
++        if ( material != blockMaterial && ( iSide == 1 || ( material != Material.ice && super.shouldSideBeRendered( blockAccess, i, j, k, iSide ) ) ) )
++        {
++        	bIsAnySideBeingRendered = true;
++        	
++        	return true;
++        }
++        
++        return false;
++    }
++    
++    @Override
++    public boolean RenderBlock( RenderBlocks renderer, int i, int j, int k )
++    {
++        renderer.setRenderBounds( GetBlockBoundsFromPoolBasedOnState( 
++        	renderer.blockAccess, i, j, k ) );
++        
++    	return renderer.renderBlockFluids( this, i, j, k );
++    }    
++    // END FCMOD    
++}

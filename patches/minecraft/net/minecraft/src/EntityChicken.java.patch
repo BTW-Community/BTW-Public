@@ -1,0 +1,8 @@
+--- a/minecraft/net/minecraft/src/EntityChicken.java
++++ b/minecraft/net/minecraft/src/EntityChicken.java
+@@ -1,3 +1,5 @@
++// FCMOD: Class changes deprecated 08/10/2018
++
+ package net.minecraft.src;
+ 
+ public class EntityChicken extends EntityAnimal

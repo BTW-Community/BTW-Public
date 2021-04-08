@@ -1,0 +1,59 @@
+--- a/minecraft_server/net/minecraft/src/EntityFireball.java
++++ b/minecraft_server/net/minecraft/src/EntityFireball.java
+@@ -94,7 +94,16 @@
+             else
+             {
+                 ++this.ticksInAir;
++                
++                // FCMOD: Added as fix for undying fireballs MC-4465
++                if ( ticksInAir >= 600 )
++                {
++                    setDead();
++                    
++                    return;
+             }
++                // END FCMOD
++            }
+ 
+             Vec3 var15 = this.worldObj.getWorldVec3Pool().getVecFromPool(this.posX, this.posY, this.posZ);
+             Vec3 var2 = this.worldObj.getWorldVec3Pool().getVecFromPool(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+@@ -176,10 +185,10 @@
+ 
+             if (this.isInWater())
+             {
+-                for (int var18 = 0; var18 < 4; ++var18)
++                for (int var19 = 0; var19 < 4; ++var19)
+                 {
+-                    float var19 = 0.25F;
+-                    this.worldObj.spawnParticle("bubble", this.posX - this.motionX * (double)var19, this.posY - this.motionY * (double)var19, this.posZ - this.motionZ * (double)var19, this.motionX, this.motionY, this.motionZ);
++                    float var18 = 0.25F;
++                    this.worldObj.spawnParticle("bubble", this.posX - this.motionX * (double)var18, this.posY - this.motionY * (double)var18, this.posZ - this.motionZ * (double)var18, this.motionX, this.motionY, this.motionZ);
+                 }
+ 
+                 var17 = 0.8F;
+@@ -220,6 +229,10 @@
+         par1NBTTagCompound.setByte("inTile", (byte)this.inTile);
+         par1NBTTagCompound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+         par1NBTTagCompound.setTag("direction", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
++        
++        // FCMOD: Added as fix for undying fireballs MC-4465
++        par1NBTTagCompound.setShort( "ticksInAir", (short)ticksInAir );
++        // END FCMOD        
+     }
+ 
+     /**
+@@ -244,7 +257,14 @@
+         {
+             this.setDead();
+         }
++        
++        // FCMOD: Added as fix for undying fireballs MC-4465
++        if (par1NBTTagCompound.hasKey( "ticksInAir" ) )
++        {
++        	ticksInAir = par1NBTTagCompound.getShort( "ticksInAir" );
+     }
++        // END FCMOD        
++    }
+ 
+     /**
+      * Returns true if other Entities should be prevented from moving through this Entity.

@@ -1,0 +1,150 @@
+--- a/minecraft_server/net/minecraft/src/ComponentScatteredFeatureSwampHut.java
++++ b/minecraft_server/net/minecraft/src/ComponentScatteredFeatureSwampHut.java
+@@ -41,8 +41,14 @@
+             this.placeBlockAtCurrentPosition(par1World, 0, 0, 5, 3, 4, par3StructureBoundingBox);
+             this.placeBlockAtCurrentPosition(par1World, 0, 0, 5, 3, 5, par3StructureBoundingBox);
+             this.placeBlockAtCurrentPosition(par1World, Block.flowerPot.blockID, 7, 1, 3, 5, par3StructureBoundingBox);
+-            this.placeBlockAtCurrentPosition(par1World, Block.workbench.blockID, 0, 3, 2, 6, par3StructureBoundingBox);
+-            this.placeBlockAtCurrentPosition(par1World, Block.cauldron.blockID, 0, 4, 2, 6, par3StructureBoundingBox);
++            // FCMOD: Removed
++            //this.placeBlockAtCurrentPosition(par1World, Block.workbench.blockID, 0, 3, 2, 6, par3StructureBoundingBox);
++            //this.placeBlockAtCurrentPosition(par1World, Block.cauldron.blockID, 0, 4, 2, 6, par3StructureBoundingBox);
++            // END FCMOD
++            // FCMOD: Code added to add brewing stand to witch huts
++            this.placeBlockAtCurrentPosition(par1World, Block.planks.blockID, 1, 2, 2, 6, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.brewingStand.blockID, 0, 2, 3, 6, par3StructureBoundingBox);
++            // END FCMOD
+             this.placeBlockAtCurrentPosition(par1World, Block.fence.blockID, 0, 1, 2, 1, par3StructureBoundingBox);
+             this.placeBlockAtCurrentPosition(par1World, Block.fence.blockID, 0, 5, 2, 1, par3StructureBoundingBox);
+             int var4 = this.getMetadataWithOffset(Block.stairsWoodOak.blockID, 3);
+@@ -64,6 +70,13 @@
+                 }
+             }
+ 
++            // FCMOD: Added
++            if ( !m_bHasLootBasket )
++            {
++            	AddLootBasket( par1World, par3StructureBoundingBox, 3, 2, 6 );
++            }
++            // END FCMOD
++            
+             if (!this.hasWitch)
+             {
+                 var8 = this.getXWithOffset(2, 5);
+@@ -73,14 +86,115 @@
+                 if (par3StructureBoundingBox.isVecInside(var8, var9, var10))
+                 {
+                     this.hasWitch = true;
+-                    EntityWitch var11 = new EntityWitch(par1World);
++                    // FCMOD: Changed
++                    //EntityWitch var11 = new EntityWitch(par1World);
++                    FCEntityWitch var11 = new FCEntityWitch(par1World);
++                    var11.PreInitCreature();
++                    // END FCMOD
+                     var11.setLocationAndAngles((double)var8 + 0.5D, (double)var9, (double)var10 + 0.5D, 0.0F, 0.0F);
+                     var11.initCreature();
++                    // FCMOD: Added
++                    var11.SetPersistent( true );
++                    // END FCMOD
+                     par1World.spawnEntityInWorld(var11);
+                 }
++                
++            	// FCMOD: Added
++            	SpawnAdditionalWitches( par1World );
++            	// END FCMOD
+             }
+ 
+             return true;
+         }
+     }
++    
++    // FCMOD: Added
++    private boolean m_bHasLootBasket = false;
++    
++    private static FCUtilsRandomItemStack[] m_LootBasketContents = null;
++    
++    private void InitContentsArray()
++    {
++    	m_LootBasketContents = new FCUtilsRandomItemStack[] {
++    		new FCUtilsRandomItemStack( FCBetterThanWolves.fcItemHempSeeds.itemID, 0, 1, 4, 5 ),  
++        	new FCUtilsRandomItemStack( Item.glassBottle.itemID, 0, 2, 8, 10 ),  
++        	new FCUtilsRandomItemStack( FCBetterThanWolves.fcItemMushroomRed.itemID, 0, 5, 16, 5 )
++        }; 
+ }
++    
++    private void SpawnAdditionalWitches( World world )
++    {
++    	int iNumWitches = 2;
++    	
++    	if ( !hasWitch )
++    	{
++    		iNumWitches++;
++    	}
++
++    	// constrain spawning to the chunk containing the structure component that we know is loaded
++    	// note that we can't rely on neighboring chunks with a component, like we can with a structure
++    	
++        int iMinSpawnX = ( boundingBox.minX >> 4 ) << 4;
++        int iMinSpawnZ = ( boundingBox.minZ >> 4 ) << 4;
++        
++        int iSpawnZoneWidth = 16;
++    	
++    	for ( int iTempCount = 0; iTempCount < iNumWitches; iTempCount++ )
++    	{
++    		for ( int iTempTries = 0; iTempTries < 20; iTempTries++ )
++    		{
++    			int iTempX = iMinSpawnX + world.rand.nextInt( iSpawnZoneWidth );
++    			int iTempZ = iMinSpawnZ + world.rand.nextInt( iSpawnZoneWidth );
++    			
++    			int iTempY = world.getTopSolidOrLiquidBlock( iTempX, iTempZ );
++    			
++    			if ( SpawnerAnimals.CanWitchSpawnAtLocationDuringWorldGen( 
++    				world, iTempX, iTempY, iTempZ ) )
++				{
++                    hasWitch = true;
++                    
++                    FCEntityWitch witch = new FCEntityWitch( world );
++                    
++                    // FCMOD: Added
++                    witch.PreInitCreature();
++                    // END FCMOD
++                    witch.setLocationAndAngles( (double)iTempX + 0.5D, (double)iTempY, (double)iTempZ + 0.5D, 0.0F, 0.0F);                    
++                    witch.initCreature();                    
++                    witch.SetPersistent( true );
++                    
++                    world.spawnEntityInWorld( witch );
++                    
++                    break;
++				}
++    		}
++    	}
++    }
++    
++    private void AddLootBasket( World world, StructureBoundingBox boundingBox, int iRelX, int iRelY, int iRelZ )
++    {
++    	if ( m_LootBasketContents == null )
++    	{
++    		// only initialize array on first use to ensure referenced mod items are intialized
++    		InitContentsArray();
++    	}
++    	
++    	int i = getXWithOffset( iRelX, iRelZ );
++        int j = getYWithOffset( iRelY );
++        int k = getZWithOffset( iRelX, iRelZ );
++    	
++        if ( boundingBox.isVecInside( i, j, k) && world.getBlockId( i, j, k ) != FCBetterThanWolves.fcBlockBasketWicker.blockID )
++        {
++        	m_bHasLootBasket = true;
++        	
++	    	world.setBlock( i, j, k, FCBetterThanWolves.fcBlockBasketWicker.blockID, world.rand.nextInt( 4 ) | 4, 2 );
++	    	
++	    	FCTileEntityBasketWicker tileEntity = (FCTileEntityBasketWicker)world.getBlockTileEntity( i, j, k );
++	    	
++	    	if ( tileEntity != null )
++	    	{
++	    		tileEntity.SetStorageStack( FCUtilsRandomItemStack.GetRandomStack( world.rand, m_LootBasketContents ) );
++	    	}
++        }	    	
++    }
++    // END FCMOD
++}

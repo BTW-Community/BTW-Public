@@ -1,0 +1,25 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCItemRedstone.java
+@@ -0,0 +1,22 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCItemRedstone extends FCItemPlacesAsBlock
++{
++    public FCItemRedstone( int iItemID )
++    {
++    	super( iItemID, Block.redstoneWire.blockID );
++    	
++    	SetBellowsBlowDistance( 3 );
++    	SetFilterableProperties( m_iFilterable_Fine );
++    	
++    	setUnlocalizedName( "redstone" );
++    	
++    	setCreativeTab( CreativeTabs.tabRedstone );
++    }
++    
++    //------------- Class Specific Methods ------------//
++    
++	//------------ Client Side Functionality ----------//
++}

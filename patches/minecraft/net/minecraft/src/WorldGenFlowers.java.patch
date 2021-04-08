@@ -1,0 +1,16 @@
+--- a/minecraft/net/minecraft/src/WorldGenFlowers.java
++++ b/minecraft/net/minecraft/src/WorldGenFlowers.java
+@@ -20,7 +20,13 @@
+             int var8 = par4 + par2Random.nextInt(4) - par2Random.nextInt(4);
+             int var9 = par5 + par2Random.nextInt(8) - par2Random.nextInt(8);
+ 
++            // FCMOD: Change
++            /*
+             if (par1World.isAirBlock(var7, var8, var9) && (!par1World.provider.hasNoSky || var8 < 127) && Block.blocksList[this.plantBlockId].canBlockStay(par1World, var7, var8, var9))
++            */
++            if (par1World.isAirBlock(var7, var8, var9) && (!par1World.provider.hasNoSky || var8 < 127) && 
++            	Block.blocksList[this.plantBlockId].CanBlockStayDuringGenerate(par1World, var7, var8, var9))
++        	// END FCMOD
+             {
+                 par1World.setBlock(var7, var8, var9, this.plantBlockId, 0, 2);
+             }

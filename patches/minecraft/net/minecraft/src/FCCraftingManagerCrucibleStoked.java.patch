@@ -1,0 +1,21 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCCraftingManagerCrucibleStoked.java
+@@ -0,0 +1,18 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCCraftingManagerCrucibleStoked extends FCCraftingManagerBulk
++{
++    private static final FCCraftingManagerCrucibleStoked instance = new FCCraftingManagerCrucibleStoked();
++    
++    public static final FCCraftingManagerCrucibleStoked getInstance()
++    {
++        return instance;
++    }
++
++    private FCCraftingManagerCrucibleStoked()
++    {
++    	super();    	
++    }
++}

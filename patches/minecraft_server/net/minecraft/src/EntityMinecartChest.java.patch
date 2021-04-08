@@ -1,0 +1,22 @@
+--- a/minecraft_server/net/minecraft/src/EntityMinecartChest.java
++++ b/minecraft_server/net/minecraft/src/EntityMinecartChest.java
+@@ -15,8 +15,18 @@
+     public void killMinecart(DamageSource par1DamageSource)
+     {
+         super.killMinecart(par1DamageSource);
+-        this.dropItemWithOffset(Block.chest.blockID, 1, 0.0F);
++        
++        // FCMOD: Changed
++        //this.dropItemWithOffset(Block.chest.blockID, 1, 0.0F);
++    	dropItemWithOffset( FCBetterThanWolves.fcItemSawDust.itemID, 6, 0.0F );
++    	dropItemWithOffset( Item.stick.itemID, 2, 0.0F );
++    	
++        if ( !worldObj.isRemote )
++        {        
++			playSound( "mob.zombie.woodbreak", 0.25F, 0.75F + ( worldObj.rand.nextFloat() * 0.25F ) );
+     }
++        // END FCMOD        
++    }
+ 
+     /**
+      * Returns the number of slots in the inventory.

@@ -1,0 +1,20 @@
+--- a/minecraft/net/minecraft/src/EntityTameable.java
++++ b/minecraft/net/minecraft/src/EntityTameable.java
+@@ -147,4 +147,17 @@
+     {
+         return this.aiSit;
+     }
++
++    // FCMOD: Code Added
++    @Override
++    public boolean IsSecondaryTargetForSquid()
++    {
++    	return false;
+ }
++    
++    public boolean IsAITryingToSit()
++    {
++    	return aiSit.IsTryingToSit();
++    }
++    // END FCMOD
++}

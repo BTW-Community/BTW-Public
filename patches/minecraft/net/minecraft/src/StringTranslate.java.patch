@@ -1,0 +1,72 @@
+--- a/minecraft/net/minecraft/src/StringTranslate.java
++++ b/minecraft/net/minecraft/src/StringTranslate.java
+@@ -10,6 +10,8 @@
+ import java.util.Properties;
+ import java.util.TreeMap;
+ 
++import net.minecraft.client.Minecraft;
++
+ public class StringTranslate
+ {
+     /** Is the private singleton instance of StringTranslate. */
+@@ -154,6 +156,10 @@
+ 
+             this.currentLanguage = par1Str;
+             this.translateTable = var3;
++            
++            // FCMOD: Code added
++            FCAddOnHandler.OnLanguageLoaded( this );
++            // END FCMOD
+         }
+     }
+ 
+@@ -226,4 +232,49 @@
+             this.setLanguage(this.currentLanguage, true);
+         }
+     }
++    
++    // FCMOD
++    public Properties GetTranslateTable()
++    {
++    	return translateTable;
+ }
++    
++    public void LoadAddonLanguageExtension( String sAddonPrefix )
++    {
++    	SafeLoadLanguage( sAddonPrefix + "_" + "en_US" );
++    	
++        SafeLoadLanguage( sAddonPrefix + "_" + currentLanguage );
++    }
++    
++    private void SafeLoadLanguage( String sLanguageName )
++    {
++        if ( StringTranslate.class.getResource( "/lang/" + sLanguageName + ".lang" ) != null )
++        {
++	        try
++	        {
++	            loadLanguage( translateTable, sLanguageName );
++	        }
++	        catch ( IOException exception )
++	        {
++	            ;
++	        }
++        }
++    }
++    
++    public void DebugOutputCurrentLanguage()
++    {
++        Enumeration var4 = translateTable.propertyNames();
++
++        while ( var4.hasMoreElements() )
++        {
++            Object var5 = var4.nextElement();
++            Object var6 = translateTable.get(var5);
++
++            if (var6 != null)
++            {
++                System.out.println( var5.toString() + "=" + var6.toString() );
++            }
++        }
++    }
++    // END FCMOD
++}

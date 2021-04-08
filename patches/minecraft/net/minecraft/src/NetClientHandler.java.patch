@@ -1,0 +1,331 @@
+--- a/minecraft/net/minecraft/src/NetClientHandler.java
++++ b/minecraft/net/minecraft/src/NetClientHandler.java
+@@ -104,6 +104,10 @@
+         {
+             this.netManager.wakeThreads();
+         }
++        
++        // FCMOD: Added (client only)
++        UpdateTerrainLoad();
++        // END FCMOD        
+     }
+ 
+     public void handleServerAuthData(Packet253ServerAuthData par1Packet253ServerAuthData)
+@@ -233,7 +237,10 @@
+         }
+         else if (par1Packet23VehicleSpawn.type == 66)
+         {
+-            var8 = new EntityWitherSkull(this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
++        	// FCMOD: Changed (client only)
++            //var8 = new EntityWitherSkull(this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
++            var8 = new FCEntityWitherSkull(this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
++            // END FCMOD
+             par1Packet23VehicleSpawn.throwerEntityId = 0;
+         }
+         else if (par1Packet23VehicleSpawn.type == 62)
+@@ -268,9 +275,34 @@
+         }
+         else if (par1Packet23VehicleSpawn.type == 70)
+         {
+-            var8 = new EntityFallingSand(this.worldClient, var2, var4, var6, par1Packet23VehicleSpawn.throwerEntityId & 65535, par1Packet23VehicleSpawn.throwerEntityId >> 16);
++        	// FCMOD: Changed (client only)
++            //var8 = new EntityFallingSand(this.worldClient, var2, var4, var6, par1Packet23VehicleSpawn.throwerEntityId & 65535, par1Packet23VehicleSpawn.throwerEntityId >> 16);
++            var8 = new FCEntityFallingBlock(this.worldClient, var2, var4, var6, par1Packet23VehicleSpawn.throwerEntityId & 65535, par1Packet23VehicleSpawn.throwerEntityId >> 16);
++            // END FCMOD
+             par1Packet23VehicleSpawn.throwerEntityId = 0;
+         }
++        // FCMOD: Added (client only)
++        else if ( par1Packet23VehicleSpawn.type == FCEntityInfiniteArrow.GetVehicleSpawnPacketType() )
++        {
++        	var8 = new FCEntityInfiniteArrow( worldClient, var2, var4, var6 );
++        }
++        else if ( par1Packet23VehicleSpawn.type == FCEntityBroadheadArrow.GetVehicleSpawnPacketType() )
++        {
++        	var8 = new FCEntityBroadheadArrow( worldClient, var2, var4, var6 );
++        }
++        else if ( par1Packet23VehicleSpawn.type == FCEntityMovingPlatform.GetVehicleSpawnPacketType() )
++        {
++        	var8 = new FCEntityMovingPlatform( worldClient, var2, var4, var6, null );
++        }
++        else if ( par1Packet23VehicleSpawn.type == FCEntityMovingAnchor.GetVehicleSpawnPacketType() )
++        {
++        	var8 = new FCEntityMovingAnchor( worldClient, var2, var4, var6 );
++        }
++        else if ( par1Packet23VehicleSpawn.type == FCEntityRottenArrow.GetVehicleSpawnPacketType() )
++        {
++        	var8 = new FCEntityRottenArrow( worldClient, var2, var4, var6 );
++        }
++        // END FCMOD
+ 
+         if (var8 != null)
+         {
+@@ -296,7 +328,12 @@
+ 
+             if (par1Packet23VehicleSpawn.throwerEntityId > 0)
+             {
++            	// FCMOD: Changed (client only)
++            	/*
+                 if (par1Packet23VehicleSpawn.type == 60)
++                */
++            	if ( var8 instanceof EntityArrow )
++            	// END FCMOD
+                 {
+                     Entity var13 = this.getEntityByID(par1Packet23VehicleSpawn.throwerEntityId);
+ 
+@@ -317,7 +354,16 @@
+      */
+     public void handleEntityExpOrb(Packet26EntityExpOrb par1Packet26EntityExpOrb)
+     {
++    	// FCMOD: Changed to deal with ownership parameter, and to fix vanilla bug that cause an invalid initial pos (client only)
++    	/*
+         EntityXPOrb var2 = new EntityXPOrb(this.worldClient, (double)par1Packet26EntityExpOrb.posX, (double)par1Packet26EntityExpOrb.posY, (double)par1Packet26EntityExpOrb.posZ, par1Packet26EntityExpOrb.xpValue);
++        */
++    	double posX = par1Packet26EntityExpOrb.posX / 32D;
++    	double posY = par1Packet26EntityExpOrb.posY / 32D;
++    	double posZ = par1Packet26EntityExpOrb.posZ / 32D;
++        EntityXPOrb var2 = new EntityXPOrb(worldClient, posX, posY, posZ, 
++    		par1Packet26EntityExpOrb.xpValue, par1Packet26EntityExpOrb.m_bNotPlayerOwned );
++        // END FCMOD
+         var2.serverPosX = par1Packet26EntityExpOrb.posX;
+         var2.serverPosY = par1Packet26EntityExpOrb.posY;
+         var2.serverPosZ = par1Packet26EntityExpOrb.posZ;
+@@ -335,13 +381,23 @@
+         double var2 = (double)par1Packet71Weather.posX / 32.0D;
+         double var4 = (double)par1Packet71Weather.posY / 32.0D;
+         double var6 = (double)par1Packet71Weather.posZ / 32.0D;
++        // FCMOD: Changed
++        /*
+         EntityLightningBolt var8 = null;
+ 
+         if (par1Packet71Weather.isLightningBolt == 1)
+         {
+             var8 = new EntityLightningBolt(this.worldClient, var2, var4, var6);
+         }
++        */
++        FCEntityLightningBolt var8 = null;
+ 
++        if ( par1Packet71Weather.isLightningBolt == 1 )
++        {
++            var8 = new FCEntityLightningBolt( worldClient, var2, var4, var6 );
++        }
++        // END FCMOD
++
+         if (var8 != null)
+         {
+             var8.serverPosX = par1Packet71Weather.posX;
+@@ -520,8 +576,14 @@
+             this.mc.thePlayer.prevPosX = this.mc.thePlayer.posX;
+             this.mc.thePlayer.prevPosY = this.mc.thePlayer.posY;
+             this.mc.thePlayer.prevPosZ = this.mc.thePlayer.posZ;
++            // FCMOD: Changed (client only)
++            /*
+             this.doneLoadingTerrain = true;
+             this.mc.displayGuiScreen((GuiScreen)null);
++            */
++            m_bAwaitingChunkLoadToDisableGUIScreen = true;
++            m_iUpdatesSinceTerrainLoaded = 0;
++            // END FCMOD
+         }
+     }
+ 
+@@ -819,7 +881,11 @@
+ 
+         if (var2 != null)
+         {
+-            ((Entity)var2).mountEntity(var3);
++        	// FCMOD: Changed (client only) to implement fix described in MC-1291
++        	// for players dissapearing after riding boats in SMP
++            //((Entity)var2).mountEntity(var3);
++            ((Entity)var2).MountEntityRemote( var3 );
++        	// END FCMOD
+         }
+     }
+ 
+@@ -875,6 +941,14 @@
+             this.mc.thePlayer.dimension = par1Packet9Respawn.respawnDimension;
+             this.mc.displayGuiScreen(new GuiDownloadTerrain(this));
+         }
++    	// FCMOD: Added (client only) to display loading screen on regular spawn due to 
++        // Hardcore Spawn making the player appear in ungenerated terrain
++        else
++        {
++            doneLoadingTerrain = false;
++            mc.displayGuiScreen(new GuiDownloadTerrain(this));
++        }
++        // END FCMOD        
+ 
+         this.mc.setDimensionAndSpawnPlayer(par1Packet9Respawn.respawnDimension);
+         this.mc.playerController.setGameType(par1Packet9Respawn.gameType);
+@@ -907,6 +981,7 @@
+                 break;
+ 
+             case 2:
++            	
+                 TileEntityFurnace var4 = new TileEntityFurnace();
+ 
+                 if (par1Packet100OpenWindow.useProvidedWindowTitle)
+@@ -1123,9 +1198,15 @@
+                 {
+                     var2.readFromNBT(par1Packet132TileEntityData.customParam1);
+                 }
++                // FCMOD: Added (client only)
++                else if ( par1Packet132TileEntityData.actionType == 1 && ( var2 instanceof FCITileEntityDataPacketHandler ) )
++                {
++                    ((FCITileEntityDataPacketHandler)var2).readNBTFromPacket( par1Packet132TileEntityData.customParam1 );
+             }
++                // END FCMOD
+         }
+     }
++    }
+ 
+     public void handleUpdateProgressbar(Packet105UpdateProgressbar par1Packet105UpdateProgressbar)
+     {
+@@ -1217,7 +1298,13 @@
+         {
+             this.worldClient.getWorldInfo().setRaining(true);
+             this.worldClient.setRainStrength(0.0F);
++            // FCMOD: Added (client only)
++            if ( var4 != 0 )
++            {
++                this.worldClient.setRainStrength(1.0F);
+         }
++            // END FCMOD
++        }
+         else if (var3 == 2)
+         {
+             this.worldClient.getWorldInfo().setRaining(false);
+@@ -1229,6 +1316,14 @@
+         }
+         else if (var3 == 4)
+         {
++        	// FCMOD: Added (client only) to skip the end text and just respawn immediately        	
++        	if ( FCBetterThanWolves.fcDisableEndText )
++        	{
++                this.mc.thePlayer.sendQueue.addToSendQueue(new Packet205ClientCommand(1));
++                
++                return;
++        	}
++        	// END FCMOD
+             this.mc.displayGuiScreen(new GuiWinGame());
+         }
+         else if (var3 == 5)
+@@ -1256,7 +1351,27 @@
+         {
+             this.worldClient.playSound(var2.posX, var2.posY + (double)var2.getEyeHeight(), var2.posZ, "random.successful_hit", 0.18F, 0.45F, false);
+         }
++        // FCMOD: Added (client only)
++        if (var3 == 7)
++        {
++            worldClient.getWorldInfo().setThundering(true);
++
++            if ( var4 == 0 )
++            {
++            	worldClient.prevThunderingStrength = worldClient.thunderingStrength = 0.0F;
+     }
++            else
++            {
++            	worldClient.prevThunderingStrength = worldClient.thunderingStrength = 1.0F;
++            }
++        }
++        else if (var3 == 8)
++        {
++            worldClient.getWorldInfo().setThundering(false);
++            worldClient.prevThunderingStrength = worldClient.thunderingStrength = 1.0F;
++        }
++        // END FCMOD
++    }
+ 
+     /**
+      * Contains logic for handling packets containing arbitrary unique item data. Currently this is only for maps.
+@@ -1302,7 +1417,20 @@
+ 
+         if (var2 instanceof EntityLiving)
+         {
++        	// FCMOD: Changed (client only) to add ambient param 
++        	/*
+             PotionEffect var3 = new PotionEffect(par1Packet41EntityEffect.effectId, par1Packet41EntityEffect.duration, par1Packet41EntityEffect.effectAmplifier);
++            */
++        	boolean bIsAmbient = false;
++
++        	if ( par1Packet41EntityEffect.m_bIsAmbient > 0 )
++        	{
++        		bIsAmbient = true;
++        	}
++
++            PotionEffect var3 = new PotionEffect(par1Packet41EntityEffect.effectId, par1Packet41EntityEffect.duration, par1Packet41EntityEffect.effectAmplifier,
++				bIsAmbient );
++            // END FCMOD
+             var3.setPotionDurationMax(par1Packet41EntityEffect.isDurationMax());
+             ((EntityLiving)var2).addPotionEffect(var3);
+         }
+@@ -1433,7 +1561,13 @@
+                 var7.printStackTrace();
+             }
+         }
++        // FCMOD: Added (client only)
++        else
++        {
++        	FCAddOnHandler.ClientCustomPacketReceived( mc, par1Packet250CustomPayload );
+     }
++        // END FCMOD
++    }
+ 
+     /**
+      * Handle a set objective packet.
+@@ -1580,4 +1714,56 @@
+     {
+         return this.netManager;
+     }
++    
++    // FCMOD: Added (client only)    
++    private boolean m_bAwaitingChunkLoadToDisableGUIScreen = false;
++    private int m_iUpdatesSinceTerrainLoaded = 0;
++    private static final int m_iAdditionalLoadDelay = 20;
++    
++    private void UpdateTerrainLoad()
++    {
++    	if ( m_bAwaitingChunkLoadToDisableGUIScreen )
++    	{
++    		if ( IsTerrainAroundPlayerLoaded() )
++    		{
++    			m_iUpdatesSinceTerrainLoaded++;
++    			
++    			// give it an extra second to help smooth things out post load
++    			if ( m_iUpdatesSinceTerrainLoaded > m_iAdditionalLoadDelay )
++    			{
++		            doneLoadingTerrain = true;
++		            mc.displayGuiScreen((GuiScreen)null);
++		            m_bAwaitingChunkLoadToDisableGUIScreen = false;
+ }
++    		}
++    		else
++    		{
++    			m_iUpdatesSinceTerrainLoaded = 0;
++    		}
++    	}
++    }
++    
++    public boolean IsTerrainAroundPlayerLoaded()
++    {
++    	int iPlayerBlockI = (int)mc.thePlayer.posX;
++    	int iPlayerBlockK = (int)mc.thePlayer.posZ;
++
++    	int iScanRange = 48;
++    	
++    	for ( int iTempI = iPlayerBlockI - iScanRange; iTempI <= iPlayerBlockI + iScanRange; iTempI += 16 )
++    	{
++        	for ( int iTempK = iPlayerBlockK - iScanRange; iTempK <= iPlayerBlockK + iScanRange; iTempK +=16 )
++        	{
++        		Chunk tempChunk = worldClient.getChunkFromBlockCoords( iTempI, iTempK );
++        		
++        		if ( !tempChunk.isChunkLoaded )
++        		{
++        			return false;
++        		}
++        	}
++    	}
++    	
++    	return true;    	
++    }
++    // END FCMOD
++}

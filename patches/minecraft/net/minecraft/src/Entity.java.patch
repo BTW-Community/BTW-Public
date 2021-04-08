@@ -1,0 +1,982 @@
+--- a/minecraft/net/minecraft/src/Entity.java
++++ b/minecraft/net/minecraft/src/Entity.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import java.util.Iterator;
+ import java.util.List;
+ import java.util.Random;
+ import java.util.UUID;
+@@ -117,6 +118,9 @@
+      * The entity's Z coordinate at the previous tick, used to calculate position during rendering routines
+      */
+     public double lastTickPosZ;
++    /**
++     * FCNOTE: TERRIBLE NAMING.  This is actually the position offset due to player sneaking/crouching
++     */
+     public float ySize;
+ 
+     /**
+@@ -299,6 +303,9 @@
+      */
+     protected void setSize(float par1, float par2)
+     {
++    	// FCMOD: Code change to duplicate 1.6 fix for animals suffocating and escaping fences bug
++    	// I do not believe this is actually helping anything due to the incremental nature of the 
++    	// move plus I am now ensuring sufficient space on animal grow elsewhere in the code.
+         if (par1 != this.width || par2 != this.height)
+         {
+             this.width = par1;
+@@ -309,7 +316,28 @@
+         }
+ 
+         float var3 = par1 % 2.0F;
++        /*
++        float var3;
+ 
++        if (par1 != this.width || par2 != this.height)
++        {
++            var3 = this.width;
++            this.width = par1;
++            this.height = par2;
++            this.boundingBox.maxX = this.boundingBox.minX + (double)this.width;
++            this.boundingBox.maxZ = this.boundingBox.minZ + (double)this.width;
++            this.boundingBox.maxY = this.boundingBox.minY + (double)this.height;
++
++            if (this.width > var3 && !this.firstUpdate && !this.worldObj.isRemote)
++            {
++                this.moveEntity((double)(var3 - this.width), 0.0D, (double)(var3 - this.width));
++            }
++        }
++
++        var3 = par1 % 2.0F;    	
++        */
++        // END FCMOD
++
+         if ((double)var3 < 0.375D)
+         {
+             this.myEntitySize = EnumEntitySize.SIZE_1;
+@@ -588,6 +616,8 @@
+     /**
+      * Tries to moves the entity by the passed in displacement. Args: x, y, z
+      */
++    // FCMOD: Removed and replaced
++    /*
+     public void moveEntity(double par1, double par3, double par5)
+     {
+         if (this.noClip)
+@@ -691,11 +721,11 @@
+                 }
+             }
+ 
+-            List var34 = this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox.addCoord(par1, par3, par5));
++            List var35 = this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox.addCoord(par1, par3, par5));
+ 
+-            for (int var22 = 0; var22 < var34.size(); ++var22)
++            for (int var22 = 0; var22 < var35.size(); ++var22)
+             {
+-                par3 = ((AxisAlignedBB)var34.get(var22)).calculateYOffset(this.boundingBox, par3);
++                par3 = ((AxisAlignedBB)var35.get(var22)).calculateYOffset(this.boundingBox, par3);
+             }
+ 
+             this.boundingBox.offset(0.0D, par3, 0.0D);
+@@ -707,12 +737,12 @@
+                 par1 = 0.0D;
+             }
+ 
+-            boolean var35 = this.onGround || var15 != par3 && var15 < 0.0D;
++            boolean var34 = this.onGround || var15 != par3 && var15 < 0.0D;
+             int var23;
+ 
+-            for (var23 = 0; var23 < var34.size(); ++var23)
++            for (var23 = 0; var23 < var35.size(); ++var23)
+             {
+-                par1 = ((AxisAlignedBB)var34.get(var23)).calculateXOffset(this.boundingBox, par1);
++                par1 = ((AxisAlignedBB)var35.get(var23)).calculateXOffset(this.boundingBox, par1);
+             }
+ 
+             this.boundingBox.offset(par1, 0.0D, 0.0D);
+@@ -724,9 +754,9 @@
+                 par1 = 0.0D;
+             }
+ 
+-            for (var23 = 0; var23 < var34.size(); ++var23)
++            for (var23 = 0; var23 < var35.size(); ++var23)
+             {
+-                par5 = ((AxisAlignedBB)var34.get(var23)).calculateZOffset(this.boundingBox, par5);
++                par5 = ((AxisAlignedBB)var35.get(var23)).calculateZOffset(this.boundingBox, par5);
+             }
+ 
+             this.boundingBox.offset(0.0D, 0.0D, par5);
+@@ -743,7 +773,7 @@
+             int var30;
+             double var36;
+ 
+-            if (this.stepHeight > 0.0F && var35 && (var20 || this.ySize < 0.05F) && (var13 != par1 || var17 != par5))
++            if (this.stepHeight > 0.0F && var34 && (var20 || this.ySize < 0.05F) && (var13 != par1 || var17 != par5))
+             {
+                 var36 = par1;
+                 var25 = par3;
+@@ -753,11 +783,11 @@
+                 par5 = var17;
+                 AxisAlignedBB var29 = this.boundingBox.copy();
+                 this.boundingBox.setBB(var19);
+-                var34 = this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox.addCoord(var13, par3, var17));
++                var35 = this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox.addCoord(var13, par3, var17));
+ 
+-                for (var30 = 0; var30 < var34.size(); ++var30)
++                for (var30 = 0; var30 < var35.size(); ++var30)
+                 {
+-                    par3 = ((AxisAlignedBB)var34.get(var30)).calculateYOffset(this.boundingBox, par3);
++                    par3 = ((AxisAlignedBB)var35.get(var30)).calculateYOffset(this.boundingBox, par3);
+                 }
+ 
+                 this.boundingBox.offset(0.0D, par3, 0.0D);
+@@ -769,9 +799,9 @@
+                     par1 = 0.0D;
+                 }
+ 
+-                for (var30 = 0; var30 < var34.size(); ++var30)
++                for (var30 = 0; var30 < var35.size(); ++var30)
+                 {
+-                    par1 = ((AxisAlignedBB)var34.get(var30)).calculateXOffset(this.boundingBox, par1);
++                    par1 = ((AxisAlignedBB)var35.get(var30)).calculateXOffset(this.boundingBox, par1);
+                 }
+ 
+                 this.boundingBox.offset(par1, 0.0D, 0.0D);
+@@ -783,9 +813,9 @@
+                     par1 = 0.0D;
+                 }
+ 
+-                for (var30 = 0; var30 < var34.size(); ++var30)
++                for (var30 = 0; var30 < var35.size(); ++var30)
+                 {
+-                    par5 = ((AxisAlignedBB)var34.get(var30)).calculateZOffset(this.boundingBox, par5);
++                    par5 = ((AxisAlignedBB)var35.get(var30)).calculateZOffset(this.boundingBox, par5);
+                 }
+ 
+                 this.boundingBox.offset(0.0D, 0.0D, par5);
+@@ -807,9 +837,9 @@
+                 {
+                     par3 = (double)(-this.stepHeight);
+ 
+-                    for (var30 = 0; var30 < var34.size(); ++var30)
++                    for (var30 = 0; var30 < var35.size(); ++var30)
+                     {
+-                        par3 = ((AxisAlignedBB)var34.get(var30)).calculateYOffset(this.boundingBox, par3);
++                        par3 = ((AxisAlignedBB)var35.get(var30)).calculateYOffset(this.boundingBox, par3);
+                     }
+ 
+                     this.boundingBox.offset(0.0D, par3, 0.0D);
+@@ -931,6 +961,8 @@
+             this.worldObj.theProfiler.endSection();
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Checks for block collisions, and calls the associated onBlockCollided method for the collided block.
+@@ -969,6 +1001,8 @@
+      */
+     protected void playStepSound(int par1, int par2, int par3, int par4)
+     {
++    	// FCMOD: Changed
++    	/*
+         StepSound var5 = Block.blocksList[par4].stepSound;
+ 
+         if (this.worldObj.getBlockId(par1, par2 + 1, par3) == Block.snow.blockID)
+@@ -976,6 +1010,19 @@
+             var5 = Block.snow.stepSound;
+             this.playSound(var5.getStepSound(), var5.getVolume() * 0.15F, var5.getPitch());
+         }
++        */
++        StepSound var5 = Block.blocksList[par4].GetStepSound( worldObj, par1, par2, par3 );
++        
++        int iBlockAboveID = worldObj.getBlockId( par1, par2 + 1, par3 );
++        Block blockAbove = Block.blocksList[iBlockAboveID];
++        
++        if ( blockAbove != null && blockAbove.IsGroundCover( ) )
++        {
++            var5 = blockAbove.stepSound;
++            
++            playSound( var5.getStepSound(), var5.getVolume() * 0.15F, var5.getPitch() );
++        }
++    	// END FCMOD
+         else if (!Block.blocksList[par4].blockMaterial.isLiquid())
+         {
+             this.playSound(var5.getStepSound(), var5.getVolume() * 0.15F, var5.getPitch());
+@@ -1057,7 +1104,10 @@
+      */
+     public boolean isWet()
+     {
+-        return this.inWater || this.worldObj.canLightningStrikeAt(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)) || this.worldObj.canLightningStrikeAt(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY + (double)this.height), MathHelper.floor_double(this.posZ));
++    	// FCMOD: Changed
++        //return this.inWater || this.worldObj.canLightningStrikeAt(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)) || this.worldObj.canLightningStrikeAt(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY + (double)this.height), MathHelper.floor_double(this.posZ));
++        return inWater || IsBeingRainedOn();
++        // END FCMOD
+     }
+ 
+     /**
+@@ -1480,6 +1530,12 @@
+         try
+         {
+             par1NBTTagCompound.setTag("Pos", this.newDoubleNBTList(new double[] {this.posX, this.posY + (double)this.ySize, this.posZ}));
++        	// FCMOD: Added to fix collision errors on load 
++            par1NBTTagCompound.setTag( "fcMin", newDoubleNBTList( 
++            	new double[] { boundingBox.minX, boundingBox.minY, boundingBox.minZ } ) );
++            par1NBTTagCompound.setTag( "fcMax", newDoubleNBTList(
++            	new double[] { boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ } ) );
++            // END FCMOD
+             par1NBTTagCompound.setTag("Motion", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
+             par1NBTTagCompound.setTag("Rotation", this.newFloatNBTList(new float[] {this.rotationYaw, this.rotationPitch}));
+             par1NBTTagCompound.setFloat("FallDistance", this.fallDistance);
+@@ -1515,6 +1571,8 @@
+     /**
+      * Reads the entity from NBT (calls an abstract helper method to read specialized data)
+      */
++    // FCMOD: Removed and replaced
++    /*
+     public void readFromNBT(NBTTagCompound par1NBTTagCompound)
+     {
+         try
+@@ -1571,6 +1629,8 @@
+             throw new ReportedException(var3);
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Returns the string that identifies this Entity's class
+@@ -1842,6 +1902,7 @@
+ 
+     /**
+      * Called when a player unounts an entity.
++     * FCNOTE: Call mountEntity( null ) for regular entities.  This searches area for solid ground, and is intended for the player.
+      */
+     public void unmountEntity(Entity par1Entity)
+     {
+@@ -2344,7 +2405,12 @@
+ 
+     public float func_82146_a(Explosion par1Explosion, World par2World, int par3, int par4, int par5, Block par6Block)
+     {
++    	// FCMOD: Code change
++    	/*
+         return par6Block.getExplosionResistance(this);
++        */
++        return par6Block.getExplosionResistance(this, par2World, par3, par4, par5);
++    	// END FCMOD
+     }
+ 
+     public boolean func_96091_a(Explosion par1Explosion, World par2World, int par3, int par4, int par5, int par6, float par7)
+@@ -2400,4 +2466,709 @@
+     {
+         return this.getEntityName();
+     }
++
++    // FCMOD: Added New
++    public boolean IsAffectedByMovementModifiers()
++    {
++    	return true;
+ }
++    
++    public void NotifyOfWolfHowl( Entity sourceEntity )
++    {
++    }
++    
++    protected boolean ShouldSetPositionOnLoad()
++    {
++    	return true;
++    }
++    
++    public boolean CanCollideWithEntity( Entity entity )
++    {
++    	return true;
++    }
++    
++    public boolean IsItemEntity()
++    {
++    	return false;
++    }
++    
++    public boolean CanEntityTriggerTripwire()
++    {
++    	return true;
++    }
++    
++    public AxisAlignedBB GetVisualBoundingBox()
++    {
++    	return boundingBox;    	
++    }
++    
++    public boolean IsSecondaryTargetForSquid()
++    {
++    	return false;
++    }
++    
++    public boolean GetCanBeHeadCrabbed( boolean bSquidInWater )
++    {
++    	return isEntityAlive() && riddenByEntity == null && ridingEntity == null && 
++    		IsSecondaryTargetForSquid();
++    }
++    
++    public boolean IsValidOngoingAttackTargetForSquid()
++    {
++    	return IsSecondaryTargetForSquid() && isEntityAlive();
++    }
++    
++    public void OnFlungBySquidTentacle( FCEntitySquid squid )
++    {
++    }
++    
++    public void OnHeadCrabbedBySquid( FCEntitySquid squid )
++    {
++    }
++    
++    public boolean HasHeadCrabbedSquid()
++    {
++    	return riddenByEntity != null && riddenByEntity instanceof FCEntitySquid;
++    }
++    
++    public Entity GetHeadCrabSharedAttackTarget()
++    {
++    	return null;
++    }
++    
++	public boolean IsImmuneToHeadCrabDamage()
++	{
++		return false;
++	}
++	
++    public void OnKickedByCow( FCEntityCow cow )
++	{
++    	FlingAwayFromEntity( cow, GetCowKickMovementMultiplier() );    	
++    }
++    
++    protected double GetCowKickMovementMultiplier()
++    {
++    	return 1D;
++    }
++	
++    public void FlingAwayFromEntity( Entity repulsingEntity, double dForceMultiplier )
++	{
++        if ( ridingEntity != null )
++        {
++        	mountEntity( null );
++        }
++        
++        double dVelocityX = motionX;
++        double dVelocityZ = motionZ;
++        
++		double dDeltaX = posX - repulsingEntity.posX; 
++		double dDeltaZ = posZ - repulsingEntity.posZ;
++		
++		double dFlatDistToTargetSq = dDeltaX * dDeltaX + dDeltaZ * dDeltaZ;
++
++		if ( dFlatDistToTargetSq > 0.1D )
++		{
++			double dFlatDistToTarget = MathHelper.sqrt_double( dFlatDistToTargetSq );
++			
++			dVelocityX += ( dDeltaX / dFlatDistToTarget ) * 0.5D * dForceMultiplier;
++			dVelocityZ += ( dDeltaZ / dFlatDistToTarget ) * 0.5F * dForceMultiplier;
++		}
++		
++		isAirBorne = true;
++
++        double dVelocityY = motionY + ( 0.25D * dForceMultiplier );
++        
++        dVelocityX *= ( rand.nextDouble() * 0.2D ) + 0.9;
++        dVelocityZ *= ( rand.nextDouble() * 0.2D ) + 0.9;
++        
++		motionX = FCUtilsMath.ClampDouble( dVelocityX, -1D, 1D );
++		motionY = FCUtilsMath.ClampDoubleTop( dVelocityY, 0.75D );
++		motionZ = FCUtilsMath.ClampDouble( dVelocityZ, -1D, 1D );
++    }
++    
++    public boolean DoesEntityApplyToSpawnCap()
++    {
++    	// by default entities do not apply to the spawn cap as this avoids a lot of unnecessary instanceof checks in World.CountEntitiesThatApplyToSpawnCap()
++    	// Note that this behavior is overriden in EntityLiving, which is where it really matters.
++    	
++    	return false;
++    }
++    
++	public void OutOfUpdateRangeUpdate()
++	{
++	}
++	
++	public boolean AppliesConstantForceWhenRidingBoat()
++	{
++		return false;
++	}
++	
++	public double MovementModifierWhenRidingBoat()
++	{
++		return 1.0D;
++	}
++	
++	/**
++	 * Returns true if this function has handled the possession transfer from the dead entity.  Called on server only.
++	 */
++	public boolean OnPossesedRidingEntityDeath()
++	{
++		return false;
++	}
++	
++    public boolean IsBeingRainedOn()
++    {
++        int i = MathHelper.floor_double( posX );
++        int j = MathHelper.floor_double( boundingBox.maxY );
++        int k = MathHelper.floor_double( posZ );
++    	
++    	return worldObj.IsRainingAtPos( i, j, k );
++    }
++    
++    public boolean DoesEntityApplyToSquidPossessionCap()
++    {
++    	return false;
++    }
++    
++    public boolean IsValidZombieSecondaryTarget( EntityZombie zombie )
++    {
++    	return false;
++    }
++
++    public boolean AttractsLightning()
++    {
++    	return false;
++    }
++    
++    public void OnStruckByLightning( FCEntityLightningBolt boltEntity )
++    {
++        dealFireDamage( 7 );
++        
++        fire++;
++
++        if ( fire == 0 )
++        {
++            setFire( 8 );
++        }
++
++        if ( !isEntityInvulnerable() )
++        {
++        	FlingAwayFromEntity( boltEntity, 2D );
++        }
++    }
++    
++    public void moveEntity( double dMoveX, double dMoveY, double dMoveZ )
++    {
++    	// replacement for vanilla function that cleans up the code for readability while retaining
++    	// same functionality.  Modifications to vanilla functionality listed as FCMOD
++    	
++    	// Note: I've elminated all references to field_70135_K as this seems to be a lingering
++    	// debug value that serves no actual purpose
++    	
++        if ( noClip )
++        {
++            boundingBox.offset( dMoveX, dMoveY, dMoveZ );
++            
++            posX = ( boundingBox.minX + boundingBox.maxX ) / 2D;
++            posY = boundingBox.minY + (double)yOffset - (double)ySize;
++            posZ = ( boundingBox.minZ + boundingBox.maxZ ) / 2D;
++            
++            return;
++        }
++        
++        worldObj.theProfiler.startSection("move");
++        ySize *= 0.4F; // This is actually the position offset due to player sneaking/crouching 
++        
++        double dOldPosX = posX;
++        double dOldPosY = posY;
++        double dOldPosZ = posZ;
++
++        AxisAlignedBB oldBoundingBox = boundingBox.copy();
++        
++        if ( isInWeb )
++        {
++            isInWeb = false;
++            
++            dMoveX *= 0.25D;
++            dMoveY *= 0.05000000074505806D;
++            dMoveZ *= 0.25D;
++            
++            motionX = 0.0D;
++            motionY = 0.0D;
++            motionZ = 0.0D;
++        }
++
++        boolean bIsSneakingPlayer = onGround && isSneaking() && this instanceof EntityPlayer;
++
++        if ( bIsSneakingPlayer )
++        {
++            double dStepSize = 0.05D;
++
++            while ( dMoveX != 0D && worldObj.getCollidingBoundingBoxes( this, 
++        		boundingBox.getOffsetBoundingBox( dMoveX, -1D, 0D ) ).isEmpty() )
++            {
++                if (dMoveX < dStepSize && dMoveX >= -dStepSize)
++                {
++                    dMoveX = 0D;
++                }
++                else if ( dMoveX > 0D )
++                {
++                    dMoveX -= dStepSize;
++                }
++                else
++                {
++                    dMoveX += dStepSize;
++                }
++            }
++
++            while ( dMoveZ != 0D && worldObj.getCollidingBoundingBoxes( this, 
++            	boundingBox.getOffsetBoundingBox( 0D, -1D, dMoveZ ) ).isEmpty() )
++            {
++                if ( dMoveZ < dStepSize && dMoveZ >= -dStepSize )
++                {
++                    dMoveZ = 0D;
++                }
++                else if ( dMoveZ > 0D )
++                {
++                    dMoveZ -= dStepSize;
++                }
++                else
++                {
++                    dMoveZ += dStepSize;
++                }
++            }
++
++            // FCNOTE: the dMoveX != 0D && dMoveZ != 0D below looks a bit weird,
++            // but it's valid as single axis collisions have already been checked above
++            while ( dMoveX != 0D && dMoveZ != 0D && worldObj.getCollidingBoundingBoxes( this, 
++            	boundingBox.getOffsetBoundingBox( dMoveX, -1D, dMoveZ ) ).isEmpty() )
++            {
++                if ( dMoveX < dStepSize && dMoveX >= -dStepSize )
++                {
++                    dMoveX = 0D;
++                }
++                else if ( dMoveX > 0D )
++                {
++                    dMoveX -= dStepSize;
++                }
++                else
++                {
++                    dMoveX += dStepSize;
++                }
++
++                if ( dMoveZ < dStepSize && dMoveZ >= -dStepSize )
++                {
++                    dMoveZ = 0D;
++                }
++                else if ( dMoveZ > 0D )
++                {
++                    dMoveZ -= dStepSize;
++                }
++                else
++                {
++                    dMoveZ += dStepSize;
++                }
++            }
++        }
++
++        double dUnboundedMoveX = dMoveX;
++        double dUnboundedMoveY = dMoveY;
++        double dUnboundedMoveZ = dMoveZ;
++        
++        // addCoord() below returns a new box expanded in the direction of the point
++        
++        // FCMOD: Changed the following bit to calculate one collision list that takes steps
++        // into account right from the start, instead of doing this whole thing a second time 
++        // when steps are checked for later
++        //List<AxisAlignedBB> moveRangeCollisionList = worldObj.getCollidingBoundingBoxes( this, 
++        	//boundingBox.addCoord( dMoveX, dMoveY, dMoveZ ) );
++        AxisAlignedBB moveRangeBoundingBox = boundingBox.addCoord( dMoveX, dMoveY, dMoveZ );
++        
++        if ( stepHeight > dMoveY )
++        {
++        	moveRangeBoundingBox.maxY = boundingBox.maxY + stepHeight;
++        }
++        
++        List<AxisAlignedBB> moveRangeCollisionList = worldObj.getCollidingBoundingBoxes( this, 
++        	moveRangeBoundingBox );
++        // END FCMOD
++
++        for ( int iTempIndex = 0; iTempIndex < moveRangeCollisionList.size(); iTempIndex++ )
++        {
++        	// Keep reducing the magnitude of the y movement until it is within the vertical gap
++        	// between the original position and any potentially colliding blocks
++        	
++            dMoveY = moveRangeCollisionList.get( iTempIndex ).calculateYOffset( 
++            	boundingBox, dMoveY );
++        }
++
++        boundingBox.offset( 0D, dMoveY, 0D );
++
++        boolean bVerticallySupported = onGround || 
++        	( dUnboundedMoveY != dMoveY && dUnboundedMoveY < 0D );
++        
++        for ( int iTempIndex = 0; iTempIndex < moveRangeCollisionList.size(); iTempIndex++ )
++        {        	
++            dMoveX = moveRangeCollisionList.get( iTempIndex ).calculateXOffset( 
++            	boundingBox, dMoveX );
++        }
++
++        boundingBox.offset( dMoveX, 0D, 0D );
++
++        for ( int iTempIndex = 0; iTempIndex < moveRangeCollisionList.size(); iTempIndex++ )
++        {
++            dMoveZ = moveRangeCollisionList.get( iTempIndex ).calculateZOffset(
++            	boundingBox, dMoveZ );
++        }
++
++        boundingBox.offset( 0D, 0D, dMoveZ );
++        
++        if ( stepHeight > 0F && bVerticallySupported && 
++        	( bIsSneakingPlayer || ySize < 0.05F ) && 
++        	( dUnboundedMoveX != dMoveX || dUnboundedMoveZ != dMoveZ ) )
++        {
++            double dBoundedMoveX = dMoveX;
++            double dBoundedMoveY = dMoveY;
++            double dBoundedMoveZ = dMoveZ;
++            
++            dMoveX = dUnboundedMoveX;
++            dMoveY = stepHeight;
++            dMoveZ = dUnboundedMoveZ;
++            
++            AxisAlignedBB dBoundedMoveBox = boundingBox.copy();
++            
++            boundingBox.setBB( oldBoundingBox );
++            
++            // FCMOD: Removed to use precomputed collision list
++            //moveRangeCollisionList = worldObj.getCollidingBoundingBoxes( this, 
++            	//boundingBox.addCoord( dUnboundedMoveX, dMoveY, dUnboundedMoveZ ) );
++            // END FCMOD
++
++            for ( int iTempIndex = 0; iTempIndex < moveRangeCollisionList.size(); iTempIndex++ )
++            {
++                dMoveY = moveRangeCollisionList.get( iTempIndex ).calculateYOffset(
++                	boundingBox, dMoveY );
++            }
++
++            boundingBox.offset( 0D, dMoveY, 0D );
++
++            for ( int iTempIndex = 0; iTempIndex < moveRangeCollisionList.size(); iTempIndex++ )
++            {
++                dMoveX = moveRangeCollisionList.get( iTempIndex ).calculateXOffset(
++                	boundingBox, dMoveX );
++            }
++
++            boundingBox.offset( dMoveX, 0D, 0D );
++
++            for ( int iTempIndex = 0; iTempIndex < moveRangeCollisionList.size(); iTempIndex++ )
++            {
++                dMoveZ = moveRangeCollisionList.get( iTempIndex ).calculateZOffset(
++                	boundingBox, dMoveZ );
++            }
++
++            boundingBox.offset( 0D, 0D, dMoveZ );
++
++            // the following portion drops the entity downward after stepping up, to find
++            // the surface it should be resting on
++
++            if ( dMoveY > 0D )
++            {
++	            // FCMOD: Changed so that the entity doesn't end up descending further than it 
++            	// climbed fixing a bug with mobs falling through slabs [MC-72868]
++	            //dMoveY = -stepHeight;
++	            dMoveY = -dMoveY;
++	
++	            for ( int iTempIndex = 0; iTempIndex < moveRangeCollisionList.size(); iTempIndex++ )
++	            {
++	                dMoveY = moveRangeCollisionList.get( iTempIndex ).calculateYOffset(
++	                	boundingBox, dMoveY );
++	            }
++
++	            boundingBox.offset( 0D, dMoveY, 0D );
++            }
++
++            if ( dBoundedMoveX * dBoundedMoveX + dBoundedMoveZ * dBoundedMoveZ >= 
++            	dMoveX * dMoveX + dMoveZ * dMoveZ )
++            {
++                dMoveX = dBoundedMoveX;
++                dMoveY = dBoundedMoveY;
++                dMoveZ = dBoundedMoveZ;
++                
++                boundingBox.setBB(dBoundedMoveBox);
++            }
++        }
++
++        worldObj.theProfiler.endSection();
++        
++        worldObj.theProfiler.startSection("rest");
++        
++        posX = ( boundingBox.minX + boundingBox.maxX ) / 2D;
++        posY = boundingBox.minY + yOffset - ySize;
++        posZ = ( boundingBox.minZ + boundingBox.maxZ ) / 2D;
++        
++        isCollidedHorizontally = dUnboundedMoveX != dMoveX || dUnboundedMoveZ != dMoveZ;
++        isCollidedVertically = dUnboundedMoveY != dMoveY;        
++        onGround = dUnboundedMoveY != dMoveY && dUnboundedMoveY < 0.0D;
++        
++        isCollided = isCollidedHorizontally || isCollidedVertically;
++        
++        updateFallState( dMoveY, onGround );
++
++        if ( dUnboundedMoveX != dMoveX )
++        {
++            motionX = 0D;
++        }
++
++        if ( dUnboundedMoveY != dMoveY )
++        {
++            motionY = 0D;
++        }
++
++        if ( dUnboundedMoveZ != dMoveZ )
++        {
++            motionZ = 0D;
++        }
++
++        double dDeltaX = posX - dOldPosX;
++        double dDeltaY = posY - dOldPosY;
++        double dDeltaZ = posZ - dOldPosZ;
++
++        if ( canTriggerWalking() && !bIsSneakingPlayer && ridingEntity == null )
++        {
++            int iGroundI = MathHelper.floor_double( posX );
++            // FCMOD: Changed to refine step sounds
++            //int iGroundJ = MathHelper.floor_double( posY - 0.20000000298023224D - yOffset );
++            int iGroundJ = MathHelper.floor_double( posY - 0.03D - yOffset );
++            // END FCMOD
++            int iGroundK = MathHelper.floor_double( posZ );
++            
++            int iGroundBlockID = worldObj.getBlockId(iGroundI, iGroundJ, iGroundK);
++            
++            // FCMOD: Added
++            int iTempY = iGroundJ;
++            // END FCMOD
++
++            if ( iGroundBlockID == 0 )
++            {
++                int iGroundRenderType = worldObj.blockGetRenderType( iGroundI, iGroundJ - 1, 
++                	iGroundK );
++
++                if ( iGroundRenderType == 11 || iGroundRenderType == 32 || 
++                	iGroundRenderType == 21 )
++                {
++                    iGroundBlockID = worldObj.getBlockId( iGroundI, iGroundJ - 1, iGroundK );
++                    // FCMOD: Added
++                    iTempY = iGroundJ - 1;
++                    // END FCMOD
++                }
++            }
++
++            // FCMOD: Changed
++            /*
++            if (var32 != Block.ladder.blockID)
++            {
++                var25 = 0.0D;
++            }
++            */
++            Block inBlock = Block.blocksList[iGroundBlockID];
++            
++            if ( inBlock == null || !inBlock.IsBlockClimbable( worldObj, iGroundI, iTempY, iGroundK ) )
++            {
++                dDeltaY = 0D;
++            }                
++            // END FCMOD
++
++            distanceWalkedModified = distanceWalkedModified + MathHelper.sqrt_double(
++            	dDeltaX * dDeltaX + dDeltaZ * dDeltaZ ) * 0.6F;
++            
++            distanceWalkedOnStepModified = distanceWalkedOnStepModified + MathHelper.sqrt_double( 
++            	dDeltaX * dDeltaX + dDeltaY * dDeltaY + dDeltaZ * dDeltaZ ) * 0.6F;
++
++            if ( distanceWalkedOnStepModified > nextStepDistance && iGroundBlockID > 0 )
++            {
++                nextStepDistance = (int)distanceWalkedOnStepModified + 1;
++
++                if ( isInWater() )
++                {
++                    float fSwimSoundVolume = MathHelper.sqrt_double(
++                    	motionX * motionX * 0.20000000298023224D + motionY * motionY + 
++                    	motionZ * motionZ * 0.20000000298023224D ) * 0.35F;
++
++                    if ( fSwimSoundVolume > 1F )
++                    {
++                        fSwimSoundVolume = 1F;
++                    }
++
++                    playSound( "liquid.swim", fSwimSoundVolume, 
++                    	1F + ( rand.nextFloat() - rand.nextFloat() ) * 0.4F );
++                }
++
++                playStepSound( iGroundI, iGroundJ, iGroundK, iGroundBlockID );
++                
++                Block.blocksList[iGroundBlockID].onEntityWalking( worldObj, 
++                	iGroundI, iGroundJ, iGroundK, this );
++            }
++        }
++
++        doBlockCollisions(); // notifies blocks of intersections, doesn't move entity
++        
++        boolean bWet = isWet();
++
++        // FCMOD: Changed
++        //if ( worldObj.isBoundingBoxBurning( boundingBox.contract( 0.001D, 0.001D, 0.001D ) ) )
++        if ( worldObj.isBoundingBoxBurning( this ) )
++    	// END FCMOD
++        {
++            dealFireDamage( 1 );
++
++            if ( !bWet )
++            {
++                fire++;
++
++                if ( fire == 0 )
++                {
++                    setFire( 8 );
++                }
++            }
++        }
++        else if ( fire <= 0 )
++        {
++            fire = -fireResistance;
++        }
++
++        if ( bWet && fire > 0 )
++        {
++            playSound( "random.fizz", 0.7F, 1.6F + ( rand.nextFloat() - 
++            	rand.nextFloat() ) * 0.4F );
++            
++            fire = -fireResistance;
++        }
++
++        worldObj.theProfiler.endSection();
++    }
++    
++    public void readFromNBT( NBTTagCompound tag )
++    {
++        try
++        {
++        	boolean bHasBoundingData = false;
++        	
++    		NBTTagList posTag = tag.getTagList( "Pos" );
++    		
++    		prevPosX = lastTickPosX = posX = ( (NBTTagDouble)posTag.tagAt( 0 ) ).data;
++    		prevPosY = lastTickPosY = posY = ( (NBTTagDouble)posTag.tagAt( 1 ) ).data;
++    		prevPosZ = lastTickPosZ = posZ = ( (NBTTagDouble)posTag.tagAt( 2 ) ).data;
++        	
++        	if ( tag.hasKey( "fcMin" ) )
++        	{
++        		bHasBoundingData = true; 
++        			
++        		// fix for entities getting stuck in blocks on load
++        		
++        		NBTTagList minTag = tag.getTagList( "fcMin" );
++        		
++                double dMinX = ( (NBTTagDouble )minTag.tagAt( 0 ) ).data;
++                double dMinY = ( (NBTTagDouble )minTag.tagAt( 1 ) ).data;
++                double dMinZ = ( (NBTTagDouble )minTag.tagAt( 2 ) ).data;                
++	            
++        		NBTTagList maxTag = tag.getTagList( "fcMax" );
++        		
++                double dMaxX = ( (NBTTagDouble )maxTag.tagAt( 0 ) ).data;
++                double dMaxY = ( (NBTTagDouble )maxTag.tagAt( 1 ) ).data;
++                double dMaxZ = ( (NBTTagDouble )maxTag.tagAt( 2 ) ).data;
++                
++                boundingBox.setBounds( dMinX, dMinY, dMinZ, dMaxX, dMaxY, dMaxZ );
++        	}
++        	else
++        	{   
++                setPosition( posX, posY, posZ );        		
++        	}
++        	
++            NBTTagList motionTag = tag.getTagList("Motion");
++            
++            motionX = ((NBTTagDouble)motionTag.tagAt(0)).data;
++            motionY = ((NBTTagDouble)motionTag.tagAt(1)).data;
++            motionZ = ((NBTTagDouble)motionTag.tagAt(2)).data;
++
++            if (Math.abs(this.motionX) > 10.0D)
++            {
++                this.motionX = 0.0D;
++            }
++
++            if (Math.abs(this.motionY) > 10.0D)
++            {
++                this.motionY = 0.0D;
++            }
++
++            if (Math.abs(this.motionZ) > 10.0D)
++            {
++                this.motionZ = 0.0D;
++            }
++
++            NBTTagList rotationTag = tag.getTagList("Rotation");
++            
++            this.prevRotationYaw = this.rotationYaw = ((NBTTagFloat)rotationTag.tagAt(0)).data;
++            this.prevRotationPitch = this.rotationPitch = ((NBTTagFloat)rotationTag.tagAt(1)).data;
++            
++            this.fallDistance = tag.getFloat("FallDistance");
++            this.fire = tag.getShort("Fire");
++            this.setAir(tag.getShort("Air"));
++            this.onGround = tag.getBoolean("OnGround");
++            this.dimension = tag.getInteger("Dimension");
++            this.invulnerable = tag.getBoolean("Invulnerable");
++            this.timeUntilPortal = tag.getInteger("PortalCooldown");
++
++            if (tag.hasKey("UUIDMost") && tag.hasKey("UUIDLeast"))
++            {
++                this.entityUniqueID = new UUID(tag.getLong("UUIDMost"), tag.getLong("UUIDLeast"));
++            }
++
++            this.setRotation(this.rotationYaw, this.rotationPitch);
++            
++            readEntityFromNBT(tag);
++            
++            if ( !bHasBoundingData && ShouldSetPositionOnLoad() )
++            {
++            	// added to duplicate 1.6 fix for animals suffocating and escaping.
++            	// I believe this was due to stuff like child animals modifying their dimensions
++            	// during init, but is not required with the changes made to save full bounding
++            	// boxes
++            	
++                setPosition( posX, posY, posZ);
++            }
++        }
++        catch (Throwable var5)
++        {
++            CrashReport var3 = CrashReport.makeCrashReport(var5, "Loading entity NBT");
++            CrashReportCategory var4 = var3.makeCategory("Entity being loaded");
++            this.func_85029_a(var4);
++            throw new ReportedException(var3);
++        }
++    }
++
++    /**
++     * Called when clients receive a packed from the server indicating that they should
++     * mount an entity as part of fix for MC-1291.
++     */
++    public void MountEntityRemote( Entity entityToMount )
++    {
++    	mountEntity( entityToMount );
++    }
++    
++    public void FlagAllWatchedObjectsDirty()
++    {
++    	List watchList = dataWatcher.getAllWatched();
++    	
++    	if ( watchList != null )
++    	{
++	        Iterator watchIterator = watchList.iterator();
++	
++	        while ( watchIterator.hasNext() )
++	        {
++	            WatchableObject tempWatchable = (WatchableObject)watchIterator.next();
++	            dataWatcher.setObjectWatched( tempWatchable.getDataValueId() );
++	        }
++    	}
++    }    
++    // END FCMOD
++}

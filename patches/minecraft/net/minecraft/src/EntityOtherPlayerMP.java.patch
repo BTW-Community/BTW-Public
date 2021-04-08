@@ -1,0 +1,41 @@
+--- a/minecraft/net/minecraft/src/EntityOtherPlayerMP.java
++++ b/minecraft/net/minecraft/src/EntityOtherPlayerMP.java
+@@ -21,7 +21,10 @@
+ 
+         if (par2Str != null && par2Str.length() > 0)
+         {
+-            this.skinUrl = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par2Str) + ".png";
++        	// FCMOD: Changed, client only        	
++            //this.skinUrl = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par2Str) + ".png";
++            this.skinUrl = FCBetterThanWolves.fcPlayerSkinURL + StringUtils.stripControlCodes(par2Str) + ".png";
++            // END FCMOD
+         }
+ 
+         this.noClip = true;
+@@ -61,7 +64,10 @@
+ 
+     public void updateCloak()
+     {
+-        this.cloakUrl = "http://skins.minecraft.net/MinecraftCloaks/" + StringUtils.stripControlCodes(this.username) + ".png";
++    	// FCMOD: Changed, client only        	
++        //this.cloakUrl = "http://skins.minecraft.net/MinecraftCloaks/" + StringUtils.stripControlCodes(this.username) + ".png";
++        this.cloakUrl = FCBetterThanWolves.fcPlayerCloakURL + StringUtils.stripControlCodes(this.username) + ".png";
++        // END FCMOD
+     }
+ 
+     /**
+@@ -197,4 +203,14 @@
+     {
+         return new ChunkCoordinates(MathHelper.floor_double(this.posX + 0.5D), MathHelper.floor_double(this.posY + 0.5D), MathHelper.floor_double(this.posZ + 0.5D));
+     }
++    
++    // FCMOD: Code added (client only)
++    @Override
++    public double getMountedYOffset()
++    {
++    	// need this to be different from regular players as for some reason their offset varies
++    	
++        return (double)height * 0.93D;
+ }
++    // END FCMOD
++}

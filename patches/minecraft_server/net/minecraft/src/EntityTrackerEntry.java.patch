@@ -1,0 +1,124 @@
+--- a/minecraft_server/net/minecraft/src/EntityTrackerEntry.java
++++ b/minecraft_server/net/minecraft/src/EntityTrackerEntry.java
+@@ -105,7 +105,12 @@
+             if (var24 != null && var24.getItem() instanceof ItemMap)
+             {
+                 MapData var26 = Item.map.getMapData(var24, this.trackedEntity.worldObj);
++                // FCMOD: Code change to send map data to all visible players rather than tracked ones
++                /*
+                 Iterator var29 = par1List.iterator();
++                */
++                Iterator var29 = trackingPlayers.iterator();
++                // END FCMOD
+ 
+                 while (var29.hasNext())
+                 {
+@@ -115,21 +120,28 @@
+ 
+                     if (var31.playerNetServerHandler.getNumChunkDataPackets() <= 5)
+                     {
++                    	// FCMOD: Code added so that players only receive data on their own position
++                    	var26.func_82568_a( var30 );
++                    	// END FCMOD
++
+                         Packet var32 = Item.map.getUpdatePacket(var24, this.trackedEntity.worldObj, var31);
+ 
+                         if (var32 != null)
+                         {
+                             var31.playerNetServerHandler.sendPacket(var32);
+                         }
++                    	// FCMOD: Code added so that players only receive data on their own position
++                    	var26.playersVisibleOnMap.clear();
++                    	// END FCMOD
+                     }
+                 }
+             }
+ 
+-            DataWatcher var27 = this.trackedEntity.getDataWatcher();
++            DataWatcher var28 = this.trackedEntity.getDataWatcher();
+ 
+-            if (var27.hasObjectChanged())
++            if (var28.hasObjectChanged())
+             {
+-                this.sendPacketToTrackedPlayersAndTrackedEntity(new Packet40EntityMetadata(this.trackedEntity.entityId, var27, false));
++                this.sendPacketToTrackedPlayersAndTrackedEntity(new Packet40EntityMetadata(this.trackedEntity.entityId, var28, false));
+             }
+         }
+         else if (this.updateCounter % this.updateFrequency == 0 || this.trackedEntity.isAirBorne || this.trackedEntity.getDataWatcher().hasObjectChanged())
+@@ -236,11 +248,11 @@
+                 this.encodedPosX = this.trackedEntity.myEntitySize.multiplyBy32AndRound(this.trackedEntity.posX);
+                 this.encodedPosY = MathHelper.floor_double(this.trackedEntity.posY * 32.0D);
+                 this.encodedPosZ = this.trackedEntity.myEntitySize.multiplyBy32AndRound(this.trackedEntity.posZ);
+-                DataWatcher var28 = this.trackedEntity.getDataWatcher();
++                DataWatcher var27 = this.trackedEntity.getDataWatcher();
+ 
+-                if (var28.hasObjectChanged())
++                if (var27.hasObjectChanged())
+                 {
+-                    this.sendPacketToTrackedPlayersAndTrackedEntity(new Packet40EntityMetadata(this.trackedEntity.entityId, var28, false));
++                    this.sendPacketToTrackedPlayersAndTrackedEntity(new Packet40EntityMetadata(this.trackedEntity.entityId, var27, false));
+                 }
+ 
+                 this.ridingEntity = true;
+@@ -356,9 +368,9 @@
+ 
+                     if (this.trackedEntity instanceof EntityPlayer)
+                     {
+-                        EntityPlayer var10 = (EntityPlayer)this.trackedEntity;
++                        EntityPlayer var11 = (EntityPlayer)this.trackedEntity;
+ 
+-                        if (var10.isPlayerSleeping())
++                        if (var11.isPlayerSleeping())
+                         {
+                             par1EntityPlayerMP.playerNetServerHandler.sendPacket(new Packet17Sleep(this.trackedEntity, 0, MathHelper.floor_double(this.trackedEntity.posX), MathHelper.floor_double(this.trackedEntity.posY), MathHelper.floor_double(this.trackedEntity.posZ)));
+                         }
+@@ -366,8 +378,8 @@
+ 
+                     if (this.trackedEntity instanceof EntityLiving)
+                     {
+-                        EntityLiving var11 = (EntityLiving)this.trackedEntity;
+-                        Iterator var12 = var11.getActivePotionEffects().iterator();
++                        EntityLiving var10 = (EntityLiving)this.trackedEntity;
++                        Iterator var12 = var10.getActivePotionEffects().iterator();
+ 
+                         while (var12.hasNext())
+                         {
+@@ -387,7 +399,15 @@
+ 
+     private boolean isPlayerWatchingThisChunk(EntityPlayerMP par1EntityPlayerMP)
+     {
+-        return par1EntityPlayerMP.getServerForPlayer().getPlayerManager().isPlayerWatchingChunk(par1EntityPlayerMP, this.trackedEntity.chunkCoordX, this.trackedEntity.chunkCoordZ);
++    	// FCMOD: Changed    	
++        //return par1EntityPlayerMP.getServerForPlayer().getPlayerManager().isPlayerWatchingChunk(par1EntityPlayerMP, this.trackedEntity.chunkCoordX, this.trackedEntity.chunkCoordZ);
++        return par1EntityPlayerMP.getServerForPlayer().
++        	GetChunkTracker().IsChunkWatchedByPlayerAndSentToClient(
++        	// client 
++        	//par1EntityPlayerMP, this.myEntity.chunkCoordX, this.myEntity.chunkCoordZ);
++            // server
++    		par1EntityPlayerMP, this.trackedEntity.chunkCoordX, this.trackedEntity.chunkCoordZ);
++        // END FCMOD
+     }
+ 
+     public void updatePlayerEntities(List par1List)
+@@ -405,6 +425,21 @@
+             this.trackedEntity.worldObj.getWorldLogAgent().func_98236_b("Fetching addPacket for removed entity");
+         }
+ 
++        // FCMOD: Code added.  This is at the top of all the following code due to some mod entities inheriting from the ones below
++        // client
++        //if ( myEntity instanceof FCIEntityPacketHandler )
++    	// server
++        if ( trackedEntity instanceof FCIEntityPacketHandler )        	
++        {
++        	// client
++        	//FCIEntityPacketHandler packetHandler = (FCIEntityPacketHandler)myEntity;
++        	// server
++        	FCIEntityPacketHandler packetHandler = (FCIEntityPacketHandler)trackedEntity;
++        	
++    		return packetHandler.GetSpawnPacketForThisEntity();
++        }
++        // END FCMOD
++        
+         if (this.trackedEntity instanceof EntityItem)
+         {
+             return new Packet23VehicleSpawn(this.trackedEntity, 2, 1);

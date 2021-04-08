@@ -1,0 +1,8 @@
+--- a/minecraft_server/net/minecraft/src/EntitySlime.java
++++ b/minecraft_server/net/minecraft/src/EntitySlime.java
+@@ -1,3 +1,5 @@
++// FCMOD: Class changes deprecated 09/24/2018
++
+ package net.minecraft.src;
+ 
+ public class EntitySlime extends EntityLiving implements IMob

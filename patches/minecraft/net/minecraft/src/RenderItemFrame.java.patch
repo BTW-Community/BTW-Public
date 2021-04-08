@@ -1,0 +1,34 @@
+--- a/minecraft/net/minecraft/src/RenderItemFrame.java
++++ b/minecraft/net/minecraft/src/RenderItemFrame.java
+@@ -124,6 +124,8 @@
+             {
+                 TextureCompass var9;
+ 
++                // FCMOD: Removed
++                /*
+                 if (var3.getEntityItem().getItem() == Item.compass)
+                 {
+                     var9 = TextureCompass.compassTexture;
+@@ -135,16 +137,22 @@
+                     var9.currentAngle = var10;
+                     var9.angleDelta = var7;
+                 }
++                */
++                // END FCMOD
+ 
+                 RenderItem.renderInFrame = true;
+                 RenderManager.instance.renderEntityWithPosYaw(var3, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F);
+                 RenderItem.renderInFrame = false;
+ 
++                // FCMOD: Removed
++                /*
+                 if (var3.getEntityItem().getItem() == Item.compass)
+                 {
+                     var9 = TextureCompass.compassTexture;
+                     var9.updateAnimation();
+                 }
++                */
++                // END FCMOD
+             }
+ 
+             GL11.glPopMatrix();

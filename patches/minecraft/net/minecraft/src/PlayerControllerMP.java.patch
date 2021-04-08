@@ -1,0 +1,191 @@
+--- a/minecraft/net/minecraft/src/PlayerControllerMP.java
++++ b/minecraft/net/minecraft/src/PlayerControllerMP.java
+@@ -111,6 +111,12 @@
+         }
+         else
+         {
++            // FCMOD: Code added (client only)
++            if ( blockHitDelay > 0 && !currentGameType.isCreative() )
++            {
++            	return false;
++            }
++            // END FCMOD
+             WorldClient var5 = this.mc.theWorld;
+             Block var6 = Block.blocksList[var5.getBlockId(par1, par2, par3)];
+ 
+@@ -122,13 +128,37 @@
+             {
+                 var5.playAuxSFX(2001, par1, par2, par3, var6.blockID + (var5.getBlockMetadata(par1, par2, par3) << 12));
+                 int var7 = var5.getBlockMetadata(par1, par2, par3);
+-                boolean var8 = var5.setBlockToAir(par1, par2, par3);
++                // FCMOD: Changed (client only)
++                //boolean var8 = var5.setBlockToAir(par1, par2, par3);
++                boolean var8 = false;
+ 
+-                if (var8)
++                if ( !currentGameType.isCreative() && 
++                	!mc.thePlayer.canHarvestBlock( var6, par1, par2, par3 ) &&
++                	var6.CanConvertBlock( mc.thePlayer.getCurrentEquippedItem(), var5, par1, par2, par3 ) )
+                 {
++                    var8 = var6.ConvertBlock( mc.thePlayer.getCurrentEquippedItem(), var5, par1, par2, par3, par4 );
++            	}
++                
++                if ( !var8 )
++                {
++                	var8 = var5.setBlockToAir(par1, par2, par3);
++                	
++                	if ( var8 )
++                	{
+                     var6.onBlockDestroyedByPlayer(var5, par1, par2, par3, var7);
+                 }
++                }
++                // END FCMOD
+ 
++                if (var8)
++                {
++                    // FCMOD: Changed  (client only)
++                    //var6.onBlockDestroyedByPlayer(var5, par1, par2, par3, var7);
++                    OnBlockBrokenClientSide( var6.blockID, par1, par2, par3, var7 );
++                    blockHitDelay = 5;
++                    // END FCMOD
++                }
++
+                 this.currentBlockY = -1;
+ 
+                 if (!this.currentGameType.isCreative())
+@@ -156,6 +186,15 @@
+      */
+     public void clickBlock(int par1, int par2, int par3, int par4)
+     {
++    	// FCMOD: Added (client only)
++    	if ( mc.thePlayer.isUsingItem() )
++    	{
++    		// don't allow block harvesting when block with a sword, drawing a bow, eating food, etc.
++    		
++    		return;
++    	}
++    	// END FCMOD
++    	
+         if (!this.currentGameType.isAdventure() || this.mc.thePlayer.canCurrentToolHarvestBlock(par1, par2, par3))
+         {
+             if (this.currentGameType.isCreative())
+@@ -168,10 +207,17 @@
+             {
+                 if (this.isHittingBlock)
+                 {
++                	// FCNOTE: Packet14BlockDig with a status of 1 (first param) cancels block harvesting, I assume here to cancel
++                	// the previous block harvest before starting a new one
+                     this.netClientHandler.addToSendQueue(new Packet14BlockDig(1, this.currentBlockX, this.currentBlockY, this.currentblockZ, par4));
+                 }
+ 
+-                this.netClientHandler.addToSendQueue(new Packet14BlockDig(0, par1, par2, par3, par4));
++                // FCMOD: Changed (client only) so that the client and server are updated to harvest at the same speed
++                //this.netClientHandler.addToSendQueue(new Packet14BlockDig(0, par1, par2, par3, par4));
++            	float fMiningSpeedModifier = mc.thePlayer.UpdateMiningSpeedModifier();
++            	
++                netClientHandler.addToSendQueue( new FCPacket166StartBlockHarvest( par1, par2, par3, par4, fMiningSpeedModifier ) );
++            	// END FCMOD
+                 int var5 = this.mc.theWorld.getBlockId(par1, par2, par3);
+ 
+                 if (var5 > 0 && this.curBlockDamageMP == 0.0F)
+@@ -222,7 +268,11 @@
+ 
+         if (this.blockHitDelay > 0)
+         {
++        	// FCMOD: Code removed to correct insta-harvest (client only)
++        	/*
+             --this.blockHitDelay;
++            */
++        	// END FCMOD
+         }
+         else if (this.currentGameType.isCreative())
+         {
+@@ -232,6 +282,12 @@
+         }
+         else
+         {
++        	if ( mc.thePlayer.isUsingItem() )
++        	{
++        		// don't allow block harvesting when block with a sword, drawing a bow, eating food, etc.
++        		
++        		return;
++        	}
+             if (this.sameToolAndBlock(par1, par2, par3))
+             {
+                 int var5 = this.mc.theWorld.getBlockId(par1, par2, par3);
+@@ -281,6 +337,12 @@
+ 
+     public void updateController()
+     {
++        // FCMOD: Code added to prevent insta-harvest
++    	if ( blockHitDelay > 0 )
++    	{
++    		blockHitDelay--;
++    	}
++    	// END FCMOD
+         this.syncCurrentPlayItem();
+         this.mc.sndManager.playRandomMusicIfReady();
+     }
+@@ -334,6 +396,8 @@
+             }
+         }
+ 
++        // FCMOD: Changed (client only)
++        /*
+         if (!var12 && par3ItemStack != null && par3ItemStack.getItem() instanceof ItemBlock)
+         {
+             ItemBlock var16 = (ItemBlock)par3ItemStack.getItem();
+@@ -343,6 +407,14 @@
+                 return false;
+             }
+         }
++        */        
++        if ( !var12 && par3ItemStack != null && 
++        	!par3ItemStack.getItem().CanItemBeUsedByPlayer( par2World, 
++    		par4, par5, par6, par7, par1EntityPlayer, par3ItemStack ) )
++        {
++        	return false;
++        }
++        // END FCMOD
+ 
+         this.netClientHandler.addToSendQueue(new Packet15Place(par4, par5, par6, par7, par1EntityPlayer.inventory.getCurrentItem(), var9, var10, var11));
+ 
+@@ -418,6 +490,7 @@
+         return par1EntityPlayer.interactWith(par2Entity);
+     }
+ 
++    // FCNOTE: par1 is windowId, par2 is slotnumber, par3 is hotkey num, par4 2 when this is called by checkHotbarKeys()
+     public ItemStack windowClick(int par1, int par2, int par3, int par4, EntityPlayer par5EntityPlayer)
+     {
+         short var6 = par5EntityPlayer.openContainer.getNextTransactionID(par5EntityPlayer.inventory);
+@@ -489,4 +562,30 @@
+     {
+         return this.currentGameType.isCreative();
+     }
++    
++    // FCMOD: Added (client only)
++    private void OnBlockBrokenClientSide( int iBlockID, int iBlockI, int iBlockJ, int iBlockK, int iBlockMetadata )
++    {
++    	float fExhaustionConsumed = 1F;
++    	
++	    ItemStack currentItemStack = mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem];
++	    
++	    if ( currentItemStack != null )
++	    {
++	    	fExhaustionConsumed = currentItemStack.getItem().GetExhaustionOnUsedToHarvestBlock( iBlockID, mc.theWorld, 
++	    		iBlockI, iBlockJ, iBlockK, iBlockMetadata );	    	
+ }
++		
++		if ( fExhaustionConsumed > 0F )
++		{
++			mc.thePlayer.m_bExhaustionAddedSinceLastGuiUpdate = true;
++		}
++    }
++    
++    public boolean IsHittingBlock()
++    {
++    	return isHittingBlock;
++    }
++	// END FCMOD
++    
++}

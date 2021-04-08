@@ -1,0 +1,77 @@
+--- a/minecraft_server/net/minecraft/src/MerchantRecipe.java
++++ b/minecraft_server/net/minecraft/src/MerchantRecipe.java
+@@ -30,6 +30,15 @@
+         this.secondItemToBuy = par2ItemStack;
+         this.itemToSell = par3ItemStack;
+         this.maxTradeUses = 7;
++        // FCMOD: Change
++        /*
++        this.maxTradeUses = 7;
++        */
++        maxTradeUses = 1;
++        // END FCMOD
++        
++        // FCMOD: Added
++        // END FCMOD
+     }
+ 
+     public MerchantRecipe(ItemStack par1ItemStack, ItemStack par2ItemStack)
+@@ -128,9 +137,25 @@
+         }
+         else
+         {
++            // FCMOD: Change
++            /*
+             this.maxTradeUses = 7;
++            */
++        	maxTradeUses = 1;
++        	// END FCMOD
+         }
++        
++        // FCMOD: Added
++        if ( par1NBTTagCompound.hasKey( "fcTradeLevel" ) )
++        {
++            m_iTradeLevel = par1NBTTagCompound.getInteger("fcTradeLevel");
+     }
++        else
++        {
++        	m_iTradeLevel = 1;
++        }
++        // END FCMOD
++    }
+ 
+     public NBTTagCompound writeToTags()
+     {
+@@ -145,6 +170,32 @@
+ 
+         var1.setInteger("uses", this.toolUses);
+         var1.setInteger("maxUses", this.maxTradeUses);
++        
++        // FCMOD: Added
++        var1.setInteger( "fcTradeLevel", m_iTradeLevel );
++        // END FCMOD
++        
+         return var1;
+     }
++    
++    // FCMOD: Added
++    public int m_iTradeLevel;    
++    
++    public MerchantRecipe( ItemStack inputStack1, ItemStack inputStack2, ItemStack outputStack, int iTradeLevel )
++    {
++        this( inputStack1, inputStack2, outputStack );
++        
++        m_iTradeLevel = iTradeLevel;
+ }
++    
++    public MerchantRecipe( ItemStack inputStack, ItemStack outputStack, int iTradeLevel )
++    {
++        this( inputStack, (ItemStack)null, outputStack, iTradeLevel );
++    }
++
++    public MerchantRecipe( ItemStack inputStack, Item outputItem, int iTradeLevel )
++    {
++        this( inputStack, new ItemStack( outputItem ), iTradeLevel );
++    }
++    // END FCMOD
++}

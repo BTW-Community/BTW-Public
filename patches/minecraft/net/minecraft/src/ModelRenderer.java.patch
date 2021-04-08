@@ -1,0 +1,107 @@
+--- a/minecraft/net/minecraft/src/ModelRenderer.java
++++ b/minecraft/net/minecraft/src/ModelRenderer.java
+@@ -305,4 +305,104 @@
+         this.textureHeight = (float)par2;
+         return this;
+     }
++    
++    // FCMOD: Code added
++    public void RenderWithScaleToBaseModel( float par1, float fScaleX, float fScaleY, float fScaleZ )
++    {
++        if (!this.isHidden)
++        {
++            if (this.showModel)
++            {
++                if (!this.compiled)
++                {
++                    this.compileDisplayList(par1);
+ }
++
++                GL11.glTranslatef(this.field_82906_o, this.field_82908_p, this.field_82907_q);
++                int var2;
++
++                if (this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F)
++                {
++                    if (this.rotationPointX == 0.0F && this.rotationPointY == 0.0F && this.rotationPointZ == 0.0F)
++                    {
++                        GL11.glPushMatrix();
++                        
++                    	GL11.glScalef( fScaleX, fScaleY, fScaleZ );
++                    	
++                        GL11.glCallList(this.displayList);
++
++                        if (this.childModels != null)
++                        {
++                            for (var2 = 0; var2 < this.childModels.size(); ++var2)
++                            {
++                                ((ModelRenderer)this.childModels.get(var2)).render(par1);
++                            }
++                        }
++                        
++                        GL11.glPopMatrix();
++                    }
++                    else
++                    {
++                        GL11.glTranslatef(this.rotationPointX * par1, this.rotationPointY * par1, this.rotationPointZ * par1);
++                        
++                        GL11.glPushMatrix();
++                        
++                    	GL11.glScalef( fScaleX, fScaleY, fScaleZ );
++                    	
++                        GL11.glCallList(this.displayList);
++
++                        if (this.childModels != null)
++                        {
++                            for (var2 = 0; var2 < this.childModels.size(); ++var2)
++                            {
++                                ((ModelRenderer)this.childModels.get(var2)).render(par1);
++                            }
++                        }
++                        
++                        GL11.glPopMatrix();
++
++                        GL11.glTranslatef(-this.rotationPointX * par1, -this.rotationPointY * par1, -this.rotationPointZ * par1);
++                    }
++                }
++                else
++                {
++                    GL11.glPushMatrix();
++                    GL11.glTranslatef(this.rotationPointX * par1, this.rotationPointY * par1, this.rotationPointZ * par1);
++
++                    if (this.rotateAngleZ != 0.0F)
++                    {
++                        GL11.glRotatef(this.rotateAngleZ * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
++                    }
++
++                    if (this.rotateAngleY != 0.0F)
++                    {
++                        GL11.glRotatef(this.rotateAngleY * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
++                    }
++
++                    if (this.rotateAngleX != 0.0F)
++                    {
++                        GL11.glRotatef(this.rotateAngleX * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
++                    }
++                    
++                	GL11.glScalef( fScaleX, fScaleY, fScaleZ );
++                	
++                    GL11.glCallList(this.displayList);
++
++                    if (this.childModels != null)
++                    {
++                        for (var2 = 0; var2 < this.childModels.size(); ++var2)
++                        {
++                            ((ModelRenderer)this.childModels.get(var2)).render(par1);
++                        }
++                    }
++
++                    GL11.glPopMatrix();
++                }
++
++                GL11.glTranslatef(-this.field_82906_o, -this.field_82908_p, -this.field_82907_q);
++            }
++        }
++    }
++    // END FCMOD
++
++}

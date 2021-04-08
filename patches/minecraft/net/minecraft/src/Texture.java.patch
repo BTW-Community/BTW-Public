@@ -1,0 +1,16 @@
+--- a/minecraft/net/minecraft/src/Texture.java
++++ b/minecraft/net/minecraft/src/Texture.java
+@@ -387,4 +387,13 @@
+     {
+         return this.textureData;
+     }
++    
++    // FCMOD: Code added
++    public void UploadByteBufferToGPU( int iDestX, int iDestY, ByteBuffer buffer, int iBufferWidth, int iBufferHeight )
++    {
++        GL11.glBindTexture(this.textureTarget, this.glTextureId);
++        GL11.glTexSubImage2D(this.textureTarget, 0, iDestX, iDestY, iBufferWidth, iBufferHeight, this.textureFormat, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)buffer.position(0) );
++        this.textureNotModified = true;
+ }
++    // END FCMOD
++}

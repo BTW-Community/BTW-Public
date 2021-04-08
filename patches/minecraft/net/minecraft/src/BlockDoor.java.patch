@@ -1,0 +1,15 @@
+--- a/minecraft/net/minecraft/src/BlockDoor.java
++++ b/minecraft/net/minecraft/src/BlockDoor.java
+@@ -471,4 +471,11 @@
+             par1World.setBlockToAir(par2, par3 - 1, par4);
+         }
+     }
++    
++    // FCMOD: Code added
++    public void OnAIOpenDoor( World world, int i, int j, int k, boolean bOpen )
++    {
++    	onPoweredBlockChange( world, i, j, k, bOpen );    	
+ }
++    // END FCMOD
++}
+\ No newline at end of file

@@ -1,0 +1,407 @@
+--- a/minecraft/net/minecraft/src/NetServerHandler.java
++++ b/minecraft/net/minecraft/src/NetServerHandler.java
+@@ -8,13 +8,20 @@
+ import java.util.Random;
+ import net.minecraft.server.MinecraftServer;
+ 
++// FCMOD: Added
++import java.util.List;
++// END FCMOD
++
+ public class NetServerHandler extends NetHandler
+ {
+     /** The underlying network manager for this server handler. */
+     public final INetworkManager netManager;
+ 
+     /** Reference to the MinecraftServer object. */
+-    private final MinecraftServer mcServer;
++    // FCMOD: Changed to public for simplicity with add-on authors
++    //private final MinecraftServer mcServer;
++    public final MinecraftServer mcServer;
++    // END FCMOD
+ 
+     /** This is set to true whenever a player disconnects from the server. */
+     public boolean connectionClosed = false;
+@@ -261,12 +268,23 @@
+                 }
+ 
+                 float var27 = 0.0625F;
++	            // FCMOD: Line changed so that players don't warp through platforms
++	            /*
+                 boolean var28 = var2.getCollidingBoundingBoxes(this.playerEntity, this.playerEntity.boundingBox.copy().contract((double)var27, (double)var27, (double)var27)).isEmpty();
++	            */
++	            boolean var28 = getCollidingBoundingBoxesIgnoreSpecifiedEntities( var2, playerEntity, playerEntity.boundingBox.copy().contract(var27, var27, var27)).isEmpty();
++	            // END FCMOD
+ 
+                 if (this.playerEntity.onGround && !par1Packet10Flying.onGround && var15 > 0.0D)
+                 {
+-                    this.playerEntity.addExhaustion(0.2F);
++                	// FCMOD: Changed to take sprinting into account when jumping on server
++                    //this.playerEntity.addExhaustion(0.2F);
++                	if ( !playerEntity.isOnLadder() )
++                	{
++                		playerEntity.AddExhaustionForJump();
+                 }
++                    // END FCMOD
++                }
+ 
+                 this.playerEntity.moveEntity(var13, var15, var17);
+                 this.playerEntity.onGround = par1Packet10Flying.onGround;
+@@ -291,7 +309,12 @@
+                 }
+ 
+                 this.playerEntity.setPositionAndRotation(var5, var7, var9, var11, var12);
++	            // FCMOD: Line changed so that players don't warp through platforms
++	            /*
+                 boolean var32 = var2.getCollidingBoundingBoxes(this.playerEntity, this.playerEntity.boundingBox.copy().contract((double)var27, (double)var27, (double)var27)).isEmpty();
++	            */
++	            boolean var32 = getCollidingBoundingBoxesIgnoreSpecifiedEntities( var2, playerEntity, playerEntity.boundingBox.copy().contract(var27, var27, var27)).isEmpty();
++	            // END FCMOD
+ 
+                 if (var28 && (var31 || !var32) && !this.playerEntity.isPlayerSleeping())
+                 {
+@@ -301,7 +324,13 @@
+ 
+                 AxisAlignedBB var33 = this.playerEntity.boundingBox.copy().expand((double)var27, (double)var27, (double)var27).addCoord(0.0D, -0.55D, 0.0D);
+ 
++                // FCMOD: Line change to prevent player being kicked while standing on entities like Wind Mills or Platforms
++                /*
+                 if (!this.mcServer.isFlightAllowed() && !this.playerEntity.theItemInWorldManager.isCreative() && !var2.checkBlockCollision(var33))
++                */
++                if (!mcServer.isFlightAllowed() && !playerEntity.theItemInWorldManager.isCreative() && !var2.checkBlockCollision(var33) && 
++            		var2.checkNoEntityCollision( var33, playerEntity ) )
++            	// END FCMOD
+                 {
+                     if (var29 >= -0.03125D)
+                     {
+@@ -410,7 +439,10 @@
+             }
+             else if (par1Packet14BlockDig.status == 2)
+             {
+-                this.playerEntity.theItemInWorldManager.uncheckedTryHarvestBlock(var4, var5, var6);
++            	// FCMOD: Changed (function name differs between client and server )
++                //this.playerEntity.theItemInWorldManager.uncheckedTryHarvestBlock(var4, var5, var6);
++                this.playerEntity.theItemInWorldManager.uncheckedTryHarvestBlock(var4, var5, var6, par1Packet14BlockDig.face);
++                // END FCMOD
+ 
+                 if (var2.getBlockId(var4, var5, var6) != 0)
+                 {
+@@ -547,6 +579,12 @@
+         this.kickPlayerFromServer("Protocol error, unexpected packet");
+     }
+ 
++    // FCMOD: Added (client only) alias function to match naming on server
++    public void sendPacket( Packet packet )
++    {
++    	sendPacketToPlayer( packet );
++    }
++    // END FCMOD
+     /**
+      * addToSendQueue. if it is a chat packet, check before sending it
+      */
+@@ -720,6 +758,16 @@
+                 var5 = 9.0D;
+             }
+ 
++        	// FCMOD: Code added to prevent funkiness in interacting with Wind Mills due to size            	
++        	if ( var3 instanceof FCIEntityPacketHandler )
++        	{
++        		if ( ((FCIEntityPacketHandler)var3).ShouldServerTreatAsOversized() )
++        		{
++	        		var4 = true;
++	        		var5 = 256D;
++        		}
++        	}
++        	// END FCMOD
+             if (this.playerEntity.getDistanceSqToEntity(var3) < var5)
+             {
+                 if (par1Packet7UseEntity.isLeftClick == 0)
+@@ -802,7 +850,33 @@
+                 this.playerEntity.openContainer.detectAndSendChanges();
+                 this.playerEntity.updateHeldItem();
+                 this.playerEntity.playerInventoryBeingManipulated = false;
++                // FCMOD: Added fix for items falling out of sync when player uses numerical hotkeys to swap items to the hotbar
++                // by mousing over in inventory (this is what the 2 indicates)
++                if ( par1Packet102WindowClick.holdingShift == 2 ) 
++                {
++                	int iSlotTo = par1Packet102WindowClick.mouseClick;
++
++                	if ( iSlotTo >= 0 && iSlotTo < 9 )
++                	{
++	                	int iSlotFrom = par1Packet102WindowClick.inventorySlot;
++	                	
++	                	playerEntity.sendSlotContents( playerEntity.openContainer, iSlotFrom, 
++	                		(ItemStack)playerEntity.openContainer.inventoryItemStacks.get( iSlotFrom ) );
++
++	                	// The following assumes the player's hotbar occupies the last 9 slots of all containers, but should be
++	                	// harmless if not, as it'll just refresh some other slot.
++	                	
++                		iSlotTo += playerEntity.openContainer.inventorySlots.size() - 9;
++                		
++                		if ( iSlotTo >= 0 && iSlotTo < playerEntity.openContainer.inventorySlots.size() )
++                		{
++		                	playerEntity.sendSlotContents( playerEntity.openContainer, iSlotTo,
++		                		(ItemStack)playerEntity.openContainer.inventoryItemStacks.get( iSlotTo ) );
+             }
++                	}
++                }
++                // END FCMOD
++            }
+             else
+             {
+                 this.field_72586_s.addKey(this.playerEntity.openContainer.windowId, Short.valueOf(par1Packet102WindowClick.action));
+@@ -990,7 +1064,25 @@
+     public void handleClientInfo(Packet204ClientInfo par1Packet204ClientInfo)
+     {
+         this.playerEntity.updateClientInfo(par1Packet204ClientInfo);
++        
++        // FCMOD: Code added to encode whether BTW is installed in the game difficulty
++        if ( !par1Packet204ClientInfo.IsBTWInstalled() )
++        {
++        	playerEntity.playerNetServerHandler.sendPacketToPlayer( new Packet3Chat( (new StringBuilder()).append( "\2474"). // red text
++	    		append("WARNING: You do not currently have Better Than Wolves installed on your system." ).toString() ) );
++            	
++	    	playerEntity.playerNetServerHandler.sendPacketToPlayer( new Packet3Chat( (new StringBuilder()).append( "\2474"). // red text
++	    		append( "This server requires all clients to have Better Than Wolves version ").
++	    		append( FCBetterThanWolves.fcVersionString).toString() ) );
++                	
++			// client
++	    	mcServer.getLogAgent().logInfo( (new StringBuilder()).
++    		// server
++	    	//mcServer.getLogAgent().func_98233_a( (new StringBuilder()).	    		
++	    		append( playerEntity.username ).append( " logged in without BTW installed" ).toString() );
+     }
++        // END FCMOD
++    }
+ 
+     public void handleCustomPayload(Packet250CustomPayload par1Packet250CustomPayload)
+     {
+@@ -1051,19 +1143,19 @@
+         }
+         else
+         {
+-            int var13;
++            int var14;
+ 
+             if ("MC|TrSel".equals(par1Packet250CustomPayload.channel))
+             {
+                 try
+                 {
+                     var2 = new DataInputStream(new ByteArrayInputStream(par1Packet250CustomPayload.data));
+-                    var13 = var2.readInt();
+-                    Container var15 = this.playerEntity.openContainer;
++                    var14 = var2.readInt();
++                    Container var16 = this.playerEntity.openContainer;
+ 
+-                    if (var15 instanceof ContainerMerchant)
++                    if (var16 instanceof ContainerMerchant)
+                     {
+-                        ((ContainerMerchant)var15).setCurrentRecipeIndex(var13);
++                        ((ContainerMerchant)var16).setCurrentRecipeIndex(var14);
+                     }
+                 }
+                 catch (Exception var10)
+@@ -1073,7 +1165,7 @@
+             }
+             else
+             {
+-                int var17;
++                int var18;
+ 
+                 if ("MC|AdvCdm".equals(par1Packet250CustomPayload.channel))
+                 {
+@@ -1086,16 +1178,16 @@
+                         try
+                         {
+                             var2 = new DataInputStream(new ByteArrayInputStream(par1Packet250CustomPayload.data));
+-                            var13 = var2.readInt();
+-                            var17 = var2.readInt();
++                            var14 = var2.readInt();
++                            var18 = var2.readInt();
+                             int var5 = var2.readInt();
+                             String var6 = Packet.readString(var2, 256);
+-                            TileEntity var7 = this.playerEntity.worldObj.getBlockTileEntity(var13, var17, var5);
++                            TileEntity var7 = this.playerEntity.worldObj.getBlockTileEntity(var14, var18, var5);
+ 
+                             if (var7 != null && var7 instanceof TileEntityCommandBlock)
+                             {
+                                 ((TileEntityCommandBlock)var7).setCommand(var6);
+-                                this.playerEntity.worldObj.markBlockForUpdate(var13, var17, var5);
++                                this.playerEntity.worldObj.markBlockForUpdate(var14, var18, var5);
+                                 this.playerEntity.sendChatToPlayer("Command set: " + var6);
+                             }
+                         }
+@@ -1116,17 +1208,17 @@
+                         try
+                         {
+                             var2 = new DataInputStream(new ByteArrayInputStream(par1Packet250CustomPayload.data));
+-                            var13 = var2.readInt();
+-                            var17 = var2.readInt();
+-                            ContainerBeacon var18 = (ContainerBeacon)this.playerEntity.openContainer;
+-                            Slot var19 = var18.getSlot(0);
++                            var14 = var2.readInt();
++                            var18 = var2.readInt();
++                            ContainerBeacon var17 = (ContainerBeacon)this.playerEntity.openContainer;
++                            Slot var19 = var17.getSlot(0);
+ 
+                             if (var19.getHasStack())
+                             {
+                                 var19.decrStackSize(1);
+-                                TileEntityBeacon var20 = var18.getBeacon();
+-                                var20.setPrimaryEffect(var13);
+-                                var20.setSecondaryEffect(var17);
++                                TileEntityBeacon var20 = var17.getBeacon();
++                                var20.setPrimaryEffect(var14);
++                                var20.setSecondaryEffect(var18);
+                                 var20.onInventoryChanged();
+                             }
+                         }
+@@ -1138,23 +1230,143 @@
+                 }
+                 else if ("MC|ItemName".equals(par1Packet250CustomPayload.channel) && this.playerEntity.openContainer instanceof ContainerRepair)
+                 {
+-                    ContainerRepair var14 = (ContainerRepair)this.playerEntity.openContainer;
++                    ContainerRepair var13 = (ContainerRepair)this.playerEntity.openContainer;
+ 
+                     if (par1Packet250CustomPayload.data != null && par1Packet250CustomPayload.data.length >= 1)
+                     {
+-                        String var16 = ChatAllowedCharacters.filerAllowedCharacters(new String(par1Packet250CustomPayload.data));
++                        String var15 = ChatAllowedCharacters.filerAllowedCharacters(new String(par1Packet250CustomPayload.data));
+ 
+-                        if (var16.length() <= 30)
++                        if (var15.length() <= 30)
+                         {
+-                            var14.updateItemName(var16);
++                            var13.updateItemName(var15);
+                         }
+                     }
+                     else
+                     {
+-                        var14.updateItemName("");
++                        var13.updateItemName("");
+                     }
+                 }
++                // FCMOD: Added
++                else
++                {
++                	FCAddOnHandler.ServerCustomPacketReceived( this, par1Packet250CustomPayload );
+             }
++                // END FCMOD
+         }
+     }
+ }
++
++	// FCMOD: Added
++	public List getCollidingBoundingBoxesIgnoreSpecifiedEntities( World world, Entity par1Entity, AxisAlignedBB par2AxisAlignedBB)
++	{
++		// Copied over from World.java with modifications 
++
++	    ArrayList collidingBoundingBoxes = new ArrayList();
++	    
++	    int i = MathHelper.floor_double(par2AxisAlignedBB.minX);
++	    int j = MathHelper.floor_double(par2AxisAlignedBB.maxX + 1.0D);
++	    int k = MathHelper.floor_double(par2AxisAlignedBB.minY);
++	    int l = MathHelper.floor_double(par2AxisAlignedBB.maxY + 1.0D);
++	    int i1 = MathHelper.floor_double(par2AxisAlignedBB.minZ);
++	    int j1 = MathHelper.floor_double(par2AxisAlignedBB.maxZ + 1.0D);
++	
++	    for (int k1 = i; k1 < j; k1++)
++	    {
++	        for (int l1 = i1; l1 < j1; l1++)
++	        {
++	            if (!world.blockExists(k1, 64, l1))
++	            {
++	                continue;
++	            }
++	
++	            for (int i2 = k - 1; i2 < l; i2++)
++	            {
++	                Block block = Block.blocksList[world.getBlockId(k1, i2, l1)];
++	
++	                if (block != null)
++	                {
++	                    block.addCollisionBoxesToList(world, k1, i2, l1, par2AxisAlignedBB, collidingBoundingBoxes, par1Entity);
++	                }
++	            }
++	        }
++	    }
++	
++	    double d = 0.25D;
++	    // FCMOD: Line replaced. Expanded this to help with vertical collisions on Wind Mills
++		/*
++	    List list = getEntitiesWithinAABBExcludingEntity(par1Entity, par2AxisAlignedBB.expand(d, d, d));
++		*/
++	    List list = world.getEntitiesWithinAABBExcludingEntity(par1Entity, par2AxisAlignedBB.expand(d, 2.0, d));
++	    // END FCMOD
++	    Iterator iterator = list.iterator();
++	
++	    do
++	    {
++	        if (!iterator.hasNext())
++	        {
++	            break;
++	        }
++	
++	        Entity entity = (Entity)iterator.next();
++	        
++	        if ( !( entity instanceof FCIEntityIgnoreServerValidation ) )
++			{
++	            AxisAlignedBB axisalignedbb = entity.getBoundingBox();
++	
++	            if (axisalignedbb != null && axisalignedbb.intersectsWith(par2AxisAlignedBB))
++	            {
++	                collidingBoundingBoxes.add(axisalignedbb);
++	            }
++	
++	            axisalignedbb = par1Entity.getCollisionBox(entity);
++	
++	            if (axisalignedbb != null && axisalignedbb.intersectsWith(par2AxisAlignedBB))
++	            {
++	                collidingBoundingBoxes.add(axisalignedbb);
++	            }
++			}
++	    }
++	    while (true);
++	
++	    return collidingBoundingBoxes;
++	}
++    
++    public void HandleStartBlockHarvest( FCPacket166StartBlockHarvest packet )
++    {
++        WorldServer world = mcServer.worldServerForDimension( playerEntity.dimension );
++
++        int i = packet.iIPos;
++        int j = packet.iJPos;
++        int k = packet.iKPos;
++
++        double dDeltaX = playerEntity.posX - ( (double)i + 0.5D );
++        double dDeltaY = playerEntity.posY - ( (double)j + 0.5D ) + 1.5D;
++        double dDeltaZ = playerEntity.posZ - ( (double)k + 0.5D );
++        
++        double dDistSq = dDeltaX * dDeltaX + dDeltaY * dDeltaY + dDeltaZ * dDeltaZ;
++
++        if ( dDistSq <= 36D && j < mcServer.getBuildLimit() )
++        {
++	        if ( !IsBlockWithinSpawnProtection( world, i, j, k ) )
++	        {
++	        	playerEntity.SetMiningSpeedModifier( packet.GetMiningSpeedModifier() );
++	        	
++	            playerEntity.theItemInWorldManager.onBlockClicked(i, j, k, packet.iFace );
++	        }
++	        else
++	        {
++	        	// I assume the following resets the block harvest on the player's client
++
++	        	FCUtilsWorld.SendPacketToPlayer( playerEntity.playerNetServerHandler, new Packet53BlockChange( i, j, k, world ) );
++	        }
++        }
++    }
++    
++    private boolean IsBlockWithinSpawnProtection( World world, int i, int j, int k )
++    {
++    	// func_96290_a checks if the block is within the spawn protection area on dedicated servers
++    	
++    	return mcServer.func_96290_a( world, i, j, k, playerEntity );
++    }
++	// END FCMOD
++}

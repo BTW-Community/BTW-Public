@@ -1,0 +1,86 @@
+--- a/minecraft/net/minecraft/src/RenderLiving.java
++++ b/minecraft/net/minecraft/src/RenderLiving.java
+@@ -79,6 +79,12 @@
+             float var10 = this.interpolateRotation(par1EntityLiving.prevRenderYawOffset, par1EntityLiving.renderYawOffset, par9);
+             float var11 = this.interpolateRotation(par1EntityLiving.prevRotationYawHead, par1EntityLiving.rotationYawHead, par9);
+             float var12 = par1EntityLiving.prevRotationPitch + (par1EntityLiving.rotationPitch - par1EntityLiving.prevRotationPitch) * par9;
++            // FCMOD: Added (client only)
++            if ( par1EntityLiving.HasHeadCrabbedSquid() )
++            {
++            	var12 = 0;
++            }
++            // END IF
+             this.renderLivingAt(par1EntityLiving, par2, par4, par6);
+             float var13 = this.handleRotationFloat(par1EntityLiving, par9);
+             this.rotateCorpse(par1EntityLiving, var13, var10, par9);
+@@ -103,8 +109,8 @@
+             GL11.glEnable(GL11.GL_ALPHA_TEST);
+             this.mainModel.setLivingAnimations(par1EntityLiving, var16, var15, par9);
+             this.renderModel(par1EntityLiving, var16, var15, var13, var11 - var10, var12, var14);
+-            int var18;
+             float var19;
++            int var18;
+             float var20;
+             float var22;
+ 
+@@ -200,16 +206,16 @@
+                 {
+                     var19 = (float)(var18 >> 16 & 255) / 255.0F;
+                     var20 = (float)(var18 >> 8 & 255) / 255.0F;
+-                    float var28 = (float)(var18 & 255) / 255.0F;
++                    float var29 = (float)(var18 & 255) / 255.0F;
+                     var22 = (float)(var18 >> 24 & 255) / 255.0F;
+-                    GL11.glColor4f(var19, var20, var28, var22);
++                    GL11.glColor4f(var19, var20, var29, var22);
+                     this.mainModel.render(par1EntityLiving, var16, var15, var13, var11 - var10, var12, var14);
+ 
+-                    for (int var29 = 0; var29 < 4; ++var29)
++                    for (int var28 = 0; var28 < 4; ++var28)
+                     {
+-                        if (this.inheritRenderPass(par1EntityLiving, var29, par9) >= 0)
++                        if (this.inheritRenderPass(par1EntityLiving, var28, par9) >= 0)
+                         {
+-                            GL11.glColor4f(var19, var20, var28, var22);
++                            GL11.glColor4f(var19, var20, var29, var22);
+                             this.renderPassModel.render(par1EntityLiving, var16, var15, var13, var11 - var10, var12, var14);
+                         }
+                     }
+@@ -412,6 +418,12 @@
+ 
+                 if (par1EntityLiving.isSneaking())
+                 {
++                	// FCMOD: Code added
++                	if ( FCBetterThanWolves.IsHardcorePlayerNamesEnabled( par1EntityLiving.worldObj ) )
++                	{
++                		return;
++                	}
++                	// END FCMOD
+                     FontRenderer var14 = this.getFontRendererFromRenderManager();
+                     GL11.glPushMatrix();
+                     GL11.glTranslatef((float)par2 + 0.0F, (float)par4 + par1EntityLiving.height + 0.5F, (float)par6);
+@@ -481,8 +493,17 @@
+             GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+             GL11.glScalef(-var14, -var14, var14);
+             GL11.glDisable(GL11.GL_LIGHTING);
++            
+             GL11.glDepthMask(false);
++            // FCMOD: Changed so that player names aren't visible through walls
++            /*
+             GL11.glDisable(GL11.GL_DEPTH_TEST);
++            */
++        	if ( !FCBetterThanWolves.AreHardcorePlayerNamesObstructed( par1EntityLiving.worldObj ) )
++        	{
++                GL11.glDisable(GL11.GL_DEPTH_TEST);
++        	}
++            // END FCMOD
+             GL11.glEnable(GL11.GL_BLEND);
+             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+             Tessellator var15 = Tessellator.instance;
+@@ -503,6 +524,7 @@
+             var15.addVertex((double)(var17 + 1), (double)(-1 + var16), 0.0D);
+             var15.draw();
+             GL11.glEnable(GL11.GL_TEXTURE_2D);
++            
+             var12.drawString(par2Str, -var12.getStringWidth(par2Str) / 2, var16, 553648127);
+             GL11.glEnable(GL11.GL_DEPTH_TEST);
+             GL11.glDepthMask(true);

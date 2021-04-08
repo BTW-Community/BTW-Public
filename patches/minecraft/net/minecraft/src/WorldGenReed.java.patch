@@ -1,0 +1,32 @@
+--- a/minecraft/net/minecraft/src/WorldGenReed.java
++++ b/minecraft/net/minecraft/src/WorldGenReed.java
+@@ -6,6 +6,13 @@
+ {
+     public boolean generate(World par1World, Random par2Random, int par3, int par4, int par5)
+     {
++    	// FCMOD: Added
++    	BiomeGenBase currentBiome = par1World.getBiomeGenForCoords( par3, par5 );
++    	
++        boolean bIsValidBiome = currentBiome == BiomeGenBase.swampland || 
++        	currentBiome == BiomeGenBase.jungle || currentBiome == BiomeGenBase.jungleHills;
++        // END FCMOD
++        
+         for (int var6 = 0; var6 < 20; ++var6)
+         {
+             int var7 = par3 + par2Random.nextInt(4) - par2Random.nextInt(4);
+@@ -16,6 +23,15 @@
+             {
+                 int var10 = 2 + par2Random.nextInt(par2Random.nextInt(3) + 1);
+ 
++                // FCMOD: Added
++                if ( !bIsValidBiome )
++                {
++                	// must occur after all random number generation to avoid messing up world gen
++                	
++                	continue;
++                }
++                // END FCMOD
++                
+                 for (int var11 = 0; var11 < var10; ++var11)
+                 {
+                     if (Block.reed.canBlockStay(par1World, var7, var8 + var11, var9))

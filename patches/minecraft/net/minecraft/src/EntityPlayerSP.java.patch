@@ -1,0 +1,272 @@
+--- a/minecraft/net/minecraft/src/EntityPlayerSP.java
++++ b/minecraft/net/minecraft/src/EntityPlayerSP.java
+@@ -38,7 +38,10 @@
+ 
+         if (par3Session != null && par3Session.username != null && par3Session.username.length() > 0)
+         {
+-            this.skinUrl = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par3Session.username) + ".png";
++        	// FCMOD: Changed, client only        	
++            //this.skinUrl = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par3Session.username) + ".png";
++            this.skinUrl = FCBetterThanWolves.fcPlayerSkinURL + StringUtils.stripControlCodes(par3Session.username) + ".png";
++            // END FCMOD
+         }
+ 
+         this.username = par3Session.username;
+@@ -180,7 +183,12 @@
+             this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, this.boundingBox.minY + 0.5D, this.posZ - (double)this.width * 0.35D);
+             this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, this.boundingBox.minY + 0.5D, this.posZ - (double)this.width * 0.35D);
+             this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, this.boundingBox.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
++            // FCMOD: Code change so that sprinting takes into account hunger, health, and fat
++            /*
+             boolean var4 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
++            */
++            boolean var4 = !HasStatusPenalty() || this.capabilities.allowFlying;
++            // END FCMOD
+ 
+             if (this.onGround && !var3 && this.movementInput.moveForward >= var2 && !this.isSprinting() && var4 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness))
+             {
+@@ -254,9 +262,22 @@
+             var1 *= 1.1F;
+         }
+ 
++        // FCMOD: Changed the following so the view doesn't zoom in and out based on walking on different material types
++        /*
+         var1 *= (this.landMovementFactor * this.getSpeedModifier() / this.speedOnGround + 1.0F) / 2.0F;
++        */
++        var1 *= (this.landMovementFactor * this.getFOVSpeedModifier() / this.speedOnGround + 1.0F) / 2.0F;
+ 
++        var1 *= UpdateGloomFOVMultiplier();
++        // END FCMOD
++
++        // FCMOD: Changed the following to provide FOV change on composite bow
++		/*
+         if (this.isUsingItem() && this.getItemInUse().itemID == Item.bow.itemID)
++        */
++        if ( isUsingItem() && ( getItemInUse().itemID == Item.bow.itemID ||
++    		getItemInUse().itemID == FCBetterThanWolves.fcItemCompositeBow.itemID ) )        	
++    	// END FCMOD
+         {
+             int var2 = this.getItemInUseDuration();
+             float var3 = (float)var2 / 20.0F;
+@@ -278,7 +299,10 @@
+ 
+     public void updateCloak()
+     {
+-        this.cloakUrl = "http://skins.minecraft.net/MinecraftCloaks/" + StringUtils.stripControlCodes(this.username) + ".png";
++    	// FCMOD: Changed, client only        	
++        //this.cloakUrl = "http://skins.minecraft.net/MinecraftCloaks/" + StringUtils.stripControlCodes(this.username) + ".png";
++        this.cloakUrl = FCBetterThanWolves.fcPlayerCloakURL + StringUtils.stripControlCodes(this.username) + ".png";
++        // END FCMOD
+     }
+ 
+     /**
+@@ -320,7 +344,13 @@
+         {
+             this.mc.displayGuiScreen(new GuiScreenBook(this, par1ItemStack, true));
+         }
++        // FCMOD: Code added
++        else if ( var2 == FCBetterThanWolves.fcItemAncientProphecy )
++        {
++            mc.displayGuiScreen( new GuiScreenBook( this, par1ItemStack, false ) );
+     }
++        // END FCMOD
++    }
+ 
+     /**
+      * Displays the GUI for interacting with a chest inventory. Args: chestInventory
+@@ -345,7 +375,10 @@
+      */
+     public void displayGUIWorkbench(int par1, int par2, int par3)
+     {
+-        this.mc.displayGuiScreen(new GuiCrafting(this.inventory, this.worldObj, par1, par2, par3));
++    	// FCMOD: Changed (client only)    	
++        //this.mc.displayGuiScreen(new GuiCrafting(this.inventory, this.worldObj, par1, par2, par3));
++        this.mc.displayGuiScreen(new FCClientGuiCraftingWorkbench(this.inventory, this.worldObj, par1, par2, par3));
++        // END FCMOD
+     }
+ 
+     public void displayGUIEnchantment(int par1, int par2, int par3, String par4Str)
+@@ -617,4 +650,183 @@
+     {
+         this.worldObj.playSound(this.posX, this.posY - (double)this.yOffset, this.posZ, par1Str, par2, par3, false);
+     }
++    
++    // FCMOD: Added (client only)
++    private static final float m_fMinimumGloomCaveSoundChance = 0.01F; // 1/5 seconds 
++    private static final float m_fMaximumGloomCaveSoundChance = 0.05F; // 1/second
++    private static final float m_fMinimumGloomCaveSoundVolume = 0.1F; 
++    private static final float m_fMaximumGloomCaveSoundVolume = 4.0F;
++    
++    private static final float m_fMinimumGloomGrowlSoundChance = 0.01F; // 1/5 seconds 
++    private static final float m_fMaximumGloomGrowlSoundChance = 0.05F; // 1/second
++    private static final float m_fMinimumGloomGrowlSoundVolume = 0.1F; 
++    private static final float m_fMaximumGloomGrowlSoundVolume = 4.0F;
++    
++    private static final float m_fMaximumGloomFOVMultiplier = 1.5F;
++    private static final float m_fGloomFOVMultiplierTimeForTransitionIn = 10.0F; // in seconds
++    private static final float m_fGloomFOVMultiplierTimeForTransitionOut = 2.0F; // in seconds
++    private static final float m_fGloomFOVMultiplierDeltaInPerTick = ( ( m_fMaximumGloomFOVMultiplier - 1.0F ) / 20F ) / m_fGloomFOVMultiplierTimeForTransitionIn; 
++    private static final float m_fGloomFOVMultiplierDeltaOutPerTick = ( ( m_fMaximumGloomFOVMultiplier - 1.0F ) / 20F ) / m_fGloomFOVMultiplierTimeForTransitionOut; 
++    
++    private float m_fCurrentGloomFOVMultiplier = 1F;
++    
++    private int m_iPreviousGloomLevel = 0;    
++    
++    public boolean m_bExhaustionAddedSinceLastGuiUpdate = false;
++    
++    @Override
++    public void addExhaustion( float fAmount )
++    {
++        if ( !capabilities.disableDamage )
++        {
++        	m_bExhaustionAddedSinceLastGuiUpdate = true;
+ }
++        
++        super.addExhaustion( fAmount );
++    }
++
++    @Override
++    public void AddExhaustionWithoutVisualFeedback( float fAmount )
++    {
++        super.addExhaustion( fAmount );
++    }
++    
++    private float getFOVSpeedModifier()
++    {
++    	// copy of original "getSpeedModifier()" code from EntityLiving to avoid view zooming in and out 
++    	// based on the material type you're walking on
++    	
++        float var1 = 1.0F;
++
++        /*
++        if (this.isPotionActive(Potion.moveSpeed))
++        {
++            var1 *= 1.0F + 0.2F * (float)(this.getActivePotionEffect(Potion.moveSpeed).getAmplifier() + 1);
++        }
++        */
++
++        if (this.isPotionActive(Potion.moveSlowdown))
++        {
++            var1 *= 1.0F - 0.15F * (float)(this.getActivePotionEffect(Potion.moveSlowdown).getAmplifier() + 1);
++        }
++
++        return var1;
++    }
++    
++    private float UpdateGloomFOVMultiplier()
++    {
++    	int iGloomLevel = GetGloomLevel();
++    	
++    	if ( iGloomLevel == 0 )
++    	{
++    		m_fCurrentGloomFOVMultiplier -= m_fGloomFOVMultiplierDeltaOutPerTick;
++    		
++    		if ( m_fCurrentGloomFOVMultiplier < 1F )
++    		{
++    			m_fCurrentGloomFOVMultiplier = 1F;
++    		}
++    	}
++    	else
++    	{
++    		m_fCurrentGloomFOVMultiplier += m_fGloomFOVMultiplierDeltaInPerTick;
++    		
++    		if ( m_fCurrentGloomFOVMultiplier > m_fMaximumGloomFOVMultiplier )
++    		{
++    			m_fCurrentGloomFOVMultiplier = m_fMaximumGloomFOVMultiplier;
++    		}
++    	}
++    	
++    	return m_fCurrentGloomFOVMultiplier;
++    }
++    
++    @Override
++    protected void UpdateGloomState()
++    {
++    	int iGloomLevel = GetGloomLevel();
++
++		if ( m_iPreviousGloomLevel != GetGloomLevel() )
++		{
++			m_iInGloomCounter = 0;
++	    	m_iPreviousGloomLevel = iGloomLevel;
++	    	
++	    	if ( iGloomLevel == 3 )
++	    	{
++                playSound( "mob.endermen.stare", 1.0F, 1.0F );
++	    	}
++		}			
++    	
++    	if ( iGloomLevel > 0 )
++    	{
++    		m_iInGloomCounter++;
++    		
++    		float fCounterProgress = (float)m_iInGloomCounter / (float)m_iGloomCounterBetweenStateChanges;
++    		
++    		if ( fCounterProgress > 1.0F )
++    		{
++    			fCounterProgress = 1.0F;
++    		}
++
++    		// general cave sounds
++    		
++    		float fCaveSoundChance = m_fMaximumGloomCaveSoundChance;
++    		float fCaveSoundVolume = m_fMaximumGloomCaveSoundVolume;
++    		
++    		if ( iGloomLevel > 1 )
++    		{
++    			// growls
++    			
++    			float fGrowlSoundChance = m_fMaximumGloomGrowlSoundChance;
++    			float fGrowlSoundVolume = m_fMaximumGloomGrowlSoundVolume;
++
++    			if ( iGloomLevel > 2 )
++    			{
++    				// insert effects here for when the player is getting bit
++    			}
++    			else
++    			{
++    				fGrowlSoundChance = m_fMinimumGloomGrowlSoundChance + ( m_fMaximumGloomGrowlSoundChance - m_fMinimumGloomGrowlSoundChance ) * fCounterProgress;
++    				fGrowlSoundVolume = m_fMinimumGloomGrowlSoundVolume + ( m_fMaximumGloomGrowlSoundVolume - m_fMinimumGloomGrowlSoundVolume ) * fCounterProgress;
++    			}
++	    		
++	    		if ( rand.nextFloat() < fGrowlSoundChance )
++	    		{
++	    	        PlaySoundInRandomDirection( "mob.wolf.growl", fGrowlSoundVolume, ( rand.nextFloat() - rand.nextFloat()) * 0.05F + 0.55F, 5D );
++	    		}
++    		}
++    		else
++    		{
++        		fCaveSoundChance = m_fMinimumGloomCaveSoundChance + ( m_fMaximumGloomCaveSoundChance - m_fMinimumGloomCaveSoundChance ) * fCounterProgress;        		
++        		fCaveSoundVolume = m_fMinimumGloomCaveSoundVolume + ( m_fMaximumGloomCaveSoundVolume - m_fMinimumGloomCaveSoundVolume ) * fCounterProgress;        		
++    		}
++    		
++    		if ( rand.nextFloat() < fCaveSoundChance )
++    		{
++                PlaySoundInRandomDirection( "ambient.cave.cave", fCaveSoundVolume, 0.5F + this.rand.nextFloat(), 5D );
++    		}    		
++    	}
++    }
++    
++    public void PlaySoundInRandomDirection( String sSoundName, float fVolume, float fPitch, double dDistance )
++    {
++    	double dXPos = posX;
++    	double dYPos = posY;
++    	double dZPos = posZ;
++    	
++    	double dRandomYaw = rand.nextDouble();
++    	
++        double dXOffset = (double)-MathHelper.sin( (float)( dRandomYaw * 360D  ) ) * dDistance; 
++        double dZOffset = (double)MathHelper.cos( (float)( dRandomYaw * 360D ) ) * dDistance;
++        
++        dXPos += dXOffset;
++        dZPos += dZOffset;
++        
++        worldObj.playSound( dXPos, dYPos, dZPos, sSoundName, fVolume, fPitch, false );
++    }
++    
++    @Override
++    public boolean IsLocalPlayerAndHittingBlock()
++    {
++    	return mc.playerController.IsHittingBlock();
++    }	
++    // END FCMOD
++}

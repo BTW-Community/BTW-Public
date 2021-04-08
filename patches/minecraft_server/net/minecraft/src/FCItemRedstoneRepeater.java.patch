@@ -1,0 +1,22 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCItemRedstoneRepeater.java
+@@ -0,0 +1,19 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCItemRedstoneRepeater extends FCItemPlacesAsBlock
++{
++    public FCItemRedstoneRepeater( int iItemID )
++    {
++    	super( iItemID, Block.redstoneRepeaterIdle.blockID );    	
++    	
++    	setUnlocalizedName( "diode" );
++    	
++    	setCreativeTab( CreativeTabs.tabRedstone );    	
++    }
++    
++    //------------- Class Specific Methods ------------//
++    
++	//------------ Client Side Functionality ----------//
++}

@@ -1,0 +1,45 @@
+--- a/minecraft_server/net/minecraft/src/ChunkProviderHell.java
++++ b/minecraft_server/net/minecraft/src/ChunkProviderHell.java
+@@ -25,7 +25,10 @@
+     /** Is the world that the nether is getting generated. */
+     private World worldObj;
+     private double[] noiseField;
+-    public MapGenNetherBridge genNetherBridge = new MapGenNetherBridge();
++    // FCMOD: Changed
++    //public MapGenNetherBridge genNetherBridge = new MapGenNetherBridge();
++    public FCMapGenNetherBridge genNetherBridge = new FCMapGenNetherBridge();
++    // END FCMOD
+ 
+     /**
+      * Holds the noise used to determine whether slowsand can be generated at a location
+@@ -500,9 +503,14 @@
+ 
+         for (var8 = 0; var8 < 16; ++var8)
+         {
+-            var9 = var4 + this.hellRNG.nextInt(16);
++        	// FCMOD: changed to fix unnecessary chunk loads and memory leaks
++            //var9 = var4 + this.hellRNG.nextInt(16);
++            //var10 = this.hellRNG.nextInt(108) + 10;
++            //var11 = var5 + this.hellRNG.nextInt(16);
++            var9 = var4 + this.hellRNG.nextInt(16) + 8;
+             var10 = this.hellRNG.nextInt(108) + 10;
+-            var11 = var5 + this.hellRNG.nextInt(16);
++            var11 = var5 + this.hellRNG.nextInt(16) + 8;
++            // END FCMOD
+             (new WorldGenHellLava(Block.lavaMoving.blockID, true)).generate(this.worldObj, this.hellRNG, var9, var10, var11);
+         }
+ 
+@@ -549,7 +557,13 @@
+      */
+     public List getPossibleCreatures(EnumCreatureType par1EnumCreatureType, int par2, int par3, int par4)
+     {
++    	// FCMOD: Code change to loosen spawn restrictions on wither skeletons and blazes
++    	/*
+         if (par1EnumCreatureType == EnumCreatureType.monster && this.genNetherBridge.hasStructureAt(par2, par3, par4))
++        */
++        if ( par1EnumCreatureType == EnumCreatureType.monster && 
++        	genNetherBridge.HasStructureAtLoose( par2, par3, par4 ) )
++    	// END FCMOD
+         {
+             return this.genNetherBridge.getSpawnList();
+         }

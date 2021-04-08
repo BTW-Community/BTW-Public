@@ -1,0 +1,15 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCItemNetherQuartz.java
+@@ -0,0 +1,12 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCItemNetherQuartz extends Item
++{
++    protected FCItemNetherQuartz( int iItemID )
++    {
++    	super( iItemID );
++    }
++    
++}

@@ -1,0 +1,137 @@
+--- a/minecraft/net/minecraft/src/MerchantRecipeList.java
++++ b/minecraft/net/minecraft/src/MerchantRecipeList.java
+@@ -17,6 +17,8 @@
+     /**
+      * can par1,par2 be used to in crafting recipe par3
+      */
++    // FCMOD: Code removed and replaced later
++    /*
+     public MerchantRecipe canRecipeBeUsed(ItemStack par1ItemStack, ItemStack par2ItemStack, int par3)
+     {
+         if (par3 > 0 && par3 < this.size())
+@@ -39,6 +41,8 @@
+             return null;
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * checks if there is a recipie for the same ingredients already on the list, and replaces it. otherwise, adds it
+@@ -51,10 +55,14 @@
+ 
+             if (par1MerchantRecipe.hasSameIDsAs(var3))
+             {
++            	// FCMOD: Removed to avoid problems with similar items, like skulls or colored candles, replacing each other
++            	/*
+                 if (par1MerchantRecipe.hasSameItemsAs(var3))
+                 {
+                     this.set(var2, par1MerchantRecipe);
+                 }
++                */
++            	// END FCMOD
+ 
+                 return;
+             }
+@@ -81,6 +89,10 @@
+             }
+ 
+             par1DataOutputStream.writeBoolean(var3.func_82784_g());
++            
++            // FCMOD: Code added
++            par1DataOutputStream.writeShort( var3.m_iTradeLevel );
++            // END FCMOD
+         }
+     }
+ 
+@@ -108,6 +120,12 @@
+                 var8.func_82785_h();
+             }
+ 
++            // FCMOD: Code added (client only)
++            int iTradeLevel = par0DataInputStream.readShort();
++            
++            var8.m_iTradeLevel = iTradeLevel;
++            // END FCMOD
++
+             var1.add(var8);
+         }
+ 
+@@ -139,4 +157,77 @@
+         var1.setTag("Recipes", var2);
+         return var1;
+     }
++
++    // FCMOD: Code added
++    public MerchantRecipe canRecipeBeUsed( ItemStack inputStack1, ItemStack inputStack2, int iRecipeIndex )
++    {
++        if ( iRecipeIndex >= 0 && iRecipeIndex < size() )
++        {
++            MerchantRecipe recipe = (MerchantRecipe)get(iRecipeIndex);
++            
++            if (IsStackValidForFirstSlotOfRecipe( inputStack1, recipe ) && IsStackValidForSecondSlotOfRecipe( inputStack2, recipe ) )
++            {
++            	return recipe;
+ }
++        }
++        else
++        {
++            for ( int iTempRecipeIndex = 0; iTempRecipeIndex < size(); ++iTempRecipeIndex )
++            {
++                MerchantRecipe tempRecipe = (MerchantRecipe)get( iTempRecipeIndex );
++
++                if (IsStackValidForFirstSlotOfRecipe( inputStack1, tempRecipe ) && IsStackValidForSecondSlotOfRecipe( inputStack2, tempRecipe ) )
++                {
++                	return tempRecipe;
++                }
++            }
++        }
++        
++        return null;
++    }
++    
++    private boolean IsStackValidForFirstSlotOfRecipe( ItemStack stack, MerchantRecipe recipe )
++    {
++    	if ( stack.itemID == recipe.getItemToBuy().itemID && stack.stackSize >= recipe.getItemToBuy().stackSize )
++    	{
++    		if ( recipe.getItemToBuy().getHasSubtypes() )
++    		{
++    			return stack.getItemDamage() == recipe.getItemToBuy().getItemDamage(); 
++    		}
++    		else
++    		{
++    			return true;
++    		}
++    	}
++    	
++    	return false;
++    }
++    
++    private boolean IsStackValidForSecondSlotOfRecipe( ItemStack stack, MerchantRecipe recipe )
++    {
++    	if ( recipe.hasSecondItemToBuy() )
++    	{
++    		if ( stack != null )
++    		{
++	        	if ( stack.itemID == recipe.getSecondItemToBuy().itemID && stack.stackSize >= recipe.getSecondItemToBuy().stackSize )
++	        	{
++	        		if ( recipe.getSecondItemToBuy().getHasSubtypes() )
++	        		{
++	        			return stack.getItemDamage() == recipe.getSecondItemToBuy().getItemDamage(); 
++	        		}
++	        		else
++	        		{
++	        			return true;
++	        		}
++	        	}
++    		}
++    	}
++    	else if ( stack == null )
++    	{
++    		return true;
++    	}
++    	
++    	return false;
++    }
++    // END FCMOD
++}

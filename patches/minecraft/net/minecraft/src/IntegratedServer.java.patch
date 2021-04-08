@@ -1,0 +1,51 @@
+--- a/minecraft/net/minecraft/src/IntegratedServer.java
++++ b/minecraft/net/minecraft/src/IntegratedServer.java
+@@ -2,6 +2,8 @@
+ 
+ import java.io.File;
+ import java.io.IOException;
++import java.util.Iterator;
++
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.server.MinecraftServer;
+ 
+@@ -123,7 +125,39 @@
+         {
+             super.tick();
+         }
++        // FCMOD: Added (client only)
++        else
++        {
++        	// this keeps terrain loading and being transmitted to the client even if the game is paused
++        	
++            for ( int iTempWorldIndex = 0; iTempWorldIndex < worldServers.length; iTempWorldIndex++ )
++            {
++                if ( iTempWorldIndex == 0 || getAllowNether() )
++                {
++                    WorldServer tempWorldServer = worldServers[iTempWorldIndex];
++                    
++                    if ( !tempWorldServer.playerEntities.isEmpty() )
++                    {
++                        Iterator playerIterator = tempWorldServer.playerEntities.iterator();
++                        
++                        while ( playerIterator.hasNext() )
++                        {
++                        	EntityPlayer tempPlayer = (EntityPlayer)playerIterator.next();
++                        	
++                        	// sanity check
++                        	if ( tempPlayer instanceof EntityPlayerMP )
++                        	{
++                        		EntityPlayerMP tempPlayerMP = (EntityPlayerMP)tempPlayer;
++	                        	
++	                        	tempPlayerMP.SendChunksToClient();
+     }
++                        }
++                    }
++                }
++            }
++        }
++        // END FCMOD
++    }
+ 
+     public boolean canStructuresSpawn()
+     {
