@@ -1,0 +1,369 @@
+--- a/minecraft/net/minecraft/src/EntityCreature.java
++++ b/minecraft/net/minecraft/src/EntityCreature.java
+@@ -1,5 +1,10 @@
+ package net.minecraft.src;
+ 
++import java.io.ByteArrayOutputStream;
++import java.io.DataOutputStream;
++import java.util.Iterator;
++import java.util.List;
++
+ public abstract class EntityCreature extends EntityLiving
+ {
+     private PathEntity pathToEntity;
+@@ -53,13 +58,28 @@
+         {
+             float var2 = this.entityToAttack.getDistanceToEntity(this);
+ 
++            // FCMOD: Changed
++            /*
+             if (this.canEntityBeSeen(this.entityToAttack))
+             {
+                 this.attackEntity(this.entityToAttack, var2);
+             }
++            */
++            if ( ShouldContinueAttacking( var2 ) )
++        	{
++                if (this.canEntityBeSeen(this.entityToAttack))
++                {
++                    this.attackEntity(this.entityToAttack, var2);
+         }
++        	}
+         else
+         {
++                entityToAttack = null;
++            }
++            // END FCMOD
++        }
++        else
++        {
+             this.entityToAttack = null;
+         }
+ 
+@@ -69,7 +89,12 @@
+         {
+             this.pathToEntity = this.worldObj.getPathEntityToEntity(this, this.entityToAttack, var1, true, false, false, true);
+         }
++        // FCMOD: Code changed to stop AI deactivating with distance
++        /*
+         else if (!this.hasAttacked && (this.pathToEntity == null && this.rand.nextInt(180) == 0 || this.rand.nextInt(120) == 0 || this.fleeingTick > 0) && this.entityAge < 100)
++        */
++        else if (!this.hasAttacked && (this.pathToEntity == null && this.rand.nextInt(180) == 0 || this.rand.nextInt(120) == 0 || this.fleeingTick > 0))
++        // END FCMOD
+         {
+             this.updateWanderPath();
+         }
+@@ -156,6 +181,13 @@
+             }
+ 
+             this.worldObj.theProfiler.endSection();
++            
++            // FCMOD: Added as the lack of super call in this condition was causing spiders 
++            // with targets to hang out for an exceedingly long time without despawning
++            entityAge++;
++            
++            despawnEntity();            
++            // END FCMOD
+         }
+         else
+         {
+@@ -282,4 +314,299 @@
+ 
+         return var1;
+     }
++    
++    // FCMOD: Added New
++    private static final int m_iIsPossessedDataWatcherID = 24;
++    
++    protected int m_iPossessionTimer = -1; // - 1 is not possessed
++    
++    @Override
++    protected void entityInit()
++    {
++    	EntityCreatureEntityInit();
+ }
++    
++    protected void EntityCreatureEntityInit()
++    {
++    	// Added to alow calling entityInit() directly regardless of class hierarchy
++    	
++        super.entityInit();
++        
++        if ( GetCanCreatureTypeBePossessed() )
++        {
++        	dataWatcher.addObject( m_iIsPossessedDataWatcherID, new Byte( (byte)0 ) );
++        }
++    }
++    
++    @Override
++    public void writeEntityToNBT( NBTTagCompound tag )
++    {
++        super.writeEntityToNBT( tag );
++        
++        if ( GetCanCreatureTypeBePossessed() )
++        {
++	        tag.setInteger( "fcPossessionTimer", m_iPossessionTimer );
++	        
++	        tag.setByte( "fcPossessionLevel", (byte)GetPossessionLevel() );
++        }
++    }
++
++    @Override
++    public void readEntityFromNBT( NBTTagCompound tag )
++    {
++        super.readEntityFromNBT( tag );
++        
++        if ( GetCanCreatureTypeBePossessed() )
++        {
++	        if ( tag.hasKey( "fcPossessionTimer" ) )
++	    	{
++	        	m_iPossessionTimer = tag.getInteger( "fcPossessionTimer" );
++	        
++	        	if ( m_iPossessionTimer >= 0 )
++	        	{
++	        		SetPossessionLevel( 1 );
++	        	}
++	        	else
++	        	{
++	        		SetPossessionLevel( 0 );
++	        	}
++	    	}
++	        else
++	        {
++	        	m_iPossessionTimer = -1;
++	        	
++	    		SetPossessionLevel( 0 );
++	        }
++	        
++	        if ( tag.hasKey( "fcPossessionLevel" ) )
++	        {
++	        	SetPossessionLevel( tag.getByte( "fcPossessionLevel" ) );
++	        }
++        }
++    }
++
++    @Override
++    protected void ModSpecificOnLivingUpdate()
++    {
++    	super.ModSpecificOnLivingUpdate();
++    	
++        if ( GetCanCreatureTypeBePossessed() )
++        {
++        	HandlePossession();
++        }
++    }
++    
++    protected boolean GetCanCreatureTypeBePossessed()
++    {
++    	return false;
++    }
++    
++    protected boolean GetCanCreatureBePossessedFromDistance( boolean bPersistentSpirit )
++    {
++        return GetCanCreatureTypeBePossessed() && isEntityAlive() && !IsPossessed();
++    }
++    
++    protected boolean IsPossessed()
++    {
++    	return GetCanCreatureTypeBePossessed() && dataWatcher.getWatchableObjectByte( m_iIsPossessedDataWatcherID ) != 0;    	
++    }
++    
++    protected boolean IsFullyPossessed()
++    {
++    	return GetCanCreatureTypeBePossessed() && dataWatcher.getWatchableObjectByte( m_iIsPossessedDataWatcherID ) > 1;
++    }
++    
++    protected void SetPossessionLevel( int iLevel )
++    {    	
++        if ( GetCanCreatureTypeBePossessed() )
++        {
++	    	byte byteValue = (byte)iLevel;
++	    	
++	        dataWatcher.updateObject( m_iIsPossessedDataWatcherID, Byte.valueOf( byteValue ) );
++        }
++    }
++
++    protected int GetPossessionLevel()
++    {    	
++        if ( GetCanCreatureTypeBePossessed() )
++        {
++        	return (int)( dataWatcher.getWatchableObjectByte( m_iIsPossessedDataWatcherID ) );
++        }
++        
++        return 0;
++    }
++    
++    protected int GetInitialPossessionChance()
++    {
++    	return 1000;    	
++    }
++    
++    protected int GetTimeToFullPossession()
++    {
++    	return 2400 + worldObj.rand.nextInt( 2400 ); // 2 to 4 minutes    	
++    }
++    
++    protected void OnInitialPossession()
++    {
++        worldObj.playSoundAtEntity( this, getDeathSound(), getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F );
++        
++        worldObj.playAuxSFX( FCBetterThanWolves.m_iGhastMoanSoundAuxFXID, 
++        	MathHelper.floor_double( posX ), MathHelper.floor_double( posY ), MathHelper.floor_double( posZ ), 0 );            
++    }
++    
++    protected void OnFullPossession()
++    {
++    }
++    
++    public void InitiatePossession()
++    {
++		SetPossessionLevel( 1 );
++		
++		m_iPossessionTimer = GetTimeToFullPossession();
++		
++		OnInitialPossession();	    				
++    }
++    
++    protected void HandlePossession()
++    {
++    	if ( worldObj.getWorldInfo().getGameType() == EnumGameType.CREATIVE )
++    	{
++    		return;
++    	}
++    	
++        if ( !worldObj.isRemote )
++        {
++	    	if ( !IsPossessed() )
++	    	{
++	    		if ( worldObj.provider.dimensionId == -1 ) // is nether
++	    		{
++	    			if ( worldObj.rand.nextInt( GetInitialPossessionChance() ) == 0 )
++	    			{
++	    				InitiatePossession();	    				
++	    			}
++	    		}
++	    	}
++	    	else if ( !isChild() ) // children can be possessed but it won't take full effect until they grow up
++	    	{
++	    		if ( GetPossessionLevel() == 1 )
++	    		{
++		    		m_iPossessionTimer--;
++		    		
++		    		if ( m_iPossessionTimer < 0 )
++		    		{
++		    			m_iPossessionTimer = 0;
++		    		}
++		    		
++		    		if ( m_iPossessionTimer == 0 )
++		    		{
++		    			SetPossessionLevel( 2 );
++		    			
++		    			OnFullPossession();	    			
++		    		}
++	    		}
++	    	}
++        }
++    }
++    
++    protected boolean AttemptToPossessNearbyCreature( double dRange, boolean bPersistentSpirit )
++    {    	
++        List nearbyCreatures = worldObj.getEntitiesWithinAABB( EntityCreature.class, boundingBox.expand( dRange, dRange, dRange ) );
++        
++        Iterator itemIterator = nearbyCreatures.iterator();
++    	
++        while ( itemIterator.hasNext() )
++        {
++    		EntityCreature tempCreature = (EntityCreature)itemIterator.next();
++    		
++	        if ( tempCreature.GetCanCreatureBePossessedFromDistance( bPersistentSpirit ) && tempCreature != this )
++	        {
++	        	tempCreature.InitiatePossession();
++        		
++        		return true;
++	        }	        
++        }
++        
++    	return false;
++    }
++    
++    static public int AttemptToPossessCreaturesAroundBlock( World world, int i, int j, int k, int iPossessionCount, int iCubicRange )
++    {
++		AxisAlignedBB possessionBox = AxisAlignedBB.getAABBPool().getAABB( 
++			(double)( i - iCubicRange ), (double)( j - iCubicRange ), (double)( k - iCubicRange ),
++			(double)( i + 1 + iCubicRange ), (double)( j + 1 + iCubicRange ), (double)( k + 1 + iCubicRange ) );
++		
++        List nearbyCreatures = world.getEntitiesWithinAABB( EntityCreature.class, possessionBox );
++        
++        Iterator creatureIterator = nearbyCreatures.iterator();
++    	
++        while ( creatureIterator.hasNext() && iPossessionCount > 0 )
++        {
++        	EntityCreature tempCreature = (EntityCreature)creatureIterator.next();
++    		
++	        if ( tempCreature.GetCanCreatureBePossessedFromDistance( false ) )
++	        {
++	        	tempCreature.InitiatePossession();
++	        	
++	        	iPossessionCount--;        		
++	        }        	        
++        }    
++        
++        return iPossessionCount;
++    }
++    
++    protected void AttemptToPossessNearbyCreatureOnDeath()
++    {
++		AttemptToPossessNearbyCreature( 16D, false );
++    }
++    
++    @Override
++    public void onDeath( DamageSource source )
++    {
++    	super.onDeath( source );
++    	
++    	// if a possessed creature dies, the spirits attempt to possess another nearby
++    	
++    	if ( !worldObj.isRemote && IsPossessed() )
++    	{
++    		if ( riddenByEntity == null || !riddenByEntity.OnPossesedRidingEntityDeath() )
++    		{
++    			AttemptToPossessNearbyCreatureOnDeath();
++    		}
++    	}
++    }
++    
++    protected boolean ShouldContinueAttacking( float fDistanceToTarget )
++    {
++    	return true;
++    }
++
++    protected void TransmitAttackTargetToClients()
++    {
++        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
++        DataOutputStream dataStream = new DataOutputStream( byteStream );
++        
++        try
++        {
++	        dataStream.writeInt( entityId );
++	        dataStream.writeByte( (byte)FCBetterThanWolves.fcCustomEntityEventPacketTypeSetAttackTarget );
++
++	        if ( entityToAttack != null )
++	        {
++	        	dataStream.writeInt( entityToAttack.entityId );
++	        }
++	        else
++	        {
++	        	dataStream.writeInt( -1 );
++	        }
++        }
++        catch (Exception exception)
++        {
++            exception.printStackTrace();
++        }        
++	        
++        Packet250CustomPayload packet = new Packet250CustomPayload( FCBetterThanWolves.fcCustomPacketChannelCustomEntityEvent, byteStream.toByteArray() );
++        
++        FCUtilsWorld.SendPacketToAllPlayersTrackingEntity( (WorldServer)worldObj, this, packet );
++    }
++    // END FCMOD
++}

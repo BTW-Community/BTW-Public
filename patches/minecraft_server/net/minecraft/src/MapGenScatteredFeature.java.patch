@@ -1,0 +1,14 @@
+--- a/minecraft_server/net/minecraft/src/MapGenScatteredFeature.java
++++ b/minecraft_server/net/minecraft/src/MapGenScatteredFeature.java
+@@ -26,7 +26,11 @@
+         this.scatteredFeatureSpawnList = new ArrayList();
+         this.maxDistanceBetweenScatteredFeatures = 32;
+         this.minDistanceBetweenScatteredFeatures = 8;
++        // FCMOD: Code removed
++        /*
+         this.scatteredFeatureSpawnList.add(new SpawnListEntry(EntityWitch.class, 1, 1, 1));
++        */
++        // END FCMOD
+     }
+ 
+     public MapGenScatteredFeature(Map par1Map)

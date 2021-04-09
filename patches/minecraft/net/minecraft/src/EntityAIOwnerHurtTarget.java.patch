@@ -1,0 +1,33 @@
+--- a/minecraft/net/minecraft/src/EntityAIOwnerHurtTarget.java
++++ b/minecraft/net/minecraft/src/EntityAIOwnerHurtTarget.java
+@@ -17,6 +17,12 @@
+      */
+     public boolean shouldExecute()
+     {
++    	// FCMOD: Code added to check if sitting before attacking    	
++    	if ( theEntityTameable.isSitting() )
++    	{
++    		return false;
++    	}
++    	// END FCMOD
+         if (!this.theEntityTameable.isTamed())
+         {
+             return false;
+@@ -45,4 +51,17 @@
+         this.taskOwner.setAttackTarget(this.theTarget);
+         super.startExecuting();
+     }
++
++    // FCMOD: Inherited function added
++    @Override
++    public boolean continueExecuting()
++    {
++    	if ( theEntityTameable.isSitting() )
++    	{
++    		return false;
+ }
++    	
++    	return super.continueExecuting();
++    }
++    // END FCMOD
++}

@@ -1,0 +1,18 @@
+--- a/minecraft/net/minecraft/src/DispenserBehaviorEmptyBucket.java
++++ b/minecraft/net/minecraft/src/DispenserBehaviorEmptyBucket.java
+@@ -7,6 +7,8 @@
+     /**
+      * Dispense the specified stack, play the dispense sound and spawn particles.
+      */
++    // FCMOD: Code removed to prevent usage
++    /*
+     public ItemStack dispenseStack(IBlockSource par1IBlockSource, ItemStack par2ItemStack)
+     {
+         EnumFacing var3 = BlockDispenser.getFacing(par1IBlockSource.getBlockMetadata());
+@@ -46,4 +48,6 @@
+ 
+         return par2ItemStack;
+     }
++    */
++    // END FCMOD
+ }

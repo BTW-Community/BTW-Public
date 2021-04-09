@@ -1,0 +1,276 @@
+--- a/minecraft_server/net/minecraft/src/EntityArrow.java
++++ b/minecraft_server/net/minecraft/src/EntityArrow.java
+@@ -4,12 +4,22 @@
+ 
+ public class EntityArrow extends Entity implements IProjectile
+ {
++	// FCMOD: Changed to protected
++	/*
+     private int xTile = -1;
+     private int yTile = -1;
+     private int zTile = -1;
+     private int inTile = 0;
+     private int inData = 0;
+     private boolean inGround = false;
++    */
++    protected int xTile = -1;
++    protected int yTile = -1;
++    protected int zTile = -1;
++    protected int inTile = 0;
++    protected int inData = 0;
++    protected boolean inGround = false;
++	// END FCMOD
+ 
+     /** 1 if the player can pick up the arrow */
+     public int canBePickedUp = 0;
+@@ -143,7 +153,9 @@
+ 
+         if (var16 > 0)
+         {
+-            Block.blocksList[var16].setBlockBoundsBasedOnState(this.worldObj, this.xTile, this.yTile, this.zTile);
++        	// FCMOD: Removed due to deprecation
++            //Block.blocksList[var16].setBlockBoundsBasedOnState(this.worldObj, this.xTile, this.yTile, this.zTile);
++        	// END FCMOD
+             AxisAlignedBB var2 = Block.blocksList[var16].getCollisionBoundingBoxFromPool(this.worldObj, this.xTile, this.yTile, this.zTile);
+ 
+             if (var2 != null && var2.isVecInside(this.worldObj.getWorldVec3Pool().getVecFromPool(this.posX, this.posY, this.posZ)))
+@@ -162,11 +174,21 @@
+             int var18 = this.worldObj.getBlockId(this.xTile, this.yTile, this.zTile);
+             int var19 = this.worldObj.getBlockMetadata(this.xTile, this.yTile, this.zTile);
+ 
++            // FCMOD: Changed this line
++			/*
+             if (var18 == this.inTile && var19 == this.inData)
++			*/
++            if (var18 == this.inTile && ( var19 == this.inData || var18 == FCBetterThanWolves.fcBlockDetector.blockID ) )
++    		// END FCMOD
+             {
+                 ++this.ticksInGround;
+ 
++                // FCMOD: Changed this to increase arrow despawn time to be same as items
++                /*
+                 if (this.ticksInGround == 1200)
++                */
++                if ( ticksInGround >= 6000 )
++            	// END FCMOD
+                 {
+                     this.setDead();
+                 }
+@@ -231,38 +253,38 @@
+ 
+             if (var4 != null && var4.entityHit != null && var4.entityHit instanceof EntityPlayer)
+             {
+-                EntityPlayer var20 = (EntityPlayer)var4.entityHit;
++                EntityPlayer var21 = (EntityPlayer)var4.entityHit;
+ 
+-                if (var20.capabilities.disableDamage || this.shootingEntity instanceof EntityPlayer && !((EntityPlayer)this.shootingEntity).func_96122_a(var20))
++                if (var21.capabilities.disableDamage || this.shootingEntity instanceof EntityPlayer && !((EntityPlayer)this.shootingEntity).func_96122_a(var21))
+                 {
+                     var4 = null;
+                 }
+             }
+ 
+-            float var21;
++            float var20;
+             float var27;
+ 
+             if (var4 != null)
+             {
+                 if (var4.entityHit != null)
+                 {
+-                    var21 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+-                    int var22 = MathHelper.ceiling_double_int((double)var21 * this.damage);
++                    var20 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
++                    int var24 = MathHelper.ceiling_double_int((double)var20 * this.damage);
+ 
+                     if (this.getIsCritical())
+                     {
+-                        var22 += this.rand.nextInt(var22 / 2 + 2);
++                        var24 += this.rand.nextInt(var24 / 2 + 2);
+                     }
+ 
+-                    DamageSource var23 = null;
++                    DamageSource var22 = null;
+ 
+                     if (this.shootingEntity == null)
+                     {
+-                        var23 = DamageSource.causeArrowDamage(this, this);
++                        var22 = DamageSource.causeArrowDamage(this, this);
+                     }
+                     else
+                     {
+-                        var23 = DamageSource.causeArrowDamage(this, this.shootingEntity);
++                        var22 = DamageSource.causeArrowDamage(this, this.shootingEntity);
+                     }
+ 
+                     if (this.isBurning() && !(var4.entityHit instanceof EntityEnderman))
+@@ -270,7 +292,12 @@
+                         var4.entityHit.setFire(5);
+                     }
+ 
+-                    if (var4.entityHit.attackEntityFrom(var23, var22))
++                    // FCMOD: Line changed
++                    /*
++                    if (var4.entityHit.attackEntityFrom(var22, var24))
++                    */
++	                if ( var4.entityHit.attackEntityFrom( var22, (int)((float)var24 * GetDamageMultiplier() ) ))
++	            	// END FCMOD
+                     {
+                         if (var4.entityHit instanceof EntityLiving)
+                         {
+@@ -326,13 +353,16 @@
+                     this.zTile = var4.blockZ;
+                     this.inTile = this.worldObj.getBlockId(this.xTile, this.yTile, this.zTile);
+                     this.inData = this.worldObj.getBlockMetadata(this.xTile, this.yTile, this.zTile);
++                    // FCMOD: Added
++                    NotifyColldingBlockOfImpact();
++                    // END FCMOD
+                     this.motionX = (double)((float)(var4.hitVec.xCoord - this.posX));
+                     this.motionY = (double)((float)(var4.hitVec.yCoord - this.posY));
+                     this.motionZ = (double)((float)(var4.hitVec.zCoord - this.posZ));
+-                    var21 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
+-                    this.posX -= this.motionX / (double)var21 * 0.05000000074505806D;
+-                    this.posY -= this.motionY / (double)var21 * 0.05000000074505806D;
+-                    this.posZ -= this.motionZ / (double)var21 * 0.05000000074505806D;
++                    var20 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
++                    this.posX -= this.motionX / (double)var20 * 0.05000000074505806D;
++                    this.posY -= this.motionY / (double)var20 * 0.05000000074505806D;
++                    this.posZ -= this.motionZ / (double)var20 * 0.05000000074505806D;
+                     this.playSound("random.bowhit", 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+                     this.inGround = true;
+                     this.arrowShake = 7;
+@@ -356,10 +386,10 @@
+             this.posX += this.motionX;
+             this.posY += this.motionY;
+             this.posZ += this.motionZ;
+-            var21 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
++            var20 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
+             this.rotationYaw = (float)(Math.atan2(this.motionX, this.motionZ) * 180.0D / Math.PI);
+ 
+-            for (this.rotationPitch = (float)(Math.atan2(this.motionY, (double)var21) * 180.0D / Math.PI); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
++            for (this.rotationPitch = (float)(Math.atan2(this.motionY, (double)var20) * 180.0D / Math.PI); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F)
+             {
+                 ;
+             }
+@@ -381,7 +411,7 @@
+ 
+             this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
+             this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
+-            float var24 = 0.99F;
++            float var23 = 0.99F;
+             var11 = 0.05F;
+ 
+             if (this.isInWater())
+@@ -392,16 +422,19 @@
+                     this.worldObj.spawnParticle("bubble", this.posX - this.motionX * (double)var27, this.posY - this.motionY * (double)var27, this.posZ - this.motionZ * (double)var27, this.motionX, this.motionY, this.motionZ);
+                 }
+ 
+-                var24 = 0.8F;
++                var23 = 0.8F;
+             }
+ 
+-            this.motionX *= (double)var24;
+-            this.motionY *= (double)var24;
+-            this.motionZ *= (double)var24;
++            this.motionX *= (double)var23;
++            this.motionY *= (double)var23;
++            this.motionZ *= (double)var23;
+             this.motionY -= (double)var11;
+             this.setPosition(this.posX, this.posY, this.posZ);
+             this.doBlockCollisions();
+         }
++        // FCMOD: Added        
++        NotifyAnyCollidingBlocks();
++        // END FCMOD
+     }
+ 
+     /**
+@@ -418,6 +451,10 @@
+         par1NBTTagCompound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+         par1NBTTagCompound.setByte("pickup", (byte)this.canBePickedUp);
+         par1NBTTagCompound.setDouble("damage", this.damage);
++        
++        // FCMOD: Added
++        par1NBTTagCompound.setShort( "fcInTileEx", (short)this.inTile );
++	    // END FCMOD    
+     }
+ 
+     /**
+@@ -446,7 +483,14 @@
+         {
+             this.canBePickedUp = par1NBTTagCompound.getBoolean("player") ? 1 : 0;
+         }
++        
++        // FCMOD: Added
++        if ( par1NBTTagCompound.hasKey( "fcInTileEx" ) )
++        {
++        	inTile = par1NBTTagCompound.getShort( "fcInTileEx" );
+     }
++	    // END FCMOD
++    }
+ 
+     /**
+      * Called by a player entity when they collide with an entity
+@@ -457,7 +501,12 @@
+         {
+             boolean var2 = this.canBePickedUp == 1 || this.canBePickedUp == 2 && par1EntityPlayer.capabilities.isCreativeMode;
+ 
++            // FCMOD: Changed line
++            /*
+             if (this.canBePickedUp == 1 && !par1EntityPlayer.inventory.addItemStackToInventory(new ItemStack(Item.arrow, 1)))
++	        */
++	        if ( canBePickedUp == 1 && !AddArrowToPlayerInv( par1EntityPlayer ) )
++	    	// END FCMOD
+             {
+                 var2 = false;
+             }
+@@ -531,4 +580,49 @@
+         byte var1 = this.dataWatcher.getWatchableObjectByte(16);
+         return (var1 & 1) != 0;
+     }
++    
++    // FCMOD: Code added
++    protected float GetDamageMultiplier()
++    {
++    	return 1F;
+ }
++    
++	protected boolean AddArrowToPlayerInv( EntityPlayer player )
++	{
++		return player.inventory.addItemStackToInventory( new ItemStack( GetCorrespondingItem(), 1 ) );
++	}
++	
++	public Item GetCorrespondingItem()
++	{
++		return Item.arrow;
++	}
++	
++	public boolean CanHopperCollect()
++	{
++		return true;
++	}
++	
++	private void NotifyAnyCollidingBlocks()
++	{
++        if ( inGround )
++        {
++            Block blockHit = Block.blocksList[inTile];
++            
++            if ( blockHit != null )
++            {
++            	blockHit.OnArrowCollide( worldObj, xTile, yTile, zTile, this );
++            }
++        }
++	}
++	
++    private void NotifyColldingBlockOfImpact()
++    {
++	    Block blockHit = Block.blocksList[inTile];
++	    
++	    if ( blockHit != null )
++	    {
++	    	blockHit.OnArrowImpact( worldObj, xTile, yTile, zTile, this );
++	    }
++    }
++	// END FCMOD
++}

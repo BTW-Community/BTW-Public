@@ -1,0 +1,85 @@
+--- a/minecraft/net/minecraft/src/SoundManager.java
++++ b/minecraft/net/minecraft/src/SoundManager.java
+@@ -13,6 +13,11 @@
+ import paulscode.sound.codecs.CodecWav;
+ import paulscode.sound.libraries.LibraryLWJGLOpenAL;
+ 
++// FCMOD: Code added (client only)
++import java.util.HashMap;
++import java.util.Map;
++// END FCMOD
++
+ public class SoundManager
+ {
+     /** A reference to the sound system. */
+@@ -206,6 +211,9 @@
+                 float var16 = 0.0F;
+                 float var17 = 1.0F;
+                 float var18 = 0.0F;
++                // FCMOD: Code added, client only
++                Update3DSoundTrackerForNewPosition((float)var5, (float)var7, (float)var9);
++                // END FCMOD
+                 sndSystem.setListenerPosition((float)var5, (float)var7, (float)var9);
+                 sndSystem.setListenerOrientation(var13, var14, var15, var16, var17, var18);
+             }
+@@ -454,6 +462,10 @@
+ 
+                 sndSystem.setVolume(var8, par5 * this.options.soundVolume);
+                 sndSystem.play(var8);
++                
++                // FCMOD: Code added, client only
++                Add3DSoundToTracker( var8, par2, par3, par4, var9 );
++                // END FCMOD
+             }
+         }
+     }
+@@ -539,4 +551,49 @@
+     {
+         this.field_92072_h.add(new ScheduledSound(par1Str, par2, par3, par4, par5, par6, par7));
+     }
++    
++    // FCMOD: Code added, client only
++    private Map m_Tracked3DSoundsHashMap = new HashMap();
++    
++    private void Add3DSoundToTracker( String name, float x, float y, float z, float fRange )
++    {
++    	// note that hash maps automatically remove any previous entry with the same name
++    	
++    	m_Tracked3DSoundsHashMap.put( name, new FCClientSoundTrackerEntry( name, x, y, z, fRange ) );
+ }
++    
++    private void Update3DSoundTrackerForNewPosition( float x, float y, float z )
++    {
++        Iterator soundIterator = m_Tracked3DSoundsHashMap.values().iterator();
++
++        while (soundIterator.hasNext())
++        {
++            FCClientSoundTrackerEntry tempSoundEntry = (FCClientSoundTrackerEntry)soundIterator.next();
++            
++            if ( sndSystem.playing( tempSoundEntry.m_sName ) )
++            {
++            	float fDeltaX = x - tempSoundEntry.m_fXPos;
++            	float fDeltaY = y - tempSoundEntry.m_fYPos;
++            	float fDeltaZ = z - tempSoundEntry.m_fZPos;
++            	
++            	float distSqToSound = ( fDeltaX * fDeltaX ) + ( fDeltaY * fDeltaY ) + ( fDeltaZ * fDeltaZ );
++            	
++            	if ( distSqToSound >= tempSoundEntry.m_fMaxRangeSq )
++            	{
++            		// the sound has gone out of range and should stop
++            		
++            		sndSystem.stop( tempSoundEntry.m_sName );
++            		
++                	soundIterator.remove();
++            	}
++            }
++            else
++            {
++            	// the sound is done playing, remove it from the map
++            	
++            	soundIterator.remove();
++            }
++        }
++    }
++    // END FCMOD
++}

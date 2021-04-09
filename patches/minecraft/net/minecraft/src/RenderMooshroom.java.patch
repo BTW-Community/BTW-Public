@@ -1,0 +1,55 @@
+--- a/minecraft/net/minecraft/src/RenderMooshroom.java
++++ b/minecraft/net/minecraft/src/RenderMooshroom.java
+@@ -7,6 +7,11 @@
+     public RenderMooshroom(ModelBase par1ModelBase, float par2)
+     {
+         super(par1ModelBase, par2);
++        // FCMOD: Added (client only)        
++        m_ModelUdder = new FCClientModelCowUdder();
++        
++        setRenderPassModel(m_ModelUdder);
++        // END FCMOD
+     }
+ 
+     public void renderLivingMooshroom(EntityMooshroom par1EntityMooshroom, double par2, double par4, double par6, float par8, float par9)
+@@ -29,6 +34,9 @@
+             this.renderBlocks.renderBlockAsItem(Block.mushroomRed, 0, 1.0F);
+             GL11.glTranslatef(0.1F, 0.0F, -0.6F);
+             GL11.glRotatef(42.0F, 0.0F, 1.0F, 0.0F);
++            // FCMOD: Added (client only) to not display mid mushroom if starving
++            if ( !par1EntityMooshroom.IsStarving() )
++        	// END FCMOD
+             this.renderBlocks.renderBlockAsItem(Block.mushroomRed, 0, 1.0F);
+             GL11.glPopMatrix();
+             GL11.glPushMatrix();
+@@ -36,6 +44,9 @@
+             GL11.glScalef(1.0F, -1.0F, 1.0F);
+             GL11.glTranslatef(0.0F, 0.75F, -0.2F);
+             GL11.glRotatef(12.0F, 0.0F, 1.0F, 0.0F);
++            // FCMOD: Added (client only) to not display head mushroom if not full
++            if ( par1EntityMooshroom.IsFullyFed() )
++        	// END FCMOD
+             this.renderBlocks.renderBlockAsItem(Block.mushroomRed, 0, 1.0F);
+             GL11.glPopMatrix();
+             GL11.glDisable(GL11.GL_CULL_FACE);
+@@ -62,4 +73,20 @@
+     {
+         this.renderLivingMooshroom((EntityMooshroom)par1Entity, par2, par4, par6, par8, par9);
+     }
++    
++    // FCMOD: Added New (client only)
++    FCClientModelCowUdder m_ModelUdder;
++    
++    protected int shouldRenderPass(EntityLiving par1EntityLiving, int par2, float par3)
++    {
++    	if ( par2 == 0 && ((FCEntityCow)par1EntityLiving).GotMilk() )
++    	{
++    		loadTexture( "/btwmodtex/cow_udder.png" );
++    		
++    		return 1;
+ }
++    	
++        return -1;
++    }
++    // END FCMOD
++}

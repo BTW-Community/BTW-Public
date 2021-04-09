@@ -1,0 +1,22 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCCraftingManagerCauldronStoked.java
+@@ -0,0 +1,19 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCCraftingManagerCauldronStoked  extends FCCraftingManagerBulk
++{
++    private static final FCCraftingManagerCauldronStoked instance = new FCCraftingManagerCauldronStoked();
++    
++    public static final FCCraftingManagerCauldronStoked getInstance()
++    {
++        return instance;
++    }
++
++    private FCCraftingManagerCauldronStoked()
++    {
++    	super();    	
++    }
++}
++

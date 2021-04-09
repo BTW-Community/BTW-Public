@@ -1,0 +1,75 @@
+--- a/minecraft/net/minecraft/src/MerchantRecipe.java
++++ b/minecraft/net/minecraft/src/MerchantRecipe.java
+@@ -29,7 +29,13 @@
+         this.itemToBuy = par1ItemStack;
+         this.secondItemToBuy = par2ItemStack;
+         this.itemToSell = par3ItemStack;
++        // FCMOD: Change
++        /*
+         this.maxTradeUses = 7;
++        */
++        maxTradeUses = 1;
++        m_iTradeLevel = 1;
++        // END FCMOD
+     }
+ 
+     public MerchantRecipe(ItemStack par1ItemStack, ItemStack par2ItemStack)
+@@ -133,9 +139,25 @@
+         }
+         else
+         {
++            // FCMOD: Change
++            /*
+             this.maxTradeUses = 7;
++            */
++        	maxTradeUses = 1;
++        	// END FCMOD
+         }
++        
++        // FCMOD: Added
++        if ( par1NBTTagCompound.hasKey( "fcTradeLevel" ) )
++        {
++            m_iTradeLevel = par1NBTTagCompound.getInteger("fcTradeLevel");
+     }
++        else
++        {
++        	m_iTradeLevel = 1;
++        }
++        // END FCMOD
++    }
+ 
+     public NBTTagCompound writeToTags()
+     {
+@@ -150,6 +172,32 @@
+ 
+         var1.setInteger("uses", this.toolUses);
+         var1.setInteger("maxUses", this.maxTradeUses);
++        
++        // FCMOD: Added
++        var1.setInteger( "fcTradeLevel", m_iTradeLevel );
++        // END FCMOD
++        
+         return var1;
+     }
++    
++    // FCMOD: Added
++    public int m_iTradeLevel;    
++    
++    public MerchantRecipe( ItemStack inputStack1, ItemStack inputStack2, ItemStack outputStack, int iTradeLevel )
++    {
++        this( inputStack1, inputStack2, outputStack );
++        
++        m_iTradeLevel = iTradeLevel;
+ }
++    
++    public MerchantRecipe( ItemStack inputStack, ItemStack outputStack, int iTradeLevel )
++    {
++        this( inputStack, (ItemStack)null, outputStack, iTradeLevel );
++    }
++
++    public MerchantRecipe( ItemStack inputStack, Item outputItem, int iTradeLevel )
++    {
++        this( inputStack, new ItemStack( outputItem ), iTradeLevel );
++    }
++    // END FCMOD
++}

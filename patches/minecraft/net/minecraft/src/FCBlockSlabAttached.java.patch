@@ -1,0 +1,93 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockSlabAttached.java
+@@ -0,0 +1,90 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public abstract class FCBlockSlabAttached extends FCBlockSlab
++{
++    protected FCBlockSlabAttached( int iBlockID, Material material )
++    {
++        super( iBlockID, material );
++    }
++    
++    @Override
++    public boolean canPlaceBlockOnSide( World world, int i, int j, int k, int iSide )
++    {
++    	if ( iSide == 0 || iSide == 1 )
++    	{
++    		if ( HasValidAnchorToFacing( world, i, j, k, Block.GetOppositeFacing( iSide ) ) )
++			{
++		        return super.canPlaceBlockOnSide( world, i, j, k, iSide );
++			}
++    	}
++    	else if ( HasValidAnchorToFacing( world, i, j, k, 0 ) || 
++			HasValidAnchorToFacing( world, i, j, k, 1 ) )
++		{
++	        return super.canPlaceBlockOnSide( world, i, j, k, iSide );
++		}
++    	
++		return false;
++    }
++    
++	@Override
++    public int onBlockPlaced( World world, int i, int j, int k, int iFacing, float fClickX, float fClickY, float fClickZ, int iMetadata )
++    {
++		if ( iFacing == 0 )
++		{
++        	iMetadata = SetIsUpsideDown( iMetadata, true );
++		}
++		else if ( iFacing != 1 )
++        {
++			if ( (double)fClickY > 0.5D )
++			{
++				if ( HasValidAnchorToFacing( world, i, j, k, 1 ) )
++				{
++		        	iMetadata = SetIsUpsideDown( iMetadata, true );
++				}
++			}
++			else
++			{
++				if ( !HasValidAnchorToFacing( world, i, j, k, 0 ) )
++				{
++		        	iMetadata = SetIsUpsideDown( iMetadata, true );
++				}
++			}
++        }
++        
++        return iMetadata;
++    }
++	
++	@Override
++    public void onNeighborBlockChange( World world, int i, int j, int k, int iNeighborBlockID )
++    {
++		int iAnchorSide = 0;
++		
++		if ( GetIsUpsideDown( world.getBlockMetadata( i, j, k ) ) )
++		{
++			iAnchorSide = 1;			
++		}
++		
++		if ( !HasValidAnchorToFacing( world, i, j, k, iAnchorSide ) )
++		{
++			OnAnchorBlockLost( world, i, j, k );
++			
++	        world.setBlockToAir( i, j, k );
++		}
++    }
++	
++    //------------- Class Specific Methods ------------//    
++    
++	protected boolean HasValidAnchorToFacing( World world, int i, int j, int k, int iFacing )
++	{
++		FCUtilsBlockPos attachedPos = new FCUtilsBlockPos( i, j, k, iFacing );
++		
++		return FCUtilsWorld.DoesBlockHaveLargeCenterHardpointToFacing( world, attachedPos.i, attachedPos.j, attachedPos.k, 
++			Block.GetOppositeFacing( iFacing ), true );		
++	}
++	
++	abstract protected void OnAnchorBlockLost( World world, int i, int j, int k );
++	
++	//----------- Client Side Functionality -----------//
++}

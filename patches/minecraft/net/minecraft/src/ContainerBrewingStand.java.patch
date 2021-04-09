@@ -1,0 +1,14 @@
+--- a/minecraft/net/minecraft/src/ContainerBrewingStand.java
++++ b/minecraft/net/minecraft/src/ContainerBrewingStand.java
+@@ -113,7 +113,10 @@
+                         return null;
+                     }
+                 }
+-                else if (!this.mergeItemStack(var5, 4, 40, false))
++                // FCMOD: Change to give priority to player hotbar
++                //else if (!this.mergeItemStack(var5, 4, 40, false))
++                else if (!this.mergeItemStack(var5, 4, 40, true))
++            	// END FCMOD
+                 {
+                     return null;
+                 }

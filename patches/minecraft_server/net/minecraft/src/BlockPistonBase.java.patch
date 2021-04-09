@@ -1,0 +1,108 @@
+--- a/minecraft_server/net/minecraft/src/BlockPistonBase.java
++++ b/minecraft_server/net/minecraft/src/BlockPistonBase.java
+@@ -5,7 +5,10 @@
+ public class BlockPistonBase extends Block
+ {
+     /** This pistons is the sticky one? */
+-    private final boolean isSticky;
++	// FCMOD: Changed
++    //private final boolean isSticky;
++    protected final boolean isSticky;
++    // END FCMOD
+ 
+     public BlockPistonBase(int par1, boolean par2)
+     {
+@@ -81,7 +84,10 @@
+     /**
+      * handles attempts to extend or retract the piston.
+      */
+-    private void updatePistonState(World par1World, int par2, int par3, int par4)
++    // FCMOD: Changed
++    //private void updatePistonState(World par1World, int par2, int par3, int par4)
++    protected void updatePistonState(World par1World, int par2, int par3, int par4)
++    // END FCMOD
+     {
+         int var5 = par1World.getBlockMetadata(par2, par3, par4);
+         int var6 = getOrientation(var5);
+@@ -184,8 +190,18 @@
+                     }
+                 }
+ 
+-                if (!var13 && var11 > 0 && canPushBlock(var11, par1World, var8, var9, var10, false) && (Block.blocksList[var11].getMobilityFlag() == 0 || var11 == Block.pistonBase.blockID || var11 == Block.pistonStickyBase.blockID))
++                // FCMOD: Changed
++                //if (!var13 && var11 > 0 && canPushBlock(var11, par1World, var8, var9, var10, false) && (Block.blocksList[var11].getMobilityFlag() == 0 || var11 == Block.pistonBase.blockID || var11 == Block.pistonStickyBase.blockID))
++                Block targetBlock = Block.blocksList[var11];
++                
++                if ( !var13 && targetBlock != null && 
++                	targetBlock.CanBlockBePulledByPiston( par1World, var8, var9, var10, Block.GetOppositeFacing( par6 ) ) )
++                // END FCMOD                	
+                 {
++                    // FCMOD: Added
++            		var12 =  targetBlock.AdjustMetadataForPistonMove( var12 );
++                    // END FCMOD
++                    
+                     par2 += Facing.offsetsXForSide[par6];
+                     par3 += Facing.offsetsYForSide[par6];
+                     par4 += Facing.offsetsZForSide[par6];
+@@ -329,6 +345,8 @@
+     /**
+      * returns true if the piston can push the specified block
+      */
++    // FCMOD: Removed and replaced in child class
++    /*
+     private static boolean canPushBlock(int par0, World par1World, int par2, int par3, int par4, boolean par5)
+     {
+         if (par0 == Block.obsidian.blockID)
+@@ -367,10 +385,14 @@
+             return !(Block.blocksList[par0] instanceof ITileEntityProvider);
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * checks to see if this piston could push the blocks in front of it.
+      */
++    // FCMOD: Removed and replaced in child class
++    /* 
+     private static boolean canExtend(World par0World, int par1, int par2, int par3, int par4)
+     {
+         int var5 = par1 + Facing.offsetsXForSide[par4];
+@@ -415,10 +437,14 @@
+             return true;
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * attempts to extend the piston. returns false if impossible.
+      */
++    // FCMOD: Removed and replaced in child class
++    /* 
+     private boolean tryExtend(World par1World, int par2, int par3, int par4, int par5)
+     {
+         int var6 = par2 + Facing.offsetsXForSide[par5];
+@@ -515,4 +541,22 @@
+             return true;
+         }
+     }
++    */
++    // END FCMOD
++    
++    // FCMOD: Added New    
++    protected boolean canExtend( World world, int i, int j, int k, int iFacing )
++    {
++    	// intended to be overriden by child class
++    	
++    	return false;
+ }
++    
++    protected boolean tryExtend( World world, int i, int j, int k, int iFacing )
++    {
++    	// intended to be overriden by child class
++    	
++    	return false;
++    }
++    // END FCMOD    
++}

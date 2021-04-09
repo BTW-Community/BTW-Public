@@ -1,0 +1,12 @@
+--- a/minecraft/net/minecraft/src/RenderTNTPrimed.java
++++ b/minecraft/net/minecraft/src/RenderTNTPrimed.java
+@@ -48,6 +48,9 @@
+             GL11.glEnable(GL11.GL_BLEND);
+             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
+             GL11.glColor4f(1.0F, 1.0F, 1.0F, var10);
++            // FCMOD: Code added to prevent texture shimmering
++            GL11.glScalef(1.001F, 1.001F, 1.001F);
++            // END FCMOD
+             this.blockRenderer.renderBlockAsItem(Block.tnt, 0, 1.0F);
+             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+             GL11.glDisable(GL11.GL_BLEND);

@@ -1,0 +1,74 @@
+--- a/minecraft/net/minecraft/src/ItemFood.java
++++ b/minecraft/net/minecraft/src/ItemFood.java
+@@ -39,6 +39,11 @@
+         this.isWolfsFavoriteMeat = par4;
+         this.saturationModifier = par3;
+         this.setCreativeTab(CreativeTabs.tabFood);
++        // FCMOD: Added
++        maxStackSize = 16;
++        SetBuoyant();        
++        SetIncineratedInCrucible();
++        // END FCMOD
+     }
+ 
+     public ItemFood(int par1, int par2, boolean par3)
+@@ -88,6 +93,12 @@
+         {
+             par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
+         }
++        // FCMOD: Added
++    	else
++    	{
++    		par3EntityPlayer.OnCantConsume();
++    	}
++        // END FCMOD
+ 
+         return par1ItemStack;
+     }
+@@ -134,4 +145,46 @@
+         this.alwaysEdible = true;
+         return this;
+     }
++    
++    // FCMOD: Added New    
++    private boolean m_bDoZombiesConsume = false;
++    
++    public ItemFood( int iItemID, int iHealAmount, float fSaturationModifier, boolean bWolfsFavoriteMeat, boolean bZombiesConsume )
++    {
++    	this( iItemID, iHealAmount, fSaturationModifier, bWolfsFavoriteMeat );
++    	
++    	m_bDoZombiesConsume = bZombiesConsume;
+ }
++    
++    @Override
++    public boolean DoZombiesConsume()
++    {
++    	return m_bDoZombiesConsume;
++    }
++    
++    @Override
++    public boolean IsMultiUsePerClick()
++    {
++    	return false;
++    }
++
++    @Override
++    public boolean IsWolfFood()
++    {
++    	return isWolfsFavoriteMeat();
++    }
++    
++    @Override
++    public int GetWolfHealAmount()
++    {
++    	return getHealAmount();
++    }
++    
++    public int GetHungerRestored()
++    {
++    	// multiply original values by 3 to take into account increased hunger resolution 
++    	
++    	return healAmount * 3;
++    }
++    // END FCMOD
++}

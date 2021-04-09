@@ -1,0 +1,13 @@
+--- a/minecraft_server/net/minecraft/src/ContainerEnchantment.java
++++ b/minecraft_server/net/minecraft/src/ContainerEnchantment.java
+@@ -190,6 +190,10 @@
+                     }
+ 
+                     this.onCraftMatrixChanged(this.tableInventory);
++
++                    // FCMOD: Code added
++                    worldPointer.playSoundAtEntity( par1EntityPlayer, "random.levelup", 0.25F, worldPointer.rand.nextFloat() * 0.1F + 0.5F );
++                    // END FCMOD
+                 }
+             }
+ 

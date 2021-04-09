@@ -1,0 +1,51 @@
+--- a/minecraft_server/net/minecraft/src/FurnaceRecipes.java
++++ b/minecraft_server/net/minecraft/src/FurnaceRecipes.java
+@@ -45,11 +45,15 @@
+     /**
+      * Adds a smelting recipe.
+      */
++    // FCMOD: Code removed and replaced later
++    /*
+     public void addSmelting(int par1, ItemStack par2ItemStack, float par3)
+     {
+         this.smeltingList.put(Integer.valueOf(par1), par2ItemStack);
+         this.experienceList.put(Integer.valueOf(par2ItemStack.itemID), Float.valueOf(par3));
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Returns the smelting result of an item.
+@@ -68,4 +72,32 @@
+     {
+         return this.experienceList.containsKey(Integer.valueOf(par1)) ? ((Float)this.experienceList.get(Integer.valueOf(par1))).floatValue() : 0.0F;
+     }
++    
++    // FCMOD: Code added
++    private Map m_CookTimeBinaryShiftMap = new HashMap();
++    
++    public void addSmelting( int iInputItemID, ItemStack outputStack, float fExperience )
++    {
++    	addSmelting( iInputItemID, outputStack, fExperience, 0 );
+ }
++    
++    public void addSmelting( int iInputItemID, ItemStack outputStack, float fExperience, int iCookTimeBinaryShift )
++    {
++        smeltingList.put( Integer.valueOf( iInputItemID ), outputStack );
++        
++        experienceList.put( Integer.valueOf( outputStack.itemID ), Float.valueOf( fExperience ) );
++        
++        m_CookTimeBinaryShiftMap.put( Integer.valueOf( iInputItemID ), Integer.valueOf( iCookTimeBinaryShift ) );
++    }
++    
++    public int GetCookTimeBinaryShift( int iItemID )
++    {
++    	if ( m_CookTimeBinaryShiftMap.containsKey( Integer.valueOf( iItemID ) ) )
++    	{
++    		return ((Integer)m_CookTimeBinaryShiftMap.get( Integer.valueOf( iItemID ) ) ).intValue();
++    	}
++    	
++    	return 0;
++    }
++    // END FCMOD
++}

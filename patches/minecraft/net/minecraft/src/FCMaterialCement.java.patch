@@ -1,0 +1,18 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCMaterialCement.java
+@@ -0,0 +1,14 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCMaterialCement extends Material
++{
++    public FCMaterialCement( MapColor mapcolor )
++    {
++        super(mapcolor);
++        
++        setReplaceable();
++        setNoPushMobility();
++    }
++}
+\ No newline at end of file

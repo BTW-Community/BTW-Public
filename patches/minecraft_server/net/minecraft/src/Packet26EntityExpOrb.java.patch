@@ -1,0 +1,55 @@
+--- a/minecraft_server/net/minecraft/src/Packet26EntityExpOrb.java
++++ b/minecraft_server/net/minecraft/src/Packet26EntityExpOrb.java
+@@ -6,6 +6,10 @@
+ 
+ public class Packet26EntityExpOrb extends Packet
+ {
++    // FCMOD: Code added
++    public boolean m_bNotPlayerOwned;
++    // END FCMOD
++
+     /** Entity ID for the XP Orb */
+     public int entityId;
+     public int posX;
+@@ -24,6 +28,9 @@
+         this.posY = MathHelper.floor_double(par1EntityXPOrb.posY * 32.0D);
+         this.posZ = MathHelper.floor_double(par1EntityXPOrb.posZ * 32.0D);
+         this.xpValue = par1EntityXPOrb.getXpValue();
++        // FCMOD: Code added
++        m_bNotPlayerOwned = par1EntityXPOrb.m_bNotPlayerOwned;
++        // END FCMOD
+     }
+ 
+     /**
+@@ -36,6 +43,9 @@
+         this.posY = par1DataInputStream.readInt();
+         this.posZ = par1DataInputStream.readInt();
+         this.xpValue = par1DataInputStream.readShort();
++        // FCMOD: Code added
++        m_bNotPlayerOwned = par1DataInputStream.readBoolean();
++        // END FCMOD
+     }
+ 
+     /**
+@@ -48,6 +58,9 @@
+         par1DataOutputStream.writeInt(this.posY);
+         par1DataOutputStream.writeInt(this.posZ);
+         par1DataOutputStream.writeShort(this.xpValue);
++        // FCMOD: Code added
++        par1DataOutputStream.writeBoolean( m_bNotPlayerOwned );
++        // END FCMOD
+     }
+ 
+     /**
+@@ -63,6 +76,11 @@
+      */
+     public int getPacketSize()
+     {
++    	// FCMOD: Code changed
++    	/*
+         return 18;
++        */
++        return 19;
++        // END FCMOD
+     }
+ }

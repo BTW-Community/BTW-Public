@@ -1,0 +1,33 @@
+--- a/minecraft/net/minecraft/src/SlotFurnace.java
++++ b/minecraft/net/minecraft/src/SlotFurnace.java
+@@ -79,12 +79,16 @@
+                 var2 = var4;
+             }
+ 
++            // FCMOD: Code removed
++            /*
+             while (var2 > 0)
+             {
+                 var4 = EntityXPOrb.getXPSplit(var2);
+                 var2 -= var4;
+                 this.thePlayer.worldObj.spawnEntityInWorld(new EntityXPOrb(this.thePlayer.worldObj, this.thePlayer.posX, this.thePlayer.posY + 0.5D, this.thePlayer.posZ + 0.5D, var4));
+             }
++            */
++            // END FCMOD
+         }
+ 
+         this.field_75228_b = 0;
+@@ -98,5 +102,13 @@
+         {
+             this.thePlayer.addStat(AchievementList.cookFish, 1);
+         }
++        
++        // FCMOD: Code added
++		if ( par1ItemStack.getItem().itemID == Item.bread.itemID )
++		{
++            thePlayer.addStat( AchievementList.makeBread, 1 );
+     }
++		// END FCMOD
++        
+ }
++}

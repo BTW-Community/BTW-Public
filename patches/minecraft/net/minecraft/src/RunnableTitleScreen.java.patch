@@ -1,0 +1,19 @@
+--- a/minecraft/net/minecraft/src/RunnableTitleScreen.java
++++ b/minecraft/net/minecraft/src/RunnableTitleScreen.java
+@@ -13,6 +13,8 @@
+ 
+     public void run()
+     {
++    	// FCMOD: Code removed to get rid of update pester
++    	/*
+         try
+         {
+             String var1 = HttpUtil.func_104145_a(new URL("http://assets.minecraft.net/1_6_has_been_released.flag"));
+@@ -39,5 +41,7 @@
+         {
+             var6.printStackTrace();
+         }
++        */
++    	// END FCMOD
+     }
+ }

@@ -1,0 +1,12 @@
+--- a/minecraft_server/net/minecraft/src/ServerCommandManager.java
++++ b/minecraft_server/net/minecraft/src/ServerCommandManager.java
+@@ -30,6 +30,9 @@
+         this.registerCommand(new CommandClearInventory());
+         this.registerCommand(new ServerCommandTestFor());
+         this.registerCommand(new ServerCommandScoreboard());
++        // FCMOD: Code added
++        registerCommand(new FCCommandServerLoc());
++        // END FCMOD
+ 
+         if (MinecraftServer.getServer().isDedicatedServer())
+         {

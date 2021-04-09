@@ -1,0 +1,28 @@
+--- a/minecraft/net/minecraft/src/HttpUtilRunnable.java
++++ b/minecraft/net/minecraft/src/HttpUtilRunnable.java
+@@ -108,12 +108,12 @@
+                 throw new IOException("Filesize is bigger than maximum allowed (file is " + var6 + ", limit is " + this.maxFileSize + ")");
+             }
+ 
+-            boolean var30 = false;
+-            int var31;
++            boolean var31 = false;
++            int var30;
+ 
+-            while ((var31 = var2.read(var4)) >= 0)
++            while ((var30 = var2.read(var4)) >= 0)
+             {
+-                var6 += (float)var31;
++                var6 += (float)var30;
+ 
+                 if (this.feedbackHook != null)
+                 {
+@@ -130,7 +130,7 @@
+                     throw new IOException("Filesize was bigger than maximum allowed (got >= " + var6 + ", limit was " + this.maxFileSize + ")");
+                 }
+ 
+-                var3.write(var4, 0, var31);
++                var3.write(var4, 0, var30);
+             }
+ 
+             this.downloadSuccess.onSuccess(this.destinationFile);

@@ -1,0 +1,14 @@
+--- a/minecraft/net/minecraft/src/NetHandler.java
++++ b/minecraft/net/minecraft/src/NetHandler.java
+@@ -458,4 +458,11 @@
+     {
+         this.unexpectedPacket(par1Packet63WorldParticles);
+     }
++    
++    // FCMOD: Added
++    public void HandleStartBlockHarvest( FCPacket166StartBlockHarvest packet )
++    {
++        unexpectedPacket( packet );
+ }
++    // END FCMOD
++}

@@ -1,0 +1,27 @@
+--- a/minecraft/net/minecraft/src/TextureClock.java
++++ b/minecraft/net/minecraft/src/TextureClock.java
+@@ -10,6 +10,9 @@
+     public TextureClock()
+     {
+         super("compass");
++        // FCMOD: Code added
++        m_clockTexture = this;
++        // END FCMOD
+     }
+ 
+     public void updateAnimation()
+@@ -66,4 +69,14 @@
+             this.textureSheet.copyFrom(this.originX, this.originY, (Texture)this.textureList.get(this.frameCounter), this.rotated);
+         }
+     }
++    
++    // FCMOD: Code added
++    public static TextureClock m_clockTexture;
++    
++    public void UpdateInert()
++    {
++        this.frameCounter = 0;
++        this.textureSheet.copyFrom(this.originX, this.originY, (Texture)this.textureList.get(this.frameCounter), this.rotated);
+ }
++    // END FCMOD
++}

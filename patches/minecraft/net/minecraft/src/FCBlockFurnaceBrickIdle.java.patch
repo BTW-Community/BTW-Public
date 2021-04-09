@@ -1,0 +1,14 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockFurnaceBrickIdle.java
+@@ -0,0 +1,11 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCBlockFurnaceBrickIdle extends FCBlockFurnaceBrick
++{
++    protected FCBlockFurnaceBrickIdle( int iBlockID )
++    {
++        super( iBlockID, false );
++    }
++}

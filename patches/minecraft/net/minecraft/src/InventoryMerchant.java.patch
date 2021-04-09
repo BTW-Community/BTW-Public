@@ -1,0 +1,51 @@
+--- a/minecraft/net/minecraft/src/InventoryMerchant.java
++++ b/minecraft/net/minecraft/src/InventoryMerchant.java
+@@ -228,6 +228,10 @@
+                 }
+             }
+         }
++        
++        // FCMOD: Code added
++        ResetRecipeAndSlotsModProcessing();
++        // END FCMOD
+     }
+ 
+     public MerchantRecipe getCurrentRecipe()
+@@ -240,4 +244,37 @@
+         this.currentRecipeIndex = par1;
+         this.resetRecipeAndSlots();
+     }
++    
++    // FCMOD: Code added
++    private void ResetRecipeAndSlotsModProcessing()
++    {
++    	ItemStack outputStack = theInventory[2];
++    	
++		if ( outputStack != null && outputStack.itemID == FCBetterThanWolves.fcItemAncientProphecy.itemID )
++		{
++			ItemStack manuscriptStack = theInventory[0];
++			
++			if ( manuscriptStack.itemID != Item.enchantedBook.itemID )
++			{
++				manuscriptStack = theInventory[1];
+ }
++			
++			int iEnchantmentID = -1;
++			
++			NBTTagList enchantmentTagList = Item.enchantedBook.func_92110_g( manuscriptStack );
++			
++			if ( enchantmentTagList != null && enchantmentTagList.tagCount() > 0 )
++			{
++                short iTempID = ((NBTTagCompound)enchantmentTagList.tagAt( 0 ) ).getShort("id");
++
++                if (Enchantment.enchantmentsList[iTempID] != null)
++                {
++                	iEnchantmentID = iTempID;                	
++                }
++			}
++			
++			((FCItemAncientProphecy)FCBetterThanWolves.fcItemAncientProphecy).InitializeProphecyDataFromEnchantmentID( outputStack, iEnchantmentID );
++		}
++    }
++    // END FCMOD
++}

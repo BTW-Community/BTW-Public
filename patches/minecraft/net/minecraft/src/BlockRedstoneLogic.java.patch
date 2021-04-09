@@ -1,0 +1,32 @@
+--- a/minecraft/net/minecraft/src/BlockRedstoneLogic.java
++++ b/minecraft/net/minecraft/src/BlockRedstoneLogic.java
+@@ -11,7 +11,10 @@
+     {
+         super(par1, Material.circuits);
+         this.isRepeaterPowered = par2;
+-        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.125F, 1.0F);
++        // FCMOD: Changed
++        //this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.125F, 1.0F);
++        InitBlockBounds( 0.0F, 0.0F, 0.0F, 1.0F, 0.125F, 1.0F );
++        // END FCMOD
+     }
+ 
+     /**
+@@ -372,4 +375,17 @@
+     {
+         return this.func_94487_f(par1);
+     }
++
++    // FCMOD: Added New
++	//----------- Client Side Functionality -----------//
++    
++    @Override
++    public boolean RenderBlock( RenderBlocks renderer, int i, int j, int k )
++    {
++        renderer.setRenderBounds( GetBlockBoundsFromPoolBasedOnState( 
++        	renderer.blockAccess, i, j, k ) );
++        
++    	return renderer.RenderBlockRedstoneLogic( this, i, j, k );
+ }
++    // END FCMOD
++}

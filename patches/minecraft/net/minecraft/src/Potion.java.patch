@@ -1,0 +1,63 @@
+--- a/minecraft/net/minecraft/src/Potion.java
++++ b/minecraft/net/minecraft/src/Potion.java
+@@ -135,6 +135,8 @@
+         {
+             ((EntityPlayer)par1EntityLiving).addExhaustion(0.025F * (float)(par2 + 1));
+         }
++        // FCMOD: Changed this to get rid of whole "healing hurts undead, harming helps them" thing
++        /*
+         else if ((this.id != heal.id || par1EntityLiving.isEntityUndead()) && (this.id != harm.id || !par1EntityLiving.isEntityUndead()))
+         {
+             if (this.id == harm.id && !par1EntityLiving.isEntityUndead() || this.id == heal.id && par1EntityLiving.isEntityUndead())
+@@ -146,7 +148,17 @@
+         {
+             par1EntityLiving.heal(6 << par2);
+         }
++        */
++        else if ( this.id == harm.id )
++        {
++            par1EntityLiving.attackEntityFrom(DamageSource.magic, 6 << par2);
+     }
++        else if ( this.id == heal.id )
++        {
++            par1EntityLiving.heal(6 << par2);
++        }
++        // END FCMOD
++    }
+ 
+     /**
+      * Hits the provided entity with this potion's instant effect.
+@@ -155,6 +167,8 @@
+     {
+         int var6;
+ 
++        // FCMOD: Code change to get rid of special casing of undead in potion use
++        /*
+         if ((this.id != heal.id || par2EntityLiving.isEntityUndead()) && (this.id != harm.id || !par2EntityLiving.isEntityUndead()))
+         {
+             if (this.id == harm.id && !par2EntityLiving.isEntityUndead() || this.id == heal.id && par2EntityLiving.isEntityUndead())
+@@ -172,8 +186,24 @@
+             }
+         }
+         else
++        */
++        if ( this.id == harm.id )
+         {
+             var6 = (int)(par4 * (double)(6 << par3) + 0.5D);
++
++            if (par1EntityLiving == null)
++            {
++                par2EntityLiving.attackEntityFrom(DamageSource.magic, var6);
++            }
++            else
++            {
++                par2EntityLiving.attackEntityFrom(DamageSource.causeIndirectMagicDamage(par2EntityLiving, par1EntityLiving), var6);
++            }
++        }
++        else if ( this.id == heal.id )
++        // END FCMOD        
++        {
++            var6 = (int)(par4 * (double)(6 << par3) + 0.5D);
+             par2EntityLiving.heal(var6);
+         }
+     }

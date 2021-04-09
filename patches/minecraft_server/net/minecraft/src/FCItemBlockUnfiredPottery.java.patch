@@ -1,0 +1,25 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCItemBlockUnfiredPottery.java
+@@ -0,0 +1,22 @@
++//FCMOD 
++
++package net.minecraft.src;
++
++public class FCItemBlockUnfiredPottery extends ItemBlock
++{
++    public FCItemBlockUnfiredPottery( int i )
++    {
++        super( i );
++        
++        setMaxDamage( 0 );
++        setHasSubtypes( true );
++        
++        setUnlocalizedName( "fcBlockUnfiredPottery" );
++    }
++
++    @Override
++    public int getMetadata( int i )
++    {
++        return i;
++    }
++}

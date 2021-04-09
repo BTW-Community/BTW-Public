@@ -1,0 +1,29 @@
+--- a/minecraft_server/net/minecraft/src/EntityEgg.java
++++ b/minecraft_server/net/minecraft/src/EntityEgg.java
+@@ -38,13 +38,24 @@
+ 
+             for (int var3 = 0; var3 < var2; ++var3)
+             {
+-                EntityChicken var4 = new EntityChicken(this.worldObj);
+-                var4.setGrowingAge(-24000);
++            	// FCMOD: Changed
++                //EntityChicken var4 = new EntityChicken(this.worldObj);
++                //var4.setGrowingAge(-24000);
++                FCEntityChicken var4 = new FCEntityChicken( worldObj );
++                var4.setGrowingAge( -var4.GetTicksForChildToGrow() );
++                // END FCMOD
+                 var4.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
+                 this.worldObj.spawnEntityInWorld(var4);
+             }
+         }
++        // FCMOD: Added
++        else if ( !worldObj.isRemote )
++        {
++        	FCUtilsItem.EjectSingleItemWithRandomVelocity( worldObj, (float)posX, (float)posY, (float)posZ, FCBetterThanWolves.fcItemRawEgg.itemID, 0 );
+ 
++        }
++        // END FCMOD
++
+         for (int var5 = 0; var5 < 8; ++var5)
+         {
+             this.worldObj.spawnParticle("snowballpoof", this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);

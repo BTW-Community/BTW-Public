@@ -1,0 +1,28 @@
+--- a/minecraft_server/net/minecraft/src/EntityAISit.java
++++ b/minecraft_server/net/minecraft/src/EntityAISit.java
+@@ -33,7 +33,12 @@
+         else
+         {
+             EntityLiving var1 = this.theEntity.getOwner();
++            // FCMOD: Line change to prevent wolves from standing when player is attacked
++            /*
+             return var1 == null ? true : (this.theEntity.getDistanceSqToEntity(var1) < 144.0D && var1.getAITarget() != null ? false : this.isSitting);
++            */
++            return var1 == null ? true : this.isSitting;
++            // END FCMOD
+         }
+     }
+ 
+@@ -61,4 +66,11 @@
+     {
+         this.isSitting = par1;
+     }
++    
++    // FCMOD: Added
++    public boolean IsTryingToSit()
++    {
++    	return this.isSitting;
+ }
++    // END FCMOD
++}
+\ No newline at end of file

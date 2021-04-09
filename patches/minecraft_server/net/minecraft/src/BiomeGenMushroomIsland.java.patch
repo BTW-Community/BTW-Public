@@ -1,0 +1,14 @@
+--- a/minecraft_server/net/minecraft/src/BiomeGenMushroomIsland.java
++++ b/minecraft_server/net/minecraft/src/BiomeGenMushroomIsland.java
+@@ -11,7 +11,11 @@
+         this.theBiomeDecorator.mushroomsPerChunk = 1;
+         this.theBiomeDecorator.bigMushroomsPerChunk = 1;
+         this.topBlock = (byte)Block.mycelium.blockID;
++        // FCMOD: Code removed so mobs can spawn in mushroom biomes
++        /*
+         this.spawnableMonsterList.clear();
++        */
++        // END FCMOD
+         this.spawnableCreatureList.clear();
+         this.spawnableWaterCreatureList.clear();
+         this.spawnableCreatureList.add(new SpawnListEntry(EntityMooshroom.class, 8, 4, 8));

@@ -1,0 +1,15 @@
+--- a/minecraft_server/net/minecraft/src/CommandDifficulty.java
++++ b/minecraft_server/net/minecraft/src/CommandDifficulty.java
+@@ -30,6 +30,12 @@
+         if (par2ArrayOfStr.length > 0)
+         {
+             int var3 = this.getDifficultyForName(par1ICommandSender, par2ArrayOfStr[0]);
++            // FCMOD: Code added to remove peaceful and easy
++            if ( var3 < 2 )
++            {
++            	var3 = 2;
++            }
++            // END FCMOD
+             MinecraftServer.getServer().setDifficultyForAllWorlds(var3);
+             String var4 = StatCollector.translateToLocal(difficulties[var3]);
+             notifyAdmins(par1ICommandSender, "commands.difficulty.success", new Object[] {var4});

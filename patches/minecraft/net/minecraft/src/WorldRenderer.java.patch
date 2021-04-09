@@ -1,0 +1,16 @@
+--- a/minecraft/net/minecraft/src/WorldRenderer.java
++++ b/minecraft/net/minecraft/src/WorldRenderer.java
+@@ -306,7 +306,12 @@
+      */
+     public boolean skipAllRenderPasses()
+     {
+-        return !this.isInitialized ? false : this.skipRenderPass[0] && this.skipRenderPass[1];
++    	// FCMOD: Changed to try and resolve https://bugs.mojang.com/browse/MC-129 as per
++    	// Andr�s del Campo Novales' suggested fix in that thread.
++        //return !this.isInitialized ? false : this.skipRenderPass[0] && this.skipRenderPass[1];
++        return !isInitialized ? false : ( skipRenderPass[0] && skipRenderPass[1] ) && !needsUpdate;
++        // END FCMOD
++    	
+     }
+ 
+     /**

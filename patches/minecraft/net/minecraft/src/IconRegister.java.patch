@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/IconRegister.java
++++ b/minecraft/net/minecraft/src/IconRegister.java
+@@ -3,4 +3,8 @@
+ public interface IconRegister
+ {
+     Icon registerIcon(String var1);
++    
++    // FCMOD: Code added (client only)
++    public Icon registerIcon( String sName, TextureStitched textureHandler );
++    // END FCMOD
+ }

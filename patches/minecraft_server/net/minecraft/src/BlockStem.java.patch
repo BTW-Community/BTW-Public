@@ -1,0 +1,15 @@
+--- a/minecraft_server/net/minecraft/src/BlockStem.java
++++ b/minecraft_server/net/minecraft/src/BlockStem.java
+@@ -5,7 +5,12 @@
+ public class BlockStem extends BlockFlower
+ {
+     /** Defines if it is a Melon or a Pumpkin that the stem is producing. */
++	// FCMOD: Changed
++	/*
+     private final Block fruitType;
++    */
++    protected Block fruitType;
++	// END FCMOD
+ 
+     protected BlockStem(int par1, Block par2Block)
+     {

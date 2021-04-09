@@ -1,0 +1,14 @@
+--- a/minecraft/net/minecraft/src/EffectRenderer.java
++++ b/minecraft/net/minecraft/src/EffectRenderer.java
+@@ -94,7 +94,11 @@
+ 
+                 Tessellator var9 = Tessellator.instance;
+                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
++                // FCMOD: Code removed to fix annoying particle behind break cracking thing
++                /*
+                 GL11.glDepthMask(false);
++                */
++                // END FCMOD
+                 GL11.glEnable(GL11.GL_BLEND);
+                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                 GL11.glAlphaFunc(GL11.GL_GREATER, 0.003921569F);

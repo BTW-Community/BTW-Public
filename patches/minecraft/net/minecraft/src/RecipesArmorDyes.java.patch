@@ -1,0 +1,86 @@
+--- a/minecraft/net/minecraft/src/RecipesArmorDyes.java
++++ b/minecraft/net/minecraft/src/RecipesArmorDyes.java
+@@ -22,10 +22,22 @@
+                 {
+                     ItemArmor var7 = (ItemArmor)var6.getItem();
+ 
++                    // FCMOD: Code change
++                    /*
+                     if (var7.getArmorMaterial() != EnumArmorMaterial.CLOTH || var3 != null)
++                    */                    
++                    if ( var7 instanceof FCItemArmorMod )
+                     {
++                    	if ( !((FCItemArmorMod)var7).HasCustomColors() || var3 != null )
++                    	{
+                         return false;
+                     }
++                    }
++                    else if (var7.getArmorMaterial() != EnumArmorMaterial.CLOTH || var3 != null)
++                	// END FCMOD
++                    {
++                        return false;
++                    }
+ 
+                     var3 = var6;
+                 }
+@@ -69,11 +81,22 @@
+                 if (var8.getItem() instanceof ItemArmor)
+                 {
+                     var6 = (ItemArmor)var8.getItem();
+-
++                    // FCMOD: Code change
++                    /*
+                     if (var6.getArmorMaterial() != EnumArmorMaterial.CLOTH || var2 != null)
++                    */                    
++                    if ( var6 instanceof FCItemArmorMod )
+                     {
++                    	if ( !((FCItemArmorMod)var6).HasCustomColors() || var2 != null )
++                    	{
+                         return null;
+                     }
++                    }
++                    else if (var6.getArmorMaterial() != EnumArmorMaterial.CLOTH || var2 != null)
++                	// END FCMOD
++                    {
++                        return null;
++                    }
+ 
+                     var2 = var8.copy();
+                     var2.stackSize = 1;
+@@ -99,12 +122,12 @@
+                     }
+ 
+                     float[] var14 = EntitySheep.fleeceColorTable[BlockCloth.getBlockFromDye(var8.getItemDamage())];
+-                    int var15 = (int)(var14[0] * 255.0F);
+-                    int var16 = (int)(var14[1] * 255.0F);
++                    int var16 = (int)(var14[0] * 255.0F);
++                    int var15 = (int)(var14[1] * 255.0F);
+                     var17 = (int)(var14[2] * 255.0F);
+-                    var4 += Math.max(var15, Math.max(var16, var17));
+-                    var3[0] += var15;
+-                    var3[1] += var16;
++                    var4 += Math.max(var16, Math.max(var15, var17));
++                    var3[0] += var16;
++                    var3[1] += var15;
+                     var3[2] += var17;
+                     ++var5;
+                 }
+@@ -144,4 +167,18 @@
+     {
+         return null;
+     }
++    
++    // FCMOD: Function added
++    @Override
++    public boolean matches( IRecipe recipe )
++    {
++    	return false;
+ }
++    
++    @Override
++    public boolean HasSecondaryOutput()
++    {
++    	return false;
++    }
++    // END FCMOD
++}

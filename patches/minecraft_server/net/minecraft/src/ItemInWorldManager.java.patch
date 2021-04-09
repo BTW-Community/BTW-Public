@@ -1,0 +1,216 @@
+--- a/minecraft_server/net/minecraft/src/ItemInWorldManager.java
++++ b/minecraft_server/net/minecraft/src/ItemInWorldManager.java
+@@ -27,6 +27,9 @@
+     private int posZ;
+     private int field_73093_n;
+     private int durabilityRemainingOnBlock;
++    // FCMOD: Added
++    private int m_iHarvestingFromFacing;
++    // END FCMOD
+ 
+     public ItemInWorldManager(World par1World)
+     {
+@@ -99,7 +102,10 @@
+                 if (var4 >= 1.0F)
+                 {
+                     this.receivedFinishDiggingPacket = false;
+-                    this.tryHarvestBlock(this.posX, this.posY, this.posZ);
++                    // FCMOD: Changed
++                    //this.tryHarvestBlock(this.posX, this.posY, this.posZ);
++                    this.tryHarvestBlock(this.posX, this.posY, this.posZ, this.m_iHarvestingFromFacing);
++                    // END FCMOD
+                 }
+             }
+         }
+@@ -141,12 +147,17 @@
+             {
+                 if (!this.theWorld.extinguishFire((EntityPlayer)null, par1, par2, par3, par4))
+                 {
+-                    this.tryHarvestBlock(par1, par2, par3);
++                	// FCMOD: Changed
++                    //this.tryHarvestBlock(par1, par2, par3);
++                    this.tryHarvestBlock(par1, par2, par3, par4);
++                    // END FCMOD
+                 }
+             }
+             else
+             {
+-                this.theWorld.extinguishFire((EntityPlayer)null, par1, par2, par3, par4);
++            	// FCMOD: Removed
++                //this.theWorld.extinguishFire((EntityPlayer)null, par1, par2, par3, par4);
++            	// END FCMOD
+                 this.initialDamage = this.curblockDamage;
+                 float var5 = 1.0F;
+                 int var6 = this.theWorld.getBlockId(par1, par2, par3);
+@@ -159,7 +170,10 @@
+ 
+                 if (var6 > 0 && var5 >= 1.0F)
+                 {
+-                    this.tryHarvestBlock(par1, par2, par3);
++                	// FCMOD: Changed
++                    //this.tryHarvestBlock(par1, par2, par3);
++                    this.tryHarvestBlock(par1, par2, par3, par4);
++                    // END FCMOD
+                 }
+                 else
+                 {
+@@ -175,7 +189,11 @@
+         }
+     }
+ 
+-    public void blockRemoving(int par1, int par2, int par3)
++	// FCMOD: Changed (function name differs between client and server ), "overloaded" function required for DemoWorldManager
++    //public void blockRemoving(int par1, int par2, int par3)    
++    public void blockRemoving(int par1, int par2, int par3 ) { blockRemoving( par1, par2, par3, 1 ); }
++    public void blockRemoving(int par1, int par2, int par3, int iFromFacing)
++    // END FCMOD
+     {
+         if (par1 == this.curBlockX && par2 == this.curBlockY && par3 == this.curBlockZ)
+         {
+@@ -191,7 +209,10 @@
+                 {
+                     this.isDestroyingBlock = false;
+                     this.theWorld.destroyBlockInWorldPartially(this.thisPlayerMP.entityId, par1, par2, par3, -1);
+-                    this.tryHarvestBlock(par1, par2, par3);
++                    // FCMOD: Changed
++                    //this.tryHarvestBlock(par1, par2, par3);
++                    this.tryHarvestBlock(par1, par2, par3, iFromFacing);
++                    // END FCMOD
+                 }
+                 else if (!this.receivedFinishDiggingPacket)
+                 {
+@@ -201,6 +222,9 @@
+                     this.posY = par2;
+                     this.posZ = par3;
+                     this.field_73093_n = this.initialDamage;
++                    // FCMOD: Added
++                    m_iHarvestingFromFacing = iFromFacing;
++                    // END FCMOD
+                 }
+             }
+         }
+@@ -233,6 +257,10 @@
+         if (var4 != null && var6)
+         {
+             var4.onBlockDestroyedByPlayer(this.theWorld, par1, par2, par3, var5);
++            
++            // FCMOD: Panick animals when blocks are destroyed near them
++            theWorld.NotifyNearbyAnimalsOfPlayerBlockAddOrRemove( thisPlayerMP, var4, par1, par2, par3 );            
++            // END FCMOD
+         }
+ 
+         return var6;
+@@ -241,6 +269,8 @@
+     /**
+      * Attempts to harvest a block at the given coordinate
+      */
++    // FCMOD: Removed and replaced later
++    /*
+     public boolean tryHarvestBlock(int par1, int par2, int par3)
+     {
+         if (this.gameType.isAdventure() && !this.thisPlayerMP.canCurrentToolHarvestBlock(par1, par2, par3))
+@@ -282,6 +312,8 @@
+             return var6;
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Attempts to right-click use an item by the given EntityPlayer in the given World
+@@ -368,4 +400,95 @@
+     {
+         this.theWorld = par1WorldServer;
+     }
++    
++    // FCMOD: Added
++    
++	// "overloaded" function required for DemoWorldManager
++    public boolean tryHarvestBlock( int i, int j, int k ) { return tryHarvestBlock( i, j, k, 1 ); }
++    public boolean tryHarvestBlock( int i, int j, int k, int iFromSide )
++    {
++        if ( gameType.isAdventure() && !thisPlayerMP.canCurrentToolHarvestBlock( i, j, k ) )
++        {
++            return false;
+ }
++        else if ( isCreative() )
++        {
++            int iBlockID = theWorld.getBlockId( i, j, k );
++            int iBlockMetadata = theWorld.getBlockMetadata( i, j, k );
++            
++            theWorld.playAuxSFXAtEntity( thisPlayerMP, 2001, i, j, k, iBlockID + ( theWorld.getBlockMetadata( i, j, k ) << 12 ) );
++            
++            boolean bBlockRemoved = removeBlock( i, j, k );
++
++            FCUtilsWorld.SendPacketToPlayer( thisPlayerMP.playerNetServerHandler, new Packet53BlockChange(i, j, k, this.theWorld) );
++
++            return bBlockRemoved;
++        }
++        else
++        {
++    		return SurvivalTryHarvestBlock( i, j, k, iFromSide );
++        }
++    }
++    
++    public boolean SurvivalTryHarvestBlock( int i, int j, int k, int iFromSide )
++    {
++        int iBlockID = theWorld.getBlockId(i, j, k);
++    	Block block = Block.blocksList[iBlockID];
++    	
++    	if ( block == null )
++    	{
++    		return false;
++    	}
++    	
++        int iMetadata = theWorld.getBlockMetadata(i, j, k);
++        
++        theWorld.playAuxSFXAtEntity( thisPlayerMP, 2001, i, j, k, iBlockID + ( iMetadata << 12 ) );
++        
++        ItemStack currentStack = thisPlayerMP.getCurrentEquippedItem();
++        
++        boolean bRemovingBlock = true;
++        boolean bConvertingBlock = false;
++        
++        boolean bHarvestingBlock = thisPlayerMP.canHarvestBlock( Block.blocksList[iBlockID], i, j, k );
++        
++        if ( !bHarvestingBlock )
++        {
++        	bConvertingBlock = block.CanConvertBlock( currentStack, theWorld, i, j, k );
++        	
++        	if ( bConvertingBlock )
++        	{
++                bRemovingBlock = !( block.ConvertBlock( currentStack, theWorld, i, j, k, iFromSide ) );
++        	}
++        }
++
++        if ( bRemovingBlock )
++        {
++        	bRemovingBlock = removeBlock( i, j, k );
++
++            if ( bRemovingBlock && !bConvertingBlock )
++            {
++    	        if ( bHarvestingBlock )
++    	        {
++    	            Block.blocksList[iBlockID].harvestBlock( theWorld, thisPlayerMP, i, j, k, iMetadata );
++    	        }
++    	        else 
++    	        {
++    	        	Block.blocksList[iBlockID].OnBlockDestroyedWithImproperTool( theWorld, thisPlayerMP, i, j, k, iMetadata );
++    	        }
++            }
++        }
++
++        if ( currentStack != null )
++        {
++            currentStack.onBlockDestroyed( theWorld, iBlockID, i, j, k, thisPlayerMP );
++
++            if ( currentStack.stackSize == 0 )
++            {
++                thisPlayerMP.destroyCurrentEquippedItem();
++            }
++        }
++
++        return bRemovingBlock;
++    }
++    // END FCMOD
++}

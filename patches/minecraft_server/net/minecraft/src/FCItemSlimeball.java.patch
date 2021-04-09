@@ -1,0 +1,26 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCItemSlimeball.java
+@@ -0,0 +1,22 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCItemSlimeball extends FCItemMortar
++{
++    public FCItemSlimeball( int iItemID )
++    {
++    	super( iItemID );
++    	
++    	SetNeutralBuoyant();
++		SetFilterableProperties( m_iFilterable_Small );
++    	
++    	setUnlocalizedName( "slimeball" );
++    	
++    	setCreativeTab( CreativeTabs.tabMisc );
++    }
++    
++    //------------- Class Specific Methods ------------//
++    
++	//------------ Client Side Functionality ----------//
++}
+\ No newline at end of file

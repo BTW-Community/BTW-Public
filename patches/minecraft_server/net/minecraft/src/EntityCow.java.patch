@@ -1,0 +1,15 @@
+--- a/minecraft_server/net/minecraft/src/EntityCow.java
++++ b/minecraft_server/net/minecraft/src/EntityCow.java
+@@ -1,5 +1,12 @@
++// FCMOD: Class changes deprecated 07/23/2018
++
+ package net.minecraft.src;
+ 
++import java.io.ByteArrayOutputStream;
++import java.io.DataOutputStream;
++import java.util.Iterator;
++import java.util.List;
++
+ public class EntityCow extends EntityAnimal
+ {
+     public EntityCow(World par1World)

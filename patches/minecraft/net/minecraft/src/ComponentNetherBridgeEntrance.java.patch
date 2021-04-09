@@ -1,0 +1,13 @@
+--- a/minecraft/net/minecraft/src/ComponentNetherBridgeEntrance.java
++++ b/minecraft/net/minecraft/src/ComponentNetherBridgeEntrance.java
+@@ -117,6 +117,10 @@
+             par1World.scheduledUpdatesAreImmediate = false;
+         }
+ 
++        // FCMOD: Code added
++        placeBlockAtCurrentPosition( par1World, FCBetterThanWolves.fcBlockSoulforgeDormant.blockID, FCUtilsWorld.RotateFacingForCoordBaseMode( 4, coordBaseMode ), 5, 6, 6, par3StructureBoundingBox );
++        // END FCMOD
++
+         return true;
+     }
+ }

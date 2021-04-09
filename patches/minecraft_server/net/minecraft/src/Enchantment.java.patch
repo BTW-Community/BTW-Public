@@ -1,0 +1,39 @@
+--- a/minecraft_server/net/minecraft/src/Enchantment.java
++++ b/minecraft_server/net/minecraft/src/Enchantment.java
+@@ -198,7 +198,10 @@
+ 
+     public boolean func_92089_a(ItemStack par1ItemStack)
+     {
+-        return this.type.canEnchantItem(par1ItemStack.getItem());
++    	// FCMOD: Changed
++        //return this.type.canEnchantItem(par1ItemStack.getItem());
++        return par1ItemStack.getItem().IsEnchantmentApplicable( this );
++    	// END FCMOD
+     }
+ 
+     static
+@@ -219,4 +222,24 @@
+ 
+         field_92090_c = (Enchantment[])var0.toArray(new Enchantment[0]);
+     }
++    
++    // FCMOD: Added New
++    private boolean m_bCanBeAppliedByVanillaEnchanter = true;
++    
++    static
++    {
++        // remove the more powerful enchants from the vanilla enchanter
++    	
++        protection.m_bCanBeAppliedByVanillaEnchanter = false;
++        silkTouch.m_bCanBeAppliedByVanillaEnchanter = false;
++        fortune.m_bCanBeAppliedByVanillaEnchanter = false;
++        sharpness.m_bCanBeAppliedByVanillaEnchanter = false;
++        featherFalling.m_bCanBeAppliedByVanillaEnchanter = false;
+ }
++    
++    public boolean CanBeAppliedByVanillaEnchanter()
++    {
++    	return m_bCanBeAppliedByVanillaEnchanter;
++    }
++    // END FCMOD
++}

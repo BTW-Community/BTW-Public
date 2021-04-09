@@ -1,0 +1,312 @@
+--- a/minecraft_server/net/minecraft/src/ServerConfigurationManager.java
++++ b/minecraft_server/net/minecraft/src/ServerConfigurationManager.java
+@@ -116,6 +116,9 @@
+                 var10.field_98038_p = false;
+             }
+         }
++        // FCMOD: Code added
++        FCBetterThanWolves.ServerPlayerConnectionInitialized( var7, par2EntityPlayerMP );
++        //END FCMOD
+     }
+ 
+     protected void func_96456_a(ServerScoreboard par1ServerScoreboard, EntityPlayerMP par2EntityPlayerMP)
+@@ -163,16 +166,25 @@
+ 
+         if (par2WorldServer != null)
+         {
+-            par2WorldServer.getPlayerManager().removePlayer(par1EntityPlayerMP);
++        	// FCMOD: Changed
++            //par2WorldServer.getPlayerManager().removePlayer(par1EntityPlayerMP);
++            par2WorldServer.GetChunkTracker().RemovePlayer(par1EntityPlayerMP);
++            // END FCMOD
+         }
+ 
+-        var3.getPlayerManager().addPlayer(par1EntityPlayerMP);
++    	// FCMOD: Changed
++        //var3.getPlayerManager().addPlayer(par1EntityPlayerMP);
++        var3.GetChunkTracker().AddPlayer(par1EntityPlayerMP);
++        // END FCMOD
+         var3.theChunkProviderServer.loadChunk((int)par1EntityPlayerMP.posX >> 4, (int)par1EntityPlayerMP.posZ >> 4);
+     }
+ 
+     public int getEntityViewDistance()
+     {
+-        return PlayerManager.getFurthestViewableBlock(this.getViewDistance());
++    	// FCMOD: Changed    	
++        //return PlayerManager.getFurthestViewableBlock(this.getViewDistance());
++        return FCChunkTracker.GetFurthestViewableBlock( getViewDistance() );
++    	// END FCMOD
+     }
+ 
+     /**
+@@ -226,9 +238,16 @@
+     /**
+      * using player's dimension, update their movement when in a vehicle (e.g. cart, boat)
+      */
++    /** 
++     * FCNOTE: This is totally misnamed.  It is called for all moving players, not just mounted ones
++     */
+     public void serverUpdateMountedMovingPlayer(EntityPlayerMP par1EntityPlayerMP)
+     {
+-        par1EntityPlayerMP.getServerForPlayer().getPlayerManager().updateMountedMovingPlayer(par1EntityPlayerMP);
++    	// FCMOD: Changed
++        //par1EntityPlayerMP.getServerForPlayer().getPlayerManager().updateMountedMovingPlayer(par1EntityPlayerMP);
++        par1EntityPlayerMP.getServerForPlayer().GetChunkTracker().UpdateMovingPlayer(
++        	par1EntityPlayerMP);
++        // END FCMOD
+     }
+ 
+     /**
+@@ -246,7 +265,10 @@
+         }
+ 
+         var2.removeEntity(par1EntityPlayerMP);
+-        var2.getPlayerManager().removePlayer(par1EntityPlayerMP);
++        // FCMOD: Changed
++        //var2.getPlayerManager().removePlayer(par1EntityPlayerMP);
++        var2.GetChunkTracker().RemovePlayer(par1EntityPlayerMP);
++        // END FCMOD
+         this.playerEntityList.remove(par1EntityPlayerMP);
+         this.sendPacketToAllPlayers(new Packet201PlayerInfo(par1EntityPlayerMP.username, false, 9999));
+     }
+@@ -340,6 +362,8 @@
+     /**
+      * Called on respawn
+      */
++    // FCMOD: Function removed and replaced later
++    /*
+     public EntityPlayerMP recreatePlayerEntity(EntityPlayerMP par1EntityPlayerMP, int par2, boolean par3)
+     {
+         par1EntityPlayerMP.getServerForPlayer().getEntityTracker().removePlayerFromTrackers(par1EntityPlayerMP);
+@@ -404,7 +428,10 @@
+         var7.setEntityHealth(var7.getHealth());
+         return var7;
+     }
++	*/
++	// FCMOD
+ 
++
+     /**
+      * moves provided player from overworld to nether or vice versa
+      */
+@@ -430,6 +457,11 @@
+             PotionEffect var7 = (PotionEffect)var6.next();
+             par1EntityPlayerMP.playerNetServerHandler.sendPacket(new Packet41EntityEffect(par1EntityPlayerMP.entityId, var7));
+         }
++        
++        // FCMOD: Added
++        par1EntityPlayerMP.FlagAllWatchedObjectsDirty();
++        par1EntityPlayerMP.m_lTimeOfLastDimensionSwitch = var5.getWorldTime();
++        // END FCMOD
+     }
+ 
+     /**
+@@ -502,10 +534,21 @@
+ 
+             if (par1Entity.isEntityAlive())
+             {
++            	// FCMOD: Code change to fix other players not showing up when going through a portal in SMP
++            	/*
+                 par4WorldServer.spawnEntityInWorld(par1Entity);
+                 par1Entity.setLocationAndAngles(var5, par1Entity.posY, var7, par1Entity.rotationYaw, par1Entity.rotationPitch);
+                 par4WorldServer.updateEntityWithOptionalForce(par1Entity, false);
+                 par4WorldServer.getDefaultTeleporter().placeInPortal(par1Entity, var11, var13, var15, var17);
++                */
++                par1Entity.setLocationAndAngles(var5, par1Entity.posY, var7, par1Entity.rotationYaw, par1Entity.rotationPitch);
++                
++                FlagChunksAroundTeleportingEntityForCheckForUnload( par4WorldServer, par1Entity );
++                
++                par4WorldServer.getDefaultTeleporter().placeInPortal(par1Entity, var11, var13, var15, var17);
++                par4WorldServer.spawnEntityInWorld(par1Entity);
++                par4WorldServer.updateEntityWithOptionalForce(par1Entity, false);
++                // END FCMOD
+             }
+ 
+             par3WorldServer.theProfiler.endSection();
+@@ -886,9 +929,21 @@
+ 
+         if (par2WorldServer.isRaining())
+         {
++        	// FCMOD: Code change so that initial rain strength is set to full on client
++        	/*
+             par1EntityPlayerMP.playerNetServerHandler.sendPacket(new Packet70GameEvent(1, 0));
++            */
++            par1EntityPlayerMP.playerNetServerHandler.sendPacket(new Packet70GameEvent(1, 1));
++        	// END FCMOD
+         }
++        
++        // FCMOD: Code added
++        if (par2WorldServer.worldInfo.isThundering())
++        {
++            par1EntityPlayerMP.playerNetServerHandler.sendPacket(new Packet70GameEvent(7, 1));
+     }
++        // END FCMOD
++    }
+ 
+     /**
+      * sends the players inventory to himself
+@@ -1006,4 +1061,164 @@
+         this.mcServer.logInfo(par1Str);
+         this.sendPacketToAllPlayers(new Packet3Chat(par1Str));
+     }
++
++    // FCMOD: Added    
++    // client
++    //public EntityPlayerMP respawnPlayer( EntityPlayerMP oldPlayer, int iDefaultDimension, boolean bPlayerLeavingTheEnd )
++    // server
++    public EntityPlayerMP recreatePlayerEntity( EntityPlayerMP oldPlayer, int iDefaultDimension, boolean bPlayerLeavingTheEnd )
++    {
++        oldPlayer.getServerForPlayer().getEntityTracker().removePlayerFromTrackers( oldPlayer );
++        
++    	// client
++        //oldPlayer.getServerForPlayer().getEntityTracker().removeEntityFromAllTrackingPlayers( oldPlayer );
++    	// server    	
++    	oldPlayer.getServerForPlayer().getEntityTracker().untrackEntity( oldPlayer );
++        
++        oldPlayer.getServerForPlayer().GetChunkTracker().RemovePlayer( oldPlayer );
++        
++        playerEntityList.remove( oldPlayer );
++        
++        mcServer.worldServerForDimension( oldPlayer.dimension ).removePlayerEntityDangerously( oldPlayer );
++        
++        ChunkCoordinates verifiedRespawnCoords = null;
++        boolean bRetainPreviousSpawn = false;
++
++    	String sSpawnFailMessage = null;
++    	
++    	int iNewDimension = iDefaultDimension;
++    	
++        if ( oldPlayer.HasRespawnCoordinates() )
++        {
++            if ( !bPlayerLeavingTheEnd )
++            {
++	        	ChunkCoordinates rawRespawnCoords = new ChunkCoordinates();
++	        	
++	            int iReturnValue = oldPlayer.GetValidatedRespawnCoordinates( mcServer.worldServerForDimension( oldPlayer.m_iSpawnDimension ), rawRespawnCoords );
++	
++	            if ( iReturnValue == 0 )
++	            {
++	            	verifiedRespawnCoords = rawRespawnCoords;	
++	            	iNewDimension = oldPlayer.m_iSpawnDimension;
+ }
++	            else
++	            {
++		            if ( iReturnValue == 1 )
++		            {
++		            	sSpawnFailMessage = "Your respawn location was invalid";
++		            }
++		            else if ( iReturnValue == 2 )
++		            {
++		            	sSpawnFailMessage = "The beacon to which you were bound is no longer present";
++		            }
++		            else if ( iReturnValue == 3 )
++		            {
++		            	sSpawnFailMessage = "The beacon to which you are bound was too far away";
++		            	bRetainPreviousSpawn = true;
++		            }
++		            else if ( iReturnValue == 4 )
++		            {
++		            	sSpawnFailMessage = "The beacon to which you are bound was obstructed";
++		            	bRetainPreviousSpawn = true;
++		            }
++		            else
++		            {
++		            	sSpawnFailMessage = "Your respawn failed for an unknown reason";
++		            }
++		            
++	            }
++	        }
++            else
++            {
++            	// retain the player's previous respawn location when you pop back from the end
++            	
++            	bRetainPreviousSpawn = true;
++            }
++        }
++
++        ItemInWorldManager worldManager;
++
++        if (this.mcServer.isDemo())
++        {
++            worldManager = new DemoWorldManager(this.mcServer.worldServerForDimension( iNewDimension ) );
++        }
++        else
++        {
++            worldManager = new ItemInWorldManager(this.mcServer.worldServerForDimension( iNewDimension ) );
++        }
++
++        EntityPlayerMP newPlayer = new EntityPlayerMP( mcServer, mcServer.worldServerForDimension( iNewDimension ), oldPlayer.username, worldManager );
++        
++        newPlayer.playerNetServerHandler = oldPlayer.playerNetServerHandler;
++        
++        oldPlayer.dimension = iNewDimension;        
++        newPlayer.clonePlayer( oldPlayer, bPlayerLeavingTheEnd );
++        newPlayer.entityId = oldPlayer.entityId;
++        
++        WorldServer newWorldServer = mcServer.worldServerForDimension( oldPlayer.dimension );
++        
++        func_72381_a( newPlayer, oldPlayer, newWorldServer ); // initializes the game type
++        
++        if ( verifiedRespawnCoords != null )
++        {
++            newPlayer.setLocationAndAngles((double)((float)verifiedRespawnCoords.posX + 0.5F), (double)((float)verifiedRespawnCoords.posY + 0.1F), (double)((float)verifiedRespawnCoords.posZ + 0.5F), 0.0F, 0.0F);
++            
++            bRetainPreviousSpawn = true;
++            
++        }
++        else if ( !bPlayerLeavingTheEnd )
++        {
++    		FCUtilsHardcoreSpawn.HandleHardcoreSpawn( mcServer, oldPlayer, newPlayer );
++        }
++        
++        if ( bRetainPreviousSpawn )
++        {
++            newPlayer.setSpawnChunk( oldPlayer.getBedLocation(), oldPlayer.isSpawnForced(), oldPlayer.m_iSpawnDimension );
++        }
++        
++        if ( sSpawnFailMessage != null )
++        {
++            FCUtilsWorld.SendPacketToPlayer( newPlayer.playerNetServerHandler, new Packet3Chat( sSpawnFailMessage ) );
++        }
++        
++        newWorldServer.theChunkProviderServer.loadChunk((int)newPlayer.posX >> 4, (int)newPlayer.posZ >> 4);
++
++        while (!newWorldServer.getCollidingBoundingBoxes(newPlayer, newPlayer.boundingBox).isEmpty())
++        {
++            newPlayer.setPosition(newPlayer.posX, newPlayer.posY + 1.0D, newPlayer.posZ);
++        }
++
++        newPlayer.playerNetServerHandler.sendPacket(new Packet9Respawn(newPlayer.dimension, (byte)newPlayer.worldObj.difficultySetting, newPlayer.worldObj.getWorldInfo().getTerrainType(), newPlayer.worldObj.getHeight(), newPlayer.theItemInWorldManager.getGameType()));
++        verifiedRespawnCoords = newWorldServer.getSpawnPoint();
++        newPlayer.playerNetServerHandler.sendPacket(new Packet6SpawnPosition(verifiedRespawnCoords.posX, verifiedRespawnCoords.posY, verifiedRespawnCoords.posZ));
++        newPlayer.playerNetServerHandler.sendPacket(new Packet43Experience(newPlayer.experience, newPlayer.experienceTotal, newPlayer.experienceLevel));
++        this.updateTimeAndWeatherForPlayer(newPlayer, newWorldServer);
++        newWorldServer.GetChunkTracker().AddPlayer(newPlayer);
++        newWorldServer.spawnEntityInWorld(newPlayer);
++        this.playerEntityList.add(newPlayer);
++        newPlayer.addSelfToInternalCraftingInventory();
++        newPlayer.setEntityHealth(newPlayer.getHealth());
++        
++        // Code moved relative to vanilla version so that some loading occurs before loading screen dissapears
++        newPlayer.playerNetServerHandler.setPlayerLocation(newPlayer.posX, newPlayer.posY, newPlayer.posZ, newPlayer.rotationYaw, newPlayer.rotationPitch);
++        
++        return newPlayer;
++    }
++    
++    private void FlagChunksAroundTeleportingEntityForCheckForUnload( WorldServer world, Entity entity )
++    {
++        // flag area checked for teleport for unload check as the Teleporter 
++        // class potentially loads a whole bunch of chunks in the placeInPortal() call.
++    	
++    	int iChunkX = MathHelper.floor_double( entity.posX / 16D ); 
++    	int iChunkZ = MathHelper.floor_double( entity.posZ / 16D );
++    	
++    	// Teleporter.placeInExistingPortal() checks out to 128 blocks, or 8 chunks
++    	
++    	int iChunkRange = 9;
++    	
++    	world.AddChunkRangeToCheckForUnloadList( iChunkX - iChunkRange, iChunkZ - iChunkRange,
++    		iChunkX + iChunkRange, iChunkZ + iChunkRange );        
++    }
++    // END FCMOD
++}

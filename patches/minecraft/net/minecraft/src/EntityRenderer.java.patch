@@ -1,0 +1,528 @@
+--- a/minecraft/net/minecraft/src/EntityRenderer.java
++++ b/minecraft/net/minecraft/src/EntityRenderer.java
+@@ -88,8 +88,15 @@
+ 
+     /** FOV multiplier temp */
+     private float fovMultiplierTemp;
++    
++    // FCMOD: Changed (client only) the name of this variable for clarity
++    /*
+     private float field_82831_U;
+     private float field_82832_V;
++    */
++    private float fWitherEffectIntensity;
++    private float fPreviousWithEffectIntensity;
++    // END FCMOD
+ 
+     /** Cloud fog mode */
+     private boolean cloudFog = false;
+@@ -202,22 +209,23 @@
+         ++this.rendererUpdateCount;
+         this.itemRenderer.updateEquippedItem();
+         this.addRainParticles();
+-        this.field_82832_V = this.field_82831_U;
++        this.fPreviousWithEffectIntensity = this.fWitherEffectIntensity;
+ 
++        // FCNOTE: The follwing test is basically "if the wither is present"
+         if (BossStatus.field_82825_d)
+         {
+-            this.field_82831_U += 0.05F;
++            this.fWitherEffectIntensity += 0.05F;
+ 
+-            if (this.field_82831_U > 1.0F)
++            if (this.fWitherEffectIntensity > 1.0F)
+             {
+-                this.field_82831_U = 1.0F;
++                this.fWitherEffectIntensity = 1.0F;
+             }
+ 
+             BossStatus.field_82825_d = false;
+         }
+-        else if (this.field_82831_U > 0.0F)
++        else if (this.fWitherEffectIntensity > 0.0F)
+         {
+-            this.field_82831_U -= 0.0125F;
++            this.fWitherEffectIntensity -= 0.0125F;
+         }
+     }
+ 
+@@ -232,15 +240,31 @@
+             {
+                 this.mc.pointedEntityLiving = null;
+                 double var2 = (double)this.mc.playerController.getBlockReachDistance();
++                // FCMOD: Changed (client only) to limit snow ray-trace tests to this call
++                /*
+                 this.mc.objectMouseOver = this.mc.renderViewEntity.rayTrace(var2, par1);
++                */
++                this.mc.objectMouseOver = this.mc.renderViewEntity.MouseOverCustomRayTrace(var2, par1);
++                // END FCMOD
++                
+                 double var4 = var2;
+                 Vec3 var6 = this.mc.renderViewEntity.getPosition(par1);
+ 
+                 if (this.mc.playerController.extendedReach())
+                 {
++                	// FCMOD: Changed (client only) to fix weird reach problems in 
++                	//creative mode between blocks and entities
++        			/*
+                     var2 = 6.0D;
+                     var4 = 6.0D;
++					*/
++		        	if ( var4 > 6D )
++		        	{
++		        		var4 = 6D;
+                 }
++		        	var2 = var4;
++		        	// END FCMOD
++                }
+                 else
+                 {
+                     if (var2 > 3.0D)
+@@ -760,9 +784,9 @@
+                 var15 = var15 * 0.96F + 0.03F;
+                 float var16;
+ 
+-                if (this.field_82831_U > 0.0F)
++                if (this.fWitherEffectIntensity > 0.0F)
+                 {
+-                    var16 = this.field_82832_V + (this.field_82831_U - this.field_82832_V) * par1;
++                    var16 = this.fPreviousWithEffectIntensity + (this.fWitherEffectIntensity - this.fPreviousWithEffectIntensity) * par1;
+                     var13 = var13 * (1.0F - var16) + var13 * 0.7F * var16;
+                     var14 = var14 * (1.0F - var16) + var14 * 0.6F * var16;
+                     var15 = var15 * (1.0F - var16) + var15 * 0.6F * var16;
+@@ -793,8 +817,12 @@
+                     }
+ 
+                     var13 = var13 * (1.0F - var16) + var13 * var17 * var16;
++                    // FCMOD: Removed (client only) to only modify red with night vision
++                    /*
+                     var14 = var14 * (1.0F - var16) + var14 * var17 * var16;
+                     var15 = var15 * (1.0F - var16) + var15 * var17 * var16;
++                    */
++                    // END FCMOD
+                 }
+ 
+                 if (var13 > 1.0F)
+@@ -873,6 +901,12 @@
+     private float getNightVisionBrightness(EntityPlayer par1EntityPlayer, float par2)
+     {
+         int var3 = par1EntityPlayer.getActivePotionEffect(Potion.nightVision).getDuration();
++        // FCMOD: Added (client only) to prevent constant flashing with beacon version 
++        if ( par1EntityPlayer.getActivePotionEffect(Potion.nightVision).getIsAmbient() )
++        {
++        	var3 = 400;
++        }
++        // END FCMOD
+         return var3 > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)var3 - par2) * (float)Math.PI * 0.2F) * 0.3F;
+     }
+ 
+@@ -885,7 +919,12 @@
+ 
+         if (this.lightmapUpdateNeeded)
+         {
++        	// FCMOD: Changed (client only)
++        	/*
+             this.updateLightmap(par1);
++            */
++        	ModUpdateLightmap(par1);
++        	// END FCMOD
+         }
+ 
+         this.mc.mcProfiler.endSection();
+@@ -967,6 +1006,13 @@
+                 {
+                     this.mc.ingameGUI.renderGameOverlay(par1, this.mc.currentScreen != null, var16, var17);
+                 }
++                // FCMOD: Added (client only) to display stuff like ender spectacle effects 
++                // even if the GUI is turned off
++                else
++                {
++                	mc.ingameGUI.RenderGameOverlayWithGuiDisabled(par1, this.mc.currentScreen != null, var16, var17);
++                }
++                // END FCMOD
+ 
+                 this.mc.mcProfiler.endSection();
+             }
+@@ -1013,7 +1059,12 @@
+ 
+         if (this.lightmapUpdateNeeded)
+         {
++        	// FCMOD: Changed (client only)
++        	/*
+             this.updateLightmap(par1);
++            */
++        	ModUpdateLightmap(par1);
++        	// END FCMOD
+         }
+ 
+         GL11.glEnable(GL11.GL_CULL_FACE);
+@@ -1255,6 +1306,11 @@
+     {
+         float var1 = this.mc.theWorld.getRainStrength(1.0F);
+ 
++        // FCMOD: Added (client only) to reduce rain particles when it's not stormy
++        var1 *= 0.1F;
++        var1 += mc.theWorld.thunderingStrength * 0.9F;
++        // END FCMOD
++
+         if (!this.mc.gameSettings.fancyGraphics)
+         {
+             var1 /= 2.0F;
+@@ -1292,7 +1348,11 @@
+                 int var20 = var3.getBlockId(var17, var19 - 1, var18);
+                 BiomeGenBase var21 = var3.getBiomeGenForCoords(var17, var18);
+ 
+-                if (var19 <= var5 + var7 && var19 >= var5 - var7 && var21.canSpawnLightningBolt() && var21.getFloatTemperature() >= 0.2F)
++                // FCMOD: Changed (client only) for clarity
++                //if (var19 <= var5 + var7 && var19 >= var5 - var7 && var21.canSpawnLightningBolt() && var21.getFloatTemperature() >= 0.2F)
++                if ( var19 <= var5 + var7 && var19 >= var5 - var7 && 
++                	var21.CanRainInBiome() && var21.getFloatTemperature() >= 0.2F )
++            	// END FCMOD
+                 {
+                     float var22 = this.random.nextFloat();
+                     float var23 = this.random.nextFloat();
+@@ -1326,11 +1386,21 @@
+ 
+                 if (var10 > var2.posY + 1.0D && var3.getPrecipitationHeight(MathHelper.floor_double(var2.posX), MathHelper.floor_double(var2.posZ)) > MathHelper.floor_double(var2.posY))
+                 {
++                	// FCMOD: Changed (client only) to make intensity of sound dependent on storm strength
++                	/*
+                     this.mc.theWorld.playSound(var8, var10, var12, "ambient.weather.rain", 0.1F, 0.5F, false);
++                    */
++                    this.mc.theWorld.playSound(var8, var10, var12, "ambient.weather.rain", 0.1F * var1, 0.5F, false);
++                    // END FCMOD
+                 }
+                 else
+                 {
++                	// FCMOD: Changed (client only) to make intensity of sound dependent on storm strength
++                	/*
+                     this.mc.theWorld.playSound(var8, var10, var12, "ambient.weather.rain", 0.2F, 1.0F, false);
++                    */
++                    this.mc.theWorld.playSound(var8, var10, var12, "ambient.weather.rain", 0.2F * var1, 1.0F, false);
++                    // END FCMOD
+                 }
+             }
+         }
+@@ -1342,6 +1412,10 @@
+     protected void renderRainSnow(float par1)
+     {
+         float var2 = this.mc.theWorld.getRainStrength(par1);
++        // FCMOD: Added (client only) to reduce rain particles when it's not stormy
++        var2 *= 0.5F;
++        var2 += mc.theWorld.thunderingStrength * 0.5F;
++        // END FCMOD
+ 
+         if (var2 > 0.0F)
+         {
+@@ -1409,7 +1483,10 @@
+                     float var24 = this.rainYCoords[var22] * 0.5F;
+                     BiomeGenBase var25 = var42.getBiomeGenForCoords(var21, var20);
+ 
+-                    if (var25.canSpawnLightningBolt() || var25.getEnableSnow())
++                    // FCMOD: Changed (client only) for clarity
++                    //if (var25.canSpawnLightningBolt() || var25.getEnableSnow())
++                    if ( var25.CanRainInBiome() || var25.getEnableSnow() )
++                	// END FCMOD
+                     {
+                         int var26 = var42.getPrecipitationHeight(var21, var20);
+                         int var27 = var44 - var16;
+@@ -1437,8 +1514,8 @@
+                         {
+                             this.random.setSeed((long)(var21 * var21 * 3121 + var21 * 45238971 ^ var20 * var20 * 418711 + var20 * 13761));
+                             float var31 = var25.getFloatTemperature();
+-                            float var32;
+                             double var35;
++                            float var32;
+ 
+                             if (var42.getWorldChunkManager().getTemperatureAtHeight(var31, var26) >= 0.15F)
+                             {
+@@ -1639,6 +1716,12 @@
+                 var14 = 0.0D;
+             }
+         }
++        // FCMOD: Added (client only)
++        else if ( mc.gameSettings.thirdPersonView == 0 && var3.HasHeadCrabbedSquid() )
++        {
++        	var14 = 0.2D;
++        }
++        // END FCMOD
+ 
+         if (var14 < 1.0D)
+         {
+@@ -1655,9 +1738,9 @@
+ 
+         float var23;
+ 
+-        if (this.field_82831_U > 0.0F)
++        if (this.fWitherEffectIntensity > 0.0F)
+         {
+-            var23 = this.field_82832_V + (this.field_82831_U - this.field_82832_V) * par1;
++            var23 = this.fPreviousWithEffectIntensity + (this.fWitherEffectIntensity - this.fPreviousWithEffectIntensity) * par1;
+             this.fogColorRed = this.fogColorRed * (1.0F - var23) + this.fogColorRed * 0.7F * var23;
+             this.fogColorGreen = this.fogColorGreen * (1.0F - var23) + this.fogColorGreen * 0.6F * var23;
+             this.fogColorBlue = this.fogColorBlue * (1.0F - var23) + this.fogColorBlue * 0.6F * var23;
+@@ -1681,8 +1764,12 @@
+             }
+ 
+             this.fogColorRed = this.fogColorRed * (1.0F - var23) + this.fogColorRed * var17 * var23;
++            // FCMOD: Removed (client only) to only affect red with night vision
++            /*
+             this.fogColorGreen = this.fogColorGreen * (1.0F - var23) + this.fogColorGreen * var17 * var23;
+             this.fogColorBlue = this.fogColorBlue * (1.0F - var23) + this.fogColorBlue * var17 * var23;
++            */
++            // END FCMOD
+         }
+ 
+         if (this.mc.gameSettings.anaglyph)
+@@ -1762,8 +1849,32 @@
+                     GL11.glFogi(34138, 34139);
+                 }
+             }
++            // FCMOD: Added (client only)
++            else if ( mc.gameSettings.thirdPersonView == 0 && var3.HasHeadCrabbedSquid() )
++            {
++                var6 = 0.45F;
++
++                GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
++
++                if (par1 < 0)
++                {
++                    GL11.glFogf(GL11.GL_FOG_START, 0.0F);
++                    GL11.glFogf(GL11.GL_FOG_END, var6 * 0.8F);
++                }
+             else
+             {
++                    GL11.glFogf(GL11.GL_FOG_START, 0.0F);
++                    GL11.glFogf(GL11.GL_FOG_END, var6);
++                }
++
++                if (GLContext.getCapabilities().GL_NV_fog_distance)
++                {
++                    GL11.glFogi(34138, 34139);
++                }
++            }
++            // END FCMOD            
++            else
++            {
+                 float var8;
+                 float var9;
+                 float var10;
+@@ -1923,4 +2034,218 @@
+     {
+         return par0EntityRenderer.mc;
+     }
++    
++    // FCMOD: Added (client only)
++    private static final float m_fMaximumSunBrightnessDelta = 0.001F;
++    
++    private float m_fPreviousSunBrightness = -1F;
++    
++    private void ModUpdateLightmap( float fPartialTicks )
++    {
++        WorldClient world = mc.theWorld;
++        
++        if ( world != null )
++        {
++            if ( world.provider.dimensionId == 0 )
++            {
++            	// isolating the overworld for gloom effects
++            	
++            	ModUpdateLightmapOverworld( world, fPartialTicks );
++            	
++            	return;
+ }
++            else
++            {
++                m_fPreviousSunBrightness = -1F;
++                
++            	updateLightmap( fPartialTicks );
++            }
++        }
++    }
++    
++	private void ModUpdateLightmapOverworld( WorldClient world, float fPartialTicks )
++	{
++    	// copy of updateLightmap() to modify for moon phases and to refactor it to make it easier to understand and work with.
++
++    	float fCurrentSunBrightness = world.ComputeOverworldSunBrightnessWithMoonPhases();
++    	
++    	if ( m_fPreviousSunBrightness > -0.01F )
++    	{
++    		if ( Math.abs( fCurrentSunBrightness - m_fPreviousSunBrightness ) > m_fMaximumSunBrightnessDelta )
++    		{
++    			if ( fCurrentSunBrightness > m_fPreviousSunBrightness )
++    			{
++    				fCurrentSunBrightness = m_fPreviousSunBrightness + m_fMaximumSunBrightnessDelta;
++    			}
++    			else
++    			{
++    				fCurrentSunBrightness = m_fPreviousSunBrightness - m_fMaximumSunBrightnessDelta;
++    			}	
++    		}
++    	}
++    	
++    	m_fPreviousSunBrightness = fCurrentSunBrightness;
++    	
++        float fModifiedSunBrightness = fCurrentSunBrightness;
++        
++        boolean bPlayerHasNightVision = mc.thePlayer.isPotionActive( Potion.nightVision );
++    	
++        for ( int iTempMapIndex = 0; iTempMapIndex < 256; ++iTempMapIndex )
++        {
++            float fRedIntensity;
++            float fGreenIntensity;
++            float fBlueIntensity;
++
++            float fTorchBrightnessForIndex = world.provider.lightBrightnessTable[iTempMapIndex % 16] * ( torchFlickerX * 0.1F + 1.5F );
++            
++            float fGreenTorchBrightness = fTorchBrightnessForIndex * ( ( fTorchBrightnessForIndex * 0.6F + 0.4F ) * 0.6F + 0.4F );
++            float fBlueTorchBrightness = fTorchBrightnessForIndex * ( fTorchBrightnessForIndex * fTorchBrightnessForIndex * 0.6F + 0.4F );
++
++            float fSunBrightnessForIndex = world.provider.lightBrightnessTable[iTempMapIndex / 16] * fModifiedSunBrightness;
++            
++            if ( world.lastLightningBolt > 0 )
++            {
++                fSunBrightnessForIndex = world.provider.lightBrightnessTable[iTempMapIndex / 16];
++            }
++
++            float fRedSunBrightness = fSunBrightnessForIndex * ( fCurrentSunBrightness * 0.65F + 0.35F );
++            float fGreenSunBrightness = fRedSunBrightness;                
++            
++            fRedIntensity = fRedSunBrightness + fTorchBrightnessForIndex;
++            fGreenIntensity = fGreenSunBrightness + fGreenTorchBrightness;
++            fBlueIntensity = fSunBrightnessForIndex + fBlueTorchBrightness;
++            
++            if ( fWitherEffectIntensity > 0.0F )
++            {
++            	// this all seems to be related to darkening the sky around the wither.  The above test is true if the player is near, or has recently been near, 
++            	// the wither, with what appears to be a fade-in/out transition on the effect
++
++                float fCurrentWitherEffectIntensity = fPreviousWithEffectIntensity + ( fWitherEffectIntensity - fPreviousWithEffectIntensity ) * fPartialTicks;
++                
++                fRedIntensity = fRedIntensity * (1.0F - fCurrentWitherEffectIntensity) + fRedIntensity * 0.7F * fCurrentWitherEffectIntensity;
++                fGreenIntensity = fGreenIntensity * (1.0F - fCurrentWitherEffectIntensity) + fGreenIntensity * 0.6F * fCurrentWitherEffectIntensity;
++                fBlueIntensity = fBlueIntensity * (1.0F - fCurrentWitherEffectIntensity) + fBlueIntensity * 0.6F * fCurrentWitherEffectIntensity;
++            }
++            
++            float fMinimumBrightness = fSunBrightnessForIndex + fTorchBrightnessForIndex;
++            
++            fMinimumBrightness *= fMinimumBrightness;
++            
++            if ( fMinimumBrightness > 0.03F )
++            {
++            	fMinimumBrightness = 0.03F;
++            }
++
++            if ( bPlayerHasNightVision )
++            {
++            	fRedIntensity = fRedIntensity * 0.96F + 0.03F;
++            	
++            	// Note: this portion has been modified from stock to only modify red with night vision
++                float fNightVisionBrightness = getNightVisionBrightness( mc.thePlayer, fPartialTicks );
++                
++                float var17 = 1.0F / fRedIntensity;
++
++                if (var17 > 1.0F / fGreenIntensity)
++                {
++                    var17 = 1.0F / fGreenIntensity;
++                }
++
++                if (var17 > 1.0F / fBlueIntensity)
++                {
++                    var17 = 1.0F / fBlueIntensity;
++                }
++
++                fRedIntensity = fRedIntensity * (1.0F - fNightVisionBrightness) + fRedIntensity * var17 * fNightVisionBrightness;
++            }
++
++            float fMinimumBrightnessMultiplier = 1F - fMinimumBrightness;
++            
++        	fRedIntensity = fRedIntensity * fMinimumBrightnessMultiplier + fMinimumBrightness;
++        	fGreenIntensity = fGreenIntensity  * fMinimumBrightnessMultiplier + fMinimumBrightness;
++        	fBlueIntensity = fBlueIntensity  * fMinimumBrightnessMultiplier + fMinimumBrightness;            
++
++            if (fRedIntensity > 1.0F)
++            {
++                fRedIntensity = 1.0F;
++            }
++
++            if (fGreenIntensity > 1.0F)
++            {
++                fGreenIntensity = 1.0F;
++            }
++
++            if (fBlueIntensity > 1.0F)
++            {
++                fBlueIntensity = 1.0F;
++            }
++
++            float fGammaSetting = mc.gameSettings.gammaSetting;
++            
++            float fRedModifier = 1.0F - fRedIntensity;
++            float fGreenModifier = 1.0F - fGreenIntensity;
++            float fBlueModifier = 1.0F - fBlueIntensity;
++            
++            fRedModifier = 1.0F - fRedModifier * fRedModifier * fRedModifier * fRedModifier;
++            fGreenModifier = 1.0F - fGreenModifier * fGreenModifier * fGreenModifier * fGreenModifier;
++            fBlueModifier = 1.0F - fBlueModifier * fBlueModifier * fBlueModifier * fBlueModifier;
++            
++            fRedIntensity = fRedIntensity * (1.0F - fGammaSetting) + fRedModifier * fGammaSetting;
++            fGreenIntensity = fGreenIntensity * (1.0F - fGammaSetting) + fGreenModifier * fGammaSetting;
++            fBlueIntensity = fBlueIntensity * (1.0F - fGammaSetting) + fBlueModifier * fGammaSetting;
++            
++        	//fRedIntensity = fRedIntensity * 0.96F + 0.03F;
++        	//fGreenIntensity = fGreenIntensity * 0.96F + 0.03F;
++        	//fBlueIntensity = fBlueIntensity * 0.96F + 0.03F;
++
++        	fRedIntensity = fRedIntensity * fMinimumBrightnessMultiplier + fMinimumBrightness;
++        	fGreenIntensity = fGreenIntensity  * fMinimumBrightnessMultiplier + fMinimumBrightness;
++        	fBlueIntensity = fBlueIntensity  * fMinimumBrightnessMultiplier + fMinimumBrightness;            
++        	
++            if (fRedIntensity > 1.0F)
++            {
++                fRedIntensity = 1.0F;
++            }
++
++            if (fGreenIntensity > 1.0F)
++            {
++                fGreenIntensity = 1.0F;
++            }
++
++            if (fBlueIntensity > 1.0F)
++            {
++                fBlueIntensity = 1.0F;
++            }
++
++            if (fRedIntensity < 0.0F)
++            {
++                fRedIntensity = 0.0F;
++            }
++
++            if (fGreenIntensity < 0.0F)
++            {
++                fGreenIntensity = 0.0F;
++            }
++
++            if (fBlueIntensity < 0.0F)
++            {
++                fBlueIntensity = 0.0F;
++            }
++            
++            short sFinalAlpha = 255;
++            
++            int iFinalRed = (int)(fRedIntensity * 255.0F);
++            int iFinalGreen = (int)(fGreenIntensity * 255.0F);
++            int iFinalBlue = (int)(fBlueIntensity * 255.0F);
++            
++            lightmapColors[iTempMapIndex] = sFinalAlpha << 24 | iFinalRed << 16 | iFinalGreen << 8 | iFinalBlue;
++        }
++
++        mc.renderEngine.createTextureFromBytes( lightmapColors, 16, 16, lightmapTexture );
++	}
++	
++    static public boolean InstallationIntegrityTest()
++    {
++    	return true;
++    }    
++    // END FCMOD
++}

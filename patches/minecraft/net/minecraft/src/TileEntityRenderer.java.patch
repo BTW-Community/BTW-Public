@@ -1,0 +1,28 @@
+--- a/minecraft/net/minecraft/src/TileEntityRenderer.java
++++ b/minecraft/net/minecraft/src/TileEntityRenderer.java
+@@ -56,6 +56,13 @@
+         this.specialRendererMap.put(TileEntityEndPortal.class, new RenderEndPortal());
+         this.specialRendererMap.put(TileEntityBeacon.class, new TileEntityBeaconRenderer());
+         this.specialRendererMap.put(TileEntitySkull.class, new TileEntitySkullRenderer());
++        // FCMOD: Added (client Only)
++        specialRendererMap.put( FCTileEntityCampfire.class, new FCTileEntityCampfireRenderer() );
++        specialRendererMap.put( FCTileEntityFurnaceBrick.class, new FCTileEntityFurnaceBrickRenderer() );
++        specialRendererMap.put( FCTileEntityToolPlaced.class, new FCTileEntityToolPlacedRenderer() );
++        specialRendererMap.put( FCTileEntityBasketWicker.class, new FCTileEntityBasketWickerRenderer() );
++        specialRendererMap.put( FCTileEntityHamper.class, new FCTileEntityBasketRenderer() );
++        // END FCMOD
+         Iterator var1 = this.specialRendererMap.values().iterator();
+ 
+         while (var1.hasNext())
+@@ -182,4 +189,11 @@
+     {
+         return this.fontRenderer;
+     }
++    
++    // FCMOD: Added
++    public Map GetSpecialRendererMap()
++    {
++    	return specialRendererMap;
+ }
++    // END FCMOD
++}

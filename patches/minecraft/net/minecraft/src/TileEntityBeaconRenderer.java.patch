@@ -1,0 +1,56 @@
+--- a/minecraft/net/minecraft/src/TileEntityBeaconRenderer.java
++++ b/minecraft/net/minecraft/src/TileEntityBeaconRenderer.java
+@@ -14,7 +14,19 @@
+         if (var9 > 0.0F)
+         {
+             Tessellator var10 = Tessellator.instance;
+-            this.bindTextureByName("/misc/beam.png");
++            // FCMOD: Change
++            /*
++            //this.bindTextureByName("/misc/beam.png");
++            */
++            if ( par1TileEntityBeacon.IsHomeBeacon() )
++            {
++            	bindTextureByName( "/btwmodtex/fcBeam.png" );
++            }
++            else
++            {
++            	bindTextureByName( "/misc/beam.png" );
++            }
++            // END FCMOD
+             GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 10497.0F);
+             GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 10497.0F);
+             GL11.glDisable(GL11.GL_LIGHTING);
+@@ -29,6 +41,12 @@
+             var10.startDrawingQuads();
+             var10.setColorRGBA(255, 255, 255, 32);
+             double var16 = (double)var13 * 0.2D;
++            // FCMOD: Code added
++            if ( par1TileEntityBeacon.IsHomeBeacon() )
++            {
++            	var16 *= 1.5D;
++            }
++            // END FCMOD
+             double var18 = 0.5D + Math.cos(var14 + 2.356194490192345D) * var16;
+             double var20 = 0.5D + Math.sin(var14 + 2.356194490192345D) * var16;
+             double var22 = 0.5D + Math.cos(var14 + (Math.PI / 4D)) * var16;
+@@ -72,6 +90,19 @@
+             double var23 = 0.8D;
+             double var25 = 0.8D;
+             double var27 = 0.8D;
++            // FCMOD: Code added
++            if ( par1TileEntityBeacon.IsHomeBeacon() )
++            {
++	            var44 = 0D;
++	            var15 = 0D;            
++	            var17 = 1.0D;            
++	            var19 = 0D;
++	            var21 = 0D;            
++	            var23 = 1.0D;
++	            var25 = 1.0D;
++	            var27 = 1.0D;
++            }
++            // END FCMOD            
+             double var29 = (double)(256.0F * var9);
+             double var31 = 0.0D;
+             double var33 = 1.0D;

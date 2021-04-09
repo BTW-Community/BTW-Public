@@ -1,0 +1,1501 @@
+--- a/minecraft_server/net/minecraft/src/EntityPlayer.java
++++ b/minecraft_server/net/minecraft/src/EntityPlayer.java
+@@ -100,7 +100,10 @@
+     public EntityPlayer(World par1World)
+     {
+         super(par1World);
+-        this.inventoryContainer = new ContainerPlayer(this.inventory, !par1World.isRemote, this);
++        // FCMOD: Changed
++        //this.inventoryContainer = new ContainerPlayer(this.inventory, !par1World.isRemote, this);
++        inventoryContainer = new FCContainerPlayer( inventory, !par1World.isRemote, this );
++        // END FCMOD
+         this.openContainer = this.inventoryContainer;
+         this.yOffset = 1.62F;
+         ChunkCoordinates var2 = par1World.getSpawnPoint();
+@@ -122,8 +125,29 @@
+         this.dataWatcher.addObject(16, Byte.valueOf((byte)0));
+         this.dataWatcher.addObject(17, Byte.valueOf((byte)0));
+         this.dataWatcher.addObject(18, Integer.valueOf(0));
++        
++        // FCMOD: Added
++        dataWatcher.addObject( m_iHasValidMagneticPointForLocationDataWatcherID, new Byte( (byte)0 ) );
++        dataWatcher.addObject( m_iStongestMagneticPointForLocationIDataWatcherID, new Integer( 0 ) );
++        dataWatcher.addObject( m_iStongestMagneticPointForLocationKDataWatcherID, new Integer( 0 ) );
++        dataWatcher.addObject( m_iGloomLevelDataWatcherID, new Byte( (byte)0 ) );
++        dataWatcher.addObject( m_iFatPenaltyLevelDataWatcherID, new Byte( (byte)0 ) );
++        dataWatcher.addObject( m_iHungerPenaltyLevelDataWatcherID, new Byte( (byte)0 ) );
++        dataWatcher.addObject( m_iHealthPenaltyLevelDataWatcherID, new Byte( (byte)0 ) );
++        
++        dataWatcher.addObject( m_iSpawnChunksVisualizationLocationIDataWatcherID, new Integer( 0 ) );
++        dataWatcher.addObject( m_iSpawnChunksVisualizationLocationJDataWatcherID, new Integer( 0 ) );
++        dataWatcher.addObject( m_iSpawnChunksVisualizationLocationKDataWatcherID, new Integer( 0 ) );
++        // END FCMOD
+     }
+ 
++    // FCMOD: Added (server only to match client)
++    public int getItemInUseCount()
++    {
++        return this.itemInUseCount;
++    }
++    // END FCMOD
++
+     /**
+      * Checks if the entity is currently using an item (e.g., bow, food, sword) by holding down the useItemButton
+      */
+@@ -163,17 +187,35 @@
+      */
+     public void onUpdate()
+     {
++    	// FCMOD: Added
++    	m_iTimesCraftedThisTick = 0;
++        m_iTicksSinceEmoteSound++;
++    	// END FCMOD
++    	
+         if (this.itemInUse != null)
+         {
+             ItemStack var1 = this.inventory.getCurrentItem();
+ 
+-            if (var1 == this.itemInUse)
++            // FCMOD: Changed
++            //if (var1 == this.itemInUse)
++            if ( var1 == this.itemInUse || 
++            	( var1 != null && itemInUse.getItem().IgnoreDamageWhenComparingDuringUse() && 
++        		var1.itemID == itemInUse.itemID && ItemStack.areItemStackTagsEqual( itemInUse, var1 ) ) )
++        	// END FCMOD
+             {
++            	// FCMOD: Added
++            	itemInUse = var1;
++            	// END FCMOD
++            	
+                 if (this.itemInUseCount <= 25 && this.itemInUseCount % 4 == 0)
+                 {
+                     this.updateItemUse(var1, 5);
+                 }
+ 
++                // FCMOD: Added
++        		var1.getItem().UpdateUsingItem( var1, this.worldObj, this );
++                // END FCMOD 
++
+                 if (--this.itemInUseCount == 0 && !this.worldObj.isRemote)
+                 {
+                     this.onItemUseFinish();
+@@ -286,6 +328,10 @@
+         {
+             this.foodStats.onUpdate(this);
+         }
++        
++        // FCMOD: Added
++        UpdateModStatusVariables();
++        // END FCMOD
+     }
+ 
+     /**
+@@ -304,6 +350,10 @@
+         return 10;
+     }
+ 
++    // FCMOD: Comment added
++    /**
++	/* the playSound function both plays the sound locally on the client, and plays it remotely on the server without it being sent again to the same player
++	 */ // END FCMOD
+     public void playSound(String par1Str, float par2, float par3)
+     {
+         this.worldObj.playSoundToNearExcept(this, par1Str, par2, par3);
+@@ -449,6 +499,9 @@
+         super.onLivingUpdate();
+         this.landMovementFactor = this.capabilities.getWalkSpeed();
+         this.jumpMovementFactor = this.speedInAir;
++        // FCMOD: Code added to apply move penalties to jumping
++        jumpMovementFactor *= GetJumpingHorizontalMovementModifier();        
++        // END FCMOD
+ 
+         if (this.isSprinting())
+         {
+@@ -626,6 +679,9 @@
+                 var3.motionX = (double)(-MathHelper.sin(var6) * var5);
+                 var3.motionZ = (double)(MathHelper.cos(var6) * var5);
+                 var3.motionY = 0.20000000298023224D;
++                // FCMOD: Code added: par2 flag indicates that the item has been dropped on death
++                var3.SetEntityItemAsDroppedOnPlayerDeath( this );
++                // END FCMOD
+             }
+             else
+             {
+@@ -658,9 +714,19 @@
+     /**
+      * Returns how strong the player is against the specified block at this moment
+      */
++    // FCMOD: Code change
++    /*
+     public float getCurrentPlayerStrVsBlock(Block par1Block, boolean par2)
++    */
++    public float getCurrentPlayerStrVsBlock(Block par1Block, int i, int j, int k)
++    // END FCMOD
+     {
++        // FCMOD: Code change
++        /*
+         float var3 = this.inventory.getStrVsBlock(par1Block);
++        */
++        float var3 = this.inventory.getStrVsBlock(worldObj, par1Block, i, j, k);
++    	// END FCMOD
+ 
+         if (var3 > 1.0F)
+         {
+@@ -671,7 +737,12 @@
+             {
+                 float var6 = (float)(var4 * var4 + 1);
+ 
++                // FCMOD: Code change
++                /*
+                 if (!var5.canHarvestBlock(par1Block) && var3 <= 1.0F)
++                */
++                if (!var5.canHarvestBlock( worldObj, par1Block, i, j, k) && var3 <= 1.0F)
++                // END FCMOD
+                 {
+                     var3 += var6 * 0.08F;
+                 }
+@@ -702,16 +773,24 @@
+             var3 /= 5.0F;
+         }
+ 
++        // FCMOD: Added
++        var3 *= GetMiningSpeedModifier();
++        // END FCMOD        
++
+         return var3;
+     }
+ 
+     /**
+      * Checks if the player has the ability to harvest a block (checks current inventory item for a tool if necessary)
+      */
++    // FCMOD: Code removed and replaced later
++    /*
+     public boolean canHarvestBlock(Block par1Block)
+     {
+         return this.inventory.canHarvestBlock(par1Block);
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * (abstract) Protected helper method to read subclass entity data from NBT.
+@@ -749,6 +828,9 @@
+             NBTTagList var3 = par1NBTTagCompound.getTagList("EnderItems");
+             this.theInventoryEnderChest.loadInventoryFromNBT(var3);
+         }
++        // FCMOD: Code added
++        ReadModDataFromNBT( par1NBTTagCompound );
++        // END FCMOD
+     }
+ 
+     /**
+@@ -777,6 +859,9 @@
+         this.foodStats.writeNBT(par1NBTTagCompound);
+         this.capabilities.writeCapabilitiesToNBT(par1NBTTagCompound);
+         par1NBTTagCompound.setTag("EnderItems", this.theInventoryEnderChest.saveInventoryToNBT());
++        // FCMOD: Code added
++        WriteModDataToNBT( par1NBTTagCompound );
++        // END FCMOD
+     }
+ 
+     /**
+@@ -878,6 +963,14 @@
+                     }
+ 
+                     this.addStat(StatList.damageTakenStat, par2);
++                    // FCMOD: Code added
++                    if ( !isDead && IsCarryingBlastingOil() )
++                    {
++                    	DetonateCarriedBlastingOil();
++                    	
++                    	return false;
++                    }
++                    // END FCMOD
+                     return super.attackEntityFrom(par1DamageSource, par2);
+                 }
+             }
+@@ -897,7 +990,13 @@
+      */
+     protected void alertWolves(EntityLiving par1EntityLiving, boolean par2)
+     {
+-        if (!(par1EntityLiving instanceof EntityCreeper) && !(par1EntityLiving instanceof EntityGhast))
++    	// FCMOD: Added to make sure that wolves don't attack if sitting
++    	par2 = true;
++    	// END FCMOD
++    	// FCMOD: Changed
++        //if (!(par1EntityLiving instanceof EntityCreeper) && !(par1EntityLiving instanceof EntityGhast))
++        if (!(par1EntityLiving instanceof FCEntityCreeper) && !(par1EntityLiving instanceof FCEntityGhast))
++    	// END FCMOD
+         {
+             if (par1EntityLiving instanceof EntityWolf)
+             {
+@@ -970,6 +1069,10 @@
+         {
+             if (!par1DamageSource.isUnblockable() && this.isBlocking())
+             {
++        		// FCMOD: Code added
++        		OnBlockedDamage( par1DamageSource, par2 );
++        		// END FCMOD
++        		
+                 par2 = 1 + par2 >> 1;
+             }
+ 
+@@ -1106,6 +1209,15 @@
+                     ++var3;
+                 }
+ 
++                // FCMOD: Code added to modify player attack damage by health and exhaustion
++                float fModifier = GetMeleeDamageModifier();
++                
++                if ( fModifier < 0.99F )
++                {
++                	var2 = (int)((float)var2 * fModifier);                	
++                }
++                // END FCMOD
++
+                 if (var2 > 0 || var4 > 0)
+                 {
+                     boolean var5 = this.fallDistance > 0.0F && !this.onGround && !this.isOnLadder() && !this.isInWater() && !this.isPotionActive(Potion.blindness) && this.ridingEntity == null && par1Entity instanceof EntityLiving;
+@@ -1204,9 +1316,15 @@
+ 
+                     this.addExhaustion(0.3F);
+                 }
++                // FCMOD: Code added
++                else // else from "if (var2 > 0 || var4 > 0)" above, indicating zero damage attack
++                {
++            		OnZeroDamageAttack();
+             }
++                // END FCMOD
+         }
+     }
++    }
+ 
+     /**
+      * Called when the player performs a critical hit on the Entity. Args: entity that was hit critically
+@@ -1247,6 +1365,11 @@
+      */
+     public EnumStatus sleepInBedAt(int par1, int par2, int par3)
+     {
++    	// FCMOD: Code added
++        return EnumStatus.OTHER_PROBLEM;
++        // END FCMOD
++    	// FCMOD: Code removed
++        /*
+         if (!this.worldObj.isRemote)
+         {
+             if (this.isPlayerSleeping() || !this.isEntityAlive())
+@@ -1326,6 +1449,8 @@
+         }
+ 
+         return EnumStatus.OK;
++        */
++        // END FCMOD
+     }
+ 
+     private void func_71013_b(int par1)
+@@ -1495,6 +1620,10 @@
+             this.spawnChunk = null;
+             this.spawnForced = false;
+         }
++        
++        // FCMOD: Code added
++        m_iSpawnDimension = 0;
++        // END FCMOD
+     }
+ 
+     /**
+@@ -1518,6 +1647,8 @@
+         super.jump();
+         this.addStat(StatList.jumpStat, 1);
+ 
++        // FCMOD: Changed
++        /*
+         if (this.isSprinting())
+         {
+             this.addExhaustion(0.8F);
+@@ -1526,6 +1657,9 @@
+         {
+             this.addExhaustion(0.2F);
+         }
++        */
++        AddExhaustionForJump();
++        // END FCMOD
+     }
+ 
+     /**
+@@ -1563,6 +1697,13 @@
+         {
+             int var7;
+ 
++            // FCMOD: Added
++            if ( isInWater() && par3 > 0D && CanSwim() )
++            {
++                addExhaustion( 0.025F );
++            }
++            // END FCMOD
++            
+             if (this.isInsideOfMaterial(Material.water))
+             {
+                 var7 = Math.round(MathHelper.sqrt_double(par1 * par1 + par3 * par3 + par5 * par5) * 100.0F);
+@@ -1570,7 +1711,12 @@
+                 if (var7 > 0)
+                 {
+                     this.addStat(StatList.distanceDoveStat, var7);
++                    // FCMOD: Code change
++                    /*
+                     this.addExhaustion(0.015F * (float)var7 * 0.01F);
++                    */
++                    this.AddExhaustionWithoutVisualFeedback(0.015F * (float)var7 * 0.01F);
++                    // END FCMOD
+                 }
+             }
+             else if (this.isInWater())
+@@ -1580,7 +1726,12 @@
+                 if (var7 > 0)
+                 {
+                     this.addStat(StatList.distanceSwumStat, var7);
++                    // FCMOD: Code change
++                    /*
+                     this.addExhaustion(0.015F * (float)var7 * 0.01F);
++                    */
++                    this.AddExhaustionWithoutVisualFeedback(0.015F * (float)var7 * 0.01F);
++                    // END FCMOD
+                 }
+             }
+             else if (this.isOnLadder())
+@@ -1604,7 +1755,12 @@
+                     }
+                     else
+                     {
++                        // FCMOD: Code change
++                        /*
+                         this.addExhaustion(0.01F * (float)var7 * 0.01F);
++                        */
++                        this.AddExhaustionWithoutVisualFeedback(0.01F * (float)var7 * 0.01F);
++                        // END FCMOD
+                     }
+                 }
+             }
+@@ -1768,6 +1924,9 @@
+         {
+             if (!this.worldObj.isRemote)
+             {
++            	// FCMOD: Code added        	
++            	par1 *= GetArmorExhaustionModifier();
++        		// END FCMOD
+                 this.foodStats.addExhaustion(par1);
+             }
+         }
+@@ -1783,6 +1942,12 @@
+ 
+     public boolean canEat(boolean par1)
+     {
++    	// FCMOD: Code added to prevent player from eating while having the hunger effect
++        if ( isPotionActive( Potion.hunger ) )
++        {
++        	return false;
++        }
++    	// END FCMOD
+         return (par1 || this.foodStats.needFood()) && !this.capabilities.disableDamage;
+     }
+ 
+@@ -1837,7 +2002,12 @@
+                 {
+                     ItemStack var6 = this.getCurrentEquippedItem();
+ 
++                    // FCMOD: Code change
++                    /*
+                     if (var6.canHarvestBlock(var5) || var6.getStrVsBlock(var5) > 1.0F)
++                    */
++                    if (var6.canHarvestBlock(worldObj, var5, par1, par2, par3) || var6.getStrVsBlock(worldObj, var5, par1, par2, par3) > 1.0F)
++                	// END FCMOD
+                     {
+                         return true;
+                     }
+@@ -1850,6 +2020,13 @@
+ 
+     public boolean canPlayerEdit(int par1, int par2, int par3, int par4, ItemStack par5ItemStack)
+     {
++    	// FCMOD: Code added to prevent the player from placing blocks while in mid air
++    	if ( !capabilities.isCreativeMode && !onGround && !inWater && !isOnLadder() && ridingEntity == null && !handleLavaMovement() )
++    	{
++    		return false;
++    	}
++    	// END FCMOD
++    	
+         return this.capabilities.allowEdit ? true : (par5ItemStack != null ? par5ItemStack.func_82835_x() : false);
+     }
+ 
+@@ -2026,4 +2203,1072 @@
+     {
+         return ScorePlayerTeam.func_96667_a(this.getTeam(), this.username);
+     }
++
++    // FCMOD: Added New
++    public ChunkCoordinates m_HardcoreSpawnChunk;
++    
++    public long m_lTimeOfLastSpawnAssignment = 0;
++    public long m_lTimeOfLastDimensionSwitch = 0;
++    public long m_lRespawnAssignmentCooldownTimer = 0;
++    
++    public int m_iSpawnDimension = 0;
++    public int m_iTimesCraftedThisTick = 0;
++    public int m_iInGloomCounter = 0;
++    public int m_iAirRecoveryCountdown = 0;    
++    public int m_iTicksSinceEmoteSound = 0;
++    
++	protected float m_fCurrentMiningSpeedModifier = 1F;
++    
++    public static final int m_iGloomCounterBetweenStateChanges = 1200; // 1 minute
++    
++	private static final int m_iStongestMagneticPointForLocationIDataWatcherID = 22;
++	private static final int m_iStongestMagneticPointForLocationKDataWatcherID = 23;
++	private static final int m_iHasValidMagneticPointForLocationDataWatcherID = 24;
++	private static final int m_iGloomLevelDataWatcherID = 25;
++	private static final int m_iFatPenaltyLevelDataWatcherID = 26;
++	private static final int m_iHungerPenaltyLevelDataWatcherID = 27;
++	private static final int m_iHealthPenaltyLevelDataWatcherID = 28;
++    
++	private static final int m_iSpawnChunksVisualizationLocationIDataWatcherID = 29;
++	private static final int m_iSpawnChunksVisualizationLocationJDataWatcherID = 30;
++	private static final int m_iSpawnChunksVisualizationLocationKDataWatcherID = 31;
++	
++	private static final int m_iTicksBetweenEmoteSounds = 10;
++	
++	public static final float m_fExhaustionJumping = 0.2F;
++	public static final float m_fExhaustionJumpingSprinting = 1.0F;
++	
++    protected void ReadModDataFromNBT( NBTTagCompound tag )
++    {
++	    if ( tag.hasKey( "fcTimeOfLastSpawnAssignment" ) )
++	    {
++	    	m_lTimeOfLastSpawnAssignment = tag.getLong( "fcTimeOfLastSpawnAssignment" );
+ }
++	    
++	    if ( tag.hasKey( "fcTimeOfLastDimensionSwitch" ) )
++	    {
++	    	m_lTimeOfLastDimensionSwitch = tag.getLong( "fcTimeOfLastDimensionSwitch" );
++	    }
++	    
++	    if ( tag.hasKey( "fcHCSpawnX" ) && tag.hasKey( "fcHCSpawnY" ) && tag.hasKey( "fcHCSpawnZ" ) )
++	    {
++	        m_HardcoreSpawnChunk = new ChunkCoordinates( tag.getInteger( "fcHCSpawnX" ), tag.getInteger( "fcHCSpawnY" ), tag.getInteger( "fcHCSpawnZ" ) );
++	    }
++	    
++	    if ( tag.hasKey( "fcSpawnDimension" ) )
++	    {
++	    	m_iSpawnDimension = tag.getInteger( "fcSpawnDimension" );
++	    }	    	    
++	    
++	    if ( tag.hasKey( "fcGloomLevel" ) )
++	    {
++	    	SetGloomLevel( tag.getInteger( "fcGloomLevel" ) );
++	    }
++	    
++	    if ( tag.hasKey( "fcGloomCounter" ) )
++	    {
++	    	m_iInGloomCounter = tag.getInteger( "fcGloomCounter" );
++	    }
++    }
++    
++    protected void WriteModDataToNBT( NBTTagCompound tag )
++    {
++	 	tag.setLong( "fcTimeOfLastSpawnAssignment", m_lTimeOfLastSpawnAssignment );
++	 	
++	 	tag.setLong( "fcTimeOfLastDimensionSwitch", m_lTimeOfLastDimensionSwitch );
++	    
++	    if ( m_HardcoreSpawnChunk != null )
++	    {
++	        tag.setInteger( "fcHCSpawnX", m_HardcoreSpawnChunk.posX );
++	        tag.setInteger( "fcHCSpawnY", m_HardcoreSpawnChunk.posY );
++	        tag.setInteger( "fcHCSpawnZ", m_HardcoreSpawnChunk.posZ );
++	    }
++	    
++	 	tag.setInteger( "fcSpawnDimension", m_iSpawnDimension );
++	 	
++	 	tag.setInteger( "fcGloomLevel", GetGloomLevel() );
++	 	tag.setInteger( "fcGloomCounter", m_iInGloomCounter );
++    }
++    
++    @Override
++    protected int decreaseAirSupply( int iAirSupply )
++    {
++        m_iAirRecoveryCountdown = 20;
++        
++        int iEnchantmentLevel = EnchantmentHelper.getRespiration(this);
++        
++        if ( iEnchantmentLevel > 0 && IsWearingSoulforgedHelm() )
++        {
++    		if ( this.worldObj.getWorldTime() % 100 == 0 )
++    		{
++    			worldObj.playSoundAtEntity( this, 
++            		"random.breath", 
++            		0.75F + rand.nextFloat() * 0.5F, 
++            		0.5F + rand.nextFloat() * 0.025F );
++    		}    		
++
++        	if ( rand.nextInt( ( iEnchantmentLevel * iEnchantmentLevel + 1 ) ) > 0 )
++        	{
++        		return iAirSupply;
++        	}
++        	else
++        	{
++                return iAirSupply - 1;
++        	}        	
++        }
++        else
++        {
++        	return super.decreaseAirSupply( iAirSupply );
++        }
++    }
++    
++    @Override
++    protected void RecoverAirSupply()
++    {
++    	if ( m_iAirRecoveryCountdown > 0 )
++    	{
++    		m_iAirRecoveryCountdown--;
++    		
++    	}
++    	else
++    	{
++        	int iCurrentAir = getAir();
++        	
++        	if ( iCurrentAir < 300 )
++        	{
++        		iCurrentAir += 10;
++        		
++        		if ( iCurrentAir > 300 )
++        		{
++        			iCurrentAir = 300;
++        		}
++        		setAir( iCurrentAir + 1 );
++        	}
++        	else
++        	{
++        		setAir(300);
++        	}
++    	}
++    }
++    
++	@Override
++    public boolean isOnLadder()
++    {
++		return GetHealthPenaltyLevel() < 4 && super.isOnLadder();
++    }
++	
++	@Override
++    public boolean CanJump()
++    {		
++    	return health > 4 && foodStats.getFoodLevel() > 12 && (int)foodStats.getSaturationLevel() < 18;
++    }
++	
++	@Override
++    public boolean CanSwim()
++    {		
++    	return !isWeighted() && health > 4;
++    }
++	
++	@Override
++	protected int GetWornArmorWeight()
++	{
++		int iWeight = 0;
++		
++        for ( int iSlot = 0; iSlot < inventory.armorInventory.length; iSlot++ )
++        {
++        	ItemStack tempStack = inventory.armorInventory[iSlot];
++        	
++            if ( tempStack != null )
++            {
++                iWeight += tempStack.getItem().GetWeightWhenWorn();
++            }
++        }
++        
++		return iWeight;
++	}
++	
++	public float GetArmorExhaustionModifier()
++	{
++		float fModifier = 1.0F;
++		
++		int iWeight = GetWornArmorWeight();
++		
++		if ( iWeight > 0 )
++		{
++			// set to cap at a 2 times modifier with full plate armor
++			
++			fModifier += (float)iWeight / 44F;
++		}
++		
++		return fModifier;
++	}
++	
++	
++	public boolean IsWearingFullSuitSoulforgedArmor()
++	{
++        for ( int iSlot = 0; iSlot < inventory.armorInventory.length; iSlot++ )
++        {
++            if ( inventory.armorInventory[iSlot] == null || !( inventory.armorInventory[iSlot].getItem() instanceof FCItemArmorRefined ) )
++            {
++                return false;
++            }
++        }
++        
++		return true;
++	}
++	
++    protected boolean IsWearingSoulforgedHelm()
++	{
++        return inventory.armorInventory[3] != null && 
++        	inventory.armorInventory[3].getItem().itemID == 
++    		FCBetterThanWolves.fcItemPlateHelm.itemID;
++	}
++	
++    protected boolean IsWearingSoulforgedBoots()
++	{
++        return inventory.armorInventory[0] != null && 
++        	inventory.armorInventory[0].getItem().itemID == 
++    		FCBetterThanWolves.fcItemPlateBoots.itemID;
++	}
++    
++    public boolean IsWearingEnderSpectacles()
++    {
++        return inventory.armorInventory[3] != null && 
++        	inventory.armorInventory[3].getItem().itemID == 
++    		FCBetterThanWolves.fcItemEnderSpectacles.itemID;
++    }
++    
++	@Override
++    protected void playStepSound( int i, int j, int k, int iBlockID )
++    {
++		float fHealthAndExhaustionModifier = GetHealthAndExhaustionModifier();
++		
++		if ( fHealthAndExhaustionModifier < 0.26F )
++		{
++			// play grunting along with step
++			
++			float fGruntVolume = ( 1F - fHealthAndExhaustionModifier ) * 0.75F;
++			
++			worldObj.playSoundAtEntity( this, 
++        		"random.classic_hurt", 0.5F, 
++        		1F + rand.nextFloat() * 0.1F);
++		}
++		
++		if ( IsWearingSoulforgedBoots() )
++		{
++	        int iBlockAboveID = worldObj.getBlockId( i, j + 1, k );
++	        Block blockAbove = Block.blocksList[iBlockAboveID];
++	        
++	        if ( blockAbove != null && blockAbove.IsGroundCover( ) )
++	        {
++	        	StepSound stepSound = blockAbove.stepSound;
++	            
++	            worldObj.playSoundAtEntity( this, stepSound.getStepSound(), stepSound.getVolume() * 0.3F, stepSound.getPitch() * 0.75F );
++	        }
++	        else if ( !Block.blocksList[iBlockID].blockMaterial.isLiquid() )
++	        {
++		        StepSound stepSound = Block.blocksList[iBlockID].GetStepSound( worldObj, i, j, k );    	
++
++	            worldObj.playSoundAtEntity( this, stepSound.getStepSound(), stepSound.getVolume() * 0.3F, stepSound.getPitch() * 0.5F );
++	        }
++		}
++		else
++		{
++			super.playStepSound( i, j, k, iBlockID );
++		}
++    }
++
++	@Override
++    protected float GetHealthAndExhaustionModifier()
++    {
++		float fModifier = 1.0F;
++
++		int iPenaltyLevel = GetMaximumStatusPenaltyLevel();
++		
++		if ( iPenaltyLevel >= 2 )
++		{
++			if ( iPenaltyLevel >= 3 )
++			{
++				if ( iPenaltyLevel >= 4 )
++				{
++					fModifier = 0.25F;
++				}
++				else
++				{
++					fModifier = 0.5F;
++				}
++			} 
++			else
++			{
++				fModifier = 0.75F;
++			}
++		}
++		
++    	return fModifier;
++    }
++    
++    protected float GetHealthAndExhaustionModifierWithSightlessModifier()
++    {
++		float fModifier = GetHealthAndExhaustionModifier();
++		
++		if ( GetGloomLevel() > 0 )
++		{
++			fModifier *= 0.5F;
++		}
++		
++    	return fModifier;
++    }
++    
++	@Override
++    protected float GetSwimmingHorizontalModifier()
++    {
++		return GetHealthAndExhaustionModifierWithSightlessModifier();
++    }
++    
++	@Override
++    protected float GetLandMovementModifier()
++    {
++		return GetHealthAndExhaustionModifierWithSightlessModifier();
++    }
++    
++	@Override
++    protected float GetLadderVerticalMovementModifier()
++    {
++		return GetHealthAndExhaustionModifierWithSightlessModifier();
++    }    
++    
++	protected float GetJumpingHorizontalMovementModifier()        
++    {
++		return GetHealthAndExhaustionModifierWithSightlessModifier();
++    }
++    
++	protected void SetMiningSpeedModifier( float fModifier )
++	{
++		if ( fModifier > 1F )
++		{
++			// cap it just in case the client sends an invalid speed to the server
++			
++			fModifier = 1F;
++		}
++		
++		m_fCurrentMiningSpeedModifier = fModifier;
++	}
++	
++    protected float GetMiningSpeedModifier()
++    {
++		return m_fCurrentMiningSpeedModifier;
++    }
++    
++    protected float UpdateMiningSpeedModifier()
++    {
++    	m_fCurrentMiningSpeedModifier = GetHealthAndExhaustionModifierWithSightlessModifier();
++    	
++    	return m_fCurrentMiningSpeedModifier;
++    }
++    
++    protected float GetMeleeDamageModifier()
++    {
++		return GetHealthAndExhaustionModifierWithSightlessModifier();
++    }
++    
++    public float GetBowPullStrengthModifier()
++    {
++    	return GetHealthAndExhaustionModifier();
++    }
++    
++	public boolean HasStatusPenalty()
++	{
++        return getHealth() <= 10 || foodStats.getFoodLevel() <= 24 || (int)foodStats.getSaturationLevel() >= 12;
++	}
++	
++	public int GetMaximumStatusPenaltyLevel()
++	{
++		int iMaximumPenaltyLevel = GetHealthPenaltyLevel();
++		int iHungerPenaltyLevel = GetHungerPenaltyLevel();
++		
++		if ( iHungerPenaltyLevel > iMaximumPenaltyLevel )
++		{
++			iMaximumPenaltyLevel = iHungerPenaltyLevel;
++		}
++		
++		int iFatPenaltyLevel = GetFatPenaltyLevel();
++		
++		if ( iFatPenaltyLevel > iMaximumPenaltyLevel )
++		{
++			iMaximumPenaltyLevel = iFatPenaltyLevel;
++		}
++		
++		return iMaximumPenaltyLevel;
++	}
++	
++    protected boolean IsCarryingBlastingOil()
++    {	
++    	return inventory.hasItem( FCBetterThanWolves.fcItemBlastingOil.itemID );
++    }
++    
++	protected void DetonateCarriedBlastingOil()
++	{
++		if ( !worldObj.isRemote )
++		{
++	    	int iHellfireCount = FCUtilsInventory.CountItemsInInventory( inventory, FCBetterThanWolves.fcItemHellfireDust.itemID, -1 );
++	    	
++	    	float fExplosionSize = ( iHellfireCount * 10.0F ) / 64.0F;
++	    	
++	    	fExplosionSize += ( FCUtilsInventory.CountItemsInInventory( inventory, Item.gunpowder.itemID, -1 ) * 10.0F ) / 64.0F;
++	    	
++	    	fExplosionSize += ( FCUtilsInventory.CountItemsInInventory( inventory, FCBetterThanWolves.fcItemBlastingOil.itemID, -1 ) * 10.0F ) / 64.0F;
++	    	
++	    	int iTNTCount = FCUtilsInventory.CountItemsInInventory( inventory, Block.tnt.blockID, -1 );
++	    	
++	    	if ( iTNTCount > 0 )
++	    	{
++	    		if ( fExplosionSize < 4.0F )
++	    		{
++	    			fExplosionSize = 4.0F;
++	    		}
++	    		
++	        	fExplosionSize += FCUtilsInventory.CountItemsInInventory( inventory, Block.tnt.blockID, -1 );
++	    	}
++	    	
++	    	if ( fExplosionSize < 1.5F )
++	    	{
++	    		fExplosionSize = 1.5F;
++	    	}
++	    	else if ( fExplosionSize > 10.0F )
++	    	{
++	    		fExplosionSize = 10.0F;
++	    	}
++	    	
++	    	FCUtilsInventory.ClearInventoryContents( inventory );
++	    	
++			health = 0;
++			
++			onDeath( DamageSource.generic );
++			
++	        worldObj.createExplosion( null, posX, posY, posZ, fExplosionSize, true );
++		}		
++	}
++	
++	@Override
++    protected void dropHead()
++    {
++        EntityItem skullEntity = entityDropItem( new ItemStack( Item.skull.itemID, 1, 3 ), 0.0F );
++        
++        if ( skullEntity != null )
++        {
++        	// client
++        	ItemStack stack = skullEntity.getEntityItem();
++        	// server
++        	//ItemStack stack = skullEntity.func_92059_d();
++        	
++            NBTTagCompound tag = stack.getTagCompound();
++
++            if ( tag == null)
++            {
++                tag = new NBTTagCompound();
++                
++                stack.setTagCompound( tag );
++            }
++
++            tag.setString( "SkullOwner", username );
++        }
++    }
++    
++    public boolean HasValidMagneticPointForLocation()
++    {
++        return dataWatcher.getWatchableObjectByte( m_iHasValidMagneticPointForLocationDataWatcherID ) > 0;
++    }
++    
++    public int GetStongestMagneticPointForLocationI()
++    {
++        return dataWatcher.getWatchableObjectInt( m_iStongestMagneticPointForLocationIDataWatcherID );
++    }
++    
++    public int GetStongestMagneticPointForLocationK()
++    {
++        return dataWatcher.getWatchableObjectInt( m_iStongestMagneticPointForLocationKDataWatcherID );
++    }
++    
++    public void SetHasValidMagneticPointForLocation( boolean bValid )
++    {
++    	byte bValidByte = 0;
++    	
++    	if ( bValid )
++    	{
++    		bValidByte = 1;
++    	}
++    	
++        dataWatcher.updateObject( m_iHasValidMagneticPointForLocationDataWatcherID, Byte.valueOf( bValidByte ) );
++    }
++    
++    public void SetStongestMagneticPointForLocationI( int iLocationI )
++    {
++        dataWatcher.updateObject( m_iStongestMagneticPointForLocationIDataWatcherID, Integer.valueOf( iLocationI ) );
++    }
++    
++    public void SetStongestMagneticPointForLocationK( int iLocationK )
++    {
++        dataWatcher.updateObject( m_iStongestMagneticPointForLocationKDataWatcherID, Integer.valueOf( iLocationK ) );
++    }
++    
++    public int GetGloomLevel()
++    {
++        return dataWatcher.getWatchableObjectByte( m_iGloomLevelDataWatcherID );
++    }
++    
++    public void SetGloomLevel( int iGloomLevel )
++    {
++        dataWatcher.updateObject( m_iGloomLevelDataWatcherID, Byte.valueOf( (byte)iGloomLevel ) );
++    }
++    
++    public int GetFatPenaltyLevel()
++    {
++        return dataWatcher.getWatchableObjectByte( m_iFatPenaltyLevelDataWatcherID );
++    }
++    
++    public void SetFatPenaltyLevel( int iPenaltyLevel )
++    {
++        dataWatcher.updateObject( m_iFatPenaltyLevelDataWatcherID, Byte.valueOf( (byte)iPenaltyLevel ) );
++    }
++    
++    public int GetHungerPenaltyLevel()
++    {
++        return dataWatcher.getWatchableObjectByte( m_iHungerPenaltyLevelDataWatcherID );
++    }
++    
++    public void SetHungerPenaltyLevel( int iPenaltyLevel )
++    {
++        dataWatcher.updateObject( m_iHungerPenaltyLevelDataWatcherID, Byte.valueOf( (byte)iPenaltyLevel ) );
++    }
++    
++    public int GetHealthPenaltyLevel()
++    {
++        return dataWatcher.getWatchableObjectByte( m_iHealthPenaltyLevelDataWatcherID );
++    }
++    
++    public void SetHealthPenaltyLevel( int iPenaltyLevel )
++    {
++        dataWatcher.updateObject( m_iHealthPenaltyLevelDataWatcherID, Byte.valueOf( (byte)iPenaltyLevel ) );
++    }
++    
++    public int GetSpawnChunksVisualizationLocationI()
++    {
++        return dataWatcher.getWatchableObjectInt( m_iSpawnChunksVisualizationLocationIDataWatcherID );
++    }
++    
++    public int GetSpawnChunksVisualizationLocationJ()
++    {
++        return dataWatcher.getWatchableObjectInt( m_iSpawnChunksVisualizationLocationJDataWatcherID );
++    }
++    
++    public int GetSpawnChunksVisualizationLocationK()
++    {
++        return dataWatcher.getWatchableObjectInt( m_iSpawnChunksVisualizationLocationKDataWatcherID );
++    }
++    
++    public void SetSpawnChunksVisualization( int iLocationI, int iLocationJ, int iLocationK )
++    {
++        dataWatcher.updateObject( m_iSpawnChunksVisualizationLocationIDataWatcherID, 
++        	Integer.valueOf( iLocationI ) );
++        
++        dataWatcher.updateObject( m_iSpawnChunksVisualizationLocationJDataWatcherID, 
++        	Integer.valueOf( iLocationJ ) );
++        
++        dataWatcher.updateObject( m_iSpawnChunksVisualizationLocationKDataWatcherID, 
++        	Integer.valueOf( iLocationK ) );
++    }
++    
++    public boolean HasRespawnCoordinates()
++    {
++    	return spawnChunk != null;
++    }
++    
++    /*
++     * returns zero if a valid spawn location is found
++     * 1 = invalid forced spawn location
++     * 2 = missing beacon
++     * 3 = Beacon is out of range
++     * 4 = Area around beacon is obstructed
++     */
++    public int GetValidatedRespawnCoordinates( World newWorld, ChunkCoordinates respawnLocation )
++    {
++    	int iReturnValue = 0;
++    	
++    	int iOldDimension = dimension;
++    	int iNewDimension = m_iSpawnDimension;
++    	
++        IChunkProvider chunkProvider = newWorld.getChunkProvider();
++        
++        ChunkCoordinates validatedCoords = null;
++        
++        chunkProvider.loadChunk( spawnChunk.posX - 4 >> 4, spawnChunk.posZ - 4 >> 4 );
++        chunkProvider.loadChunk( spawnChunk.posX + 4 >> 4, spawnChunk.posZ - 4 >> 4 );
++        chunkProvider.loadChunk( spawnChunk.posX - 4 >> 4, spawnChunk.posZ + 4 >> 4 );
++        chunkProvider.loadChunk( spawnChunk.posX + 4 >> 4, spawnChunk.posZ + 4 >> 4 );
++
++        if ( spawnForced )
++        {
++            Material targetMaterial = newWorld.getBlockMaterial( spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ );
++            Material aboveTargetMaterial = newWorld.getBlockMaterial( spawnChunk.posX, spawnChunk.posY + 1, spawnChunk.posZ );
++            
++            boolean bValidTarget = !targetMaterial.isSolid() && !targetMaterial.isLiquid();
++            boolean bValidAboveTarget = !aboveTargetMaterial.isSolid() && !aboveTargetMaterial.isLiquid();
++            
++            if ( IsValidRespawnLocation( newWorld, spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ ) )
++            {
++            	validatedCoords = spawnChunk;
++            }
++            else
++            {
++            	iReturnValue = 1;
++            }
++        }
++        else
++        {        
++    		iReturnValue = 2;
++    		
++	        if ( newWorld.getBlockId( spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ ) == Block.beacon.blockID )
++	        {
++	        	FCTileEntityBeacon beaconEnt = (FCTileEntityBeacon)newWorld.getBlockTileEntity( spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ );
++	        	
++	        	if ( beaconEnt != null )
++	        	{
++	        		int iBeaconEffect = beaconEnt.getPrimaryEffect();
++	        		
++	        		if ( iBeaconEffect == FCTileEntityBeacon.m_iEffectIDSpawnPoint )
++	        		{
++	        			int iBeaconPowerLevel = beaconEnt.getLevels();
++	        		
++	        			if ( iBeaconPowerLevel > 0 )
++	        			{
++	        				iReturnValue = 3;
++	        				
++		        			if ( iBeaconPowerLevel >= 4 || iOldDimension == iNewDimension )
++		        			{
++		        				boolean bInRange = true;
++		        				
++		        				if ( iBeaconPowerLevel < 3 )
++		        				{
++		        					int iMaxRange = 160;
++		        					
++		        					if ( iBeaconPowerLevel == 2 )
++		        					{
++		        						iMaxRange = 2000;
++		        					}
++		        					
++		        					int iDeltaX = Math.abs( (int)posX - spawnChunk.posX );
++		        					
++		        					if ( iDeltaX > iMaxRange )
++		        					{
++		        						bInRange = false;
++		        					}
++		        					else
++		        					{
++			        					int iDeltaZ = Math.abs( (int)posZ - spawnChunk.posZ );
++			        					
++			        					if ( iDeltaZ > iMaxRange )
++			        					{
++			        						bInRange = false;
++			        					}
++		        					}
++		        				}
++		        				
++		        				if ( bInRange )
++		        				{	        				
++		        					validatedCoords = GetRandomValidSpawnAroundBeaconLocation( newWorld, spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ, iBeaconPowerLevel );
++		        					
++		        					if ( validatedCoords != null )
++		        					{
++		        						iReturnValue = 0;
++		        						beaconEnt.m_bPlayerRespawnedAtBeacon = true;
++		        					}
++		        					else
++		        					{
++		        						iReturnValue = 4;
++		        					}
++		        				}
++		        			}
++	        			}
++	        		}
++	        	}
++	        }
++	        
++	        if ( validatedCoords != null )
++	        {
++	        	respawnLocation.posX = validatedCoords.posX;
++	        	respawnLocation.posY = validatedCoords.posY;
++	        	respawnLocation.posZ = validatedCoords.posZ;
++	        }
++        }
++        
++        return iReturnValue;
++    }
++    
++    private boolean IsValidRespawnLocation( World world, int i, int j, int k )
++    {
++        Material targetMaterial = world.getBlockMaterial( i, j, k );
++        Material aboveTargetMaterial = world.getBlockMaterial( i, j + 1, k );
++        
++        boolean bValidTarget = !targetMaterial.isSolid() && !targetMaterial.isLiquid();
++        boolean bValidAboveTarget = !aboveTargetMaterial.isSolid() && !aboveTargetMaterial.isLiquid();
++        
++        return bValidTarget && bValidAboveTarget;
++	}
++    
++    private ChunkCoordinates GetRandomValidSpawnAroundBeaconLocation( World world, int i, int j, int k, int iBeaconLevel )
++    {
++    	for ( int iAttempt = 0; iAttempt < 20; iAttempt++ )
++    	{
++    		int iDistance = rand.nextInt( iBeaconLevel ) + 1;    		
++    		
++    		// generate a random point around the edge at the specified distance
++    		
++    		int iPrimaryOffset = rand.nextInt( 2 ) * iDistance;
++    		
++			if ( rand.nextInt( 2 ) == 0 )
++			{
++				iPrimaryOffset = -iPrimaryOffset;
++			}
++			
++    		int iSecondaryOffset = rand.nextInt( iBeaconLevel * 2 + 1 ) - iBeaconLevel;
++    		
++    		int iXOffset = iPrimaryOffset; 
++			int iYOffset = -( iDistance - 1 );
++    		int iZOffset = iSecondaryOffset;
++    		
++			if ( rand.nextInt( 2 ) == 0 )
++			{
++	    		iXOffset = iSecondaryOffset;
++	    		iZOffset = iPrimaryOffset;
++			}
++			
++			int iISpawn = i + iXOffset;
++			int iJSpawn = j + iYOffset;
++			int iKSpawn = k + iZOffset;
++			
++        	if ( world.doesBlockHaveSolidTopSurface( iISpawn, iJSpawn - 1, iKSpawn ) && IsValidRespawnLocation( world, iISpawn, iJSpawn, iKSpawn ) )
++        	{
++                return new ChunkCoordinates( iISpawn, iJSpawn, iKSpawn );
++            }
++    	}
++    	
++        return null;
++    }
++
++    // overloaded vanilla function with added dimension param
++    public void setSpawnChunk( ChunkCoordinates coords, boolean bForced, int iDimension )
++    {
++        if ( coords != null )
++        {
++            spawnChunk = new ChunkCoordinates(coords);
++            spawnForced = bForced;
++            m_iSpawnDimension = iDimension;
++        }
++        else
++        {
++            spawnChunk = null;
++            spawnForced = false;
++            m_iSpawnDimension = 0;            
++        }        
++    }
++    
++	public void AddRawChatMessage( String message )
++	{
++	}
++	
++	boolean IsCurrentToolEffectiveOnBlock( Block targetBlock, int i, int j, int k )
++	{
++        float var2 = 1.0F;
++
++        ItemStack currentItemStack = inventory.mainInventory[inventory.currentItem];
++        
++        if ( currentItemStack != null )
++        {
++            return currentItemStack.getItem().IsEfficientVsBlock( currentItemStack, worldObj, targetBlock, i, j, k );
++        }
++
++		return false;
++	}
++    
++    public boolean canHarvestBlock( Block par1Block, int i, int j, int k )
++    {
++        return this.inventory.canHarvestBlock( worldObj, par1Block, i, j, k );
++    }
++    
++    public boolean AddStackToCurrentHeldStackIfEmpty( ItemStack stack )
++    {
++    	if ( getCurrentEquippedItem() == null )
++    	{
++    		inventory.setInventorySlotContents( inventory.currentItem, stack.copy() );
++    		
++    		return true;
++    	}
++    	
++    	return false;
++    }    
++    	
++    protected void UpdateModStatusVariables()
++    {
++    	UpdateGloomState();
++    	
++    	UpdateHungerPenaltyLevel();
++    	
++    	UpdateFatPenaltyLevel();
++    	
++    	UpdateHealthPenaltyLevel();
++    }
++
++    protected void UpdateGloomState() {}
++    
++	protected void UpdateHungerPenaltyLevel() {}
++	
++    protected void UpdateFatPenaltyLevel() {}
++	
++	protected void UpdateHealthPenaltyLevel() {}
++	
++	protected void OnBlockedDamage( DamageSource source, int iDamage )
++	{
++        ItemStack currentItemStack = inventory.mainInventory[inventory.currentItem];
++        
++        if ( currentItemStack != null )
++        {
++        	currentItemStack.damageItem( 1, this );
++        }
++	}
++	
++    @Override
++    public double getMountedYOffset()
++    {
++        return (double)height * 0.025D;
++    }
++    
++    public void AddExhaustionWithoutVisualFeedback( float fAmount )
++    {
++        addExhaustion( fAmount );
++    }
++    
++    public void AddHarvestBlockExhaustion( int iBlockID, int iBlockI, int iBlockJ, int iBlockK, int iBlockMetadata )
++    {
++    	float fExhaustionConsumed = 0.025F; // default exhaustion amount
++    	
++        ItemStack currentItemStack = inventory.mainInventory[inventory.currentItem];
++        
++        if ( currentItemStack != null )
++        {
++        	fExhaustionConsumed = currentItemStack.getItem().GetExhaustionOnUsedToHarvestBlock( iBlockID, worldObj, iBlockI, iBlockJ, iBlockK, iBlockMetadata );
++        }
++    	
++    	if ( fExhaustionConsumed > 0F )
++    	{
++    		addExhaustion( fExhaustionConsumed );
++    	}
++    }
++    
++    protected void OnZeroDamageAttack()
++    {
++    }
++    
++    protected boolean IsPlayerHoldingSail()
++    {
++        ItemStack currentItemStack = inventory.mainInventory[inventory.currentItem];
++        
++        if ( currentItemStack != null )
++        {
++    		return currentItemStack.itemID == FCBetterThanWolves.fcItemWindMillBlade.itemID;
++        }
++        
++        return false;
++    }
++    
++    @Override
++	public boolean AppliesConstantForceWhenRidingBoat()
++	{
++		return IsPlayerHoldingSail();
++	}
++	
++    @Override
++	public double MovementModifierWhenRidingBoat()
++	{
++        double dModifier = 0.35D;
++        
++        if ( IsPlayerHoldingSail() )
++        {
++			dModifier = 1.0D;
++    	}
++        
++		return dModifier;
++	}
++
++    @Override
++    public void unmountEntity( Entity riddenEntity )
++    {
++        double dUnmountX = posX;
++        double dUnmountY = posY;
++        double dUnmountZ = posZ;
++
++        if (riddenEntity != null)
++        {
++            dUnmountX = riddenEntity.posX;
++            dUnmountY = riddenEntity.boundingBox.minY + (double)riddenEntity.height;
++            dUnmountZ = riddenEntity.posZ;
++        }
++        
++        double dLookOffsetX = -MathHelper.cos( ( rotationYaw - 90 ) * (float)Math.PI / 180.0F );
++        double dLookOffsetZ = -MathHelper.sin( ( rotationYaw - 90 ) * (float)Math.PI / 180.0F );
++        
++        int iMaxSuitability = 0;
++        
++        for ( double dTempLookOffset = 2.0D; dTempLookOffset > 0.1D; dTempLookOffset -= 0.5D )
++        {
++        	double dTempXOffset = dLookOffsetX * dTempLookOffset;
++        	double dTempZOffset = dLookOffsetZ * dTempLookOffset;
++        	
++        	int iTempSuitability = GetDismountLocationSuitability( dTempXOffset, dTempZOffset );
++        	
++        	if (  iTempSuitability > iMaxSuitability )
++        	{
++                dUnmountX = posX + dTempXOffset;
++                dUnmountY = posY + 1.0D;
++                dUnmountZ = posZ + dTempZOffset;
++                
++                iMaxSuitability = iTempSuitability;
++        	}
++        }
++        
++        if ( iMaxSuitability <= 0 )
++        {
++	        for ( double dTempXOffset = -1.5D; dTempXOffset < 2.0D; ++dTempXOffset )
++	        {
++	            for ( double dTempZOffset = -1.5D; dTempZOffset < 2.0D; ++dTempZOffset )
++	            {
++	            	int iTempSuitability = GetDismountLocationSuitability( dTempXOffset, dTempZOffset );
++	            	
++	            	if (  iTempSuitability > iMaxSuitability )
++	            	{
++	                    dUnmountX = posX + dTempXOffset;
++	                    dUnmountY = posY + 1.0D;
++	                    dUnmountZ = posZ + dTempZOffset;
++	                    
++	                    iMaxSuitability = iTempSuitability;
++	            	}
++	            }
++	        }
++        }
++
++        setLocationAndAngles(dUnmountX, dUnmountY, dUnmountZ, this.rotationYaw, this.rotationPitch);
++    }
++    
++    private boolean IsSolidBlockToDismountOn( int i, int j, int k )
++    {
++    	return worldObj.doesBlockHaveSolidTopSurface( i , j, k )  || worldObj.getBlockMaterial( i, j, k ) == Material.ice;    
++	}
++    
++    /**
++     * Returns a value of zero or higher, with larger numbers indicating greater suitability
++     */
++    private int GetDismountLocationSuitability( double dPosOffsetX, double dPosOffsetZ )
++    {
++    	int i = MathHelper.floor_double( posX + dPosOffsetX );
++    	int j = MathHelper.floor_double( posY ); 
++    	int k = MathHelper.floor_double( posZ + dPosOffsetZ );
++    	
++        AxisAlignedBB dTempBoundingBox = boundingBox.getOffsetBoundingBox( dPosOffsetX, 1.0D, dPosOffsetZ );
++
++        if ( worldObj.getCollidingBlockBounds( dTempBoundingBox ).isEmpty() )
++        {
++	        if ( IsSolidBlockToDismountOn( i, j, k ) )
++	        {
++	            return 3;
++	        }
++	        else if ( IsSolidBlockToDismountOn( i, j - 1, k ) )
++	        {
++	            return 2;
++	            
++	        }
++	        else if ( worldObj.getBlockMaterial( i, j - 1, k ) == Material.water )
++	        {
++	        	return 1;
++	        }
++        }
++        
++        return 0;
++    }
++    
++    public void AddExhaustionForJump()
++    {
++	    if ( isSprinting() )
++	    {
++			addExhaustion( m_fExhaustionJumpingSprinting );
++	    }
++	    else
++	    {
++			addExhaustion( m_fExhaustionJumping );
++	    }
++    }
++    
++    public void SetItemInUseCount( int iCount )
++    {
++        itemInUseCount = iCount;
++    }
++    
++    @Override
++    public boolean GetCanBeHeadCrabbed( boolean bSquidInWater )
++    {
++    	return isEntityAlive() && !capabilities.disableDamage && 
++			riddenByEntity == null && ridingEntity == null;
++    }
++    
++    @Override
++    public boolean IsValidOngoingAttackTargetForSquid()
++    {
++    	return isEntityAlive();
++    }
++    
++    @Override
++	public boolean IsImmuneToHeadCrabDamage()
++	{
++		return IsWearingSoulforgedHelm();
++	}
++    
++    public boolean IsLocalPlayerAndHittingBlock()
++    {
++    	return false;
++    }
++	
++    @Override
++    public void MountEntityRemote( Entity entityToMount )
++    {
++    	// Fix described in MC-1291 for players dissapearing after riding boats in SMP
++    	// Bypasses toggle type behavior of mounting and dismounting if multiple packets
++    	// are received for a player.
++    	
++    	if ( ridingEntity != entityToMount )
++    	{
++    		super.mountEntity( entityToMount );
++    	}
++    }
++    
++    public boolean CanDrink()
++    {
++        return !isPotionActive( Potion.hunger );
++    }
++    
++    public void OnCantConsume()
++    {
++    	if ( !worldObj.isRemote && m_iTicksSinceEmoteSound >= m_iTicksBetweenEmoteSounds )    		
++    	{    		
++            worldObj.playAuxSFX( FCBetterThanWolves.m_iEatFailAuxFXID,           
++            	MathHelper.floor_double( posX ), 
++            	MathHelper.floor_double( posY ), 
++            	MathHelper.floor_double( posZ ), 0 );    
++            
++            m_iTicksSinceEmoteSound = 0;
++    	}
++    }
++    
++    static public boolean InstallationIntegrityTestPlayer()
++    {
++    	return true;
++    }
++    // END FCMOD
++}

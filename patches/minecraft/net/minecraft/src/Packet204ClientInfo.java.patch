@@ -1,0 +1,37 @@
+--- a/minecraft/net/minecraft/src/Packet204ClientInfo.java
++++ b/minecraft/net/minecraft/src/Packet204ClientInfo.java
+@@ -23,6 +23,9 @@
+         this.chatColours = par4;
+         this.gameDifficulty = par5;
+         this.showCape = par6;
++        // FCMOD: Added to encode whether BTW is installed in the game difficulty 
++        gameDifficulty = par5 + 10;
++        // FCMOD
+     }
+ 
+     /**
+@@ -89,6 +92,12 @@
+ 
+     public int getDifficulty()
+     {
++        // FCMOD: Code added to encode whether BTW is installed in the game difficulty
++    	if ( gameDifficulty >= 10 )
++    	{
++    		return gameDifficulty - 10;
++    	}
++    	// END FCMOD
+         return this.gameDifficulty;
+     }
+ 
+@@ -113,4 +122,11 @@
+     {
+         return true;
+     }
++    
++    // FCMOD: Function added to encode whether BTW is installed in the game difficulty
++    public boolean IsBTWInstalled()
++    {
++    	return gameDifficulty >= 10;
+ }
++    // END FCMOD
++}

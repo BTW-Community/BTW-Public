@@ -1,0 +1,61 @@
+--- a/minecraft_server/net/minecraft/src/WorldGenDesertWells.java
++++ b/minecraft_server/net/minecraft/src/WorldGenDesertWells.java
+@@ -89,7 +89,58 @@
+                 par1World.setBlock(par3 + 1, par4 + var7, par5 + 1, Block.sandStone.blockID, 0, 2);
+             }
+ 
++            // FCMOD: Added
++            AddModBlocks( par1World, par3, par4, par5);
++            // END FCMOD
++
+             return true;
+         }
+     }
++    
++    // FCMOD: Added
++    private static FCUtilsRandomItemStack[] m_LootBasketContents = null;
++    
++    private void InitContentsArray()
++    {
++    	m_LootBasketContents = new FCUtilsRandomItemStack[] {
++    		new FCUtilsRandomItemStack( FCBetterThanWolves.fcItemHempSeeds.itemID, 0, 1, 4, 5 ),  
++        	new FCUtilsRandomItemStack( Item.glassBottle.itemID, 0, 2, 8, 10 ),  
++        }; 
+ }
++    
++    private void AddModBlocks( World world, int i, int j, int k )
++    {
++    	int iNumBaskets = world.rand.nextInt( 3 );
++    	
++    	for ( int iTempCount = 0; iTempCount < iNumBaskets; iTempCount++ )
++    	{
++	    	int iBasketI = i + ( world.rand.nextInt( 2 ) == 0 ? -2 : 2 );
++	    	int iBasketJ = j + 2;
++	    	int iBasketK = k + ( world.rand.nextInt( 2 ) == 0 ? -2 : 2 );
++	    	
++	    	AddLootBasket( world, iBasketI, iBasketJ, iBasketK );
++    	}
++    }
++    
++    private void AddLootBasket( World world, int i, int j, int k )
++    {
++    	if ( m_LootBasketContents == null )
++    	{
++    		// only initialize array on first use to ensure referenced mod items are intialized
++    		InitContentsArray();
++    	}
++    	
++        if ( world.getBlockId( i, j, k ) != FCBetterThanWolves.fcBlockBasketWicker.blockID )
++        {
++	    	world.setBlock( i, j, k, FCBetterThanWolves.fcBlockBasketWicker.blockID, world.rand.nextInt( 4 ) | 4, 2 );
++	    	
++	    	FCTileEntityBasketWicker tileEntity = (FCTileEntityBasketWicker)world.getBlockTileEntity( i, j, k );
++	    	
++	    	if ( tileEntity != null )
++	    	{
++	    		tileEntity.SetStorageStack( FCUtilsRandomItemStack.GetRandomStack( world.rand, m_LootBasketContents ) );
++	    	}
++        }	    	
++    }
++    // END FCMOD
++}

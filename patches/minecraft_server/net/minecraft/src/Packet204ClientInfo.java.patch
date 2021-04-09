@@ -1,0 +1,27 @@
+--- a/minecraft_server/net/minecraft/src/Packet204ClientInfo.java
++++ b/minecraft_server/net/minecraft/src/Packet204ClientInfo.java
+@@ -77,6 +77,12 @@
+ 
+     public int getDifficulty()
+     {
++        // FCMOD: Code added to encode whether BTW is installed in the game difficulty
++    	if ( gameDifficulty >= 10 )
++    	{
++    		return gameDifficulty - 10;
++    	}
++    	// END FCMOD
+         return this.gameDifficulty;
+     }
+ 
+@@ -101,4 +107,11 @@
+     {
+         return true;
+     }
++    
++    // FCMOD: Function added to encode whether BTW is installed in the game difficulty
++    public boolean IsBTWInstalled()
++    {
++    	return gameDifficulty >= 10;
+ }
++    // END FCMOD
++}

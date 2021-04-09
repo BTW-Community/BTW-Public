@@ -1,0 +1,51 @@
+--- a/minecraft/net/minecraft/src/ItemReed.java
++++ b/minecraft/net/minecraft/src/ItemReed.java
+@@ -1,20 +1,39 @@
+ package net.minecraft.src;
+ 
+-public class ItemReed extends Item
++// FCMOD: Changed to consolidate functionality in parent class
++//public class ItemReed extends Item
++public class ItemReed extends FCItemPlacesAsBlock
++// END FCMOD
+ {
+     /** The ID of the block the reed will spawn when used from inventory bar. */
+-    private int spawnID;
++	// FCMOD: Removed
++    //private int spawnID;
++	// END FCMOD
+ 
+     public ItemReed(int par1, Block par2Block)
+     {
++    	// FCMOD: Changed
++    	/*
+         super(par1);
+         this.spawnID = par2Block.blockID;
++        */
++    	super( par1, par2Block.blockID );
++    	// END FCMOD
+     }
+ 
++    // FCMOD: Added
++    public ItemReed( int iItemID, int iBlockID )
++    {
++    	super( iItemID, iBlockID );
++    }
++    // END FCMOD
++
+     /**
+      * Callback for item usage. If the item does something special on right clicking, he will have one of those. Return
+      * True if something happen and false if it don't. This is for ITEMS, not BLOCKS
+      */
++	// FCMOD: Removed
++    /*
+     public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
+     {
+         int var11 = par3World.getBlockId(par4, par5, par6);
+@@ -87,4 +106,6 @@
+             return true;
+         }
+     }
++    */
++    // END FCMOD
+ }

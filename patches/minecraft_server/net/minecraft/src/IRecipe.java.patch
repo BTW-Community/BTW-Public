@@ -1,0 +1,17 @@
+--- a/minecraft_server/net/minecraft/src/IRecipe.java
++++ b/minecraft_server/net/minecraft/src/IRecipe.java
+@@ -18,4 +18,14 @@
+     int getRecipeSize();
+ 
+     ItemStack getRecipeOutput();
++    
++    // FCMOD: Added
++    public abstract boolean matches( IRecipe recipe );
++    
++    // NOTE: That secondary output is manually flagged rather than maintaining an internal 
++    // list of outputs because of SlotCrafting having no idea what recipe is being produced when 
++    // the output is collected.  It would be a mess of base class edits to change this.
++    
++    public abstract boolean HasSecondaryOutput();
++    // END FCMOD
+ }

@@ -1,0 +1,26 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockGlowStone.java
+@@ -0,0 +1,22 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCBlockGlowStone extends BlockGlowStone
++{
++    public FCBlockGlowStone( int iBlockID )
++    {
++    	super( iBlockID, Material.glass );
++    	
++	    setHardness( 0.6F );
++	    setResistance( 0.5F ); // preserve vanilla resistance
++	    
++    	SetPicksEffectiveOn();
++    	
++    	setLightValue( 1F );
++    	
++    	setStepSound( soundGlassFootstep );
++    	
++    	setUnlocalizedName( "lightgem" );
++    }
++}
+\ No newline at end of file

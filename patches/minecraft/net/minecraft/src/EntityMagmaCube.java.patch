@@ -1,0 +1,21 @@
+--- a/minecraft/net/minecraft/src/EntityMagmaCube.java
++++ b/minecraft/net/minecraft/src/EntityMagmaCube.java
+@@ -1,13 +1,16 @@
+ package net.minecraft.src;
+ 
+-public class EntityMagmaCube extends EntitySlime
++// FCMOD: Changed
++//public class EntityMagmaCube extends EntitySlime
++public class EntityMagmaCube extends FCEntitySlime
++// END FCMOD
+ {
+     public EntityMagmaCube(World par1World)
+     {
+         super(par1World);
+         this.texture = "/mob/lava.png";
+         this.isImmuneToFire = true;
+-        this.landMovementFactor = 0.2F;
++        this.landMovementFactor = 0.5F;
+     }
+ 
+     /**

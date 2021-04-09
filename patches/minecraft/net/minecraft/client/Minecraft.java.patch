@@ -1,0 +1,150 @@
+--- a/minecraft/net/minecraft/client/Minecraft.java
++++ b/minecraft/net/minecraft/client/Minecraft.java
+@@ -300,6 +300,9 @@
+         theMinecraft = this;
+         TextureManager.init();
+         this.guiAchievement = new GuiAchievement(this);
++        // FCMOD: Code added to handle initialization of mods on client
++        net.minecraft.src.FCAddOnHandler.InitializeMods();
++        // END FCMOD
+     }
+ 
+     private void startTimerHackThread()
+@@ -404,7 +407,12 @@
+         this.fontRenderer = new FontRenderer(this.gameSettings, "/font/default.png", this.renderEngine, false);
+         this.standardGalacticFontRenderer = new FontRenderer(this.gameSettings, "/font/alternate.png", this.renderEngine, false);
+ 
++    	// FCMOD: Change to prevent crash loading options files from newer versions of MC
++    	/*
+         if (this.gameSettings.language != null)
++        */
++        if ( gameSettings.language != null && Minecraft.class.getResource( "/lang/" + gameSettings.language + ".lang" ) != null )
++        // END FCMOD
+         {
+             StringTranslate.getInstance().setLanguage(this.gameSettings.language, false);
+             this.fontRenderer.setUnicodeFlag(StringTranslate.getInstance().isUnicode());
+@@ -1092,8 +1100,8 @@
+                 var5.addVertex((double)var7, (double)var8, 0.0D);
+                 int var14;
+                 float var15;
+-                float var16;
+                 float var17;
++                float var16;
+ 
+                 for (var14 = var13; var14 >= 0; --var14)
+                 {
+@@ -1120,27 +1128,27 @@
+                 var9 += var12.field_76332_a;
+             }
+ 
+-            DecimalFormat var18 = new DecimalFormat("##0.00");
++            DecimalFormat var19 = new DecimalFormat("##0.00");
+             GL11.glEnable(GL11.GL_TEXTURE_2D);
+-            String var19 = "";
++            String var18 = "";
+ 
+             if (!var4.field_76331_c.equals("unspecified"))
+             {
+-                var19 = var19 + "[0] ";
++                var18 = var18 + "[0] ";
+             }
+ 
+             if (var4.field_76331_c.length() == 0)
+             {
+-                var19 = var19 + "ROOT ";
++                var18 = var18 + "ROOT ";
+             }
+             else
+             {
+-                var19 = var19 + var4.field_76331_c + " ";
++                var18 = var18 + var4.field_76331_c + " ";
+             }
+ 
+             var13 = 16777215;
+-            this.fontRenderer.drawStringWithShadow(var19, var7 - var6, var8 - var6 / 2 - 16, var13);
+-            this.fontRenderer.drawStringWithShadow(var19 = var18.format(var4.field_76330_b) + "%", var7 + var6 - this.fontRenderer.getStringWidth(var19), var8 - var6 / 2 - 16, var13);
++            this.fontRenderer.drawStringWithShadow(var18, var7 - var6, var8 - var6 / 2 - 16, var13);
++            this.fontRenderer.drawStringWithShadow(var18 = var19.format(var4.field_76330_b) + "%", var7 + var6 - this.fontRenderer.getStringWidth(var18), var8 - var6 / 2 - 16, var13);
+ 
+             for (int var21 = 0; var21 < var3.size(); ++var21)
+             {
+@@ -1158,8 +1166,8 @@
+ 
+                 var22 = var22 + var20.field_76331_c;
+                 this.fontRenderer.drawStringWithShadow(var22, var7 - var6, var8 + var6 / 2 + var21 * 8 + 20, var20.func_76329_a());
+-                this.fontRenderer.drawStringWithShadow(var22 = var18.format(var20.field_76332_a) + "%", var7 + var6 - 50 - this.fontRenderer.getStringWidth(var22), var8 + var6 / 2 + var21 * 8 + 20, var20.func_76329_a());
+-                this.fontRenderer.drawStringWithShadow(var22 = var18.format(var20.field_76330_b) + "%", var7 + var6 - this.fontRenderer.getStringWidth(var22), var8 + var6 / 2 + var21 * 8 + 20, var20.func_76329_a());
++                this.fontRenderer.drawStringWithShadow(var22 = var19.format(var20.field_76332_a) + "%", var7 + var6 - 50 - this.fontRenderer.getStringWidth(var22), var8 + var6 / 2 + var21 * 8 + 20, var20.func_76329_a());
++                this.fontRenderer.drawStringWithShadow(var22 = var19.format(var20.field_76330_b) + "%", var7 + var6 - this.fontRenderer.getStringWidth(var22), var8 + var6 / 2 + var21 * 8 + 20, var20.func_76329_a());
+             }
+         }
+     }
+@@ -1228,7 +1236,11 @@
+ 
+         if (par1 != 0 || this.leftClickCounter <= 0)
+         {
+-            if (par2 && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == EnumMovingObjectType.TILE && par1 == 0)
++        	// FCMOD: Changed (client only)
++            //if (par2 && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == EnumMovingObjectType.TILE && par1 == 0)
++            if ( par2 && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == EnumMovingObjectType.TILE && par1 == 0 &&
++            	!thePlayer.isUsingItem() )
++        	// END FCMOD
+             {
+                 int var3 = this.objectMouseOver.blockX;
+                 int var4 = this.objectMouseOver.blockY;
+@@ -1793,6 +1805,11 @@
+ 
+             if (this.gameSettings.keyBindUseItem.pressed && this.rightClickDelayTimer == 0 && !this.thePlayer.isUsingItem())
+             {
++            	// FCMOD: Code added (Client Only)
++            	ItemStack currentStack = thePlayer.inventory.getCurrentItem();
++            	
++            	if ( currentStack != null && currentStack.getItem().IsMultiUsePerClick() )
++        		// END FCMOD
+                 this.clickMouse(1);
+             }
+ 
+@@ -2253,27 +2270,27 @@
+         var1.put("username", var6);
+         var1.put("fullscreen", "" + var4);
+         var1.put("sessionid", var7);
+-        Frame var15 = new Frame();
+-        var15.setTitle("Minecraft");
+-        var15.setBackground(Color.BLACK);
++        Frame var17 = new Frame();
++        var17.setTitle("Minecraft");
++        var17.setBackground(Color.BLACK);
+         JPanel var16 = new JPanel();
+-        var15.setLayout(new BorderLayout());
++        var17.setLayout(new BorderLayout());
+         var16.setPreferredSize(new Dimension(854, 480));
+-        var15.add(var16, "Center");
+-        var15.pack();
+-        var15.setLocationRelativeTo((Component)null);
+-        var15.setVisible(true);
+-        var15.addWindowListener(new GameWindowListener());
+-        MinecraftFakeLauncher var17 = new MinecraftFakeLauncher(var1);
++        var17.add(var16, "Center");
++        var17.pack();
++        var17.setLocationRelativeTo((Component)null);
++        var17.setVisible(true);
++        var17.addWindowListener(new GameWindowListener());
++        MinecraftFakeLauncher var15 = new MinecraftFakeLauncher(var1);
+         MinecraftApplet var18 = new MinecraftApplet();
+-        var18.setStub(var17);
+-        var17.setLayout(new BorderLayout());
+-        var17.add(var18, "Center");
+-        var17.validate();
+-        var15.removeAll();
++        var18.setStub(var15);
+         var15.setLayout(new BorderLayout());
+-        var15.add(var17, "Center");
++        var15.add(var18, "Center");
+         var15.validate();
++        var17.removeAll();
++        var17.setLayout(new BorderLayout());
++        var17.add(var15, "Center");
++        var17.validate();
+         var18.init();
+         Iterator var19 = var8.iterator();
+ 

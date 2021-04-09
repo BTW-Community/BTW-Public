@@ -1,0 +1,20 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockPressurePlateStone.java
+@@ -0,0 +1,17 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCBlockPressurePlateStone extends FCBlockPressurePlate
++{
++    protected FCBlockPressurePlateStone( int iBlockID )
++    {
++    	super( iBlockID, "stone", Material.rock, EnumMobType.mobs );
++    	
++    	setHardness( 1.5F );
++    	
++    	setStepSound( soundStoneFootstep );
++    	
++    	setUnlocalizedName( "pressurePlate" );
++    }
++}

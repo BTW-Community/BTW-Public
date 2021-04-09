@@ -1,0 +1,183 @@
+--- a/minecraft/net/minecraft/src/RenderItem.java
++++ b/minecraft/net/minecraft/src/RenderItem.java
+@@ -17,6 +17,10 @@
+     public float zLevel = 0.0F;
+     public static boolean renderInFrame = false;
+ 
++    // FCMOD: Added (client only)
++    public static boolean m_bForceFancyItemRender = false;
++    // END FCMOD
++
+     public RenderItem()
+     {
+         this.shadowSize = 0.15F;
+@@ -61,13 +65,18 @@
+             GL11.glTranslatef((float)par2, (float)par4 + var11, (float)par6);
+             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+             int var17;
+-            float var18;
+             float var19;
++            float var18;
+             float var20;
+ 
++            // FCMOD: Changed (client only)
++            /*
+             if (var10.getItemSpriteNumber() == 0 && Block.blocksList[var10.itemID] != null && RenderBlocks.renderItemIn3d(Block.blocksList[var10.itemID].getRenderType()))
++            */
++            if (var10.getItemSpriteNumber() == 0 && Block.blocksList[var10.itemID] != null && Block.blocksList[var10.itemID].DoesItemRenderAsBlock( var10.getItemDamage() ) )
++            // END FCMOD
+             {
+-                Block var22 = Block.blocksList[var10.itemID];
++                Block var21 = Block.blocksList[var10.itemID];
+                 GL11.glRotatef(var12, 0.0F, 1.0F, 0.0F);
+ 
+                 if (renderInFrame)
+@@ -78,15 +87,15 @@
+                 }
+ 
+                 this.loadTexture("/terrain.png");
+-                float var24 = 0.25F;
+-                int var25 = var22.getRenderType();
++                float var25 = 0.25F;
++                int var24 = var21.getRenderType();
+ 
+-                if (var25 == 1 || var25 == 19 || var25 == 12 || var25 == 2)
++                if (var24 == 1 || var24 == 19 || var24 == 12 || var24 == 2)
+                 {
+-                    var24 = 0.5F;
++                    var25 = 0.5F;
+                 }
+ 
+-                GL11.glScalef(var24, var24, var24);
++                GL11.glScalef(var25, var25, var25);
+ 
+                 for (var17 = 0; var17 < var13; ++var17)
+                 {
+@@ -94,14 +103,14 @@
+ 
+                     if (var17 > 0)
+                     {
+-                        var18 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var24;
+-                        var19 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var24;
+-                        var20 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var24;
++                        var18 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var25;
++                        var19 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var25;
++                        var20 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.2F / var25;
+                         GL11.glTranslatef(var18, var19, var20);
+                     }
+ 
+                     var18 = 1.0F;
+-                    this.itemRenderBlocks.renderBlockAsItem(var22, var10.getItemDamage(), var18);
++                    this.itemRenderBlocks.renderBlockAsItem(var21, var10.getItemDamage(), var18);
+                     GL11.glPopMatrix();
+                 }
+             }
+@@ -156,7 +165,7 @@
+                         GL11.glScalef(0.5F, 0.5F, 0.5F);
+                     }
+ 
+-                    Icon var21 = var10.getIconIndex();
++                    Icon var23 = var10.getIconIndex();
+ 
+                     if (var10.getItemSpriteNumber() == 0)
+                     {
+@@ -169,16 +178,16 @@
+ 
+                     if (this.renderWithColor)
+                     {
+-                        int var23 = Item.itemsList[var10.itemID].getColorFromItemStack(var10, 0);
+-                        var16 = (float)(var23 >> 16 & 255) / 255.0F;
+-                        float var26 = (float)(var23 >> 8 & 255) / 255.0F;
+-                        var18 = (float)(var23 & 255) / 255.0F;
++                        int var22 = Item.itemsList[var10.itemID].getColorFromItemStack(var10, 0);
++                        var16 = (float)(var22 >> 16 & 255) / 255.0F;
++                        float var26 = (float)(var22 >> 8 & 255) / 255.0F;
++                        var18 = (float)(var22 & 255) / 255.0F;
+                         var19 = 1.0F;
+-                        this.renderDroppedItem(par1EntityItem, var21, var13, par9, var16 * var19, var26 * var19, var18 * var19);
++                        this.renderDroppedItem(par1EntityItem, var23, var13, par9, var16 * var19, var26 * var19, var18 * var19);
+                     }
+                     else
+                     {
+-                        this.renderDroppedItem(par1EntityItem, var21, var13, par9, 1.0F, 1.0F, 1.0F);
++                        this.renderDroppedItem(par1EntityItem, var23, var13, par9, 1.0F, 1.0F, 1.0F);
+                     }
+                 }
+             }
+@@ -209,7 +218,10 @@
+         float var15 = 0.25F;
+         float var17;
+ 
+-        if (this.renderManager.options.fancyGraphics)
++        // FCMOD: Changed (client only)
++        //if (this.renderManager.options.fancyGraphics)
++        if ( this.renderManager.options.fancyGraphics || m_bForceFancyItemRender )
++    	// END FCMOD
+         {
+             GL11.glPushMatrix();
+ 
+@@ -306,9 +318,9 @@
+                 if (var25 > 0)
+                 {
+                     var17 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
+-                    float var26 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
+                     float var27 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
+-                    GL11.glTranslatef(var17, var26, var27);
++                    float var26 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
++                    GL11.glTranslatef(var17, var27, var26);
+                 }
+ 
+                 if (!renderInFrame)
+@@ -339,9 +351,14 @@
+         Icon var8 = par3ItemStack.getIconIndex();
+         float var12;
+         float var13;
+-        float var18;
++        float var16;
+ 
++        // FCMOD: Changed (client only)
++        /*
+         if (par3ItemStack.getItemSpriteNumber() == 0 && RenderBlocks.renderItemIn3d(Block.blocksList[var6].getRenderType()))
++        */
++        if (par3ItemStack.getItemSpriteNumber() == 0 && Block.blocksList[var6].DoesItemRenderAsBlock( par3ItemStack.getItemDamage() ) )
++        // END FCMOD
+         {
+             par2RenderEngine.bindTexture("/terrain.png");
+             Block var15 = Block.blocksList[var6];
+@@ -352,14 +369,14 @@
+             GL11.glScalef(1.0F, 1.0F, -1.0F);
+             GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
+             GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+-            int var17 = Item.itemsList[var6].getColorFromItemStack(par3ItemStack, 0);
+-            var18 = (float)(var17 >> 16 & 255) / 255.0F;
+-            var12 = (float)(var17 >> 8 & 255) / 255.0F;
+-            var13 = (float)(var17 & 255) / 255.0F;
++            int var18 = Item.itemsList[var6].getColorFromItemStack(par3ItemStack, 0);
++            var16 = (float)(var18 >> 16 & 255) / 255.0F;
++            var12 = (float)(var18 >> 8 & 255) / 255.0F;
++            var13 = (float)(var18 & 255) / 255.0F;
+ 
+             if (this.renderWithColor)
+             {
+-                GL11.glColor4f(var18, var12, var13, 1.0F);
++                GL11.glColor4f(var16, var12, var13, 1.0F);
+             }
+ 
+             GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+@@ -414,13 +431,13 @@
+                 }
+ 
+                 var9 = Item.itemsList[var6].getColorFromItemStack(par3ItemStack, 0);
+-                float var16 = (float)(var9 >> 16 & 255) / 255.0F;
+-                var18 = (float)(var9 >> 8 & 255) / 255.0F;
++                float var17 = (float)(var9 >> 16 & 255) / 255.0F;
++                var16 = (float)(var9 >> 8 & 255) / 255.0F;
+                 var12 = (float)(var9 & 255) / 255.0F;
+ 
+                 if (this.renderWithColor)
+                 {
+-                    GL11.glColor4f(var16, var18, var12, 1.0F);
++                    GL11.glColor4f(var17, var16, var12, 1.0F);
+                 }
+ 
+                 this.renderIcon(par4, par5, var8, 16, 16);

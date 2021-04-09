@@ -1,0 +1,43 @@
+--- a/minecraft/net/minecraft/src/EntityMinecart.java
++++ b/minecraft/net/minecraft/src/EntityMinecart.java
+@@ -685,11 +685,27 @@
+         }
+         else
+         {
++            // FCMOD: Changed the following for less drag on non-ridden carts
++            /*
+             this.motionX *= 0.9599999785423279D;
+             this.motionY *= 0.0D;
+             this.motionZ *= 0.9599999785423279D;
++            */
++            if ( FCBetterThanWolves.fcDisableMinecartChanges )
++            {
++                motionX *= 0.96D;
++                motionY *= 0.0D;
++                motionZ *= 0.96D;
+         }
++            else
++            {
++                motionX *= 0.985D;
++                motionY *= 0.0D;
++                motionZ *= 0.985D;
+     }
++            // END FCMOD
++        }
++    }
+ 
+     public Vec3 func_70495_a(double par1, double par3, double par5, double par7)
+     {
+@@ -1133,4 +1149,12 @@
+     {
+         return this.entityName;
+     }
++    
++    // FCMOD: Code added
++    @Override
++    public boolean CanCollideWithEntity( Entity entity )
++    {
++    	return !entity.IsItemEntity();
+ }
++    // END FCMOD
++}

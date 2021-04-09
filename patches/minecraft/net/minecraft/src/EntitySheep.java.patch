@@ -1,0 +1,12 @@
+--- a/minecraft/net/minecraft/src/EntitySheep.java
++++ b/minecraft/net/minecraft/src/EntitySheep.java
+@@ -1,5 +1,9 @@
++// FCMOD: Class changes deprecated 07/23/2018
++
+ package net.minecraft.src;
+ 
++import java.util.Iterator;
++import java.util.List;
+ import java.util.Random;
+ 
+ public class EntitySheep extends EntityAnimal

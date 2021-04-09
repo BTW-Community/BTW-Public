@@ -1,0 +1,44 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCItemBlockLegacySiding.java
+@@ -0,0 +1,41 @@
++// FCMOD 
++
++package net.minecraft.src;
++
++public class FCItemBlockLegacySiding extends ItemBlock
++{
++    public FCItemBlockLegacySiding(int i)
++    {
++        super(i);
++        setMaxDamage(0);
++        setHasSubtypes(true);
++        setUnlocalizedName("fcBlockOmniSlab");
++    }
++
++    @Override
++    public int getMetadata( int i )
++    {
++        return i;
++    }
++
++    @Override
++    public float GetBuoyancy( int iItemDamage )
++    {
++    	if ( iItemDamage == 0 ) // stone siding
++    	{
++    		return -1.0F;
++    	}
++    	else
++    	{
++    		return super.GetBuoyancy( iItemDamage );
++    	}
++    }
++
++	//----------- Client Side Functionality -----------//
++
++    @Override
++    public Icon getIconFromDamage( int i )
++    {
++        return FCBetterThanWolves.fcBlockLegacySmoothstoneAndOakSiding.getIcon( 2, i );
++    }
++}

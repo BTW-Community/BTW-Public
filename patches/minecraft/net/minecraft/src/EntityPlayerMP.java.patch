@@ -1,0 +1,694 @@
+--- a/minecraft/net/minecraft/src/EntityPlayerMP.java
++++ b/minecraft/net/minecraft/src/EntityPlayerMP.java
+@@ -33,6 +33,10 @@
+     public double managedPosZ;
+ 
+     /** LinkedList that holds the loaded chunks. */
++    /**
++     * FCNOTE: Deprecated list used by vanilla PlayerInstance and PlayerManager to track watched
++     * chunks
++     */
+     public final List loadedChunks = new LinkedList();
+ 
+     /** entities added to this list will  be packet29'd to the player */
+@@ -188,6 +192,8 @@
+             this.playerNetServerHandler.sendPacketToPlayer(new Packet29DestroyEntity(var2));
+         }
+ 
++        // FCMOD: Changed
++        /*
+         if (!this.loadedChunks.isEmpty())
+         {
+             ArrayList var6 = new ArrayList();
+@@ -209,23 +215,30 @@
+             if (!var6.isEmpty())
+             {
+                 this.playerNetServerHandler.sendPacketToPlayer(new Packet56MapChunks(var6));
+-                Iterator var10 = var8.iterator();
++                Iterator var11 = var8.iterator();
+ 
+-                while (var10.hasNext())
++                while (var11.hasNext())
+                 {
+-                    TileEntity var5 = (TileEntity)var10.next();
++                    TileEntity var5 = (TileEntity)var11.next();
+                     this.sendTileEntityToPlayer(var5);
+                 }
+ 
+-                var10 = var6.iterator();
++                var11 = var6.iterator();
+ 
+-                while (var10.hasNext())
++                while (var11.hasNext())
+                 {
+-                    Chunk var11 = (Chunk)var10.next();
+-                    this.getServerForPlayer().getEntityTracker().func_85172_a(this, var11);
++                    Chunk var10 = (Chunk)var11.next();
++                    this.getServerForPlayer().getEntityTracker().func_85172_a(this, var10);
+                 }
+             }
+         }
++        */
++        SendChunksToClient();
++        // END FCMOD
++
++        // FCMOD: Code Added
++        ModSpecificOnUpdate();
++        // END FCMOD
+     }
+ 
+     public void setEntityHealth(int par1)
+@@ -262,12 +275,21 @@
+                 }
+             }
+ 
++        	// FCMOD: Code changed to relay changes in food saturation
++        	/*
+             if (this.getHealth() != this.lastHealth || this.lastFoodLevel != this.foodStats.getFoodLevel() || this.foodStats.getSaturationLevel() == 0.0F != this.wasHungry)
++        	*/
++        	if (this.getHealth() != this.lastHealth || this.lastFoodLevel != this.foodStats.getFoodLevel() || this.foodStats.getSaturationLevel() == 0.0F != this.wasHungry ||
++        		m_iLastFoodSaturation != (int)( foodStats.getSaturationLevel() * 8F ) )
++    		// END FCMOD
+             {
+                 this.playerNetServerHandler.sendPacketToPlayer(new Packet8UpdateHealth(this.getHealth(), this.foodStats.getFoodLevel(), this.foodStats.getSaturationLevel()));
+                 this.lastHealth = this.getHealth();
+                 this.lastFoodLevel = this.foodStats.getFoodLevel();
+                 this.wasHungry = this.foodStats.getSaturationLevel() == 0.0F;
++            	// FCMOD: Code added
++            	m_iLastFoodSaturation = (int)( foodStats.getSaturationLevel() * 8F );
++            	// END FCMOD
+             }
+ 
+             if (this.experienceTotal != this.lastExperience)
+@@ -297,6 +319,10 @@
+             this.inventory.dropAllItems();
+         }
+ 
++        // FCMOD: Code added
++        CustomModDrops( par1DamageSource );
++        // END FCMOD
++
+         Collection var2 = this.worldObj.getScoreboard().func_96520_a(ScoreObjectiveCriteria.field_96642_c);
+         Iterator var3 = var2.iterator();
+ 
+@@ -405,7 +431,10 @@
+     /**
+      * called from onUpdate for all tileEntity in specific chunks
+      */
++    // FCMOD: Changed (server only) to match name on client
++    //private void getTileEntityInfo(TileEntity par1TileEntity)
+     private void sendTileEntityToPlayer(TileEntity par1TileEntity)
++    // END FCMOD
+     {
+         if (par1TileEntity != null)
+         {
+@@ -499,7 +528,10 @@
+     {
+         this.incrementWindowID();
+         this.playerNetServerHandler.sendPacketToPlayer(new Packet100OpenWindow(this.currentWindowId, 1, "Crafting", 9, true));
+-        this.openContainer = new ContainerWorkbench(this.inventory, this.worldObj, par1, par2, par3);
++        // FCMOD: Changed
++        //this.openContainer = new ContainerWorkbench(this.inventory, this.worldObj, par1, par2, par3);
++        openContainer = new FCContainerWorkbench( inventory, worldObj, par1, par2, par3 );
++        // END FCMOD
+         this.openContainer.windowId = this.currentWindowId;
+         this.openContainer.addCraftingToCrafters(this);
+     }
+@@ -613,9 +645,16 @@
+         this.incrementWindowID();
+         this.openContainer = new ContainerMerchant(this.inventory, par1IMerchant, this.worldObj);
+         this.openContainer.windowId = this.currentWindowId;
++        // FCMOD: Code moved slightly later to avoid init order problems
++        /*
+         this.openContainer.addCraftingToCrafters(this);
++        */
++        // END FCMOD
+         InventoryMerchant var3 = ((ContainerMerchant)this.openContainer).getMerchantInventory();
+         this.playerNetServerHandler.sendPacketToPlayer(new Packet100OpenWindow(this.currentWindowId, 6, par2Str == null ? "" : par2Str, var3.getSizeInventory(), par2Str != null));
++        // FCMOD: Code moved from above to avoid init order problems
++        this.openContainer.addCraftingToCrafters(this);
++        // END FCMOD
+         MerchantRecipeList var4 = par1IMerchant.getRecipes(this);
+ 
+         if (var4 != null)
+@@ -923,4 +962,560 @@
+     {
+         return new ChunkCoordinates(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY + 0.5D), MathHelper.floor_double(this.posZ));
+     }
++
++    // FCMOD: Added
++    public LinkedList<ChunkCoordIntPair> m_chunksToBeSentToClient = 
++    	new LinkedList<ChunkCoordIntPair>();
++    
++    private int m_iLastFoodSaturation = -99999999;
++	private int m_iExhaustionWithTimeCounter = 0;
++	
++	private static final int m_iExhaustionWithTimePeriod = 600; // once per 30 seconds
++	private static final float m_fExhaustionWithTimeAmount = 0.5F; // set with above to begin starving to death after 160 minutes if you're fully obese, losing 1 hunger every 4 minutes	
++    
++    private static final float m_fMinimumGloomBiteChance = 0.01F; 
++    private static final float m_fMaximumGloomBiteChance = 0.05F; // 1/second
++    
++	private static final int m_iDelayBetweenZeroDamageAttackSounds = 20; 
++	private long m_lTimeOfLastZeroDamageAttackSound = 0;
++	
++    @Override
++    protected void CheckForHeadDrop( DamageSource source, int iLootingModifier )
++    {
++	    Entity sourceEntity = source.getEntity();        
++	    int iHeadChance = this.rand.nextInt(200);        
++	    
++        iHeadChance -= iLootingModifier;
++    	
++	    if ( sourceEntity instanceof EntityPlayer)
++	    {
++	    	if ( ((EntityPlayer)sourceEntity).getHeldItem() != null && 
++	    		((EntityPlayer)sourceEntity).getHeldItem().getItem().itemID == FCBetterThanWolves.fcItemBattleAxe.itemID )
++	    	{
++	    		// 100% chance of decapitation with Battle Axe in PvP
++	    		
++	    		iHeadChance = 0;
+ }
++	    }
++	    else if ( source == FCDamageSourceCustom.m_DamageSourceChoppingBlock )
++	    {
++			iHeadChance = 0;
++	    }
++	    
++	    if ( iHeadChance < 5 )
++	    {
++	        dropHead();
++	    }
++    }
++    
++    private void CustomModDrops( DamageSource source )
++    {
++	    Entity sourceEntity = source.getEntity();        
++        int iLootingModifier = GetAmbientLootingModifier();
++
++        if ( sourceEntity instanceof EntityPlayer )
++        {
++            int iPlayerLootingModifier = EnchantmentHelper.getLootingModifier((EntityLiving)sourceEntity);
++            
++            if ( iPlayerLootingModifier > iLootingModifier )
++            {
++            	iLootingModifier = iPlayerLootingModifier;
++            }
++        }
++        
++        DropMysteryMeat( iLootingModifier );
++        
++        CheckForHeadDrop( source, iLootingModifier );
++    }
++    
++    private void DropMysteryMeat( int iLootingModifier )
++    {
++        if ( !HasHeadCrabbedSquid() )
++        {
++	    	// only drop mystery meat periodically to prevent people killing themselves repeatedly for food.
++	    	// With HC Spawn enabled, it only happens when the player will be moved to a new spawn location.
++	    	
++			long lOverworldTime = MinecraftServer.getServer().worldServers[0].getWorldTime();
++			
++			if ( m_lTimeOfLastSpawnAssignment == 0 || m_lTimeOfLastSpawnAssignment > lOverworldTime || 
++				lOverworldTime - m_lTimeOfLastSpawnAssignment >= FCUtilsHardcoreSpawn.m_iHardcoreSpawnTimeBetweenReassignments )
++			{
++				int iDropItemID = FCBetterThanWolves.fcItemRawMysteryMeat.itemID;
++				
++				if ( isBurning() )
++				{
++					iDropItemID = FCBetterThanWolves.fcItemMeatBurned.itemID;
++				}
++		    	
++		        int iFat = ( (int)foodStats.getSaturationLevel() ) / 2;
++		        
++		        int iNumDropped = 1 + iFat;
++		
++		        for ( int iTempCount = 0; iTempCount < iNumDropped; ++iTempCount )
++		        {        	
++		            dropItem( iDropItemID, 1 );
++		        }
++			}
++        }
++    }
++    
++    private void ModSpecificOnUpdate()
++    {
++        UpdateExhaustionWithTime();
++        
++        UpdateHealthAndHungerEffects();
++        
++        UpdateMagneticInfluences();
++        
++        UpdateSpawnChunksVisualization();
++        
++    	NotifyBlockWalkedOn();
++    }
++    
++	private void UpdateMagneticInfluences()
++	{
++		if ( ( worldObj.getTotalWorldTime() + entityId ) % 40 != 0 )
++		{
++			// stagger these updates as they can be performance intensive
++			 
++			return;
++		}
++		 
++		FCMagneticPoint strongestPoint = null;
++		double dStrongestFieldStrength = 0.0D;
++		 
++	    if ( worldObj.provider.isSurfaceWorld() )
++	    {
++	    	ChunkCoordinates spawnPos = worldObj.getSpawnPoint();
++	    	 
++	    	strongestPoint = new FCMagneticPoint( spawnPos.posX, 0, spawnPos.posZ, 2 );
++	    	 
++	    	dStrongestFieldStrength = strongestPoint.GetFieldStrengthRelativeToPosition( posX, posZ );
++	    	 
++	        Iterator pointIterator = worldObj.GetMagneticPointList().m_MagneticPoints.iterator();
++	         
++	        while ( pointIterator.hasNext() )
++	        {
++	        	FCMagneticPoint tempPoint = (FCMagneticPoint)pointIterator.next();
++	        	 
++	        	double dTempFieldStrength = tempPoint.GetFieldStrengthRelativeToPosition( posX, posZ );
++	        	 
++	        	if ( dTempFieldStrength > dStrongestFieldStrength )
++	        	{
++	        		strongestPoint = tempPoint;
++	        		dStrongestFieldStrength = dTempFieldStrength;
++	        	}
++	        }
++	    }
++	    else
++	    {
++	        Iterator pointIterator = worldObj.GetMagneticPointList().m_MagneticPoints.iterator();
++	         
++	        while ( pointIterator.hasNext() )
++	        {
++	        	FCMagneticPoint tempPoint = (FCMagneticPoint)pointIterator.next();
++	        	 
++	        	double dTempFieldStrength = tempPoint.GetFieldStrengthRelativeToPositionWithBackgroundNoise( posX, posZ );
++	        	 
++	        	if ( dTempFieldStrength > dStrongestFieldStrength )
++	        	{
++	        		strongestPoint = tempPoint;
++	        		dStrongestFieldStrength = dTempFieldStrength;
++	        	}
++	        }
++	    }         
++	     
++	    if ( strongestPoint != null )
++	    {
++	    	SetHasValidMagneticPointForLocation( true );
++	    	SetStongestMagneticPointForLocationI( strongestPoint.m_iIPos );
++	    	SetStongestMagneticPointForLocationK( strongestPoint.m_iKPos );
++	    }
++	    else
++	    {
++	    	SetHasValidMagneticPointForLocation( false );
++	    }
++	}
++	
++	private void UpdateSpawnChunksVisualization()
++	{
++		if ( worldObj.provider.dimensionId == 0 && ( IsWearingEnderSpectacles() || 
++			isPotionActive( FCBetterThanWolves.potionTrueSight ) ) )
++		{
++			SetSpawnChunksVisualization( worldObj.worldInfo.getSpawnX(),
++				worldObj.worldInfo.getSpawnY(), worldObj.worldInfo.getSpawnZ() );
++		}
++		else
++		{
++			SetSpawnChunksVisualization( 0, 0, 0 );
++		}
++	}
++	
++    private void UpdateExhaustionWithTime()
++    {
++    	m_iExhaustionWithTimeCounter++;
++    	
++    	if ( m_iExhaustionWithTimeCounter >= m_iExhaustionWithTimePeriod )
++    	{
++            if ( !capabilities.disableDamage ) // disable hunger drain in creative
++            {
++            	foodStats.addExhaustion( m_fExhaustionWithTimeAmount );
++            }
++            
++    		m_iExhaustionWithTimeCounter = 0;
++    	}
++    }
++    
++    private void UpdateHealthAndHungerEffects()
++    {
++    	if ( !isDead && ( worldObj.getTotalWorldTime() + (long)entityId ) % 80L == 0L )
++    	{
++    		if ( foodStats.getFoodLevel() <= 0 && foodStats.getSaturationLevel() <= 0F )
++    		{
++                addPotionEffect( new PotionEffect( Potion.confusion.getId(), 180, 0, true ) );                            
++    		}
++    		
++    		if ( health <= 2 )
++    		{
++                addPotionEffect( new PotionEffect( Potion.blindness.getId(), 180, 0, true ) );                            
++    		}
++    	}
++    }
++    
++    @Override
++    protected void UpdateGloomState()
++    {
++    	if ( !isDead )
++    	{
++    		if ( IsInGloom() )
++    		{
++    			m_iInGloomCounter++;
++    			
++    			if ( GetGloomLevel() == 0 || ( m_iInGloomCounter > m_iGloomCounterBetweenStateChanges && GetGloomLevel() < 3 ) )
++    			{
++    				SetGloomLevel( GetGloomLevel() + 1 );
++    				
++    				m_iInGloomCounter = 0;
++    			}
++    			
++    			if ( GetGloomLevel() >= 3 )
++    			{
++    		    	if ( ( worldObj.getTotalWorldTime() + (long)entityId ) % 80L == 0L )
++    		    	{
++		                addPotionEffect( new PotionEffect( Potion.confusion.getId(), 180, 0, true ) );                            
++    		    	}
++    		    	
++    		    	// gloom bites
++    		    	
++    	    		float fCounterProgress = (float)m_iInGloomCounter / (float)m_iGloomCounterBetweenStateChanges;
++    	    		
++    	    		if ( fCounterProgress > 1.0F )
++    	    		{
++    	    			fCounterProgress = 1.0F;
++    	    		}
++
++            		float fGloomBiteChance = m_fMinimumGloomBiteChance + ( m_fMaximumGloomBiteChance - m_fMinimumGloomBiteChance ) * fCounterProgress;        		
++    	    		
++            		if ( rand.nextFloat() < fGloomBiteChance )
++            		{
++            			if ( attackEntityFrom( FCDamageSourceCustom.m_DamageSourceGloom, 1 ) )
++            			{            			
++	            			if ( health <= 0 )
++	            			{
++	            	        	worldObj.playAuxSFX( FCBetterThanWolves.m_iBurpSoundAuxFXID, 
++	            	        		MathHelper.floor_double( posX ), MathHelper.floor_double( posY ), MathHelper.floor_double( posZ ), 0 );
++	            			}
++            			}
++            		}
++		    	}
++    		}
++    		else
++    		{
++        		SetGloomLevel( 0 );
++        		
++        		m_iInGloomCounter = 0;
++    		}   		    		
++    	}
++    }
++
++    @Override
++    protected void UpdateFatPenaltyLevel()
++    {
++        int iFat = (int)foodStats.getSaturationLevel();
++    	int iFatLevel = 4;
++        
++        if ( iFat < 12 )
++        {
++        	iFatLevel = 0;
++        }
++        else if ( iFat < 14 )
++        {
++        	iFatLevel = 1;
++        }
++        else if ( iFat < 16 )
++        {
++        	iFatLevel = 2;
++        }
++        else if ( iFat < 18 )
++        {
++        	iFatLevel = 3;
++        }
++    	
++    	SetFatPenaltyLevel( iFatLevel );
++    }
++	
++    @Override
++	protected void UpdateHungerPenaltyLevel()
++	{
++        int iHunger = foodStats.getFoodLevel();
++        int iPenaltyLevel = 5;
++        
++        if ( iHunger > 24 )
++        {
++        	iPenaltyLevel = 0;
++        }
++        else if ( iHunger > 18 )
++        {
++        	iPenaltyLevel = 1;
++        }
++        else if ( iHunger > 12 )
++        {
++        	iPenaltyLevel = 2;
++        }
++        else if ( iHunger > 6 )
++        {
++        	iPenaltyLevel = 3;
++        }
++        else if ( iHunger > 0 || foodStats.getSaturationLevel() > 0F )
++        {
++        	iPenaltyLevel = 4;
++        }
++        
++        SetHungerPenaltyLevel( iPenaltyLevel );
++	}
++	
++    @Override
++	protected void UpdateHealthPenaltyLevel()
++	{
++		int iHealth = getHealth();
++        int iPenaltyLevel = 5;
++        
++        if ( iHealth > 10 )
++        {
++        	iPenaltyLevel = 0;
++        }
++        else if ( iHealth > 8 )
++        {
++        	iPenaltyLevel = 1;
++        }
++        else if ( iHealth > 6 )
++        {
++        	iPenaltyLevel = 2;
++        }
++        else if ( iHealth > 4 )
++        {
++        	iPenaltyLevel = 3;
++        }
++        else if ( iHealth > 2 )
++        {
++        	iPenaltyLevel = 4;
++        }
++        
++        SetHealthPenaltyLevel( iPenaltyLevel );
++	}
++	
++    private boolean IsInGloom()
++    {
++        if ( !capabilities.disableDamage ) // disable darkness effects in creative
++        {
++	        if ( !isPotionActive( Potion.nightVision ) && worldObj.provider.dimensionId == 0 )
++	        {
++		        int i = MathHelper.floor_double( posX );
++		        int j = MathHelper.floor_double( posY - yOffset );
++		        int k = MathHelper.floor_double( posZ );
++		        
++		        int iOldSkylightSubtracted = worldObj.skylightSubtracted;
++		        
++		        float fSunBrightness = worldObj.ComputeOverworldSunBrightnessWithMoonPhases();
++		        
++		        if ( fSunBrightness < 0.02D )
++		        {
++		        	// world is in gloom, no skylight at all
++		        	worldObj.skylightSubtracted = 15;
++		        }
++		        else
++		        {
++		        	worldObj.skylightSubtracted = (int)( ( 1F - fSunBrightness ) * 11.9F );
++		        }
++
++		        float fBlockInLightValue = worldObj.getLightBrightness( i, j, k );
++		        
++		        float fBlockAboveLightValue = worldObj.getLightBrightness( i, j + 1, k );
++		        
++		        if ( fBlockAboveLightValue > fBlockInLightValue )
++		        {
++		        	fBlockInLightValue = fBlockAboveLightValue;
++		        }
++		        
++		        worldObj.skylightSubtracted = iOldSkylightSubtracted;
++		        
++		    	return fBlockInLightValue < 0.001F;
++	        }
++        }
++        
++        return false;
++    }
++    
++	@Override    
++	public void AddRawChatMessage( String message )
++	{
++		playerNetServerHandler.sendPacket( new Packet3Chat( message ) );
++	}
++
++	@Override
++    protected void OnZeroDamageAttack()
++    {
++		long lCurrentTime = worldObj.getWorldTime();
++		
++		if ( lCurrentTime > m_lTimeOfLastZeroDamageAttackSound + m_iDelayBetweenZeroDamageAttackSounds )
++		{
++			worldObj.playSoundAtEntity( this, 
++	    		"random.classic_hurt", 1.0F +  rand.nextFloat() * 0.25F, 
++	    		getSoundPitch() * 1.20F + rand.nextFloat() * 0.1F);
++			
++			m_lTimeOfLastZeroDamageAttackSound = lCurrentTime;
++		}
++    }
++	
++	@Override
++    public void OnStruckByLightning( FCEntityLightningBolt boltEntity )
++    {
++        if ( !capabilities.disableDamage )
++        {
++            dealFireDamage( 12 );
++            
++            setFire( 8 );
++
++        	FlingAwayFromEntity( boltEntity, 2D );
++    		
++    		worldObj.playSoundAtEntity( this, 
++        		"random.classic_hurt", 1.0F +  rand.nextFloat() * 0.25F, 
++        		getSoundPitch() * 1.20F + rand.nextFloat() * 0.1F);
++    		
++            addPotionEffect( new PotionEffect( Potion.blindness.getId(), 90, 0, true ) );
++            
++            addPotionEffect( new PotionEffect( Potion.confusion.getId(), 180, 0, true ) );                            
++        }
++    }
++	
++    public int IncrementAndGetWindowID()
++    {
++        this.currentWindowId = this.currentWindowId % 100 + 1;
++        
++        return currentWindowId;
++    }
++    
++    private void NotifyBlockWalkedOn()
++    {
++        if ( onGround )
++        {
++        	int iGroundI = MathHelper.floor_double( posX );
++        	int iGroundJ = MathHelper.floor_double( posY - 0.03D - (double)yOffset ); // same calc used for step sound
++        	int iGroundK = MathHelper.floor_double( posZ );
++        	
++        	Block blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];
++
++        	if ( blockOn == null || blockOn.getCollisionBoundingBoxFromPool( worldObj, iGroundI, iGroundJ, iGroundK ) == null )
++        	{
++        		float fHalfWidth = width / 2F;
++        		
++        		// block we are standing on directly is air or has no collision box.  Check the horizontal extents of our box for a movement modifier
++
++        		int iCenterGroundI = iGroundI;
++        		
++        		iGroundI = MathHelper.floor_double( posX + fHalfWidth );	        		
++	        	blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];
++	        	
++	        	if ( blockOn == null || blockOn.getCollisionBoundingBoxFromPool( worldObj, iGroundI, iGroundJ, iGroundK ) == null )
++	        	{
++	        		iGroundI = MathHelper.floor_double( posX - fHalfWidth );
++		        	blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];
++		        	
++		        	if ( blockOn == null || blockOn.getCollisionBoundingBoxFromPool( worldObj, iGroundI, iGroundJ, iGroundK ) == null )
++		        	{
++		        		iGroundI = iCenterGroundI;
++		        		
++		        		iGroundK = MathHelper.floor_double( posZ + fHalfWidth );
++			        	blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];
++			        	
++			        	if ( blockOn == null || blockOn.getCollisionBoundingBoxFromPool( worldObj, iGroundI, iGroundJ, iGroundK ) == null )
++			        	{
++			        		iGroundK = MathHelper.floor_double( posZ - fHalfWidth );
++				        	blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];					        	
++			        	}
++		        	}
++	        	}	        	
++        	}
++        	
++        	if ( blockOn != null )
++        	{
++        		blockOn.OnPlayerWalksOnBlock( worldObj, iGroundI, iGroundJ, iGroundK, this );        		
++        	}
++        }        
++    }
++    
++    public void SendChunksToClient()
++    {
++        if ( !m_chunksToBeSentToClient.isEmpty() )
++        {
++            Iterator<ChunkCoordIntPair> coordIterator = m_chunksToBeSentToClient.iterator();
++            
++            ArrayList<Chunk> chunksToSend = new ArrayList<Chunk>();
++            ArrayList<TileEntity> tileEntitiesToSend = new ArrayList<TileEntity>();
++
++            while ( coordIterator.hasNext() && chunksToSend.size() < 5 )
++            {
++                ChunkCoordIntPair tempCoord = coordIterator.next();
++                coordIterator.remove();
++
++                if ( tempCoord != null && worldObj.chunkExists( 
++                	tempCoord.chunkXPos, tempCoord.chunkZPos ) )
++                {
++                    chunksToSend.add( worldObj.getChunkFromChunkCoords(
++                    	tempCoord.chunkXPos, tempCoord.chunkZPos ) );
++                    
++                    tileEntitiesToSend.addAll( getServerForPlayer().getAllTileEntityInBox(
++                    	tempCoord.chunkXPos * 16, 0, tempCoord.chunkZPos * 16, 
++                    	tempCoord.chunkXPos * 16 + 16, 256, tempCoord.chunkZPos * 16 + 16));
++                }
++            }
++
++            if ( !chunksToSend.isEmpty() )
++            {
++	        	FCUtilsWorld.SendPacketToPlayer( playerNetServerHandler, 
++	        		new Packet56MapChunks( chunksToSend ) );
++	        	
++                Iterator<TileEntity> tileIterator = tileEntitiesToSend.iterator();
++
++                while ( tileIterator.hasNext() )
++                {
++                    TileEntity tempTile = (TileEntity)tileIterator.next();
++                    
++                    sendTileEntityToPlayer( tempTile );
++                }
++
++                Iterator<Chunk> chunkIterator = chunksToSend.iterator();
++
++                while ( chunkIterator.hasNext() )
++                {
++                    Chunk var10 = chunkIterator.next();
++                    
++                    // the following call checks for entities in the chunk, and starts the player
++                    // watching them for updates
++                    getServerForPlayer().getEntityTracker().func_85172_a( this, var10 );
++                }
++            }
++        }
++    }
++	// END FCMOD
++}

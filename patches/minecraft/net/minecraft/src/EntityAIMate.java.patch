@@ -1,0 +1,55 @@
+--- a/minecraft/net/minecraft/src/EntityAIMate.java
++++ b/minecraft/net/minecraft/src/EntityAIMate.java
+@@ -6,9 +6,9 @@
+ 
+ public class EntityAIMate extends EntityAIBase
+ {
+-    private EntityAnimal theAnimal;
++    protected EntityAnimal theAnimal;
+     World theWorld;
+-    private EntityAnimal targetMate;
++    protected EntityAnimal targetMate;
+ 
+     /**
+      * Delay preventing a baby from spawning immediately when two mate-able animals find each other.
+@@ -47,6 +47,12 @@
+      */
+     public boolean continueExecuting()
+     {
++    	// FCMOD: Added
++        if ( !theAnimal.isInLove() )
++        {
++            return false;
++        }
++    	// END FCMOD
+         return this.targetMate.isEntityAlive() && this.targetMate.isInLove() && this.spawnBabyDelay < 60;
+     }
+ 
+@@ -70,7 +76,11 @@
+ 
+         if (this.spawnBabyDelay >= 60 && this.theAnimal.getDistanceSqToEntity(this.targetMate) < 9.0D)
+         {
++        	/* FCMOD: Changed to use entity function to make birthing behavior easier to override and to consolodate it in one place
+             this.spawnBaby();
++            */
++        	theAnimal.procreate( targetMate );
++        	// END FCMOD
+         }
+     }
+ 
+@@ -103,6 +113,8 @@
+     /**
+      * Spawns a baby animal of the same type.
+      */
++    // FCMOD: Removed dead code
++    /*
+     private void spawnBaby()
+     {
+         EntityAgeable var1 = this.theAnimal.createChild(this.targetMate);
+@@ -129,4 +141,6 @@
+             this.theWorld.spawnEntityInWorld(new EntityXPOrb(this.theWorld, this.theAnimal.posX, this.theAnimal.posY, this.theAnimal.posZ, var2.nextInt(7) + 1));
+         }
+     }
++    */
++    // END FCMOD
+ }

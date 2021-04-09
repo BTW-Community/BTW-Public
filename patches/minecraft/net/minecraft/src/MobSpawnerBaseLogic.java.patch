@@ -1,0 +1,28 @@
+--- a/minecraft/net/minecraft/src/MobSpawnerBaseLogic.java
++++ b/minecraft/net/minecraft/src/MobSpawnerBaseLogic.java
+@@ -120,6 +120,12 @@
+                     double var7 = (double)(this.getSpawnerY() + this.getSpawnerWorld().rand.nextInt(3) - 1);
+                     double var9 = (double)this.getSpawnerZ() + (this.getSpawnerWorld().rand.nextDouble() - this.getSpawnerWorld().rand.nextDouble()) * (double)this.spawnRange;
+                     EntityLiving var11 = var13 instanceof EntityLiving ? (EntityLiving)var13 : null;
++                    // FCMOD: Added
++                    if ( var11 != null )
++                    {
++                    	var11.PreInitCreature();
++                    }
++                    // END FCMOD                    
+                     var13.setLocationAndAngles(var5, var7, var9, this.getSpawnerWorld().rand.nextFloat() * 360.0F, 0.0F);
+ 
+                     if (var11 == null || var11.getCanSpawnHere())
+@@ -195,7 +201,12 @@
+         }
+         else if (par1Entity instanceof EntityLiving && par1Entity.worldObj != null)
+         {
++        	// FCMOD: Code change to prevent mobs spawning with armor and weapons
++        	/*
+             ((EntityLiving)par1Entity).initCreature();
++            */
++            ((EntityLiving)par1Entity).SpawnerInitCreature();
++        	// END FCMOD
+             this.getSpawnerWorld().spawnEntityInWorld(par1Entity);
+         }
+ 

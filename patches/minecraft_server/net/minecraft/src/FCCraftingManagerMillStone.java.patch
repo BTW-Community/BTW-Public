@@ -1,0 +1,22 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCCraftingManagerMillStone.java
+@@ -0,0 +1,18 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCCraftingManagerMillStone  extends FCCraftingManagerBulk
++{
++    private static final FCCraftingManagerMillStone instance = new FCCraftingManagerMillStone();
++    
++    public static final FCCraftingManagerMillStone getInstance()
++    {
++        return instance;
++    }
++
++    private FCCraftingManagerMillStone()
++    {
++    	super();    	
++    }
++}
+\ No newline at end of file

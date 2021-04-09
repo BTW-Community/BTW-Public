@@ -1,0 +1,184 @@
+--- a/minecraft/net/minecraft/src/EntityAgeable.java
++++ b/minecraft/net/minecraft/src/EntityAgeable.java
+@@ -1,9 +1,16 @@
+ package net.minecraft.src;
+ 
++import java.util.Iterator;
++import java.util.List;
++
+ public abstract class EntityAgeable extends EntityCreature
+ {
+-    private float field_98056_d = -1.0F;
+-    private float field_98057_e;
++	// FCMOD: Changed for clarity
++    //private float field_98056_d = -1.0F;
++    //private float field_98057_e;
++    private float m_fAdultWidth = -1.0F; // -1 flags super entity size has not been initialized
++    private float m_fAdultHeight;
++    // END FCMOD
+ 
+     public EntityAgeable(World par1World)
+     {
+@@ -16,7 +23,14 @@
+      * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
+      */
+     public boolean interact(EntityPlayer par1EntityPlayer)
++    // FCMOD: Added to alow calling this method directly regardless of class hierarchy
+     {
++    	return EntityAgeableInteract( par1EntityPlayer );
++    }
++    
++    public boolean EntityAgeableInteract( EntityPlayer par1EntityPlayer )
++    // END FCMOD
++    {
+         ItemStack var2 = par1EntityPlayer.inventory.getCurrentItem();
+ 
+         if (var2 != null && var2.itemID == Item.monsterPlacer.itemID && !this.worldObj.isRemote)
+@@ -29,7 +43,10 @@
+ 
+                 if (var4 != null)
+                 {
+-                    var4.setGrowingAge(-24000);
++                	// FCMOD: Changed
++                    //var4.setGrowingAge(-24000);
++                    var4.setGrowingAge( -GetTicksForChildToGrow() );
++                	// END FCMOD
+                     var4.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
+                     this.worldObj.spawnEntityInWorld(var4);
+ 
+@@ -77,7 +94,12 @@
+     public void setGrowingAge(int par1)
+     {
+         this.dataWatcher.updateObject(12, Integer.valueOf(par1));
+-        this.func_98054_a(this.isChild());
++        // FCNOTE: This seems grossly ineffecient as I believe this data will get sent to the 
++        // clients every tick for child animals, and those waiting to recharge their love juice
++        // FCMOD: Changed
++        //this.func_98054_a(this.isChild());
++    	AdjustSizeForAge( isChild() );
++        // END FCMOD
+     }
+ 
+     /**
+@@ -108,7 +130,10 @@
+ 
+         if (this.worldObj.isRemote)
+         {
+-            this.func_98054_a(this.isChild());
++        	// FCMOD: Changed
++            //this.func_98054_a(this.isChild());
++        	AdjustSizeForAge( isChild() );
++            // END FCMOD
+         }
+         else
+         {
+@@ -116,11 +141,43 @@
+ 
+             if (var1 < 0)
+             {
++	        	// FCMOD: Added
++	        	if ( !CanChildGrow() )
++	        	{
++	        		return;
++	        	}
++	        	// END FCMOD
++	        	
+                 ++var1;
++                
++                // FCMOD: Added
++        		if ( var1 == 0 )
++        		{
++        			// child is about to grow to adulthood.  Make sure it has enough space
++        			AxisAlignedBB adultBounds = AxisAlignedBB.getAABBPool().getAABB(
++        				boundingBox.minX, boundingBox.minY, boundingBox.minZ,
++        				boundingBox.minX + m_fAdultWidth, 
++        				boundingBox.minY + m_fAdultHeight, 
++        				boundingBox.minZ + m_fAdultWidth ); 
++        			
++        			if ( !worldObj.getCollidingBoundingBoxes( this, adultBounds ).isEmpty() )
++        			{
++        				var1 = -20;
++        			}        			
++        		}
++        		// END FCMOD
++        		
+                 this.setGrowingAge(var1);
+             }
+             else if (var1 > 0)
+             {
++	        	// FCMOD: Added
++	        	if ( !CanLoveJuiceRegenerate() )
++	        	{
++	        		return;
++	        	}
++	        	// END FCMOD
++	        	
+                 --var1;
+                 this.setGrowingAge(var1);
+             }
+@@ -135,14 +192,13 @@
+         return this.getGrowingAge() < 0;
+     }
+ 
++	// FCMOD: Removed and replaced
++	/*
+     public void func_98054_a(boolean par1)
+     {
+         this.func_98055_j(par1 ? 0.5F : 1.0F);
+     }
+ 
+-    /**
+-     * Sets the width and height of the entity. Args: width, height
+-     */
+     protected final void setSize(float par1, float par2)
+     {
+         boolean var3 = this.field_98056_d > 0.0F;
+@@ -159,4 +215,48 @@
+     {
+         super.setSize(this.field_98056_d * par1, this.field_98057_e * par1);
+     }
++    */
++	// END FCMOD
++    
++    // FCMOD: Added New
++	protected final void setSize( float fWidth, float fHeight )
++	{
++        boolean bSizeAlreadyInitialized = m_fAdultWidth > 0F;
++        
++        m_fAdultWidth = fWidth;
++        m_fAdultHeight = fHeight;
++
++        if ( !bSizeAlreadyInitialized )
++        {
++        	AdjustedSizeToScale( 1F );
+ }
++	}
++
++    private void AdjustedSizeToScale( float fScale )
++    {
++        super.setSize( m_fAdultWidth * fScale, m_fAdultHeight * fScale );
++    }
++    
++    public void AdjustSizeForAge( boolean bIsChild )
++    {
++    	AdjustedSizeToScale( bIsChild ? 0.5F : 1F );
++    }
++    
++    public boolean CanChildGrow()
++    {
++    	// prevent animals growing up in the end
++    	
++    	return worldObj.provider.dimensionId != 1;
++    }
++    
++    public boolean CanLoveJuiceRegenerate()
++    {
++    	return true;
++    }
++    
++    protected int GetTicksForChildToGrow()
++    {
++    	return FCUtilsMisc.m_iTicksPerGameDay;
++    }
++    // END FCMOD
++}

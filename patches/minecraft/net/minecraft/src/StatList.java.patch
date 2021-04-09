@@ -1,0 +1,19 @@
+--- a/minecraft/net/minecraft/src/StatList.java
++++ b/minecraft/net/minecraft/src/StatList.java
+@@ -173,9 +173,16 @@
+      */
+     private static StatBase[] initMinableStats(String par0Str, int par1)
+     {
++    	// FCMOD: Change to accomodate extended block IDs 
++    	/*
+         StatBase[] var2 = new StatBase[256];
+ 
+         for (int var3 = 0; var3 < 256; ++var3)
++        */
++        StatBase[] var2 = new StatBase[4096];
++
++        for (int var3 = 0; var3 < 4096; ++var3)
++    	// END FCMOD
+         {
+             if (Block.blocksList[var3] != null && Block.blocksList[var3].getEnableStats())
+             {

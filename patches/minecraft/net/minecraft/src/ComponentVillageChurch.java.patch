@@ -1,0 +1,90 @@
+--- a/minecraft/net/minecraft/src/ComponentVillageChurch.java
++++ b/minecraft/net/minecraft/src/ComponentVillageChurch.java
+@@ -65,6 +65,8 @@
+         this.placeBlockAtCurrentPosition(par1World, Block.stairsCobblestone.blockID, this.getMetadataWithOffset(Block.stairsCobblestone.blockID, 3), 3, 1, 5, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.stairsCobblestone.blockID, this.getMetadataWithOffset(Block.stairsCobblestone.blockID, 1), 1, 2, 7, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.stairsCobblestone.blockID, this.getMetadataWithOffset(Block.stairsCobblestone.blockID, 0), 3, 2, 7, par3StructureBoundingBox);
++        // FCMOD: Code change to remove glass from abandoned villages
++        /*
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 0, 2, 2, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 0, 3, 2, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 4, 2, 2, par3StructureBoundingBox);
+@@ -84,17 +86,76 @@
+         this.placeBlockAtCurrentPosition(par1World, Block.torchWood.blockID, 0, 1, 4, 6, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.torchWood.blockID, 0, 3, 4, 6, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.torchWood.blockID, 0, 2, 4, 5, par3StructureBoundingBox);
++        */
++        int iAbandonmentLevel = startPiece.GetAbandonmentLevel( par1World );
++        
++        if ( iAbandonmentLevel == 0 )
++    	{
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 0, 2, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 0, 3, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 4, 2, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 4, 3, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 0, 6, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 0, 7, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 4, 6, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 4, 7, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 2, 6, 0, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 2, 7, 0, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 2, 6, 4, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 2, 7, 4, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 0, 3, 6, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 4, 3, 6, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 2, 3, 8, par3StructureBoundingBox);
++            
++            this.placeBlockAtCurrentPosition(par1World, FCBetterThanWolves.fcBlockTorchFiniteUnlit.blockID, 8, 2, 4, 7, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, FCBetterThanWolves.fcBlockTorchFiniteUnlit.blockID, 8, 1, 4, 6, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, FCBetterThanWolves.fcBlockTorchFiniteUnlit.blockID, 8, 3, 4, 6, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, FCBetterThanWolves.fcBlockTorchFiniteUnlit.blockID, 8, 2, 4, 5, par3StructureBoundingBox);
++    	}
++        else
++        {
++        	// cut out holes where windows normally are
++        	
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 0, 2, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 0, 3, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 4, 2, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 4, 3, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 0, 6, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 0, 7, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 4, 6, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 4, 7, 2, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 2, 6, 0, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 2, 7, 0, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 2, 6, 4, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 2, 7, 4, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 0, 3, 6, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 4, 3, 6, par3StructureBoundingBox);
++            this.placeBlockAtCurrentPosition(par1World, 0, 0, 2, 3, 8, par3StructureBoundingBox);
++        }
++        // END FCMOD
+         int var4 = this.getMetadataWithOffset(Block.ladder.blockID, 4);
+         int var5;
+ 
+         for (var5 = 1; var5 <= 9; ++var5)
+         {
+-            this.placeBlockAtCurrentPosition(par1World, Block.ladder.blockID, var4, 3, var5, 3, par3StructureBoundingBox);
++        	// FCMOD: Changed
++            //this.placeBlockAtCurrentPosition(par1World, Block.ladder.blockID, var4, 3, var5, 3, par3StructureBoundingBox);
++            int iMetadata = FCBetterThanWolves.fcBlockLadder.SetFacing( 0, var4 );
++            
++            placeBlockAtCurrentPosition(par1World, FCBetterThanWolves.fcBlockLadder.blockID, iMetadata, 3, var5, 3, par3StructureBoundingBox);
++            // END FCMOD
+         }
+ 
+         this.placeBlockAtCurrentPosition(par1World, 0, 0, 2, 1, 0, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, 0, 0, 2, 2, 0, par3StructureBoundingBox);
+-        this.placeDoorAtCurrentPosition(par1World, par3StructureBoundingBox, par2Random, 2, 1, 0, this.getMetadataWithOffset(Block.doorWood.blockID, 1));
++        // FCMOD: Changed
++        //this.placeDoorAtCurrentPosition(par1World, par3StructureBoundingBox, par2Random, 2, 1, 0, this.getMetadataWithOffset(Block.doorWood.blockID, 1));
++        if ( iAbandonmentLevel == 0 )
++        {
++            placeDoorAtCurrentPosition(par1World, par3StructureBoundingBox, par2Random, 2, 1, 0, 
++            	getMetadataWithOffset(FCBetterThanWolves.fcBlockDoorWood.blockID, 1));
++        }
++    	// END FCMOD
+ 
+         if (this.getBlockIdAtCurrentPosition(par1World, 2, 0, -1, par3StructureBoundingBox) == 0 && this.getBlockIdAtCurrentPosition(par1World, 2, -1, -1, par3StructureBoundingBox) != 0)
+         {

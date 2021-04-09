@@ -1,0 +1,94 @@
+--- a/minecraft/net/minecraft/src/ComponentVillageHouse3.java
++++ b/minecraft/net/minecraft/src/ComponentVillageHouse3.java
+@@ -108,34 +108,89 @@
+             }
+         }
+ 
++        // FCMOD: Code added to remove glass from abandoned villages
++        int iAbandonmentLevel = startPiece.GetAbandonmentLevel( par1World );
++        
++        int iGlassBlockID = 0;
++        
++        if ( iAbandonmentLevel == 0 )
++        {
++        	iGlassBlockID = Block.thinGlass.blockID;
++        }
++        // END FCMOD
++        
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 0, 2, 1, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 0, 2, 4, par3StructureBoundingBox);
++        // FCMOD: Code change to remove glass from abandoned villages
++        /*
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 0, 2, 2, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 0, 2, 3, par3StructureBoundingBox);
++        */
++        this.placeBlockAtCurrentPosition(par1World, iGlassBlockID, 0, 0, 2, 2, par3StructureBoundingBox);
++        this.placeBlockAtCurrentPosition(par1World, iGlassBlockID, 0, 0, 2, 3, par3StructureBoundingBox);
++        // END FCMOD
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 4, 2, 0, par3StructureBoundingBox);
++        // FCMOD: Code change to remove glass from abandoned villages
++        /*
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 5, 2, 0, par3StructureBoundingBox);
++        */
++        this.placeBlockAtCurrentPosition(par1World, iGlassBlockID, 0, 5, 2, 0, par3StructureBoundingBox);
++        // END FCMOD
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 6, 2, 0, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 8, 2, 1, par3StructureBoundingBox);
++        // FCMOD: Code change to remove glass from abandoned villages
++        /*
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 8, 2, 2, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 8, 2, 3, par3StructureBoundingBox);
++        */
++        this.placeBlockAtCurrentPosition(par1World, iGlassBlockID, 0, 8, 2, 2, par3StructureBoundingBox);
++        this.placeBlockAtCurrentPosition(par1World, iGlassBlockID, 0, 8, 2, 3, par3StructureBoundingBox);        
++        // END FCMOD
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 8, 2, 4, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.planks.blockID, 0, 8, 2, 5, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 8, 2, 6, par3StructureBoundingBox);
++        // FCMOD: Code change to remove glass from abandoned villages
++        /*
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 8, 2, 7, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 8, 2, 8, par3StructureBoundingBox);
++        */
++        this.placeBlockAtCurrentPosition(par1World, iGlassBlockID, 0, 8, 2, 7, par3StructureBoundingBox);
++        this.placeBlockAtCurrentPosition(par1World, iGlassBlockID, 0, 8, 2, 8, par3StructureBoundingBox);
++        // END FCMOD
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 8, 2, 9, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 2, 2, 6, par3StructureBoundingBox);
++        // FCMOD: Code change to remove glass from abandoned villages
++        /*
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 2, 2, 7, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 2, 2, 8, par3StructureBoundingBox);
++        */
++        this.placeBlockAtCurrentPosition(par1World, iGlassBlockID, 0, 2, 2, 7, par3StructureBoundingBox);
++        this.placeBlockAtCurrentPosition(par1World, iGlassBlockID, 0, 2, 2, 8, par3StructureBoundingBox);
++        // END FCMOD
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 2, 2, 9, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 4, 4, 10, par3StructureBoundingBox);
++        // FCMOD: Code change to remove glass from abandoned villages
++        /*
+         this.placeBlockAtCurrentPosition(par1World, Block.thinGlass.blockID, 0, 5, 4, 10, par3StructureBoundingBox);
++        */
++        this.placeBlockAtCurrentPosition(par1World, iGlassBlockID, 0, 5, 4, 10, par3StructureBoundingBox);
++        // END FCMOD        
+         this.placeBlockAtCurrentPosition(par1World, Block.wood.blockID, 0, 6, 4, 10, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, Block.planks.blockID, 0, 5, 5, 10, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, 0, 0, 2, 1, 0, par3StructureBoundingBox);
+         this.placeBlockAtCurrentPosition(par1World, 0, 0, 2, 2, 0, par3StructureBoundingBox);
+-        this.placeBlockAtCurrentPosition(par1World, Block.torchWood.blockID, 0, 2, 3, 1, par3StructureBoundingBox);
+-        this.placeDoorAtCurrentPosition(par1World, par3StructureBoundingBox, par2Random, 2, 1, 0, this.getMetadataWithOffset(Block.doorWood.blockID, 1));
++        
++        // FCMOD: Changed
++        //this.placeBlockAtCurrentPosition(par1World, Block.torchWood.blockID, 0, 2, 3, 1, par3StructureBoundingBox);
++        //this.placeDoorAtCurrentPosition(par1World, par3StructureBoundingBox, par2Random, 2, 1, 0, this.getMetadataWithOffset(Block.doorWood.blockID, 1));
++        if ( iAbandonmentLevel <= 1 )
++        {
++            this.placeBlockAtCurrentPosition(par1World, FCBetterThanWolves.fcBlockTorchFiniteUnlit.blockID, 8, 2, 3, 1, par3StructureBoundingBox);
++            this.placeDoorAtCurrentPosition(par1World, par3StructureBoundingBox, par2Random, 2, 1, 0, 
++            	getMetadataWithOffset(FCBetterThanWolves.fcBlockDoorWood.blockID, 1));
++        }
++        // END FCMOD
++        	
+         this.fillWithBlocks(par1World, par3StructureBoundingBox, 1, 0, -1, 3, 2, -1, 0, 0, false);
+ 
+         if (this.getBlockIdAtCurrentPosition(par1World, 2, 0, -1, par3StructureBoundingBox) == 0 && this.getBlockIdAtCurrentPosition(par1World, 2, -1, -1, par3StructureBoundingBox) != 0)

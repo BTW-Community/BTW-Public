@@ -1,0 +1,63 @@
+--- a/minecraft_server/net/minecraft/src/EntityAITempt.java
++++ b/minecraft_server/net/minecraft/src/EntityAITempt.java
+@@ -97,7 +97,12 @@
+             this.field_75279_g = (double)this.temptingPlayer.rotationYaw;
+         }
+ 
++        // FCMOD: Changed this line
++        /*
+         return this.shouldExecute();
++        */
++        return ShouldContinueFollowing();
++        // END FCMOD
+     }
+ 
+     /**
+@@ -120,7 +125,12 @@
+     {
+         this.temptingPlayer = null;
+         this.temptedEntity.getNavigator().clearPathEntity();
++        // FCMOD: Code change to make animals more responsive to tempting.  Note that AI is only checked every three ticks
++        /*
+         this.delayTemptCounter = 100;
++        */
++        this.delayTemptCounter = 33;
++        // END FCMOD
+         this.field_75287_j = false;
+         this.temptedEntity.getNavigator().setAvoidsWater(this.field_75286_m);
+     }
+@@ -146,4 +156,34 @@
+     {
+         return this.field_75287_j;
+     }
++    
++    // FCMOD: Function added
++    private boolean ShouldContinueFollowing()
++    {
++        if (delayTemptCounter > 0)
++        {
++            delayTemptCounter--;
++            return false;
+ }
++
++        if (temptingPlayer == null || temptingPlayer.isLivingDead )
++        {
++            return false;
++        }
++
++        if (temptedEntity.getDistanceSqToEntity(temptingPlayer) > 256D)
++        {
++        	return false;
++        }
++
++        ItemStack itemstack = temptingPlayer.getCurrentEquippedItem();
++
++        if (itemstack == null)
++        {
++            return false;
++        }
++
++        return itemstack.itemID == breedingFood;
++    }
++    // END FCMOD
++}

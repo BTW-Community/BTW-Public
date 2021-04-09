@@ -1,0 +1,97 @@
+--- a/minecraft_server/net/minecraft/src/ComponentVillageStartPiece.java
++++ b/minecraft_server/net/minecraft/src/ComponentVillageStartPiece.java
+@@ -37,4 +37,94 @@
+     {
+         return this.worldChunkMngr;
+     }
++    
++    // FCMOD: Code added
++    private int m_iAbandonmentLevel;  // 0 = not abandoned, 1 = partially abandoned 2 = fully abandonded
++    private int m_iPrimaryCropBlockID;
++    private int m_iSecondaryCropBlockID;
++    private boolean m_bModSpecificDataInitialized = false;
++
++    public int GetAbandonmentLevel( World world )
++    {
++    	CheckIfModSpecificDataRequiresInit( world );
++    	
++    	return m_iAbandonmentLevel;
+ }
++    
++    public int GetPrimaryCropBlockID( World world )
++    {
++    	CheckIfModSpecificDataRequiresInit( world );
++    	
++    	return m_iPrimaryCropBlockID;
++    }
++    
++    public int GetSecondaryCropBlockID( World world )
++    {
++    	CheckIfModSpecificDataRequiresInit( world );
++    	
++    	return m_iSecondaryCropBlockID;
++    }
++    
++    private void CheckIfModSpecificDataRequiresInit( World world )
++    {
++    	if ( !m_bModSpecificDataInitialized )
++    	{
++    		InitializeModSpecificData( world );    		
++    	}
++    }
++    
++    private void InitializeModSpecificData( World world )
++    {    	
++		m_bModSpecificDataInitialized = true;
++		m_iAbandonmentLevel = 0;
++    	
++    	int iSpawnX = world.getWorldInfo().getSpawnX();
++    	int iSpawnZ = world.getWorldInfo().getSpawnZ();
++    	
++    	int iVillageX = boundingBox.getCenterX();
++    	int iVillageZ = boundingBox.getCenterZ();
++    	
++    	double dDeltaX = (double)( iSpawnX - iVillageX );
++    	double dDeltaZ = (double)( iSpawnZ - iVillageZ );
++    	
++    	double dDistSqFromSpawn = dDeltaX * dDeltaX + dDeltaZ * dDeltaZ;    	
++    	double dAbandonedRadius = FCUtilsHardcoreSpawn.GetAbandonedVillageRadius();
++    	
++    	if ( dDistSqFromSpawn < ( dAbandonedRadius * dAbandonedRadius ) )
++    	{
++    		m_iAbandonmentLevel = 2;
++    	}
++    	else
++    	{
++    		double dPartiallyAbandonedRadius = FCUtilsHardcoreSpawn.GetPartiallyAbandonedVillageRadius();
++    		
++    		if ( dDistSqFromSpawn < ( dPartiallyAbandonedRadius * dPartiallyAbandonedRadius ) )
++    		{    		
++        		m_iAbandonmentLevel = 1;
++        		
++    			m_iPrimaryCropBlockID = FCBetterThanWolves.fcBlockWheatCrop.blockID;
++    			m_iSecondaryCropBlockID = FCBetterThanWolves.fcBlockWheatCrop.blockID;
++    		}
++    		else
++    		{	
++    			m_iPrimaryCropBlockID = FCBetterThanWolves.fcBlockWheatCrop.blockID;
++    			
++    			int iRandomFactor = world.rand.nextInt( 6 ); 
++    			
++    			if ( iRandomFactor == 5 )
++    			{
++    				m_iSecondaryCropBlockID = Block.potato.blockID;
++    			}
++    			else if ( iRandomFactor == 4 )
++    			{
++    				m_iSecondaryCropBlockID = Block.carrot.blockID;
++    			}
++    			else
++    			{
++    				m_iSecondaryCropBlockID = FCBetterThanWolves.fcBlockWheatCrop.blockID;
++    			}
++    		}
++    	}
++    }
++    // END FCMOD
++}

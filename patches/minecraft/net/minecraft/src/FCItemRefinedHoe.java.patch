@@ -1,0 +1,21 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCItemRefinedHoe.java
+@@ -0,0 +1,17 @@
++// FCMOD
++
++package net.minecraft.src;
++
++public class FCItemRefinedHoe extends FCItemHoe
++{
++    public FCItemRefinedHoe( int iItemID )
++    {
++        super( iItemID, EnumToolMaterial.SOULFORGED_STEEL );
++        
++        setUnlocalizedName( "fcItemHoeRefined" );        
++    }
++
++    //------------- Class Specific Methods ------------//
++    
++	//------------ Client Side Functionality ----------//
++}
+\ No newline at end of file

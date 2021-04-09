@@ -1,0 +1,509 @@
+--- a/minecraft/net/minecraft/src/GuiMerchant.java
++++ b/minecraft/net/minecraft/src/GuiMerchant.java
+@@ -14,11 +14,19 @@
+     private int currentRecipeIndex = 0;
+     private String field_94082_v;
+ 
++    // FCMOD: Added
++    private int iCurrentNumValidRecipes = 0;
++    private int iValidRecipesScrollOffset = 0;
++    // END FCMOD
++
+     public GuiMerchant(InventoryPlayer par1, IMerchant par2, World par3World, String par4)
+     {
+         super(new ContainerMerchant(par1, par2, par3World));
+         this.theIMerchant = par2;
+         this.field_94082_v = par4 != null && par4.length() >= 1 ? par4 : StatCollector.translateToLocal("entity.Villager.name");
++        // FCMOD: Added
++        ySize = 239;
++        // END FCMOD
+     }
+ 
+     /**
+@@ -29,8 +37,16 @@
+         super.initGui();
+         int var1 = (this.width - this.xSize) / 2;
+         int var2 = (this.height - this.ySize) / 2;
++        // FCMOD: Changed
++        /*
+         this.buttonList.add(this.nextRecipeButtonIndex = new GuiButtonMerchant(1, var1 + 120 + 27, var2 + 24 - 1, true));
+         this.buttonList.add(this.previousRecipeButtonIndex = new GuiButtonMerchant(2, var1 + 36 - 19, var2 + 24 - 1, false));
++        */
++        this.buttonList.add(this.nextRecipeButtonIndex = new GuiButtonMerchant(1, var1 + 144, var2 + 118, true));
++        this.buttonList.add(this.previousRecipeButtonIndex = new GuiButtonMerchant(2, var1 + 34 - 14, var2 + 118, false));
++        this.nextRecipeButtonIndex.drawButton = false;
++        this.previousRecipeButtonIndex.drawButton = false;
++        // END FCMOD
+         this.nextRecipeButtonIndex.enabled = false;
+         this.previousRecipeButtonIndex.enabled = false;
+     }
+@@ -47,6 +63,8 @@
+     /**
+      * Called from the main game loop to update the screen.
+      */
++    // FCMOD: Removed
++    /*
+     public void updateScreen()
+     {
+         super.updateScreen();
+@@ -58,10 +76,14 @@
+             this.previousRecipeButtonIndex.enabled = this.currentRecipeIndex > 0;
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Fired when a control is clicked. This is the equivalent of ActionListener.actionPerformed(ActionEvent e).
+      */
++    // FCMOD: Removed
++    /*
+     protected void actionPerformed(GuiButton par1GuiButton)
+     {
+         boolean var2 = false;
+@@ -69,11 +91,23 @@
+         if (par1GuiButton == this.nextRecipeButtonIndex)
+         {
+             ++this.currentRecipeIndex;
++            // FCMOD: Sanity check added due to reported crash
++            if ( currentRecipeIndex > theIMerchant.getRecipes(this.mc.thePlayer).size() - 1 )
++            {
++            	currentRecipeIndex = theIMerchant.getRecipes(this.mc.thePlayer).size() - 1; 
++            }
++            // END FCMOD
+             var2 = true;
+         }
+         else if (par1GuiButton == this.previousRecipeButtonIndex)
+         {
+             --this.currentRecipeIndex;
++            // FCMOD: Sanity check added due to reported crash
++            if ( currentRecipeIndex < 0 )
++            {
++            	currentRecipeIndex = 0;
++            }
++            // END FCMOD
+             var2 = true;
+         }
+ 
+@@ -94,6 +128,8 @@
+             }
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Draw the background layer for the GuiContainer (everything behind the items)
+@@ -101,7 +137,12 @@
+     protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3)
+     {
+         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
++        // FCMOD: Change
++        /*
+         this.mc.renderEngine.bindTexture("/gui/trading.png");
++        */
++        mc.renderEngine.bindTexture( "/btwmodtex/fcguitrading.png" );
++        // END FCMOD
+         int var4 = (this.width - this.xSize) / 2;
+         int var5 = (this.height - this.ySize) / 2;
+         this.drawTexturedModalRect(var4, var5, 0, 0, this.xSize, this.ySize);
+@@ -114,18 +155,29 @@
+ 
+             if (var8.func_82784_g())
+             {
++                // FCMOD: Change
++                /*
+                 this.mc.renderEngine.bindTexture("/gui/trading.png");
++                */
++                mc.renderEngine.bindTexture( "/btwmodtex/fcguitrading.png" );
++            	// END FCMOD
+                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                 GL11.glDisable(GL11.GL_LIGHTING);
+                 this.drawTexturedModalRect(this.guiLeft + 83, this.guiTop + 21, 212, 0, 28, 21);
+                 this.drawTexturedModalRect(this.guiLeft + 83, this.guiTop + 51, 212, 0, 28, 21);
+             }
+         }
++        
++        // FCMOD: Added
++        DrawXPDisplay();        
++        // END FCMOD
+     }
+ 
+     /**
+      * Draws the screen and all the components in it.
+      */
++    // FCMOD: Removed and replaced later
++    /*
+     public void drawScreen(int par1, int par2, float par3)
+     {
+         super.drawScreen(par1, par2, par3);
+@@ -180,6 +232,8 @@
+             RenderHelper.enableStandardItemLighting();
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Gets the Instance of IMerchant interface.
+@@ -188,4 +242,360 @@
+     {
+         return this.theIMerchant;
+     }
++    
++    // FCMOD: Added    
++    public void drawScreen( int iMouseX, int iMouseY, float fMysteryVariable )
++    {
++        super.drawScreen( iMouseX, iMouseY, fMysteryVariable );
++        
++        MerchantRecipeList recipeList = theIMerchant.getRecipes( mc.thePlayer );
++    	ContainerMerchant associatedContainer = GetAssociatedContainerMerchant();
++    	
++        if ( recipeList != null && !recipeList.isEmpty() && associatedContainer != null )
++        {
++            int iGuiX = (this.width - this.xSize) / 2;
++            int iGuiY = (this.height - this.ySize) / 2;
++            
++            GL11.glPushMatrix();
++            RenderHelper.enableGUIStandardItemLighting();
++            GL11.glDisable(GL11.GL_LIGHTING);
++            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
++            GL11.glEnable(GL11.GL_COLOR_MATERIAL);
++            
++            int iNumRecipes = recipeList.size();
++            
++            if ( iNumRecipes > 8 )
++            {
++            	// gui can display a max of 8 recipes
++            	
++            	iNumRecipes = 8;
+ }
++            
++            ItemStack tooltipStack = null;
++            
++            int iOffsetY = 18;            
++            
++            for ( int iTempRecipeIndex = 0; iTempRecipeIndex < iNumRecipes; iTempRecipeIndex++ )
++            {
++                int iOffsetX = 8;
++                
++            	if ( iTempRecipeIndex % 2 == 1 )
++            	{
++                    iOffsetX = 8 + ( 18 * 5 );
++            	}
++            	/*
++            	else if ( iTempRecipeIndex == iNumRecipes - 1 )
++            	{
++            		// last item in an odd row, so center it
++            		
++                    iOffsetX = 8 + ( ( 18 * 5 ) - ( 9 + 36 ) );
++            	}
++            	*/
++            	
++	            MerchantRecipe tempRecipe = (MerchantRecipe)recipeList.get( iTempRecipeIndex );
++	            
++	            GL11.glEnable(GL11.GL_LIGHTING);
++	            
++	            ItemStack inputStack1 = tempRecipe.getItemToBuy();
++	            ItemStack inputStack2 = tempRecipe.getSecondItemToBuy();
++	            ItemStack outputStack = tempRecipe.getItemToSell();
++	            
++	            itemRenderer.zLevel = 100.0F;
++	            
++	            itemRenderer.renderItemAndEffectIntoGUI( fontRenderer, mc.renderEngine, inputStack1, iGuiX + iOffsetX, iGuiY + iOffsetY );
++	            itemRenderer.renderItemOverlayIntoGUI( fontRenderer, mc.renderEngine, inputStack1, iGuiX + iOffsetX, iGuiY + iOffsetY );
++	
++	            if (inputStack2 != null)
++	            {
++	                itemRenderer.renderItemAndEffectIntoGUI( fontRenderer, mc.renderEngine, inputStack2, iGuiX + iOffsetX + 18, iGuiY + iOffsetY );
++	                itemRenderer.renderItemOverlayIntoGUI( fontRenderer, mc.renderEngine, inputStack2, iGuiX + iOffsetX + 18, iGuiY + iOffsetY );
++	            }
++	
++	            itemRenderer.renderItemAndEffectIntoGUI( fontRenderer, mc.renderEngine, outputStack, iGuiX + iOffsetX + 54, iGuiY + iOffsetY );
++	            itemRenderer.renderItemOverlayIntoGUI( fontRenderer, mc.renderEngine, outputStack, iGuiX + iOffsetX + 54, iGuiY + iOffsetY );
++	            
++	            itemRenderer.zLevel = 0.0F;
++	            
++	            GL11.glDisable(GL11.GL_LIGHTING);
++	
++	            // draw arrow between input and output on active trades
++	            
++	            mc.renderEngine.bindTexture( "/btwmodtex/fcguitrading.png" );
++	            
++	            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
++	            
++	            if ( !tempRecipe.func_82784_g() ) // whether the recipe is expired
++	            {
++	                drawTexturedModalRect( iGuiX + iOffsetX + 36, iGuiY + iOffsetY, 176, 38, 16, 16 );
++	                
++	        		String sXPString = null;
++	    			
++	        		if ( tempRecipe.m_iTradeLevel < 0 )
++	        		{
++	        			if ( -( tempRecipe.m_iTradeLevel ) == associatedContainer.m_iAssociatedVillagerTradeLevel )
++	        			{
++	        				sXPString = "++";
++	        			}
++	        		}
++	        		else if ( tempRecipe.m_iTradeLevel == associatedContainer.m_iAssociatedVillagerTradeLevel && tempRecipe.m_iTradeLevel < 5 )
++	        		{
++	        			sXPString = "+";    			
++	        		}
++	        		
++	        		if ( sXPString != null )
++	        		{
++	                    int iLevelScreenX = iGuiX + iOffsetX + 45 - ( mc.fontRenderer.getStringWidth( sXPString ) / 2 );            
++	                    int iLevelScreenY = iGuiY + iOffsetY + 5;
++	                    
++	                    // black (0) outline of text
++	                    
++	                    mc.fontRenderer.drawString( sXPString, iLevelScreenX + 1, iLevelScreenY, 0 );            
++	                    mc.fontRenderer.drawString( sXPString, iLevelScreenX - 1, iLevelScreenY, 0 );
++	                    
++	                    mc.fontRenderer.drawString( sXPString, iLevelScreenX, iLevelScreenY + 1, 0 );
++	                    mc.fontRenderer.drawString( sXPString, iLevelScreenX, iLevelScreenY - 1, 0 );
++	                    
++	                    // text itself in the same color as vanilla xp display (8453920)
++	                    
++	                    mc.fontRenderer.drawString( sXPString, iLevelScreenX, iLevelScreenY, 8453920 );            
++	        		}
++	            }
++	            else
++	            {	                
++	                drawTexturedModalRect( iGuiX + iOffsetX + 36, iGuiY + iOffsetY, 191, 38, 16, 16 );
++	            }
++                
++	            if ( isPointInRegion( iOffsetX, iOffsetY, 16, 16, iMouseX, iMouseY ) )
++	            {
++	            	tooltipStack = inputStack1;
++	            }
++	            else if (inputStack2 != null && this.isPointInRegion( iOffsetX + 18, iOffsetY, 16, 16, iMouseX, iMouseY))
++	            {
++	            	tooltipStack = inputStack2;
++	            }
++	            else if ( isPointInRegion( iOffsetX + 53, iOffsetY, 16, 16, iMouseX, iMouseY ) )
++	            {
++	            	tooltipStack = outputStack;
++	            }	
++	            
++	            if ( iTempRecipeIndex % 2 == 1 )
++	            {
++	            	iOffsetY += 18;
++	            }
++            }
++            
++            if ( tooltipStack != null )
++            {
++            	// have to do this at the end so that recipes don't overlap it
++            	
++                drawItemStackTooltip( tooltipStack, iMouseX, iMouseY );
++            }
++            
++            GL11.glPopMatrix();
++            GL11.glEnable(GL11.GL_LIGHTING);
++            GL11.glEnable(GL11.GL_DEPTH_TEST);
++            RenderHelper.enableStandardItemLighting();
++        }
++    }
++    
++    ContainerMerchant GetAssociatedContainerMerchant()
++    {
++    	if ( inventorySlots != null && inventorySlots instanceof ContainerMerchant )
++    	{
++    		return (ContainerMerchant)inventorySlots;
++    	}
++    	
++    	return null;
++    }
++    
++    private void DrawXPDisplay()
++    {
++    	ContainerMerchant associatedContainer = GetAssociatedContainerMerchant();
++    	
++    	if ( associatedContainer != null && associatedContainer.m_iAssociatedVillagerTradeLevel > 0 )
++    	{
++            mc.renderEngine.bindTexture( "/btwmodtex/fcguitrading.png" );
++            
++	        int xPos = ( width - xSize ) / 2;
++	        int yPos = ( height - ySize ) / 2;
++
++	        if ( associatedContainer.m_iAssociatedVillagerTradeMaxXP > 0 )
++	        {
++	        	int iXPBarIconWidth = 151;
++	        	float fXPBarScale = ( (float)associatedContainer.m_iAssociatedVillagerTradeXP / (float)associatedContainer.m_iAssociatedVillagerTradeMaxXP );
++	        	
++		        if ( associatedContainer.m_iAssociatedVillagerTradeLevel >= 5 )
++		        {
++		        	fXPBarScale = 1F;
++		        }
++		        
++		        int iScaledIconWidth = (int)( fXPBarScale * (float)iXPBarIconWidth );		        
++
++		        if ( iScaledIconWidth > 0 )
++		        {
++			        drawTexturedModalRect( xPos + 12,									// screen x pos 
++			        		yPos + 99, 													// screen y pos
++			        		0, 															// bitmap source x
++			        		251, 														// bitmap source y
++			        		iScaledIconWidth,											// width
++			        		5 );														// height
++		        }
++	        }
++	        
++	        // draw the experience level
++	        
++            String sLevelString = "" + associatedContainer.m_iAssociatedVillagerTradeLevel;
++            
++	        if ( associatedContainer.m_iAssociatedVillagerTradeLevel >= 5 )
++	        {
++	        	sLevelString = "Max";
++	        }
++	        
++            int iLevelScreenX = xPos + 88 - ( mc.fontRenderer.getStringWidth( sLevelString ) / 2 );            
++            int iLevelScreenY = yPos + 93;
++            
++            // black (0) outline of text
++            
++            mc.fontRenderer.drawString( sLevelString, iLevelScreenX + 1, iLevelScreenY, 0 );            
++            mc.fontRenderer.drawString( sLevelString, iLevelScreenX - 1, iLevelScreenY, 0 );
++            
++            mc.fontRenderer.drawString( sLevelString, iLevelScreenX, iLevelScreenY + 1, 0 );
++            mc.fontRenderer.drawString( sLevelString, iLevelScreenX, iLevelScreenY - 1, 0 );
++            
++            // text itself in the same color as vanilla xp display (8453920)
++            
++            mc.fontRenderer.drawString( sLevelString, iLevelScreenX, iLevelScreenY, 8453920 );
++    	}
++    }
++    
++	private int IsEmeraldOnlyBuyTrade( MerchantRecipe recipe )
++	{
++		// returns a value greater than zero (the cost in emeralds) if this is a straight purchase trade
++		
++		if ( recipe.getSecondItemToBuy() == null )
++		{
++			ItemStack firstItem = recipe.getItemToBuy();
++			
++			if ( firstItem != null && firstItem.itemID == Item.emerald.itemID )
++			{
++				return firstItem.stackSize;
++			}
++		}
++		
++		return 0;
++	}
++	
++    public void updateScreen()
++    {
++    	super.updateScreen();
++    	
++    	int iOldCurrentRecipe = currentRecipeIndex;
++    	
++        MerchantRecipeList recipeList = theIMerchant.getRecipes( mc.thePlayer );
++    	ContainerMerchant associatedContainer = GetAssociatedContainerMerchant();   	
++
++	    iCurrentNumValidRecipes = 0;
++    	
++        if ( recipeList != null && !recipeList.isEmpty() && associatedContainer != null )
++        {    
++        	InventoryMerchant merchantInventory = associatedContainer.getMerchantInventory();
++        	
++            ItemStack playerStack1 = merchantInventory.getStackInSlot( 0 );
++            ItemStack playerStack2 = merchantInventory.getStackInSlot( 1 );
++            
++            if ( playerStack1 != null || playerStack2 != null )
++            {
++	            int iNumRecipes = recipeList.size();
++	            
++	            for ( int iTempRecipeIndex = 0; iTempRecipeIndex < iNumRecipes; iTempRecipeIndex++ )
++	            {
++	            	if ( ( playerStack1 != null && recipeList.canRecipeBeUsed( playerStack1, playerStack2, iTempRecipeIndex ) != null ) ||
++	            		( playerStack2 != null && recipeList.canRecipeBeUsed( playerStack2, playerStack1, iTempRecipeIndex ) != null ) )
++	            	{
++            		    iCurrentNumValidRecipes++;
++            		    
++			            MerchantRecipe tempRecipe = (MerchantRecipe)recipeList.get( iTempRecipeIndex );
++			            
++	            		int iTempEmeraldTrade = IsEmeraldOnlyBuyTrade( tempRecipe );
++	            		
++	            		if ( iTempEmeraldTrade > 0 )
++	            		{
++	            			// we keep scanning through these until we find the highest value one the player's offer can purchase
++	            			
++	            			if ( iCurrentNumValidRecipes <= iValidRecipesScrollOffset + 1 )
++	            			{
++	            				currentRecipeIndex = iTempRecipeIndex;
++	            			}
++	            		}
++	            		else
++	            		{	            		
++	            		    iValidRecipesScrollOffset = 0;
++	            		    
++		            		currentRecipeIndex = iTempRecipeIndex;
++		            		
++		            		break;
++	            		}
++	            	}
++	            }
++	            
++	            if ( iOldCurrentRecipe != currentRecipeIndex )
++	            {
++	            	associatedContainer.setCurrentRecipeIndex(currentRecipeIndex);
++	                ByteArrayOutputStream var3 = new ByteArrayOutputStream();
++	                DataOutputStream var4 = new DataOutputStream(var3);
++	
++	                try
++	                {
++	                    var4.writeInt(this.currentRecipeIndex);
++	                    this.mc.getNetHandler().addToSendQueue(new Packet250CustomPayload("MC|TrSel", var3.toByteArray()));
++	                }
++	                catch (Exception var6)
++	                {
++	                    var6.printStackTrace();
++	                }
++	            }
++            }
++        }
++        
++        if ( iCurrentNumValidRecipes <= 0 || iValidRecipesScrollOffset >= iCurrentNumValidRecipes )
++        {
++		    iValidRecipesScrollOffset = 0;
++        }
++        
++        if ( iCurrentNumValidRecipes > 1 )
++        {
++        	nextRecipeButtonIndex.drawButton = true;
++        	previousRecipeButtonIndex.drawButton = true;
++        	
++	        nextRecipeButtonIndex.enabled = iValidRecipesScrollOffset < iCurrentNumValidRecipes - 1;
++	        previousRecipeButtonIndex.enabled = iValidRecipesScrollOffset > 0;
++        }
++        else
++        {
++        	nextRecipeButtonIndex.drawButton = false;
++        	previousRecipeButtonIndex.drawButton = false;
++        	
++	        nextRecipeButtonIndex.enabled = false;
++	        previousRecipeButtonIndex.enabled = false;
++        }
++    }
++    
++    protected void actionPerformed( GuiButton button )
++    {
++        if ( button == this.nextRecipeButtonIndex )
++        {
++        	if ( iValidRecipesScrollOffset < iCurrentNumValidRecipes - 1 )
++        	{
++        		iValidRecipesScrollOffset++;
++        	}
++        }
++        else if ( button == this.previousRecipeButtonIndex )
++        {
++        	if ( iValidRecipesScrollOffset > 0 )
++        	{
++        		iValidRecipesScrollOffset--;
++        	}
++        }
++    }
++    // END FCMOD
++}

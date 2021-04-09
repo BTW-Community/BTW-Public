@@ -1,0 +1,22 @@
+--- a/minecraft_server/net/minecraft/src/EntityEnderman.java
++++ b/minecraft_server/net/minecraft/src/EntityEnderman.java
+@@ -1,3 +1,5 @@
++// FCMOD: Class changes deprecated 09/24/2018
++
+ package net.minecraft.src;
+ 
+ public class EntityEnderman extends EntityMob
+@@ -299,6 +301,13 @@
+ 
+                 if (this.worldObj.getCollidingBoundingBoxes(this, this.boundingBox).isEmpty() && !this.worldObj.isAnyLiquid(this.boundingBox))
+                 {
++                    // FCMOD: Added
++                    Block blockBelow = Block.blocksList[worldObj.getBlockId( 
++                    	var14, var15 - 1, var16 )];
++
++                    if ( blockBelow != null && blockBelow.CanMobsSpawnOn( 
++                    	worldObj, var14, var15 - 1, var16 ) )
++                    // END FCMOD
+                     var13 = true;
+                 }
+             }

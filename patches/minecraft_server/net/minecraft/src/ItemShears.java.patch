@@ -1,0 +1,43 @@
+--- a/minecraft_server/net/minecraft/src/ItemShears.java
++++ b/minecraft_server/net/minecraft/src/ItemShears.java
+@@ -10,6 +10,8 @@
+         this.setCreativeTab(CreativeTabs.tabTools);
+     }
+ 
++    // FCMOD: Removed and replaced in child class
++    /*
+     public boolean onBlockDestroyed(ItemStack par1ItemStack, World par2World, int par3, int par4, int par5, int par6, EntityLiving par7EntityLiving)
+     {
+         if (par3 != Block.leaves.blockID && par3 != Block.web.blockID && par3 != Block.tallGrass.blockID && par3 != Block.vine.blockID && par3 != Block.tripWire.blockID)
+@@ -22,21 +24,31 @@
+             return true;
+         }
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Returns if the item (tool) can harvest results from the block type.
+      */
++    // FCMOD: Removed and replaced in child class
++    /*
+     public boolean canHarvestBlock(Block par1Block)
+     {
+         return par1Block.blockID == Block.web.blockID || par1Block.blockID == Block.redstoneWire.blockID || par1Block.blockID == Block.tripWire.blockID;
+     }
++    */
++    // END FCMOD
+ 
+     /**
+      * Returns the strength of the stack against a given block. 1.0F base, (Quality+1)*2 if correct blocktype, 1.5F if
+      * sword
+      */
++    // FCMOD: Removed and replaced in child class
++    /*
+     public float getStrVsBlock(ItemStack par1ItemStack, Block par2Block)
+     {
+         return par2Block.blockID != Block.web.blockID && par2Block.blockID != Block.leaves.blockID ? (par2Block.blockID == Block.cloth.blockID ? 5.0F : super.getStrVsBlock(par1ItemStack, par2Block)) : 15.0F;
+     }
++    */
++    // END FCMOD
+ }

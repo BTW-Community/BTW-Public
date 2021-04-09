@@ -1,0 +1,772 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCTileEntityBeacon.java
+@@ -0,0 +1,769 @@
++// FCMOD
++
++package net.minecraft.src;
++
++import java.util.ArrayList;
++import java.util.Iterator;
++import java.util.List;
++import java.util.Random;
++
++public class FCTileEntityBeacon extends TileEntityBeacon
++{	
++    public static final double[] m_dRangePerLevel = new double[] { 0D, 20D, 40D, 80D, 160D };
++    
++    private static final long m_iTicksUpdates = 80L;
++    private static final int m_iEffectDuration = 180;
++    
++    private static final int m_iGlobalEffectsRandomUpdateFrequency = 6000;
++    
++    private static ArrayList<FCTileEntityBeaconEffectDescriptor>[] m_beaconEffectsByBlockID = new ArrayList[4096];
++    
++    private static final int m_iSoulforgedBeaconBlightSpreadFrequency = 10000;
++    public static final int[] m_iSoulforgedBeaconBlightSpreadRange = new int[] { 0, 8, 16, 32, 64 };
++    
++    public static final int[] m_iEnderAntennaBeaconSpawnRange = new int[] { 0, 8, 16, 32, 64 };
++    private static final int m_iEnderAntennaBeaconBaseEnderManSpawnFrequency = 1200; // once every minute, modified by pyramid level
++    public static final int[] m_iEnderAntennaBeaconEndermanSpawnChancePerLevel = new int[] { 0, 1, 8, 27, 64 };
++    private static final int m_iEnderAntennaBeaconBaseSilverfishSpawnFrequency = 1200; // once every minute, modified by pyramid level
++    public static final int[] m_iEnderAntennaBeaconSilverfishSpawnChancePerLevel = new int[] { 0, 1, 8, 27, 64 };
++    
++    private static Random rand = new Random();
++    
++    private long m_iUpdateOffset;
++    
++    public boolean m_bPlayerRespawnedAtBeacon = false;
++    
++    public static final int m_iEffectIDStrongMagneticField = 22222;
++    public static final int m_iEffectIDSpawnPoint = 22223;
++    public static final int m_iEffectIDDecorativeOnly = 22224;
++    public static final int m_iEffectIDDungCloud = 22225;	
++    public static final int m_iEffectIDEnderChestAntenna = 22226;	
++    
++    public FCTileEntityBeacon()
++    {
++    	m_iUpdateOffset = rand.nextInt( (int)m_iTicksUpdates ); 
++    }
++    
++    
++	@Override
++    public void updateEntity()
++    {
++        if ( ( worldObj.getTotalWorldTime() + m_iUpdateOffset ) % m_iTicksUpdates == 0L )
++        {
++            UpdatePowerState();
++            
++            ApplyEffectToPlayersWithinRange();
++        }
++
++        if ( !worldObj.isRemote )
++        {
++	        if ( rand.nextInt( m_iGlobalEffectsRandomUpdateFrequency ) == 0 )
++	        {
++	        	ValidateGlobalEffects();
++	        }
++	        
++	        BeaconTypeSpecificServerSideUpdate();
++	        
++	        if ( m_bPlayerRespawnedAtBeacon )
++	        {
++	        	m_bPlayerRespawnedAtBeacon = false;
++	        	
++                worldObj.playAuxSFX( FCBetterThanWolves.m_iGhastScreamSoundAuxFXID, xCoord, yCoord, zCoord, 1 );
++                
++		        worldObj.playSoundEffect( xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D, 
++		    		"mob.wither.spawn", 
++		    		1.0F + ( rand.nextFloat() * 0.1F ),	// volume 
++		    		1.0F + ( rand.nextFloat() * 0.1F ) );	// pitch		        
++	        }
++        }
++        else
++        {
++	        BeaconTypeSpecificClientSideUpdate();	        
++        }
++    }
++	
++    //------------- Class Specific Methods ------------//
++    
++    private void ApplyEffectToPlayersWithinRange()
++    {
++        if ( !worldObj.isRemote && IsOn() && getLevels() > 0 && getPrimaryEffect() > 0 )
++        {
++        	if ( getPrimaryEffect() < 256 )
++        	{
++        		// standard potion effects
++        		
++	            int iEffectPowerLevel = 0;
++
++	            if ( getPrimaryEffect() == FCBetterThanWolves.potionFortune.getId() ||
++	            	getPrimaryEffect() == FCBetterThanWolves.potionLooting.getId() ||
++	            	getPrimaryEffect() == Potion.digSpeed.getId() )
++	            {
++	            	iEffectPowerLevel = getLevels() - 1;
++	            }	            
++	            
++	            ApplyPotionEffectToPlayersInRange( getPrimaryEffect(), iEffectPowerLevel );
++	            
++        	}
++        	else if ( getPrimaryEffect() == m_iEffectIDDungCloud )
++        	{
++        		ApplyDungCloudToPlayersInRange();
++        	}
++        }
++    }
++    
++    private void ApplyPotionEffectToPlayersInRange( int iEffectID, int iEffectLevel )
++    {
++        double dRange = m_dRangePerLevel[getLevels()];
++        
++        Iterator playerIterator = worldObj.playerEntities.iterator();
++        
++        double dBeaconPosX = (double)xCoord;
++        double dBeaconPosZ = (double)zCoord;
++        
++        while ( playerIterator.hasNext() )
++        {
++        	EntityPlayer player = (EntityPlayer)playerIterator.next();
++        	
++        	double dDeltaX = Math.abs( dBeaconPosX - player.posX ); 
++        	
++        	if ( dDeltaX <= dRange )
++        	{
++            	double dDeltaZ = Math.abs( dBeaconPosZ - player.posZ ); 
++            	
++            	if ( dDeltaZ <= dRange )
++            	{
++            		if ( !player.isDead && !player.capabilities.isCreativeMode )
++            		{
++                        player.addPotionEffect( new PotionEffect( iEffectID, m_iEffectDuration, iEffectLevel, true ) );                            
++            		}
++            	}
++        	}
++        }
++    }
++    
++    private void ApplyDungCloudToPlayersInRange()
++    {
++        double dRange = m_dRangePerLevel[getLevels()];
++        
++        Iterator playerIterator = worldObj.playerEntities.iterator();
++        
++        double dBeaconPosX = (double)xCoord;
++        double dBeaconPosZ = (double)zCoord;
++        
++        while ( playerIterator.hasNext() )
++        {
++        	EntityPlayer player = (EntityPlayer)playerIterator.next();
++        	
++        	double dDeltaX = Math.abs( dBeaconPosX - player.posX ); 
++        	
++        	if ( dDeltaX <= dRange )
++        	{
++            	double dDeltaZ = Math.abs( dBeaconPosZ - player.posZ ); 
++            	
++            	if ( dDeltaZ <= dRange )
++            	{
++            		if ( !player.isDead && !player.capabilities.isCreativeMode && !player.IsWearingFullSuitSoulforgedArmor() )
++            		{            			
++                        player.addPotionEffect( new PotionEffect( Potion.confusion.getId(), m_iEffectDuration, 0, true ) );                            
++                        player.addPotionEffect( new PotionEffect( Potion.poison.getId(), m_iEffectDuration, 0, true ) );                            
++            		}
++            	}
++        	}
++        }
++    }
++    
++    private boolean IsPyramidLevelValid( int iLevel, int iBlockIDToCheck, int iMetadataToCheck )
++    {
++        int iTempJ = yCoord - iLevel;
++
++        if ( iTempJ < 0 )
++        {
++            return false;
++        }
++
++        for ( int iTempI = xCoord - iLevel; iTempI <= xCoord + iLevel; ++iTempI )
++        {
++            for ( int iTempK = zCoord - iLevel; iTempK <= zCoord + iLevel; ++iTempK )
++            {
++                int iTempBlockID = worldObj.getBlockId( iTempI, iTempJ, iTempK );
++
++                if ( iTempBlockID != iBlockIDToCheck || ( iMetadataToCheck != -1 && worldObj.getBlockMetadata( iTempI, iTempJ, iTempK ) != iMetadataToCheck ) )
++                {
++                    return false;
++                }
++            }
++        }
++
++        return true;
++    }
++
++    private void UpdatePowerState()
++    {
++    	// Don't update if part of the pyramid might be unloaded
++    	
++        if ( !worldObj.checkChunksExist( xCoord - 4, yCoord, zCoord - 4, xCoord + 4, yCoord, zCoord + 4 ) )
++        {
++        	return;
++    	}
++        
++        if ( !CanBeaconSeeSky() )
++        {
++        	SetPowerState( false, 0, 0 ); 
++        }
++        else
++        {
++            int iBlockIDToCheck = worldObj.getBlockId( xCoord, yCoord - 1, zCoord );
++        	
++            int iLevel = 0;
++            int iEffectID = 0;
++            
++            FCTileEntityBeaconEffectDescriptor effectDescriptor = GetEffectDescriptor( iBlockIDToCheck, worldObj.getBlockMetadata( xCoord, yCoord - 1, zCoord ) );
++            
++            if ( effectDescriptor != null )
++            {
++            	int iMetadataToCheck = effectDescriptor.m_iBlockMetadata;
++            	
++                iEffectID = effectDescriptor.m_iEffectID;
++                
++                for ( int iTempLevel = 1; iTempLevel <= 4; iTempLevel++ )
++                {
++                	if ( IsPyramidLevelValid( iTempLevel, iBlockIDToCheck, iMetadataToCheck ) )
++                	{
++                		iLevel = iTempLevel;
++                	}
++                	else
++                	{
++                		break;
++                	}
++                }
++            }
++
++            if ( iLevel > 0 )
++            {
++            	SetPowerState( true, iEffectID, iLevel );
++            }
++            else
++            {
++            	SetPowerState( false, 0, 0 ); 
++            }            
++        }
++        
++        IgniteIfHellfirePyramid();
++    }
++    
++    public void SetPowerState( boolean bIsOn, int iEffectID, int iPowerLevel )
++    {
++    	int iPreviousEffect = getPrimaryEffect();
++    	int iPreviousPowerLevel = getLevels();
++    	
++    	// check for changes in state which will affect the magnetic point list
++    	
++    	if ( !worldObj.isRemote )
++    	{
++    		UpdateGlobalMagneticFieldListForStateChange( iPowerLevel, iEffectID, iPreviousPowerLevel, iPreviousEffect );
++    		
++    		UpdateGlobalLootingListForStateChange( iPowerLevel, iEffectID, iPreviousPowerLevel, iPreviousEffect ); 
++    	}
++    	else
++    	{
++    		if ( iPowerLevel <= 0 && iPreviousPowerLevel > 0 )
++    		{
++    			// power down
++    			
++		        worldObj.playSound( xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D, 
++		    		"mob.wither.death", 
++		    		1.0F + ( rand.nextFloat() * 0.1F ),	// volume 
++		    		1.0F + ( rand.nextFloat() * 0.1F ) );	// pitch
++    		}
++    		else if ( iPreviousPowerLevel <= 0 && iPowerLevel > 0 )
++    		{
++    			// power up
++    			
++		        worldObj.playSound( xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D, 
++		    		"mob.wither.spawn", 
++		    		1.0F + ( rand.nextFloat() * 0.1F ),	// volume 
++		    		1.0F + ( rand.nextFloat() * 0.1F ) );	// pitch
++		        
++		        if ( iEffectID == m_iEffectIDSpawnPoint )
++		        {
++			        worldObj.playSound( xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D, 
++		            	"mob.ghast.scream", 1.0F, 
++		            	rand.nextFloat() * 0.4F + 0.25F );
++		        }
++    		}
++    	}
++    	
++    	SetIsOn( bIsOn );
++    	SetPrimaryEffect( iEffectID );
++    	setLevelsServerSafe( iPowerLevel );
++    }
++    
++    private void UpdateGlobalMagneticFieldListForStateChange( int iNewPowerLevel, int iNewEffectID, int iOldPowerLevel, int iOldEffectID )
++    {
++    	if ( iNewPowerLevel <= 0 || iNewEffectID == m_iEffectIDDecorativeOnly )
++    	{
++    		if ( iOldPowerLevel > 0 && iOldEffectID != m_iEffectIDDecorativeOnly )
++    		{
++    			worldObj.GetMagneticPointList().RemovePointAt( xCoord, yCoord, zCoord );
++    		}
++    	}
++    	else
++    	{
++    		if ( iOldPowerLevel <= 0 || iOldEffectID == m_iEffectIDDecorativeOnly )
++    		{
++    			worldObj.GetMagneticPointList().AddPoint( xCoord, yCoord, zCoord, 
++    				GetMagneticFieldLevel( iNewPowerLevel, iNewEffectID ) );
++    		}
++    		else if ( iOldPowerLevel != iNewPowerLevel )
++    		{
++    			worldObj.GetMagneticPointList().ChangePowerLevelOfPointAt( xCoord, yCoord, zCoord, 
++    				GetMagneticFieldLevel( iNewPowerLevel, iNewEffectID ) );
++    		}
++    	}
++    }
++    
++    private void UpdateGlobalLootingListForStateChange( int iNewPowerLevel, int iNewEffectID, int iOldPowerLevel, int iOldEffectID )
++    {
++    	if ( iNewPowerLevel <= 0 || iNewEffectID != FCBetterThanWolves.potionLooting.getId() )
++    	{
++    		if ( iOldPowerLevel > 0 && iOldEffectID == FCBetterThanWolves.potionLooting.getId() )
++    		{
++    			worldObj.GetLootingBeaconLocationList().RemovePointAt( xCoord, yCoord, zCoord );
++    		}
++    	}
++    	else
++    	{
++    		if ( iOldPowerLevel <= 0 || iOldEffectID != FCBetterThanWolves.potionLooting.getId() )
++    		{
++    			worldObj.GetLootingBeaconLocationList().AddPoint( xCoord, yCoord, zCoord, 
++    				iNewPowerLevel, (int)m_dRangePerLevel[iNewPowerLevel] ); 
++    		}
++    		else if ( iOldPowerLevel != iNewPowerLevel )
++    		{
++    			worldObj.GetLootingBeaconLocationList().ChangeEffectLevelOfPointAt( xCoord, yCoord, zCoord, 
++    				iNewPowerLevel, (int)m_dRangePerLevel[iNewPowerLevel] );
++    		}
++    	}
++    }
++    
++    private int GetMagneticFieldLevel( int iPowerLevel, int iEffectID )
++    {
++    	if ( iEffectID == m_iEffectIDStrongMagneticField || iEffectID == m_iEffectIDSpawnPoint )
++    	{
++    		iPowerLevel *= 2;
++    	}
++    	
++    	return iPowerLevel;
++    }
++    
++    private void ValidateGlobalEffects()
++    {
++        ValidateMagneticField();
++        
++        ValidateGlobalLootingEffects();
++    }
++    
++    private void ValidateMagneticField()
++    {
++    	if ( getLevels() > 0 && getPrimaryEffect() != m_iEffectIDDecorativeOnly )
++    	{
++    		FCMagneticPoint point = worldObj.GetMagneticPointList().GetMagneticPointAtLocation( xCoord, yCoord, zCoord );
++    		
++    		int iMagneticLevel = GetMagneticFieldLevel( getLevels(), getPrimaryEffect() );
++    		
++    		if ( point == null )
++    		{
++    			worldObj.GetMagneticPointList().AddPoint( xCoord, yCoord, zCoord, iMagneticLevel );
++    		}
++    		else
++    		{
++    			point.m_iFieldLevel = iMagneticLevel;
++    		}    			
++    	}
++    	else
++    	{
++    		// make sure there isn't a point associated with this beacon
++    		
++			worldObj.GetMagneticPointList().RemovePointAt( xCoord, yCoord, zCoord );
++    	}
++    }
++    
++    private void ValidateGlobalLootingEffects()
++    {
++		int iEffectLevel = getLevels();
++		
++    	if ( iEffectLevel > 0 && getPrimaryEffect() == FCBetterThanWolves.potionLooting.getId() )
++    	{
++    		FCBeaconEffectLocation point = worldObj.GetLootingBeaconLocationList().GetEffectAtLocation( xCoord, yCoord, zCoord );
++    		
++    		int iEffectRange = (int)m_dRangePerLevel[iEffectLevel];
++    		
++    		if ( point == null )
++    		{
++    			worldObj.GetLootingBeaconLocationList().AddPoint( xCoord, yCoord, zCoord, iEffectLevel, iEffectRange );
++    		}
++    		else 
++    		{
++				point.m_iEffectLevel = iEffectLevel;
++				point.m_iRange = iEffectRange;
++    		}    			
++    	}
++    	else
++    	{
++    		// make sure there isn't a point associated with this beacon
++    		
++			worldObj.GetLootingBeaconLocationList().RemovePointAt( xCoord, yCoord, zCoord );
++    	}
++    }
++    
++    private boolean CanBeaconSeeSky()
++    {
++    	if ( worldObj.provider.dimensionId != -1 )
++    	{
++    		return worldObj.canBlockSeeTheSky( xCoord, yCoord + 1, zCoord );
++    	}
++    	else
++    	{
++    		if ( !worldObj.isAirBlock( xCoord, yCoord + 1, zCoord ) )
++    		{
++    			// the beacon needs at least one empty space above it to activate
++    			
++        		return false;
++    		}
++    		
++    		// if we're in the nether, check if we can see bedrock above
++    		
++			for ( int iTempY = yCoord + 2; iTempY < 256; iTempY++ )
++			{
++				if ( !worldObj.isAirBlock( xCoord, iTempY, zCoord ) )
++				{
++					int iBlockID = worldObj.getBlockId( xCoord, iTempY, zCoord );
++					
++					return iBlockID == Block.bedrock.blockID;
++				}
++			}    	
++			
++			return true;    		
++    	}
++    }
++    
++    private void IgniteIfHellfirePyramid()
++    {
++	    if ( !worldObj.isRemote )
++	    {
++	        if ( getPrimaryEffect() == Potion.fireResistance.getId() )
++	        {
++	        	if ( getLevels() > 0 )
++	        	{
++	        		boolean bAnythingIgnited = false;
++	        		
++	        		// cycle through levels placing fire above each 
++	        		
++	        		for ( int iTempLevel = 1; iTempLevel <= getLevels(); iTempLevel++ )
++	        		{
++	        			int iTempY = yCoord + 1 - iTempLevel;
++	        			
++	        			for ( int iTempI = xCoord - iTempLevel; iTempI <= xCoord + iTempLevel; iTempI++ )
++	        			{
++	            			bAnythingIgnited = IgniteIfEmptyWithState( iTempI, iTempY, zCoord - iTempLevel, bAnythingIgnited );
++	            			bAnythingIgnited = IgniteIfEmptyWithState( iTempI, iTempY, zCoord + iTempLevel, bAnythingIgnited );
++	        			}
++	        			
++	        			for ( int iTempK = zCoord - ( iTempLevel - 1 ); iTempK <= zCoord + ( iTempLevel - 1 ); iTempK++ )
++	        			{
++	            			bAnythingIgnited = IgniteIfEmptyWithState( xCoord - iTempLevel, iTempY, iTempK, bAnythingIgnited );
++	            			bAnythingIgnited = IgniteIfEmptyWithState( xCoord + iTempLevel, iTempY, iTempK, bAnythingIgnited );
++	        			}
++	        		}
++	        		
++	        		// place ring of fire around bottom level
++
++	        		int iTempLevel = getLevels();
++	        		
++        			for ( int iTempI = xCoord - iTempLevel; iTempI <= xCoord + iTempLevel; iTempI++ )
++        			{
++            			bAnythingIgnited = IgniteIfEmptyWithState( iTempI, yCoord - iTempLevel, zCoord - ( iTempLevel + 1 ), bAnythingIgnited );
++            			bAnythingIgnited = IgniteIfEmptyWithState( iTempI, yCoord - iTempLevel, zCoord + ( iTempLevel + 1 ), bAnythingIgnited );
++        			}
++        			
++        			for ( int iTempK = zCoord - iTempLevel; iTempK <= zCoord + iTempLevel; iTempK++ )
++        			{
++            			bAnythingIgnited = IgniteIfEmptyWithState( xCoord - ( iTempLevel + 1 ), yCoord - iTempLevel, iTempK, bAnythingIgnited );
++            			bAnythingIgnited = IgniteIfEmptyWithState( xCoord + ( iTempLevel + 1 ), yCoord - iTempLevel, iTempK, bAnythingIgnited );
++        			}
++	        		
++	        		if ( bAnythingIgnited )
++	        		{
++        	            worldObj.playSoundEffect((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D, "mob.ghast.fireball", 1.0F, worldObj.rand.nextFloat() * 0.4F + 0.8F);
++	        		}
++	        	}
++	        }
++	    }
++    }
++    
++    public boolean IgniteIfEmptyWithState( int i, int j, int k, boolean bAnythingIgnited )
++    {
++		if ( worldObj.isAirBlock( i, j, k ) )
++		{
++			worldObj.setBlock( i, j, k, Block.fire.blockID );
++			
++			bAnythingIgnited = true;
++		}
++		
++		return bAnythingIgnited;
++    }
++    
++    private void BeaconTypeSpecificServerSideUpdate()
++    {
++    	int iLevel = getLevels();
++    	
++    	if ( iLevel > 0 )
++    	{
++    		int iEffect = getPrimaryEffect();
++    		
++    		if ( iEffect == m_iEffectIDSpawnPoint )
++    		{
++    			CheckForBlightSpread();    			
++    		}
++    		else if ( iEffect == m_iEffectIDEnderChestAntenna )
++    		{
++    			if ( worldObj.provider.dimensionId != 1 )
++    			{
++    				CheckForEndermanSpawn();
++    			}
++    			else
++    			{
++    				CheckForSilverfishSpawn();
++    			}
++    		}
++    	}
++    }
++    
++    private void CheckForBlightSpread()
++    {
++		if ( rand.nextInt(  m_iSoulforgedBeaconBlightSpreadFrequency ) == 0 )
++		{
++	    	int iLevel = getLevels();
++	    	
++			int iRange = m_iSoulforgedBeaconBlightSpreadRange[iLevel];
++			
++			int iTargetX = xCoord + rand.nextInt( iRange * 2 + 1 ) - iRange;
++			int iTargetY = rand.nextInt( 256 );
++			int iTargetZ = zCoord + rand.nextInt( iRange * 2 + 1 ) - iRange;
++			
++			int iTargetBlockID = worldObj.getBlockId( iTargetX, iTargetY, iTargetZ );
++			
++			if ( iTargetBlockID == Block.grass.blockID )
++			{
++				worldObj.setBlockAndMetadataWithNotify( iTargetX, iTargetY, iTargetZ, 
++					FCBetterThanWolves.fcBlockAestheticOpaqueEarth.blockID, FCBlockAestheticOpaqueEarth.m_iSubtypeBlightLevel0 );
++			}
++		}
++    }
++    
++    private void CheckForEndermanSpawn()
++    {
++        EnumCreatureType creatureType = EnumCreatureType.monster;
++
++    	int iMobCount = worldObj.CountEntitiesThatApplyToSpawnCap( creatureType.getCreatureClass() );
++    	
++    	int iMaxMobCount = creatureType.getMaxNumberOfCreature();
++    	
++    	// give a bit of wiggle room above the normal maximum for enderman spawns
++    	
++    	iMaxMobCount += iMaxMobCount >> 2;
++
++    	if ( iMobCount <  iMaxMobCount )
++    	{
++	    	int iLevel = getLevels();
++	    	
++	    	if ( rand.nextInt( m_iEnderAntennaBeaconBaseEnderManSpawnFrequency ) < m_iEnderAntennaBeaconEndermanSpawnChancePerLevel[iLevel] )
++	    	{	    	
++		    	int iRange = m_iEnderAntennaBeaconSpawnRange[iLevel];
++		    	
++				int iTargetX = xCoord + rand.nextInt( iRange * 2 + 1 ) - iRange;
++				int iTargetZ = zCoord + rand.nextInt( iRange * 2 + 1 ) - iRange;
++				
++				int iTargetY;
++				
++		        Chunk chunk = worldObj.getChunkFromBlockCoords( iTargetX, iTargetZ );
++		        
++		        if ( chunk == null )
++		        {
++		        	iTargetY = rand.nextInt( worldObj.getActualHeight() );
++		        }
++		        else
++		        {
++		        	iTargetY = rand.nextInt( chunk.getTopFilledSegment() + 16 - 1 );
++		        }
++		        
++		        Material targetMaterial = worldObj.getBlockMaterial( iTargetX, iTargetY, iTargetZ );
++		        
++		        if ( !targetMaterial.isSolid() && !targetMaterial.isLiquid() && worldObj.doesBlockHaveSolidTopSurface( iTargetX, iTargetY - 1, iTargetZ ) )
++		        {
++		        	FCEntityEnderman enderman = new FCEntityEnderman( worldObj );
++		        	
++		        	double dTargetPosX = (double)iTargetX + 0.5D;
++		        	double dTargetPosY = (double)iTargetY;
++		        	double dTargetPosZ = (double)iTargetZ + 0.5D;
++		        	
++	                enderman.PreInitCreature();
++	                enderman.setLocationAndAngles( dTargetPosX, dTargetPosY, dTargetPosZ, rand.nextFloat() * 360.0F, 0.0F );
++	                
++	                // very basic spawn test from EntityLiving, ignoring lighting and other conditions
++	                
++	                if ( worldObj.checkNoEntityCollision(enderman.boundingBox) && worldObj.getCollidingBoundingBoxes(enderman, enderman.boundingBox).isEmpty() && 
++	                	!worldObj.isAnyLiquid(enderman.boundingBox) )
++	                {
++	                    worldObj.spawnEntityInWorld( enderman );
++	                    
++	                    enderman.initCreature();
++	                    
++	    		        worldObj.playAuxSFX( FCBetterThanWolves.m_iEnderChangeDimensionAuxFXID, iTargetX, iTargetY, iTargetZ, 0 );	                    
++	                }
++		        }
++	    	}
++    	}
++    }
++    
++    private void CheckForSilverfishSpawn()
++    {
++        EnumCreatureType creatureType = EnumCreatureType.monster;
++
++    	int iMobCount = worldObj.CountEntitiesThatApplyToSpawnCap( creatureType.getCreatureClass() );
++    	
++    	int iMaxMobCount = creatureType.getMaxNumberOfCreature();
++    	
++    	// give a bit of wiggle room above the normal maximum for mob spawns
++    	
++    	iMaxMobCount += iMaxMobCount >> 2;
++
++    	if ( iMobCount <  iMaxMobCount )
++    	{
++	    	int iLevel = getLevels();
++	    	
++	    	if ( rand.nextInt( m_iEnderAntennaBeaconBaseSilverfishSpawnFrequency ) < m_iEnderAntennaBeaconSilverfishSpawnChancePerLevel[iLevel] )
++	    	{	    	
++		    	int iRange = m_iEnderAntennaBeaconSpawnRange[iLevel];
++		    	
++				int iTargetX = xCoord + rand.nextInt( iRange * 2 + 1 ) - iRange;
++				int iTargetZ = zCoord + rand.nextInt( iRange * 2 + 1 ) - iRange;
++				
++				int iTargetY;
++				
++		        Chunk chunk = worldObj.getChunkFromBlockCoords( iTargetX, iTargetZ );
++		        
++		        if ( chunk == null )
++		        {
++		        	iTargetY = rand.nextInt( worldObj.getActualHeight() );
++		        }
++		        else
++		        {
++		        	iTargetY = rand.nextInt( chunk.getTopFilledSegment() + 16 - 1 );
++		        }
++		        
++		        Material targetMaterial = worldObj.getBlockMaterial( iTargetX, iTargetY, iTargetZ );
++		        
++		        if ( !targetMaterial.isSolid() && !targetMaterial.isLiquid() && worldObj.doesBlockHaveSolidTopSurface( iTargetX, iTargetY - 1, iTargetZ ) )
++		        {
++		            EntitySilverfish silverfish = new EntitySilverfish( worldObj);
++		            
++		        	
++		        	double dTargetPosX = (double)iTargetX + 0.5D;
++		        	double dTargetPosY = (double)iTargetY;
++		        	double dTargetPosZ = (double)iTargetZ + 0.5D;
++		        	
++	                silverfish.setLocationAndAngles( dTargetPosX, dTargetPosY, dTargetPosZ, rand.nextFloat() * 360.0F, 0.0F );
++	                
++	                // very basic spawn test from EntityLiving, ignoring lighting and other conditions
++	                
++	                if ( worldObj.checkNoEntityCollision(silverfish.boundingBox) && worldObj.getCollidingBoundingBoxes( silverfish, silverfish.boundingBox ).isEmpty() && 
++	                	!worldObj.isAnyLiquid( silverfish.boundingBox ) )
++	                {
++	                    worldObj.spawnEntityInWorld( silverfish );
++	                    
++	                    silverfish.initCreature();
++	                    
++	    		        worldObj.playAuxSFX( FCBetterThanWolves.m_iEnderChangeDimensionAuxFXID, iTargetX, iTargetY, iTargetZ, 0 );
++	    		        
++			            silverfish.spawnExplosionParticle();
++	                }
++		        }
++	    	}
++    	}
++    }
++    
++    private void BeaconTypeSpecificClientSideUpdate()
++    {
++		int iLevel = getLevels();
++		
++		if ( iLevel > 0 )
++		{
++	    	if ( getPrimaryEffect() == m_iEffectIDSpawnPoint )
++	    	{
++	    		// moans from SFS pyramid
++	    		
++    			if ( rand.nextInt( 60 ) <= iLevel )
++    			{
++    				int iLevelOfSound = rand.nextInt( iLevel ) + 1;
++    				
++    				int iXOffset =  rand.nextInt( iLevel * 2 + 1 ) - iLevel;
++    				int iZOffset =  rand.nextInt( iLevel * 2 + 1 ) - iLevel;
++    				
++        	    	worldObj.playSound( xCoord + iXOffset, yCoord - iLevel, zCoord + iZOffset, "mob.ghast.moan", 
++    	    			0.5F, rand.nextFloat() * 0.4F + 0.25F );            	    	
++    			}
++    		}
++    	}
++    }
++    
++    private FCTileEntityBeaconEffectDescriptor GetEffectDescriptor( int iBlockID, int iMetadata )
++    {
++    	ArrayList<FCTileEntityBeaconEffectDescriptor> descriptorArray = m_beaconEffectsByBlockID[iBlockID];
++    	
++    	for ( int iTempIndex = 0; iTempIndex < descriptorArray.size(); iTempIndex++ )
++    	{
++    		FCTileEntityBeaconEffectDescriptor tempDescriptor = descriptorArray.get( iTempIndex ); 
++    		
++    		if ( tempDescriptor.m_iBlockMetadata == -1 || tempDescriptor.m_iBlockMetadata == iMetadata )
++    		{
++    			return tempDescriptor;
++    		}
++    	}
++    	
++    	return null;
++    }
++    
++    public static void AddBeaconEffect( int iBlockID, int iEffect )
++    {
++    	AddBeaconEffect( iBlockID, -1, iEffect );
++    }
++    
++    public static void AddBeaconEffect( int iBlockID, int iBlockMetadata, int iEffect )
++    {
++    	m_beaconEffectsByBlockID[iBlockID].add( new FCTileEntityBeaconEffectDescriptor( iBlockMetadata, iEffect ) );
++    }
++    
++    public static void InitializeEffectsByBlockID()
++    {
++    	for ( int iTempBlockID = 0; iTempBlockID < 4096; iTempBlockID++ )
++    	{
++    	    m_beaconEffectsByBlockID[iTempBlockID] = new ArrayList<FCTileEntityBeaconEffectDescriptor>();
++    	}
++    	
++    	AddBeaconEffect( Block.blockGold.blockID, Potion.digSpeed.getId() );
++    	AddBeaconEffect( Block.blockDiamond.blockID, FCBetterThanWolves.potionFortune.getId() );
++    	AddBeaconEffect( Block.blockEmerald.blockID, FCBetterThanWolves.potionLooting.getId() );
++    	AddBeaconEffect( Block.blockLapis.blockID, FCBetterThanWolves.potionTrueSight.getId() );    	
++    	AddBeaconEffect( Block.glowStone.blockID, Potion.nightVision.getId() );
++    	
++    	AddBeaconEffect( FCBetterThanWolves.fcAestheticOpaque.blockID, FCBlockAestheticOpaque.m_iSubtypeHellfire, Potion.fireResistance.getId() );   	
++    	
++    	AddBeaconEffect( Block.blockIron.blockID, m_iEffectIDStrongMagneticField );    	
++    	AddBeaconEffect( FCBetterThanWolves.fcSoulforgedSteelBlock.blockID, m_iEffectIDSpawnPoint );
++    	AddBeaconEffect( Block.glass.blockID, m_iEffectIDDecorativeOnly );    	
++    	AddBeaconEffect( FCBetterThanWolves.fcBlockAestheticOpaqueEarth.blockID, FCBlockAestheticOpaqueEarth.m_iSubtypeDung, m_iEffectIDDungCloud );  	
++    	
++    	AddBeaconEffect( FCBetterThanWolves.fcAestheticOpaque.blockID, FCBlockAestheticOpaque.m_iSubtypeEnderBlock, m_iEffectIDEnderChestAntenna );   	
++    }
++}

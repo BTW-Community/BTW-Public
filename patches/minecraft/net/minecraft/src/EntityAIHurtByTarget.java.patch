@@ -1,0 +1,113 @@
+--- a/minecraft/net/minecraft/src/EntityAIHurtByTarget.java
++++ b/minecraft/net/minecraft/src/EntityAIHurtByTarget.java
+@@ -5,15 +5,21 @@
+ 
+ public class EntityAIHurtByTarget extends EntityAITarget
+ {
++	// FCMOD: Changed the name of the following for clarity
++	/*
+     boolean field_75312_a;
++	*/ 
++    private boolean m_bNearbyEntitiesOfSameTypeAttack;
++    // END FCMOD
+ 
+     /** The PathNavigate of our entity. */
++    // FCNOTE: This is actually the target entity
+     EntityLiving entityPathNavigate;
+ 
+     public EntityAIHurtByTarget(EntityLiving par1EntityLiving, boolean par2)
+     {
+         super(par1EntityLiving, 16.0F, false);
+-        this.field_75312_a = par2;
++        this.m_bNearbyEntitiesOfSameTypeAttack = par2;
+         this.setMutexBits(1);
+     }
+ 
+@@ -22,7 +28,12 @@
+      */
+     public boolean shouldExecute()
+     {
++    	// FCMOD: Changed this to ignore players in creative mode to reduce overall code complexity
++    	/*
+         return this.isSuitableTarget(this.taskOwner.getAITarget(), true);
++        */
++        return this.isSuitableTarget(this.taskOwner.getAITarget(), false);
++        // END FCMOD    	
+     }
+ 
+     /**
+@@ -30,7 +41,16 @@
+      */
+     public boolean continueExecuting()
+     {
++    	// FCMOD: Change to stop executing when the target is dead, and to fix vanilla bug where this would immediately stop executing
++    	/*
+         return this.taskOwner.getAITarget() != null && this.taskOwner.getAITarget() != this.entityPathNavigate;
++        */    	
++        return taskOwner.getAITarget() != null && 
++    		taskOwner.getAITarget().isEntityAlive() && 
++        	taskOwner.getAITarget() == entityPathNavigate && 
++        	taskOwner.getAttackTarget() != null &&
++        	taskOwner.getAttackTarget() == entityPathNavigate;
++    	// END FCMOD
+     }
+ 
+     /**
+@@ -41,7 +61,7 @@
+         this.taskOwner.setAttackTarget(this.taskOwner.getAITarget());
+         this.entityPathNavigate = this.taskOwner.getAITarget();
+ 
+-        if (this.field_75312_a)
++        if (this.m_bNearbyEntitiesOfSameTypeAttack)
+         {
+             List var1 = this.taskOwner.worldObj.getEntitiesWithinAABB(this.taskOwner.getClass(), AxisAlignedBB.getAABBPool().getAABB(this.taskOwner.posX, this.taskOwner.posY, this.taskOwner.posZ, this.taskOwner.posX + 1.0D, this.taskOwner.posY + 1.0D, this.taskOwner.posZ + 1.0D).expand((double)this.targetDistance, 10.0D, (double)this.targetDistance));
+             Iterator var2 = var1.iterator();
+@@ -50,12 +70,21 @@
+             {
+                 EntityLiving var3 = (EntityLiving)var2.next();
+ 
++            	// FCMOD: Changed this so any other creatures that glom on will trigger this same AI instead of having an attack target without a corresponding
++            	// AI state
++            	/*
+                 if (this.taskOwner != var3 && var3.getAttackTarget() == null)
+                 {
+                     var3.setAttackTarget(this.taskOwner.getAITarget());
+                 }
++                */
++                if (this.taskOwner != var3 && var3.getAttackTarget() == null && var3.getAITarget() == null )
++                {
++                	var3.setRevengeTarget( taskOwner.getAITarget() );
+             }
++            	// END FCMOD
+         }
++        }
+ 
+         super.startExecuting();
+     }
+@@ -65,9 +94,26 @@
+      */
+     public void resetTask()
+     {
++    	// FCMOD: Code change to prevent problems with AI not resetting its target when it dies
++    	/*
+         if (this.taskOwner.getAttackTarget() != null && this.taskOwner.getAttackTarget() instanceof EntityPlayer && ((EntityPlayer)this.taskOwner.getAttackTarget()).capabilities.disableDamage)
+         {
+             super.resetTask();
++            
++            // FCMOD: Code added to fix flickering between angry and not in creative            
++            taskOwner.entityLivingToAttack = null;
++            // END FCMOD
+         }
++        */
++    	if ( taskOwner.getAttackTarget() != null && entityPathNavigate == taskOwner.getAttackTarget() )
++    	{
++            taskOwner.setAttackTarget((EntityLiving)null);
+     }
++    	
++    	if ( taskOwner.getAITarget() != null && entityPathNavigate == taskOwner.getAITarget() )
++    	{
++    		taskOwner.setRevengeTarget( null );
+ }
++    	// END FCMOD
++    }
++}

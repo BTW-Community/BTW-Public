@@ -1,0 +1,196 @@
+--- a/minecraft/net/minecraft/src/RenderGlobal.java
++++ b/minecraft/net/minecraft/src/RenderGlobal.java
+@@ -433,7 +433,12 @@
+             {
+                 var7 = (Entity)var5.get(var6);
+ 
++                // FCMOD: Code change so that entities may adjust their own visual bounding box for this test (client only)
++                /*
+                 if (var7.isInRangeToRenderVec3D(par1Vec3) && (var7.ignoreFrustumCheck || par2ICamera.isBoundingBoxInFrustum(var7.boundingBox) || var7.riddenByEntity == this.mc.thePlayer) && (var7 != this.mc.renderViewEntity || this.mc.gameSettings.thirdPersonView != 0 || this.mc.renderViewEntity.isPlayerSleeping()) && this.theWorld.blockExists(MathHelper.floor_double(var7.posX), 0, MathHelper.floor_double(var7.posZ)))
++                */
++                if (var7.isInRangeToRenderVec3D(par1Vec3) && (var7.ignoreFrustumCheck || par2ICamera.isBoundingBoxInFrustum(var7.GetVisualBoundingBox()) || var7.riddenByEntity == this.mc.thePlayer) && (var7 != this.mc.renderViewEntity || this.mc.gameSettings.thirdPersonView != 0 || this.mc.renderViewEntity.isPlayerSleeping()) && this.theWorld.blockExists(MathHelper.floor_double(var7.posX), 0, MathHelper.floor_double(var7.posZ)))
++            	// END FCMOD
+                 {
+                     ++this.countEntitiesRendered;
+                     RenderManager.instance.renderEntity(var7, par3);
+@@ -1034,12 +1039,12 @@
+             var12 = 20.0F;
+             this.renderEngine.bindTexture("/environment/moon_phases.png");
+             int var28 = this.theWorld.getMoonPhase();
+-            int var29 = var28 % 4;
+-            int var30 = var28 / 4 % 2;
+-            float var16 = (float)(var29 + 0) / 4.0F;
+-            float var17 = (float)(var30 + 0) / 2.0F;
+-            float var18 = (float)(var29 + 1) / 4.0F;
+-            float var19 = (float)(var30 + 1) / 2.0F;
++            int var30 = var28 % 4;
++            int var29 = var28 / 4 % 2;
++            float var16 = (float)(var30 + 0) / 4.0F;
++            float var17 = (float)(var29 + 0) / 2.0F;
++            float var18 = (float)(var30 + 1) / 4.0F;
++            float var19 = (float)(var29 + 1) / 2.0F;
+             var23.startDrawingQuads();
+             var23.addVertexWithUV((double)(-var12), -100.0D, (double)var12, (double)var18, (double)var19);
+             var23.addVertexWithUV((double)var12, -100.0D, (double)var12, (double)var16, (double)var19);
+@@ -1217,8 +1222,8 @@
+         float var17 = (float)var15.yCoord;
+         float var18 = (float)var15.zCoord;
+         float var19;
+-        float var20;
+         float var21;
++        float var20;
+ 
+         if (this.mc.gameSettings.anaglyph)
+         {
+@@ -1587,7 +1592,13 @@
+                         var19 = Block.stone;
+                     }
+ 
++                    // FCMOD: Changed
++                    /*
+                     this.globalRenderBlocks.renderBlockUsingTexture(var19, var11.getPartialBlockX(), var11.getPartialBlockY(), var11.getPartialBlockZ(), this.destroyBlockIcons[var11.getPartialBlockDamage()]);
++                    */
++                    var19.RenderBlockWithTexture( globalRenderBlocks, var11.getPartialBlockX(), var11.getPartialBlockY(), var11.getPartialBlockZ(), 
++                		destroyBlockIcons[var11.getPartialBlockDamage()] );
++                    // END FCMOD
+                 }
+             }
+ 
+@@ -1620,11 +1631,17 @@
+ 
+             if (var7 > 0)
+             {
+-                Block.blocksList[var7].setBlockBoundsBasedOnState(this.theWorld, par2MovingObjectPosition.blockX, par2MovingObjectPosition.blockY, par2MovingObjectPosition.blockZ);
++            	// FCMOD: Removed (client only)
++                //Block.blocksList[var7].setBlockBoundsBasedOnState(this.theWorld, par2MovingObjectPosition.blockX, par2MovingObjectPosition.blockY, par2MovingObjectPosition.blockZ);
++            	// END FCMOD
+                 double var8 = par1EntityPlayer.lastTickPosX + (par1EntityPlayer.posX - par1EntityPlayer.lastTickPosX) * (double)par5;
+                 double var10 = par1EntityPlayer.lastTickPosY + (par1EntityPlayer.posY - par1EntityPlayer.lastTickPosY) * (double)par5;
+                 double var12 = par1EntityPlayer.lastTickPosZ + (par1EntityPlayer.posZ - par1EntityPlayer.lastTickPosZ) * (double)par5;
+-                this.drawOutlinedBoundingBox(Block.blocksList[var7].getSelectedBoundingBoxFromPool(this.theWorld, par2MovingObjectPosition.blockX, par2MovingObjectPosition.blockY, par2MovingObjectPosition.blockZ).expand((double)var6, (double)var6, (double)var6).getOffsetBoundingBox(-var8, -var10, -var12));
++                // FCMOD: Changed (client only)
++                //this.drawOutlinedBoundingBox(Block.blocksList[var7].getSelectedBoundingBoxFromPool(this.theWorld, par2MovingObjectPosition.blockX, par2MovingObjectPosition.blockY, par2MovingObjectPosition.blockZ).expand((double)var6, (double)var6, (double)var6).getOffsetBoundingBox(-var8, -var10, -var12));
++            	drawOutlinedBoundingBox( Block.blocksList[var7].getSelectedBoundingBoxFromPool( theWorld, par2MovingObjectPosition ).
++                	expand((double)var6, (double)var6, (double)var6).getOffsetBoundingBox(-var8, -var10, -var12));
++                // END FCMOD
+             }
+ 
+             GL11.glDepthMask(true);
+@@ -1835,7 +1852,18 @@
+             {
+                 this.mc.effectRenderer.addEffect(var21 = new EntityFireworkSparkFX(this.theWorld, par2, par4, par6, par8, par10, par12, this.mc.effectRenderer));
+             }
++            // FCMOD: Added (client only)
++            else if ( par1Str.equals( "fccinders" ) )
++            {
++            	double dDistSqToPlayer = var15 * var15 + var17 * var17 + var19 * var19;
+ 
++            	if ( dDistSqToPlayer < 32D * 32D )
++            	{
++            		this.mc.effectRenderer.addEffect( var21 = new FCClientEntityCindersFX(this.theWorld, par2, par4, par6) );
++            	}
++            }
++            // END FCMOD
++
+             if (var21 != null)
+             {
+                 return (EntityFX)var21;
+@@ -2003,6 +2031,20 @@
+                         int var26 = Integer.parseInt(var28[2]);
+                         var21 = (new EntityDiggingFX(this.theWorld, par2, par4, par6, par8, par10, par12, Block.blocksList[var25], 0, var26, this.renderEngine)).applyRenderColor(var26);
+                     }
++                    // FCMOD: Added (client only)
++                    else if ( par1Str.equals( "fcwhitesmoke" ) )
++                    {
++                        var21 = new FCClientEntityWhiteSmokeFX(theWorld, par2, par4, par6, par8, par10, par12);
++                    }
++                    else if ( par1Str.equals( "fcwhitecloud" ) )
++                    {
++                        var21 = new FCClientEntityWhiteCloudFX(theWorld, par2, par4, par6, par8, par10, par12);
++                    }
++                    else if ( par1Str.equals( "fcsmallflame" ) )
++                    {
++                        var21 = new FCClientEntitySmallFlameFX(theWorld, par2, par4, par6, par8, par10, par12);
++                    }
++                    // END FCMOD
+ 
+                     if (var21 != null)
+                     {
+@@ -2099,6 +2141,11 @@
+                 }
+ 
+             default:
++            	// FCMOD: Code added:            	
++            	FCAddOnHandler.ClientPlayCustomAuxFX( mc, theWorld, null, par1, par2, par3, par4, par5 );
++            	
++                break;
++                // END FCMOD
+         }
+     }
+ 
+@@ -2196,6 +2243,10 @@
+ 
+             case 1016:
+                 this.theWorld.playSound((double)par3 + 0.5D, (double)par4 + 0.5D, (double)par5 + 0.5D, "mob.zombie.infect", 2.0F, (var7.nextFloat() - var7.nextFloat()) * 0.2F + 1.0F, false);
++                // FCMOD: Added extra slow zombie moan on infect villager
++                theWorld.playSound( (double)par3 + 0.5D, (double)par4 + 0.5D, (double)par5 + 0.5D, "mob.zombie.say", 
++                	1.0F + var7.nextFloat(), var7.nextFloat() * 0.2F + 0.5F, false );
++                // END FCMOD
+                 break;
+ 
+             case 1017:
+@@ -2221,7 +2272,7 @@
+                 var12 = (double)par4 + 0.5D;
+                 double var34 = (double)par5 + (double)var9 * 0.6D + 0.5D;
+ 
+-                for (int var36 = 0; var36 < 10; ++var36)
++                for (int var35 = 0; var35 < 10; ++var35)
+                 {
+                     double var37 = var7.nextDouble() * 0.2D + 0.01D;
+                     double var38 = var10 + (double)var33 * 0.01D + (var7.nextDouble() - 0.5D) * (double)var9 * 0.5D;
+@@ -2300,10 +2351,10 @@
+                     this.spawnParticle(var14, var8, var10, var12, var7.nextGaussian() * 0.15D, var7.nextDouble() * 0.2D, var7.nextGaussian() * 0.15D);
+                 }
+ 
+-                for (double var35 = 0.0D; var35 < (Math.PI * 2D); var35 += 0.15707963267948966D)
++                for (double var36 = 0.0D; var36 < (Math.PI * 2D); var36 += 0.15707963267948966D)
+                 {
+-                    this.spawnParticle("portal", var8 + Math.cos(var35) * 5.0D, var10 - 0.4D, var12 + Math.sin(var35) * 5.0D, Math.cos(var35) * -5.0D, 0.0D, Math.sin(var35) * -5.0D);
+-                    this.spawnParticle("portal", var8 + Math.cos(var35) * 5.0D, var10 - 0.4D, var12 + Math.sin(var35) * 5.0D, Math.cos(var35) * -7.0D, 0.0D, Math.sin(var35) * -7.0D);
++                    this.spawnParticle("portal", var8 + Math.cos(var36) * 5.0D, var10 - 0.4D, var12 + Math.sin(var36) * 5.0D, Math.cos(var36) * -5.0D, 0.0D, Math.sin(var36) * -5.0D);
++                    this.spawnParticle("portal", var8 + Math.cos(var36) * 5.0D, var10 - 0.4D, var12 + Math.sin(var36) * 5.0D, Math.cos(var36) * -7.0D, 0.0D, Math.sin(var36) * -7.0D);
+                 }
+ 
+                 return;
+@@ -2322,6 +2373,14 @@
+ 
+             case 2005:
+                 ItemDye.func_96603_a(this.theWorld, par3, par4, par5, par6);
++
++        	// FCMOD: Code added:
++            default:
++            	
++            	FCAddOnHandler.ClientPlayCustomAuxFX( mc, theWorld, par1EntityPlayer, par2, par3, par4, par5, par6 );
++            	
++                break;
++        	// END FCMOD
+         }
+     }
+ 
+@@ -2359,4 +2418,16 @@
+             this.destroyBlockIcons[var2] = par1IconRegister.registerIcon("destroy_" + var2);
+         }
+     }
++    
++    // FCMOD: Added
++    public Icon GetDestroyedBlockIcon( int iBlockDamage )
++    {
++    	if ( iBlockDamage >= 10 || iBlockDamage < 0 )
++    	{
++    		iBlockDamage = 0;
+ }
++    	
++    	return destroyBlockIcons[iBlockDamage];
++    }
++    // END FCMOD
++}

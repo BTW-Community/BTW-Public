@@ -1,0 +1,109 @@
+--- a/minecraft/net/minecraft/src/MapData.java
++++ b/minecraft/net/minecraft/src/MapData.java
+@@ -105,6 +105,29 @@
+      */
+     public void updateVisiblePlayers(EntityPlayer par1EntityPlayer, ItemStack par2ItemStack)
+     {
++    	// FCMOD: Added to handle maps in frames entirely independent of player held
++    	
++    	// clear the visible players every update to prevent players from receiving data about others
++    	
++        playersVisibleOnMap.clear();
++        
++        if ( par2ItemStack.isOnItemFrame() )
++        {
++        	if ( IsEntityLocationVisibleOnMap( par2ItemStack.getItemFrame() ) )
++        	{
++        		// the following code adds the "you are here" marker
++        		
++                func_82567_a( 1, par1EntityPlayer.worldObj, "frame-" + par2ItemStack.getItemFrame().entityId, 
++                	(double)par2ItemStack.getItemFrame().xPosition, (double)par2ItemStack.getItemFrame().zPosition, 
++                	(double)(par2ItemStack.getItemFrame().hangingDirection * 90 + 180 ));
++                
++        		return;
++        	}
++            
++            return;
++        }
++    	// END FCMOD
++    	
+         if (!this.playersHashMap.containsKey(par1EntityPlayer))
+         {
+             MapInfo var3 = new MapInfo(this, par1EntityPlayer);
+@@ -112,6 +135,16 @@
+             this.playersArrayList.add(var3);
+         }
+ 
++        // FCMOD: Code added for custom handling of players on map, only processing the player holding it
++        if ( !par1EntityPlayer.isDead && par1EntityPlayer.inventory.hasItemStack(par2ItemStack) && IsEntityLocationVisibleOnMap( par1EntityPlayer ) &&
++        	par1EntityPlayer.dimension == dimension )
++        {
++            func_82567_a( 0, par1EntityPlayer.worldObj, par1EntityPlayer.getCommandSenderName(), par1EntityPlayer.posX, par1EntityPlayer.posZ, par1EntityPlayer.rotationYaw);
++        }
++    	// END FCMOD
++        
++        // FCMOD: Code removed
++        /*
+         if (!par1EntityPlayer.inventory.hasItemStack(par2ItemStack))
+         {
+             this.playersVisibleOnMap.remove(par1EntityPlayer.getCommandSenderName());
+@@ -139,6 +172,8 @@
+         {
+             this.func_82567_a(1, par1EntityPlayer.worldObj, "frame-" + par2ItemStack.getItemFrame().entityId, (double)par2ItemStack.getItemFrame().xPosition, (double)par2ItemStack.getItemFrame().zPosition, (double)(par2ItemStack.getItemFrame().hangingDirection * 90));
+         }
++        */
++        // END FCMOD
+     }
+ 
+     private void func_82567_a(int par1, World par2World, String par3Str, double par4, double par6, double par8)
+@@ -281,4 +316,50 @@
+ 
+         return var2;
+     }
++    
++    // FCMOD: Code added
++    public boolean IsEntityLocationVisibleOnMap( Entity entity )
++    {
++        int i = MathHelper.floor_double( entity.posX );
++        int j = MathHelper.floor_double( entity.posY ) + 2;
++        int k = MathHelper.floor_double( entity.posZ );
++        
++        if ( entity.dimension == dimension )
++        {
++        	return IsLocationVisibleOnMap( entity.worldObj, i, j, k );
+ }
++        
++        return false;        
++    }
++    
++    public boolean IsLocationVisibleOnMap( World world, int i, int j, int k )    
++    {
++    	// check if location is within map bounds
++    	
++        int iMapScale = 1 << this.scale;
++        float fRelativeI = (float)((double)i - (double)this.xCenter) / (float)iMapScale;
++        float fRelativeK = (float)((double)k - (double)this.zCenter) / (float)iMapScale;
++        
++        if ( Math.abs( fRelativeI ) > 64F || Math.abs( fRelativeK ) > 64F )
++        {
++        	return false;
++        }
++        
++        // check if location is above ground
++        
++    	if ( !world.canBlockSeeTheSky( i, j, k ) && !( world.getTopSolidOrLiquidBlock( i, k ) <= j )  )
++        {
++        	return false;
++        }
++        
++        Material material = world.getBlockMaterial( i, j, k );
++        
++        if ( material != null && material.isLiquid() )
++        {
++        	return false;
++        }
++        
++    	return true;
++    }
++    // END FCMOD
++}

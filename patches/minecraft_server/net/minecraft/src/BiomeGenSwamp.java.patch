@@ -1,0 +1,24 @@
+--- a/minecraft_server/net/minecraft/src/BiomeGenSwamp.java
++++ b/minecraft_server/net/minecraft/src/BiomeGenSwamp.java
+@@ -15,7 +15,21 @@
+         this.theBiomeDecorator.clayPerChunk = 1;
+         this.theBiomeDecorator.waterlilyPerChunk = 4;
+         this.waterColorMultiplier = 14745518;
++        
++        // FCMOD: Changed
++        /*
+         this.spawnableMonsterList.add(new SpawnListEntry(EntitySlime.class, 1, 1, 1));
++        */
++        spawnableMonsterList.add( new SpawnListEntry( FCEntitySlime.class, 1, 1, 1 ) );
++        spawnableMonsterList.add( new SpawnListEntry( FCEntityWitch.class, 1, 1, 1 ) );
++        
++        // get rid of cows and sheep and cause other animals to spawn in lower numbers
++        
++        spawnableCreatureList.clear();
++        
++        spawnableCreatureList.add( new SpawnListEntry( FCEntityChicken.class, 10, 2, 2 ) );
++        spawnableCreatureList.add( new SpawnListEntry( FCEntityPig.class, 10, 2, 2 ) );
++        // END FCMOD
+     }
+ 
+     /**
