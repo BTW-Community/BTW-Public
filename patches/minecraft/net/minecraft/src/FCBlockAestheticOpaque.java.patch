@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockAestheticOpaque.java
-@@ -0,0 +1,510 @@
+@@ -0,0 +1,504 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -76,24 +76,20 @@
 +    }
 +    
 +	@Override
-+    public int idDropped( int iMetadata, Random random, int iFortuneModifier )
++    public int idDropped(int metadata, Random random, int fortuneModifier)
 +    {
-+		if ( iMetadata == m_iSubtypeWicker )
-+		{
++		if (metadata == m_iSubtypeWicker) {
 +			return FCBetterThanWolves.fcBlockWicker.blockID;
 +		}
-+		else if ( iMetadata == m_iSubtypeSteel )
-+		{
++		else if (metadata == m_iSubtypeSteel) {
 +			// convert to the new steel block
 +			
 +			return FCBetterThanWolves.fcSoulforgedSteelBlock.blockID;
 +		}
-+		else if ( iMetadata == m_iSubtypeFlint )
-+		{
++		else if (metadata == m_iSubtypeFlint) {
 +			return Item.flint.itemID;
 +		}
-+		else if ( iMetadata == m_iSubtypeNetherrackWithGrowth )
-+		{
++		else if (metadata == m_iSubtypeNetherrackWithGrowth) {
 +			return Block.netherrack.blockID;
 +		}
 +		
@@ -455,47 +451,45 @@
 +    }
 +    
 +	@Override
-+	public void getSubBlocks( int iBlockID, CreativeTabs creativeTabs, List list )
-+    {
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeHellfire ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypePadding ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeSoap ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeRope ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeFlint ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeWhiteStone ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeWhiteCobble ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeBarrel ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeChoppingBlockClean ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeEnderBlock ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeBone ) );
++	public void getSubBlocks(int blockID, CreativeTabs creativeTabs, List list) {
++        list.add(new ItemStack(blockID, 1, m_iSubtypeHellfire));
++        list.add(new ItemStack(blockID, 1, m_iSubtypePadding));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeSoap));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeRope));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeFlint));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeWhiteStone));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeWhiteCobble));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeBarrel));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeChoppingBlockDirty));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeChoppingBlockClean));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeEnderBlock));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeBone));
 +    }
 +	
 +	@Override
-+    public int idPicked( World world, int i, int j, int k )
-+    {
-+		int iMetadata = world.getBlockMetadata( i, j, k );
++    public int idPicked(World world, int x, int y, int z) {
++		int metadata = world.getBlockMetadata(x, y, z);
 +		
-+		if ( iMetadata == m_iSubtypeFlint )
-+		{
++		if (metadata == m_iSubtypeFlint) {
 +			return blockID;
 +		}
 +		
-+        return idDropped( iMetadata, world.rand, 0 );
++        return idDropped(metadata, world.rand, 0);
 +    }
 +
 +	@Override
-+    public int getDamageValue( World world, int i, int j, int k )
-+    {
++    public int getDamageValue(World world, int x, int y, int z) {
 +		// used only by pick block
++		int metadata = world.getBlockMetadata(x, y, z);
 +		
-+		int iMetadata = world.getBlockMetadata( i, j, k );
-+		
-+		if ( iMetadata == m_iSubtypeFlint )
-+		{
++		if (metadata == m_iSubtypeFlint) {
 +			return m_iSubtypeFlint;
 +		}
++		else if (metadata == m_iSubtypeWhiteStone) {
++			return m_iSubtypeWhiteStone;
++		}
 +		
-+		return super.getDamageValue( world, i, j, k );		
++		return super.getDamageValue(world, x, y, z);		
 +    }
 +	
 +	@Override

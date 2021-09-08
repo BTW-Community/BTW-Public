@@ -1,0 +1,18 @@
+--- a/minecraft/net/minecraft/src/ItemMonsterPlacer.java
++++ b/minecraft/net/minecraft/src/ItemMonsterPlacer.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeItem;
+ import java.util.Iterator;
+ import java.util.List;
+ 
+@@ -30,7 +31,7 @@
+     public int getColorFromItemStack(ItemStack par1ItemStack, int par2)
+     {
+         EntityEggInfo var3 = (EntityEggInfo)EntityList.entityEggs.get(Integer.valueOf(par1ItemStack.getItemDamage()));
+-        return var3 != null ? (par2 == 0 ? var3.primaryColor : var3.secondaryColor) : 16777215;
++        return var3 != null ? (par2 == 0 ? ColorizeItem.colorizeSpawnerEgg(var3.primaryColor, par1ItemStack.getItemDamage(), par2) : ColorizeItem.colorizeSpawnerEgg(var3.secondaryColor, par1ItemStack.getItemDamage(), par2)) : ColorizeItem.colorizeSpawnerEgg(16777215, par1ItemStack.getItemDamage(), par2);
+     }
+ 
+     public boolean requiresMultipleRenderPasses()

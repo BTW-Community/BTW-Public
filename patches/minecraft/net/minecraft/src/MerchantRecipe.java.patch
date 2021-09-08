@@ -1,6 +1,15 @@
 --- a/minecraft/net/minecraft/src/MerchantRecipe.java
 +++ b/minecraft/net/minecraft/src/MerchantRecipe.java
-@@ -29,7 +29,13 @@
+@@ -19,6 +19,8 @@
+     /** Maximum times this trade can be used. */
+     private int maxTradeUses;
+ 
++    private boolean isMandatory;
++
+     public MerchantRecipe(NBTTagCompound par1NBTTagCompound)
+     {
+         this.readFromTags(par1NBTTagCompound);
+@@ -29,7 +31,13 @@
          this.itemToBuy = par1ItemStack;
          this.secondItemToBuy = par2ItemStack;
          this.itemToSell = par3ItemStack;
@@ -14,7 +23,7 @@
      }
  
      public MerchantRecipe(ItemStack par1ItemStack, ItemStack par2ItemStack)
-@@ -133,9 +139,25 @@
+@@ -133,9 +141,25 @@
          }
          else
          {
@@ -40,7 +49,7 @@
  
      public NBTTagCompound writeToTags()
      {
-@@ -150,6 +172,32 @@
+@@ -150,6 +174,40 @@
  
          var1.setInteger("uses", this.toolUses);
          var1.setInteger("maxUses", this.maxTradeUses);
@@ -71,5 +80,14 @@
 +    {
 +        this( inputStack, new ItemStack( outputItem ), iTradeLevel );
 +    }
++
++    public boolean isMandatory() {
++		return isMandatory;
++	}
++
++	public void setMandatory() {
++		this.isMandatory = true;
++	}
 +    // END FCMOD
 +}
+\ No newline at end of file

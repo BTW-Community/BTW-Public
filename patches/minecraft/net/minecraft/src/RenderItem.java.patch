@@ -1,6 +1,13 @@
 --- a/minecraft/net/minecraft/src/RenderItem.java
 +++ b/minecraft/net/minecraft/src/RenderItem.java
-@@ -17,6 +17,10 @@
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cit.CITUtils;
+ import java.util.Random;
+ import net.minecraft.client.Minecraft;
+ import org.lwjgl.opengl.GL11;
+@@ -17,6 +18,10 @@
      public float zLevel = 0.0F;
      public static boolean renderInFrame = false;
  
@@ -11,7 +18,7 @@
      public RenderItem()
      {
          this.shadowSize = 0.15F;
-@@ -61,13 +65,18 @@
+@@ -61,13 +66,18 @@
              GL11.glTranslatef((float)par2, (float)par4 + var11, (float)par6);
              GL11.glEnable(GL12.GL_RESCALE_NORMAL);
              int var17;
@@ -32,7 +39,7 @@
                  GL11.glRotatef(var12, 0.0F, 1.0F, 0.0F);
  
                  if (renderInFrame)
-@@ -78,15 +87,15 @@
+@@ -78,15 +88,15 @@
                  }
  
                  this.loadTexture("/terrain.png");
@@ -53,7 +60,7 @@
  
                  for (var17 = 0; var17 < var13; ++var17)
                  {
-@@ -94,14 +103,14 @@
+@@ -94,14 +104,14 @@
  
                      if (var17 > 0)
                      {
@@ -72,7 +79,16 @@
                      GL11.glPopMatrix();
                  }
              }
-@@ -156,7 +165,7 @@
+@@ -126,7 +136,7 @@
+                     for (int var14 = 0; var14 <= 1; ++var14)
+                     {
+                         this.random.setSeed(187L);
+-                        Icon var15 = var10.getItem().getIconFromDamageForRenderPass(var10.getItemDamage(), var14);
++                        Icon var15 = CITUtils.getIcon(var10.getItem().getIconFromDamageForRenderPass(var10.getItemDamage(), var14), var10, var14);
+                         var16 = 1.0F;
+ 
+                         if (this.renderWithColor)
+@@ -156,7 +166,7 @@
                          GL11.glScalef(0.5F, 0.5F, 0.5F);
                      }
  
@@ -81,7 +97,7 @@
  
                      if (var10.getItemSpriteNumber() == 0)
                      {
-@@ -169,16 +178,16 @@
+@@ -169,16 +179,16 @@
  
                      if (this.renderWithColor)
                      {
@@ -104,7 +120,7 @@
                      }
                  }
              }
-@@ -209,7 +218,10 @@
+@@ -209,7 +219,10 @@
          float var15 = 0.25F;
          float var17;
  
@@ -116,7 +132,16 @@
          {
              GL11.glPushMatrix();
  
-@@ -306,9 +318,9 @@
+@@ -263,7 +276,7 @@
+                 GL11.glColor4f(par5, par6, par7, 1.0F);
+                 ItemRenderer.renderItemIn2D(var8, var10, var11, var9, var12, par2Icon.getSheetWidth(), par2Icon.getSheetHeight(), var16);
+ 
+-                if (var18 != null && var18.hasEffect())
++                if (var18 != null && !CITUtils.renderEnchantmentDropped(var18) && var18.hasEffect())
+                 {
+                     GL11.glDepthFunc(GL11.GL_EQUAL);
+                     GL11.glDisable(GL11.GL_LIGHTING);
+@@ -306,9 +319,9 @@
                  if (var25 > 0)
                  {
                      var17 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.3F;
@@ -128,7 +153,7 @@
                  }
  
                  if (!renderInFrame)
-@@ -339,9 +351,14 @@
+@@ -339,9 +352,14 @@
          Icon var8 = par3ItemStack.getIconIndex();
          float var12;
          float var13;
@@ -144,7 +169,7 @@
          {
              par2RenderEngine.bindTexture("/terrain.png");
              Block var15 = Block.blocksList[var6];
-@@ -352,14 +369,14 @@
+@@ -352,14 +370,14 @@
              GL11.glScalef(1.0F, 1.0F, -1.0F);
              GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
              GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
@@ -164,7 +189,16 @@
              }
  
              GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-@@ -414,13 +431,13 @@
+@@ -379,7 +397,7 @@
+ 
+                 for (var9 = 0; var9 <= 1; ++var9)
+                 {
+-                    Icon var10 = Item.itemsList[var6].getIconFromDamageForRenderPass(var7, var9);
++                	Icon var10 = CITUtils.getIcon(Item.itemsList[var6].getIconFromDamageForRenderPass(var7, var9), par3ItemStack, var9);
+                     int var11 = Item.itemsList[var6].getColorFromItemStack(par3ItemStack, var9);
+                     var12 = (float)(var11 >> 16 & 255) / 255.0F;
+                     var13 = (float)(var11 >> 8 & 255) / 255.0F;
+@@ -414,13 +432,13 @@
                  }
  
                  var9 = Item.itemsList[var6].getColorFromItemStack(par3ItemStack, 0);
@@ -181,3 +215,12 @@
                  }
  
                  this.renderIcon(par4, par5, var8, 16, 16);
+@@ -440,7 +458,7 @@
+         {
+             this.renderItemIntoGUI(par1FontRenderer, par2RenderEngine, par3ItemStack, par4, par5);
+ 
+-            if (par3ItemStack.hasEffect())
++            if (!CITUtils.renderEnchantmentGUI(par3ItemStack, par4, par5, this.zLevel) && par3ItemStack.hasEffect())
+             {
+                 GL11.glDepthFunc(GL11.GL_GREATER);
+                 GL11.glDisable(GL11.GL_LIGHTING);

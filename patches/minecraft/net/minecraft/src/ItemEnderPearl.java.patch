@@ -1,0 +1,43 @@
+--- a/minecraft/net/minecraft/src/ItemEnderPearl.java
++++ b/minecraft/net/minecraft/src/ItemEnderPearl.java
+@@ -14,14 +14,10 @@
+      */
+     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
+     {
+-        if (par3EntityPlayer.capabilities.isCreativeMode)
++        if (par3EntityPlayer.ridingEntity != null)
+         {
+             return par1ItemStack;
+         }
+-        else if (par3EntityPlayer.ridingEntity != null)
+-        {
+-            return par1ItemStack;
+-        }
+         else
+         {
+             --par1ItemStack.stackSize;
+@@ -35,4 +31,24 @@
+             return par1ItemStack;
+         }
+     }
++    
++    @Override
++    public boolean IsPistonPackable(ItemStack stack) {
++    	return true;
+ }
++    
++	@Override
++    public int GetRequiredItemCountToPistonPack(ItemStack stack) {
++    	return 9;
++    }
++    
++	@Override
++    public int GetResultingBlockIDOnPistonPack(ItemStack stack) {
++    	return FCBetterThanWolves.fcAestheticOpaque.blockID;
++    }
++    
++	@Override
++    public int GetResultingBlockMetadataOnPistonPack(ItemStack stack) {
++    	return ((FCBlockAestheticOpaque) FCBetterThanWolves.fcAestheticOpaque).m_iSubtypeEnderBlock;
++    }
++}

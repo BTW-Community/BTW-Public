@@ -1,6 +1,13 @@
 --- a/minecraft/net/minecraft/src/TextureCompass.java
 +++ b/minecraft/net/minecraft/src/TextureCompass.java
-@@ -12,6 +12,10 @@
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.hd.FancyDial;
+ import net.minecraft.client.Minecraft;
+ 
+ public class TextureCompass extends TextureStitched
+@@ -12,14 +13,21 @@
      /** Speed and direction of compass rotation */
      public double angleDelta;
  
@@ -11,7 +18,9 @@
      public TextureCompass()
      {
          super("compass");
-@@ -20,6 +24,8 @@
+         compassTexture = this;
++        FancyDial.setup(this);
+     }
  
      public void updateAnimation()
      {
@@ -20,7 +29,7 @@
          Minecraft var1 = Minecraft.getMinecraft();
  
          if (var1.theWorld != null && var1.thePlayer != null)
-@@ -30,17 +36,29 @@
+@@ -30,17 +38,29 @@
          {
              this.updateCompass((World)null, 0.0D, 0.0D, 0.0D, true, false);
          }
@@ -50,7 +59,7 @@
              ChunkCoordinates var12 = par1World.getSpawnPoint();
              double var13 = (double)var12.posX - par2;
              double var15 = (double)var12.posZ - par4;
-@@ -51,13 +69,18 @@
+@@ -51,13 +71,18 @@
              {
                  var10 = Math.random() * Math.PI * 2.0D;
              }
@@ -70,7 +79,7 @@
          {
              double var17;
  
-@@ -84,6 +107,9 @@
+@@ -84,8 +109,13 @@
              this.angleDelta += var17 * 0.1D;
              this.angleDelta *= 0.8D;
              this.currentAngle += this.angleDelta;
@@ -79,11 +88,15 @@
 +            // END FCMOD
          }
  
++        if (!FancyDial.update(this, par9))
++        {
          int var18;
-@@ -99,4 +125,54 @@
-             this.textureSheet.copyFrom(this.originX, this.originY, (Texture)this.textureList.get(this.frameCounter), this.rotated);
+ 
+         for (var18 = (int)((this.currentAngle / (Math.PI * 2D) + 1.0D) * (double)this.textureList.size()) % this.textureList.size(); var18 < 0; var18 = (var18 + this.textureList.size()) % this.textureList.size())
+@@ -100,3 +130,54 @@
          }
      }
+ }
 +    
 +    // FCMOD: Added (client only)
 +    public void UpdateActive()
@@ -94,7 +107,7 @@
 +        {
 +            updateCompass( mc.theWorld, mc.thePlayer.posX, mc.thePlayer.posZ, 
 +            	mc.thePlayer.rotationYaw, false, false, mc.thePlayer );
- }
++        }
 +        else
 +        {
 +            updateCompass( null, 0.0D, 0.0D, 0.0D, true, false, null );

@@ -1,22 +1,41 @@
 --- a/minecraft_server/net/minecraft/src/MerchantRecipe.java
 +++ b/minecraft_server/net/minecraft/src/MerchantRecipe.java
-@@ -30,6 +30,15 @@
+@@ -19,6 +19,8 @@
+     /** Maximum times this trade can be used. */
+     private int maxTradeUses;
+ 
++    private boolean isMandatory;
++
+     public MerchantRecipe(NBTTagCompound par1NBTTagCompound)
+     {
+         this.readFromTags(par1NBTTagCompound);
+@@ -29,7 +31,13 @@
+         this.itemToBuy = par1ItemStack;
          this.secondItemToBuy = par2ItemStack;
          this.itemToSell = par3ItemStack;
-         this.maxTradeUses = 7;
 +        // FCMOD: Change
 +        /*
-+        this.maxTradeUses = 7;
+         this.maxTradeUses = 7;
 +        */
 +        maxTradeUses = 1;
-+        // END FCMOD
-+        
-+        // FCMOD: Added
++        m_iTradeLevel = 1;
 +        // END FCMOD
      }
  
      public MerchantRecipe(ItemStack par1ItemStack, ItemStack par2ItemStack)
-@@ -128,9 +137,25 @@
+@@ -105,6 +113,11 @@
+         return this.toolUses >= this.maxTradeUses;
+     }
+ 
++    public void func_82785_h()
++    {
++        this.toolUses = this.maxTradeUses;
++    }
++
+     public void readFromTags(NBTTagCompound par1NBTTagCompound)
+     {
+         NBTTagCompound var2 = par1NBTTagCompound.getCompoundTag("buy");
+@@ -128,9 +141,25 @@
          }
          else
          {
@@ -42,7 +61,7 @@
  
      public NBTTagCompound writeToTags()
      {
-@@ -145,6 +170,32 @@
+@@ -145,6 +174,40 @@
  
          var1.setInteger("uses", this.toolUses);
          var1.setInteger("maxUses", this.maxTradeUses);
@@ -73,5 +92,14 @@
 +    {
 +        this( inputStack, new ItemStack( outputItem ), iTradeLevel );
 +    }
++
++    public boolean isMandatory() {
++		return isMandatory;
++	}
++
++	public void setMandatory() {
++		this.isMandatory = true;
++	}
 +    // END FCMOD
 +}
+\ No newline at end of file

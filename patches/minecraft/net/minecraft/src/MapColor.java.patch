@@ -1,0 +1,33 @@
+--- a/minecraft/net/minecraft/src/MapColor.java
++++ b/minecraft/net/minecraft/src/MapColor.java
+@@ -5,7 +5,10 @@
+     /**
+      * Holds all the 16 colors used on maps, very similar of a pallete system.
+      */
+-    public static final MapColor[] mapColorArray = new MapColor[16];
++	// FCMod: Changed
++    //public static final MapColor[] mapColorArray = new MapColor[16];
++    public static final MapColor[] mapColorArray = new MapColor[256];
++    // END FCMOD
+ 
+     /** The map color for Air blocks */
+     public static final MapColor airColor = new MapColor(0, 0);
+@@ -50,15 +53,17 @@
+     public static final MapColor woodColor = new MapColor(13, 6837042);
+ 
+     /** Holds the color in RGB value that will be rendered on maps. */
+-    public final int colorValue;
++    public int colorValue;
+ 
+     /** Holds the index of the color used on map. */
+     public final int colorIndex;
++    public int origColorValue;
+ 
+     private MapColor(int par1, int par2)
+     {
+         this.colorIndex = par1;
+         this.colorValue = par2;
++        this.origColorValue = par2;
+         mapColorArray[par1] = this;
+     }
+ }

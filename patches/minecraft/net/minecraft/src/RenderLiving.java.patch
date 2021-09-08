@@ -1,6 +1,15 @@
 --- a/minecraft/net/minecraft/src/RenderLiving.java
 +++ b/minecraft/net/minecraft/src/RenderLiving.java
-@@ -79,6 +79,12 @@
+@@ -1,5 +1,8 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cit.CITUtils;
++import com.prupe.mcpatcher.mal.resource.FakeResourceLocation;
++import com.prupe.mcpatcher.mob.MobRandomizer;
+ import java.util.Random;
+ import net.minecraft.client.Minecraft;
+ import org.lwjgl.opengl.GL11;
+@@ -79,6 +82,12 @@
              float var10 = this.interpolateRotation(par1EntityLiving.prevRenderYawOffset, par1EntityLiving.renderYawOffset, par9);
              float var11 = this.interpolateRotation(par1EntityLiving.prevRotationYawHead, par1EntityLiving.rotationYawHead, par9);
              float var12 = par1EntityLiving.prevRotationPitch + (par1EntityLiving.rotationPitch - par1EntityLiving.prevRotationPitch) * par9;
@@ -13,7 +22,7 @@
              this.renderLivingAt(par1EntityLiving, par2, par4, par6);
              float var13 = this.handleRotationFloat(par1EntityLiving, par9);
              this.rotateCorpse(par1EntityLiving, var13, var10, par9);
-@@ -103,8 +109,8 @@
+@@ -103,8 +112,8 @@
              GL11.glEnable(GL11.GL_ALPHA_TEST);
              this.mainModel.setLivingAnimations(par1EntityLiving, var16, var15, par9);
              this.renderModel(par1EntityLiving, var16, var15, var13, var11 - var10, var12, var14);
@@ -23,7 +32,25 @@
              float var20;
              float var22;
  
-@@ -200,16 +206,16 @@
+@@ -123,8 +132,16 @@
+                         this.renderPassModel.render(par1EntityLiving, var16, var15, var13, var11 - var10, var12, var14);
+                     }
+ 
+-                    if ((var18 & 15) == 15)
++                    if (CITUtils.setupArmorEnchantments(par1EntityLiving, var17))
+                     {
++                        while (CITUtils.preRenderArmorEnchantment())
++                        {
++                            this.renderPassModel.render(par1EntityLiving, var16, var15, var13, var11 - var10, var12, var14);
++                            CITUtils.postRenderArmorEnchantment();
++                        }
++                    }
++                    else if ((var18 & 15) == 15)
++                    {
+                         var19 = (float)par1EntityLiving.ticksExisted + par9;
+                         this.loadTexture("%blur%/misc/glint.png");
+                         GL11.glEnable(GL11.GL_BLEND);
+@@ -200,16 +217,16 @@
                  {
                      var19 = (float)(var18 >> 16 & 255) / 255.0F;
                      var20 = (float)(var18 >> 8 & 255) / 255.0F;
@@ -45,7 +72,16 @@
                              this.renderPassModel.render(par1EntityLiving, var16, var15, var13, var11 - var10, var12, var14);
                          }
                      }
-@@ -412,6 +418,12 @@
+@@ -269,7 +286,7 @@
+ 
+     protected void func_98190_a(EntityLiving par1EntityLiving)
+     {
+-        this.loadTexture(par1EntityLiving.getTexture());
++    	this.loadTexture(FakeResourceLocation.unwrap(MobRandomizer.randomTexture((Entity)par1EntityLiving, FakeResourceLocation.wrap(par1EntityLiving.getTexture()))));
+     }
+ 
+     /**
+@@ -412,6 +429,12 @@
  
                  if (par1EntityLiving.isSneaking())
                  {
@@ -58,7 +94,7 @@
                      FontRenderer var14 = this.getFontRendererFromRenderManager();
                      GL11.glPushMatrix();
                      GL11.glTranslatef((float)par2 + 0.0F, (float)par4 + par1EntityLiving.height + 0.5F, (float)par6);
-@@ -481,8 +493,17 @@
+@@ -481,8 +504,17 @@
              GL11.glRotatef(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
              GL11.glScalef(-var14, -var14, var14);
              GL11.glDisable(GL11.GL_LIGHTING);
@@ -76,7 +112,7 @@
              GL11.glEnable(GL11.GL_BLEND);
              GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
              Tessellator var15 = Tessellator.instance;
-@@ -503,6 +524,7 @@
+@@ -503,6 +535,7 @@
              var15.addVertex((double)(var17 + 1), (double)(-1 + var16), 0.0D);
              var15.draw();
              GL11.glEnable(GL11.GL_TEXTURE_2D);

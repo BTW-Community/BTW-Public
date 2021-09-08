@@ -1,0 +1,34 @@
+--- a/minecraft/net/minecraft/src/PotionHelper.java
++++ b/minecraft/net/minecraft/src/PotionHelper.java
+@@ -1,10 +1,12 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeItem;
+ import java.util.ArrayList;
+ import java.util.Collection;
+ import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Map;
+ 
+ public class PotionHelper
+ {
+@@ -63,7 +65,7 @@
+      */
+     public static int calcPotionLiquidColor(Collection par0Collection)
+     {
+-        int var1 = 3694022;
++    	int var1 = ColorizeItem.getWaterBottleColor();
+ 
+         if (par0Collection != null && !par0Collection.isEmpty())
+         {
+@@ -605,4 +607,9 @@
+         field_77925_n = new HashMap();
+         potionPrefixes = new String[] {"potion.prefix.mundane", "potion.prefix.uninteresting", "potion.prefix.bland", "potion.prefix.clear", "potion.prefix.milky", "potion.prefix.diffuse", "potion.prefix.artless", "potion.prefix.thin", "potion.prefix.awkward", "potion.prefix.flat", "potion.prefix.bulky", "potion.prefix.bungling", "potion.prefix.buttered", "potion.prefix.smooth", "potion.prefix.suave", "potion.prefix.debonair", "potion.prefix.thick", "potion.prefix.elegant", "potion.prefix.fancy", "potion.prefix.charming", "potion.prefix.dashing", "potion.prefix.refined", "potion.prefix.cordial", "potion.prefix.sparkling", "potion.prefix.potent", "potion.prefix.foul", "potion.prefix.odorless", "potion.prefix.rank", "potion.prefix.harsh", "potion.prefix.acrid", "potion.prefix.gross", "potion.prefix.stinky"};
+     }
++    
++    public static Map getPotionColorCache()
++    {
++        return field_77925_n;
+ }
++}

@@ -6,3 +6,14 @@
  package net.minecraft.src;
  
  public class EntitySlime extends EntityLiving implements IMob
+@@ -205,8 +207,8 @@
+ 
+             for (int var3 = 0; var3 < var2; ++var3)
+             {
+-                float var4 = ((float)(var3 % 2) - 0.5F) * (float)var1 / 4.0F;
+-                float var5 = ((float)(var3 / 2) - 0.5F) * (float)var1 / 4.0F;
++                float var4 = ((float)(var3 % 2) - 0.5F) * (float)var1 / 40.0F;
++                float var5 = ((float)(var3 / 2) - 0.5F) * (float)var1 / 40.0F;
+                 EntitySlime var6 = this.createInstance();
+                 var6.setSlimeSize(var1 / 2);
+                 var6.setLocationAndAngles(this.posX + (double)var4, this.posY + 0.5D, this.posZ + (double)var5, this.rand.nextFloat() * 360.0F, 0.0F);

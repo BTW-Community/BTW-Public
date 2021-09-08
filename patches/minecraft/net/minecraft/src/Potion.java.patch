@@ -1,6 +1,33 @@
 --- a/minecraft/net/minecraft/src/Potion.java
 +++ b/minecraft/net/minecraft/src/Potion.java
-@@ -135,6 +135,8 @@
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeItem;
++
+ public class Potion
+ {
+     /** The array of potion types. */
+@@ -61,7 +63,7 @@
+     public final int id;
+ 
+     /** The name of the Potion. */
+-    private String name = "";
++    public String name = "";
+ 
+     /** The index for the icon displayed when the potion effect is active. */
+     private int statusIconIndex = -1;
+@@ -74,7 +76,8 @@
+     private boolean usable;
+ 
+     /** Is the color of the liquid for this potion. */
+-    private final int liquidColor;
++    public int liquidColor;
++    public int origColor;
+ 
+     protected Potion(int par1, boolean par2, int par3)
+     {
+@@ -135,6 +138,8 @@
          {
              ((EntityPlayer)par1EntityLiving).addExhaustion(0.025F * (float)(par2 + 1));
          }
@@ -9,7 +36,7 @@
          else if ((this.id != heal.id || par1EntityLiving.isEntityUndead()) && (this.id != harm.id || !par1EntityLiving.isEntityUndead()))
          {
              if (this.id == harm.id && !par1EntityLiving.isEntityUndead() || this.id == heal.id && par1EntityLiving.isEntityUndead())
-@@ -146,7 +148,17 @@
+@@ -146,7 +151,17 @@
          {
              par1EntityLiving.heal(6 << par2);
          }
@@ -27,7 +54,7 @@
  
      /**
       * Hits the provided entity with this potion's instant effect.
-@@ -155,6 +167,8 @@
+@@ -155,6 +170,8 @@
      {
          int var6;
  
@@ -36,7 +63,7 @@
          if ((this.id != heal.id || par2EntityLiving.isEntityUndead()) && (this.id != harm.id || !par2EntityLiving.isEntityUndead()))
          {
              if (this.id == harm.id && !par2EntityLiving.isEntityUndead() || this.id == heal.id && par2EntityLiving.isEntityUndead())
-@@ -172,8 +186,24 @@
+@@ -172,8 +189,24 @@
              }
          }
          else
@@ -61,3 +88,11 @@
              par2EntityLiving.heal(var6);
          }
      }
+@@ -218,6 +251,7 @@
+     public Potion setPotionName(String par1Str)
+     {
+         this.name = par1Str;
++        ColorizeItem.setupPotion(this);
+         return this;
+     }
+ 

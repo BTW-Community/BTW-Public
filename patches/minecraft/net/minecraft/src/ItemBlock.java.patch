@@ -45,10 +45,16 @@
  
      /**
       * Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have
-@@ -210,4 +221,144 @@
+@@ -210,4 +221,150 @@
              this.field_94588_b = par1IconRegister.registerIcon(var2);
          }
      }
++    
++    public int getColorFromItemStack(ItemStack var1, int var2)
++    {
++        Block var3 = Block.blocksList[this.blockID];
++        return var3 != null ? var3.getRenderColor(var2) : super.getColorFromItemStack(var1, var2);
+ }
 +    
 +    // FCMOD: Added New
 +    private boolean m_bHasOldNamePrefix = false;
@@ -57,7 +63,7 @@
 +    public float GetBuoyancy( int iItemDamage )
 +    {
 +    	return Block.blocksList[blockID].GetBuoyancy( iItemDamage );
- }
++    }
 +    
 +    @Override
 +    public Item SetBuoyancy( float fBuoyancy )

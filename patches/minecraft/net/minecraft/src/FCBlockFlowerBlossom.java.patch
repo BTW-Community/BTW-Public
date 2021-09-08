@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockFlowerBlossom.java
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,35 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -24,6 +24,12 @@
 +    public boolean CanBeGrazedOn( IBlockAccess access, int i, int j, int k, EntityAnimal animal )
 +    {
 +		return true;
++    }
++    
++    @Override
++    public boolean CanBeCrushedByFallingEntity( World world, int i, int j, int k, EntityFallingSand entity )
++    {
++    	return true;
 +    }
 +    
 +    //------------- Class Specific Methods ------------//

@@ -1,0 +1,12 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCAddOnUtilsWorldData.java
+@@ -0,0 +1,9 @@
++package net.minecraft.src;
++
++public interface FCAddOnUtilsWorldData {
++	public void saveWorldDataToNBT(WorldServer world, NBTTagCompound tag);
++	
++	public void loadWorldDataFromNBT(WorldServer world, NBTTagCompound tag);
++	
++	public String getFilename();
++}

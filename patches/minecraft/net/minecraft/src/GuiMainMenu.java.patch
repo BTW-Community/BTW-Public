@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/GuiMainMenu.java
++++ b/minecraft/net/minecraft/src/GuiMainMenu.java
+@@ -530,7 +530,7 @@
+         GL11.glScalef(var8, var8, var8);
+         this.drawCenteredString(this.fontRenderer, this.splashText, 0, -8, 16776960);
+         GL11.glPopMatrix();
+-        String var9 = "Minecraft 1.5.2";
++        String var9 = "Better Than Wolves CE V" + FCBetterThanWolves.fcVersionString;
+ 
+         if (this.mc.isDemo())
+         {

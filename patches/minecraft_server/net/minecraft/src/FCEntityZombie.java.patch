@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCEntityZombie.java
-@@ -0,0 +1,390 @@
+@@ -0,0 +1,387 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -189,20 +189,15 @@
 +    @Override
 +    protected void convertToVillager()
 +    {
-+        FCEntityVillager newVillager = new FCEntityVillager( worldObj );
++        FCEntityVillager newVillager = FCEntityVillager.createVillagerFromProfession(this.worldObj, this.m_iVillagerClass);
 +        
 +        newVillager.func_82149_j(this);  // set same position and ables as replaced entity
 +        
 +        newVillager.initCreature();
 +        
-+        if ( m_iVillagerClass >= 0 )
++        if (m_iVillagerClass == 0)
 +        {
-+        	newVillager.setProfession( m_iVillagerClass );
-+        }
-+        
-+        if ( m_iVillagerClass == 0  )
-+        {
-+        	newVillager.SetDirtyPeasant( 1 );
++        	newVillager.SetDirtyPeasant(1);
 +        }
 +        
 +        newVillager.func_82187_q();
@@ -284,6 +279,8 @@
 +    public void SpawnerInitCreature()
 +    {
 +    	setCanPickUpLoot( rand.nextFloat() < 0.15F );
++    	
++    	func_82162_bC();
 +    }
 +
 +    @Override
@@ -391,4 +388,3 @@
 +    
 +	//----------- Client Side Functionality -----------//
 +}
-\ No newline at end of file

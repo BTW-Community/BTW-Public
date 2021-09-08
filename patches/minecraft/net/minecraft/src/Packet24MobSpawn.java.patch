@@ -13,3 +13,21 @@
          this.xPosition = par1EntityLiving.myEntitySize.multiplyBy32AndRound(par1EntityLiving.posX);
          this.yPosition = MathHelper.floor_double(par1EntityLiving.posY * 32.0D);
          this.zPosition = par1EntityLiving.myEntitySize.multiplyBy32AndRound(par1EntityLiving.posZ);
+@@ -97,7 +102,7 @@
+     public void readPacketData(DataInputStream par1DataInputStream) throws IOException
+     {
+         this.entityId = par1DataInputStream.readInt();
+-        this.type = par1DataInputStream.readByte() & 255;
++        this.type = par1DataInputStream.readInt();
+         this.xPosition = par1DataInputStream.readInt();
+         this.yPosition = par1DataInputStream.readInt();
+         this.zPosition = par1DataInputStream.readInt();
+@@ -116,7 +121,7 @@
+     public void writePacketData(DataOutputStream par1DataOutputStream) throws IOException
+     {
+         par1DataOutputStream.writeInt(this.entityId);
+-        par1DataOutputStream.writeByte(this.type & 255);
++        par1DataOutputStream.writeInt(this.type);
+         par1DataOutputStream.writeInt(this.xPosition);
+         par1DataOutputStream.writeInt(this.yPosition);
+         par1DataOutputStream.writeInt(this.zPosition);

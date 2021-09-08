@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockDetectorLogicGlowing.java
-@@ -0,0 +1,141 @@
+@@ -0,0 +1,139 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -15,9 +15,7 @@
 +        
 +        setLightValue( 1F );     
 +        
-+        setUnlocalizedName( "fcBlockDetectorLogicGlowing" );        
-+        
-+        setCreativeTab( CreativeTabs.tabRedstone );
++        setUnlocalizedName( "fcBlockDetectorLogicGlowing" );
 +    }
 +    
 +    //------------- FCBlockDetectorLogic ------------//

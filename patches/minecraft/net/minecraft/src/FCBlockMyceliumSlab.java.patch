@@ -79,7 +79,7 @@
 +	@Override
 +	protected void OnAnchorBlockLost( World world, int i, int j, int k )
 +	{
-+		DropComponentItemsOnBadBreak( world, i, j, k, world.getBlockMetadata( i, j, k ), 1F );
++		world.setBlock(i, j, k, FCBetterThanWolves.fcBlockDirtLooseSlab.blockID, world.getBlockMetadata(i, j, k) & 8, 2);
 +	}
 +	
 +	@Override

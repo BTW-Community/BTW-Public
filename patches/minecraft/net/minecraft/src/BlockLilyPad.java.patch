@@ -1,0 +1,36 @@
+--- a/minecraft/net/minecraft/src/BlockLilyPad.java
++++ b/minecraft/net/minecraft/src/BlockLilyPad.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeBlock;
+ import java.util.List;
+ 
+ public class BlockLilyPad extends BlockFlower
+@@ -44,7 +45,7 @@
+ 
+     public int getBlockColor()
+     {
+-        return 2129968;
++    	return ColorizeBlock.colorizeBlock(this) ? ColorizeBlock.blockColor : 2129968;
+     }
+ 
+     /**
+@@ -52,7 +53,7 @@
+      */
+     public int getRenderColor(int par1)
+     {
+-        return 2129968;
++    	return ColorizeBlock.colorizeBlock(this, par1) ? ColorizeBlock.blockColor : 2129968;
+     }
+ 
+     /**
+@@ -61,7 +62,7 @@
+      */
+     public int colorMultiplier(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
+     {
+-        return 2129968;
++    	return ColorizeBlock.colorizeBlock(this, par1IBlockAccess, par2, par3, par4) ? ColorizeBlock.blockColor : 2129968;
+     }
+ 
+     /**

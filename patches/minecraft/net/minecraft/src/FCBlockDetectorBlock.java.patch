@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockDetectorBlock.java
-@@ -0,0 +1,532 @@
+@@ -0,0 +1,534 @@
 +//FCMOD
 +
 +package net.minecraft.src;
@@ -22,6 +22,8 @@
 +        setUnlocalizedName( "fcBlockDetectorBlock" );        
 +        
 +        setTickRandomly( true );        
++        
++        setCreativeTab( CreativeTabs.tabRedstone );
 +    }
 +
 +	@Override

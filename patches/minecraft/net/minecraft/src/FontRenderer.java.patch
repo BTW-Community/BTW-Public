@@ -1,0 +1,147 @@
+--- a/minecraft/net/minecraft/src/FontRenderer.java
++++ b/minecraft/net/minecraft/src/FontRenderer.java
+@@ -1,5 +1,9 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeWorld;
++import com.prupe.mcpatcher.hd.FontUtils;
++import com.prupe.mcpatcher.mal.resource.FakeResourceLocation;
++import com.prupe.mcpatcher.mal.resource.TexturePackAPI;
+ import java.awt.image.BufferedImage;
+ import java.io.IOException;
+ import java.io.InputStream;
+@@ -8,7 +12,6 @@
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Random;
+-import javax.imageio.ImageIO;
+ import net.minecraft.client.Minecraft;
+ import org.lwjgl.opengl.GL11;
+ 
+@@ -31,7 +34,7 @@
+      * drop shadows.
+      */
+     private int[] colorCode = new int[32];
+-    private final String fontTextureName;
++    private String fontTextureName;
+ 
+     /** The RenderEngine used to load and setup glyph textures. */
+     private final RenderEngine renderEngine;
+@@ -86,6 +89,12 @@
+      */
+     private boolean strikethroughStyle = false;
+ 
++    public float[] charWidthf;
++    private String defaultFont;
++    private String hdFont;
++    public boolean isHD;
++    public float fontAdj;
++
+     FontRenderer()
+     {
+         this.renderEngine = null;
+@@ -135,6 +144,8 @@
+ 
+     public void readFontData()
+     {
++    	this.fontTextureName = FakeResourceLocation.unwrap(FontUtils.getFontName(this, FakeResourceLocation.wrap(this.fontTextureName), 1.0F));
++        String var1 = this.fontTextureName;
+         this.readGlyphSizes();
+         this.readFontTexture(this.fontTextureName);
+     }
+@@ -145,9 +156,9 @@
+ 
+         try
+         {
+-            var2 = ImageIO.read(RenderEngine.class.getResourceAsStream(par1Str));
++        	var2 = TexturePackAPI.getImage(FakeResourceLocation.wrap(par1Str));
+         }
+-        catch (IOException var15)
++        catch (Exception var15)
+         {
+             throw new RuntimeException(var15);
+         }
+@@ -199,6 +210,8 @@
+                 break;
+             }
+         }
++        
++        this.charWidthf = FontUtils.computeCharWidthsf(this, FakeResourceLocation.wrap(this.fontTextureName), var2, var5, this.charWidth);
+     }
+ 
+     private void readGlyphSizes()
+@@ -219,7 +232,7 @@
+      */
+     private float renderCharAtPos(int par1, char par2, boolean par3)
+     {
+-        return par2 == 32 ? 4.0F : (par1 > 0 && !this.unicodeFlag ? this.renderDefaultChar(par1 + 32, par3) : this.renderUnicodeChar(par2, par3));
++    	return par2 == 32 ? this.charWidthf[32] : (par1 > 0 && !this.unicodeFlag ? this.renderDefaultChar(par1 + 32, par3) : this.renderUnicodeChar(par2, par3));
+     }
+ 
+     /**
+@@ -242,7 +255,7 @@
+         GL11.glTexCoord2f((var3 + var6) / 128.0F, (var4 + 7.99F) / 128.0F);
+         GL11.glVertex3f(this.posX + var6 - var5, this.posY + 7.99F, 0.0F);
+         GL11.glEnd();
+-        return (float)this.charWidth[par1];
++        return FontUtils.getCharWidthf(this, this.charWidth, par1);
+     }
+ 
+     /**
+@@ -458,7 +471,7 @@
+                         var5 += 16;
+                     }
+ 
+-                    var6 = this.colorCode[var5];
++                    var6 = ColorizeWorld.colorizeText(this.colorCode[var5], var5);
+                     this.textColor = var6;
+                     GL11.glColor4f((float)(var6 >> 16) / 255.0F, (float)(var6 >> 8 & 255) / 255.0F, (float)(var6 & 255) / 255.0F, this.alpha);
+                 }
+@@ -608,6 +621,8 @@
+         }
+         else
+         {
++        	par4 = ColorizeWorld.colorizeText(par4);
++        	
+             if ((par4 & -67108864) == 0)
+             {
+                 par4 |= -16777216;
+@@ -635,8 +650,12 @@
+      */
+     public int getStringWidth(String par1Str)
+     {
+-        if (par1Str == null)
++    	if (this.isHD)
+         {
++            return (int)FontUtils.getStringWidthf(this, par1Str);
++        }
++        else if (par1Str == null)
++        {
+             return 0;
+         }
+         else
+@@ -1019,4 +1038,24 @@
+     {
+         return this.bidiFlag;
+     }
++    
++    public FakeResourceLocation getDefaultFont()
++    {
++        return FakeResourceLocation.wrap(this.defaultFont);
+ }
++
++    public void setDefaultFont(FakeResourceLocation var1)
++    {
++        this.defaultFont = FakeResourceLocation.unwrap(var1);
++    }
++
++    public FakeResourceLocation getHDFont()
++    {
++        return FakeResourceLocation.wrap(this.hdFont);
++    }
++
++    public void setHDFont(FakeResourceLocation var1)
++    {
++        this.hdFont = FakeResourceLocation.unwrap(var1);
++    }
++}

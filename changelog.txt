@@ -1,0 +1,77 @@
+## Version 1.0.0: ##
+This version WILL break any addons using the Extended Addon API, which has been deprecated, with functionality now being integrated into BTW itself. Most changes that are addon-facing are relavtively minor though so updating should be easy. Addons not using the API should be unaffected.
+
+Note that it is not safe to downgrade worlds opened in this release to a previous BTW release as this version changes how villagers are stored in the save file. Old saves can be ported without issue, but they cannot be reverted.
+
+If you are currently using the API, this version will require a clean install.
+
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- Zhil
+- yany
+- IssaMe
+- Hiracho
+
+/-- General --/
+- Integrated Extended Addon API into BTW. This is detailed further below. Addons using the API will need to update to be compatible.
+- Integrated MCPatcher into BTW.
+- Added a version display on the main menu.
+- Completely rewrote how config files are handled. It is now automatically generated under config/BTW, and the old config file has been deprecated.
+- Removed the config option for minecart changes as it really didn't serve much purpose.
+- Fixed an issue where the tops of grass slabs did not respond properly to custom biome colors using MCPatcher.
+- Fixed an issue where skins would not show up due to an API change from Mojang. This replaces the need for Zhil's skin fix.
+
+/-- Gameplay --/
+- Added the ability to piston pack ender pearls.
+- Re-enabled the redstone comparator. It is only available in creative mode for now but will be added to survival at a later date.
+- Re-enabled the speed potion effect, although the potions may still not be crafted. This is primarily for addons or custom maps to make use of the effect.
+- Added the ability for the comparator to read the contents of the following blocks: block dispenser, cauldron, crucible, millstone, pulley, and vessel of the dragon. Hoppers have their own detection method right now which will be changed in the future once comparators are available in survival.
+- Added the ability to uncraft windmills back into sails.
+- Changed dirt, grass, and mycelium slabs to turn into loose slabs when their anchor block is lost instead of exploding into items.
+- Changed flowers to be crushed by falling blocks to fix an exploit where they could be used to mine dirt in the early game.
+- Fixed an issue where baby animals would prioritize following adults over eating and could starve to death if they could not reach any nearby adult they were trying to path to.
+- Fixed an issue where baby animals would try to path up jumps too tall for them and get stuck jumping continuously. This doesn't catch all possible edge cases but will catch the majority the player is likely to encounter through normal gameplay. Specifically, if the block has a top surface you can stick things to, babies will not try to path up it. If the block does not have such a top surface but is still more than half a block tall (such as the back side of stairs), the baby will still attempt to path up it. However, this is unlikely to occur unless the player purposefully creates such a scenario.
+- Fixed an issue where wolves were unable to be bred. They may now be bred using kibble, but must be hand fed and at full health and hunger (this is what the behavior was before the bug was introduced). This behavior, however, is a placeholder and will be changed in a future release.
+- Fixed (theoretically) a bug where players would become invisible to each other when they left each other's loaded chunks in multiplayer. The fix for this was rather hacky, so let me know if anyone still has this bug occur for them.
+- Fixed an issue where villager trade weighting was not being applied evenly and was incorrectly biased towards some trades.
+- Fixed a vanilla issue where slimes could spawn inside of blocks when splitting, resulting in suffocation or them escaping through walls.
+
+/-- Creative Mode --/
+- Added creative mode as an officially supported gamemode. Bug reports and feedback about creative mode are now welcome.
+- Added villager spawn eggs for each profession as a result of the below villager change in the API section.
+- Changed the creative menu tabs for tuning forks, metal fragments, and bone fish hooks to be more appropriate.
+- Removed limitations imposed on creative mode for the following mechanics: possessed cows birthing mutants, wolves converting to beasts, villages spawning zombies, villagers gaining xp, beacon effects, arcane scroll drops, and ender pearls (this was actually vanilla but has been changed for consistency with modern versions of vanilla).
+- Fixed an issue where several blocks or items were not present in the creative inventory: vessel of the dragon, detector block, chainmail armor, mail item, crude torch, unlit torch, bloody chopping block, blight, soul sand planter, and farmland (since it can no longer be created in creative mode given the hoe changes). Subblocks will be added eventually but require more work than just adding them to the menu.
+- Fixed an issue where the technical block glowing detector logic displayed in the creative inventory.
+- Fixed an issue where several blocks gave the wrong result when using pick block: white stone, blight, stone bricks, and wooden sub-blocks.
+- Fixed an issue where gamerule doFireTick did not properly disable fire.
+- Fixed an issue where equipment defined by custom mob spawners was not being applied to mobs spawned from the spawner.
+
+/-- Addon API --/
+Most changes are equivalent to Extended Addon API 1.1.4. Those which are not are either new features, or the differences are specified further in the changelog:
+- Added a directional template block like logs which can support up to 4 subtypes.
+- Added the ability for addons to add villager professions by splitting professions into their own classes and removing a lot of the hardcoded methods related to trades.
+- Added hooks to add and modify villager trades.
+- Added hooks to play special effects on level up or when certain trades are performed.
+- Added hooks for automatic version checking.
+- Added hooks to be able to replace references to existing blocks and items.
+- Added hooks to define custom item entities.
+- Added hooks to replace custom entities.
+- Added hooks for addons to intercept existing client packets to change their behavior.
+- Added hooks to define a block's map color per metadata, and optimized map rendering to be more memory-efficient.
+- Added hooks to allow an addon to save data as a part of the world file. This data is saved uniquely per dimension.
+- Added hooks to allow addons to generate and process config files.
+- Added hooks to define custom criteria for mobs spawning during world gen.
+- Fixed an issue where trying to remove a cauldron or crucible recipe with fewer outputs than inputs would cause the game to crash on load.
+- Fixed a vanilla issue where trying to spawn an entity with an ID above 255 in multiplayer would crash all nearby clients.
+
+Changes from API 1.1.4:
+- Changed the name of AddonBlockDirectional to FCBlockDirectional.
+- Chnaged how the hooks for defining villager trades work to no longer be hardcoded to the class. All trades are handled through method calls which add them to the appropriate list. Invalid trades are also handled automatically now so hooks for determining if a trade is invalid have been removed.
+- Changed version checking to be done in their own methods instead of the generic handler methods. This should not matter for addons unless they implement custom version checking.
+- Removed AddonExt. All addon functionality has been moved into FCAddon. No change should be necessary except changing the superclass of addons back to FCAddOn for any which were using the API.
+- Removed the server acknowledgement check from addons as it was not functioning properly in some cases (and could spam clients with chat messages). This will be re-introduced at a later date in a better form.
+- Fixed an issue where breeding villagers always produced farmers.
+- Fixed an issue where villager trade lists were still using 4.B0000002 trades and not the updated versions.
+- Fixed an issue where butchers put on their breeding harness a level too early.
+- Fixed an issue where replacing entity mappings did not work for spawnable mobs.

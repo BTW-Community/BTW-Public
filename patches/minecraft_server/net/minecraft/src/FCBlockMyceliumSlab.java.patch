@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockMyceliumSlab.java
-@@ -0,0 +1,182 @@
+@@ -0,0 +1,180 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -79,7 +79,7 @@
 +	@Override
 +	protected void OnAnchorBlockLost( World world, int i, int j, int k )
 +	{
-+		DropComponentItemsOnBadBreak( world, i, j, k, world.getBlockMetadata( i, j, k ), 1F );
++		world.setBlock(i, j, k, FCBetterThanWolves.fcBlockDirtLooseSlab.blockID, world.getBlockMetadata(i, j, k) & 8, 2);
 +	}
 +	
 +	@Override
@@ -180,6 +180,4 @@
 +    }
 +    
 +    //------------- Class Specific Methods ------------//    
-+	
-+	//----------- Client Side Functionality -----------//
 +}

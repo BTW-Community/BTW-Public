@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCEntityAIVillagerMate.java
-@@ -0,0 +1,201 @@
+@@ -0,0 +1,199 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -96,22 +96,20 @@
 +
 +    private void giveBirth()
 +    {
-+        FCEntityVillager babyVillager = m_villager.func_90012_b( m_mate );
-+
-+    	int iBabyProfession = m_villager.getProfession();
++    	int iBabyProfession = m_villager.getProfessionFromClass();
 +    	
 +    	// 50% chance of baby inheriting profession from other parent
 +    	
-+        if ( babyVillager.rand.nextInt( 2 ) == 0 )
++        if ( m_villager.rand.nextInt( 2 ) == 0 )
 +        {
-+        	babyVillager.setProfession( m_mate.getProfession() );
++        	iBabyProfession = m_mate.getProfessionFromClass();
 +        }
 +        
 +        if ( iBabyProfession != 0 ) // 0 = peasant
 +        {
 +        	// 25% chance of baby being of same "caste" but different profession
 +        	
-+        	if ( babyVillager.rand.nextInt( 4 ) == 0 )
++        	if ( m_villager.rand.nextInt( 4 ) == 0 )
 +        	{
 +        		switch ( iBabyProfession )
 +        		{
@@ -141,8 +139,8 @@
 +        		}
 +        	}
 +        }
-+        
-+    	babyVillager.setProfession( iBabyProfession );
++    	
++    	FCEntityVillager babyVillager = m_villager.spawnBabyVillagerWithProfession(m_mate, iBabyProfession);
 +    	
 +        m_mate.setGrowingAge( 6000 );
 +        m_villager.setGrowingAge( 6000 );

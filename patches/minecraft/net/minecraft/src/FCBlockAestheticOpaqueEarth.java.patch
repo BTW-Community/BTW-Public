@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockAestheticOpaqueEarth.java
-@@ -0,0 +1,687 @@
+@@ -0,0 +1,704 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -682,9 +682,26 @@
 +    }    
 +    
 +	@Override
-+	public void getSubBlocks( int iBlockID, CreativeTabs creativeTabs, List list )
-+    {
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypePackedEarth ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeDung ) );
++	public void getSubBlocks(int blockID, CreativeTabs creativeTabs, List list) {
++        list.add(new ItemStack(blockID, 1, m_iSubtypeBlightLevel0));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeBlightLevel1));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeBlightLevel2));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeBlightLevel3));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeBlightRootsLevel2));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeBlightRootsLevel3));
++        list.add(new ItemStack(blockID, 1, m_iSubtypePackedEarth));
++        list.add(new ItemStack(blockID, 1, m_iSubtypeDung));
++    }
++
++	@Override
++    public int getDamageValue(World world, int x, int y, int z) {
++		// used only by pick block
++		int metadata = world.getBlockMetadata(x, y, z);
++		
++		if (metadata == m_iSubtypeBlightLevel0 || metadata == m_iSubtypeBlightLevel1 || metadata == m_iSubtypeBlightLevel2 || metadata == m_iSubtypeBlightLevel3 || metadata == m_iSubtypeBlightRootsLevel2 || metadata == m_iSubtypeBlightRootsLevel3) {
++			return metadata;
++		}
++		
++		return super.getDamageValue(world, x, y, z);		
 +    }
 +}

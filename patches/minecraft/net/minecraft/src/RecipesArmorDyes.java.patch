@@ -1,6 +1,13 @@
 --- a/minecraft/net/minecraft/src/RecipesArmorDyes.java
 +++ b/minecraft/net/minecraft/src/RecipesArmorDyes.java
-@@ -22,10 +22,22 @@
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeEntity;
+ import java.util.ArrayList;
+ 
+ public class RecipesArmorDyes implements IRecipe
+@@ -22,10 +23,22 @@
                  {
                      ItemArmor var7 = (ItemArmor)var6.getItem();
  
@@ -23,7 +30,7 @@
  
                      var3 = var6;
                  }
-@@ -69,11 +81,22 @@
+@@ -69,11 +82,22 @@
                  if (var8.getItem() instanceof ItemArmor)
                  {
                      var6 = (ItemArmor)var8.getItem();
@@ -47,12 +54,14 @@
  
                      var2 = var8.copy();
                      var2.stackSize = 1;
-@@ -99,12 +122,12 @@
+@@ -98,13 +122,13 @@
+                         return null;
                      }
  
-                     float[] var14 = EntitySheep.fleeceColorTable[BlockCloth.getBlockFromDye(var8.getItemDamage())];
+-                    float[] var14 = EntitySheep.fleeceColorTable[BlockCloth.getBlockFromDye(var8.getItemDamage())];
 -                    int var15 = (int)(var14[0] * 255.0F);
 -                    int var16 = (int)(var14[1] * 255.0F);
++                    float[] var14 = ColorizeEntity.getArmorDyeColor(EntitySheep.fleeceColorTable[BlockCloth.getBlockFromDye(var8.getItemDamage())], BlockCloth.getBlockFromDye(var8.getItemDamage()));
 +                    int var16 = (int)(var14[0] * 255.0F);
 +                    int var15 = (int)(var14[1] * 255.0F);
                      var17 = (int)(var14[2] * 255.0F);
@@ -65,7 +74,7 @@
                      var3[2] += var17;
                      ++var5;
                  }
-@@ -144,4 +167,18 @@
+@@ -144,4 +168,18 @@
      {
          return null;
      }

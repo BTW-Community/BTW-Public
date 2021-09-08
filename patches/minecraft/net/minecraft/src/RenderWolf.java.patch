@@ -1,8 +1,26 @@
 --- a/minecraft/net/minecraft/src/RenderWolf.java
 +++ b/minecraft/net/minecraft/src/RenderWolf.java
-@@ -1,3 +1,5 @@
+@@ -1,5 +1,10 @@
 +// FCMOD: Class changes deprecated 09/10/2018
 +
  package net.minecraft.src;
  
++import com.prupe.mcpatcher.cc.ColorizeEntity;
++import com.prupe.mcpatcher.mal.resource.FakeResourceLocation;
++import com.prupe.mcpatcher.mob.MobRandomizer;
  import org.lwjgl.opengl.GL11;
+ 
+ public class RenderWolf extends RenderLiving
+@@ -28,10 +33,10 @@
+         }
+         else if (par2 == 1 && par1EntityWolf.isTamed())
+         {
+-            this.loadTexture("/mob/wolf_collar.png");
++        	this.loadTexture(FakeResourceLocation.unwrap(MobRandomizer.randomTexture((Entity)par1EntityWolf, FakeResourceLocation.wrap("/mob/wolf_collar.png"))));
+             var4 = 1.0F;
+             int var5 = par1EntityWolf.getCollarColor();
+-            GL11.glColor3f(var4 * EntitySheep.fleeceColorTable[var5][0], var4 * EntitySheep.fleeceColorTable[var5][1], var4 * EntitySheep.fleeceColorTable[var5][2]);
++            GL11.glColor3f(var4 * ColorizeEntity.getWolfCollarColor(EntitySheep.fleeceColorTable[var5], var5)[0], var4 * ColorizeEntity.getWolfCollarColor(EntitySheep.fleeceColorTable[var5], var5)[1], var4 * ColorizeEntity.getWolfCollarColor(EntitySheep.fleeceColorTable[var5], var5)[2]);
+             return 1;
+         }
+         else

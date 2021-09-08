@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCEntitySkeleton.java
-@@ -0,0 +1,272 @@
+@@ -0,0 +1,274 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -72,6 +72,8 @@
 +        setCombatTask();
 +        
 +        setCanPickUpLoot( rand.nextFloat() < m_fPickUpLootProability );
++        
++        func_82162_bC();
 +    }
 +    
 +    @Override
@@ -158,7 +160,7 @@
 +
 +        int iFlameLevel = EnchantmentHelper.getEnchantmentLevel(
 +        	Enchantment.flame.effectId, getHeldItem() );
-+        	
++
 +        if ( iFlameLevel > 0 || getSkeletonType() == 1 || 
 +        	( isBurning() && rand.nextFloat() < 0.3F ) )
 +        {

@@ -1,6 +1,13 @@
 --- a/minecraft/net/minecraft/src/RenderSnowMan.java
 +++ b/minecraft/net/minecraft/src/RenderSnowMan.java
-@@ -22,12 +22,20 @@
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.mob.MobOverlay;
+ import org.lwjgl.opengl.GL11;
+ 
+ public class RenderSnowMan extends RenderLiving
+@@ -22,12 +23,20 @@
          super.renderEquippedItems(par1EntitySnowman, par2);
          ItemStack var3 = new ItemStack(Block.pumpkin, 1);
  
@@ -22,3 +29,15 @@
              {
                  float var4 = 0.625F;
                  GL11.glTranslatef(0.0F, -0.34375F, 0.0F);
+@@ -35,7 +44,11 @@
+                 GL11.glScalef(var4, -var4, var4);
+             }
+ 
++            if (!MobOverlay.renderSnowmanOverlay(par1EntitySnowman))
++            {
+             this.renderManager.itemRenderer.renderItem(par1EntitySnowman, var3, 0);
++            }
++            
+             GL11.glPopMatrix();
+         }
+     }

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockSlabAttached.java
-@@ -0,0 +1,90 @@
+@@ -0,0 +1,88 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -72,8 +72,6 @@
 +		if ( !HasValidAnchorToFacing( world, i, j, k, iAnchorSide ) )
 +		{
 +			OnAnchorBlockLost( world, i, j, k );
-+			
-+	        world.setBlockToAir( i, j, k );
 +		}
 +    }
 +	

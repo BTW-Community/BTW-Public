@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockFarmland.java
-@@ -0,0 +1,275 @@
+@@ -0,0 +1,277 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -16,6 +16,8 @@
 +    	super( iBlockID );    	
 +        
 +        setUnlocalizedName( "fcBlockFarmlandNew" );
++        
++        setCreativeTab(CreativeTabs.tabDecorations);
 +    }
 +    
 +    @Override

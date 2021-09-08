@@ -1,0 +1,25 @@
+--- a/minecraft/net/minecraft/src/BlockMycelium.java
++++ b/minecraft/net/minecraft/src/BlockMycelium.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.mal.block.RenderBlocksUtils;
+ import java.util.Random;
+ 
+ public class BlockMycelium extends Block
+@@ -27,8 +28,14 @@
+      */
+     public Icon getBlockTexture(IBlockAccess par1IBlockAccess, int par2, int par3, int par4, int par5)
+     {
+-        if (par5 == 1)
++    	Icon var7 = RenderBlocksUtils.getGrassTexture(this, par1IBlockAccess, par2, par3, par4, par5, this.field_94422_a);
++
++        if (var7 != null)
+         {
++            return var7;
++        }
++        else if (par5 == 1)
++        {
+             return this.field_94422_a;
+         }
+         else if (par5 == 0)

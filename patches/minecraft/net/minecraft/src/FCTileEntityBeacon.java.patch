@@ -135,7 +135,7 @@
 +            	
 +            	if ( dDeltaZ <= dRange )
 +            	{
-+            		if ( !player.isDead && !player.capabilities.isCreativeMode )
++            		if (!player.isDead)
 +            		{
 +                        player.addPotionEffect( new PotionEffect( iEffectID, m_iEffectDuration, iEffectLevel, true ) );                            
 +            		}

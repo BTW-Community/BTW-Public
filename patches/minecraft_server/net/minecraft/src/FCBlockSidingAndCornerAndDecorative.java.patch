@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockSidingAndCornerAndDecorative.java
-@@ -0,0 +1,535 @@
+@@ -0,0 +1,577 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -532,6 +532,48 @@
 +        
 +        return block != null && block.blockMaterial.isOpaque() && block.renderAsNormalBlock() && 
 +        	block.blockMaterial != Material.pumpkin;
++    }
++    
++    //------------- Stonecutter related functionality ------------//
++    // Only called by Automation+ addon
++    // Can be used by other addons to interface
++
++    private int mouldingIDDropped = -1;
++    
++    public void setMouldingIDDroppedOnStonecutter(int id) {
++    	this.mouldingIDDropped = id;
++    }
++    
++    public int getItemIDDroppedOnStonecutter(World var1, int var2, int var3, int var4)
++    {
++        int var5 = var1.getBlockMetadata(var2, var3, var4);
++        return var5 == 12 ? super.getItemIDDroppedOnStonecutter(var1, var2, var3, var4) : (var5 == 14 ? this.blockID : (this.GetIsCorner(var1, var2, var3, var4) ? super.getItemIDDroppedOnStonecutter(var1, var2, var3, var4) : this.mouldingIDDropped));
++    }
++
++    public int getItemCountDroppedOnStonecutter(World var1, int var2, int var3, int var4)
++    {
++        if (this.IsDecorative(var1, var2, var3, var4))
++        {
++            int var5 = var1.getBlockMetadata(var2, var3, var4);
++            return var5 == 14 ? 2 : super.getItemCountDroppedOnStonecutter(var1, var2, var3, var4);
++        }
++        else
++        {
++            return 2;
++        }
++    }
++
++    public int getItemDamageDroppedOnStonecutter(World var1, int var2, int var3, int var4)
++    {
++        if (this.IsDecorative(var1, var2, var3, var4))
++        {
++            int var5 = var1.getBlockMetadata(var2, var3, var4);
++            return var5 == 14 ? 1 : super.getItemDamageDroppedOnStonecutter(var1, var2, var3, var4);
++        }
++        else
++        {
++            return 0;
++        }
 +    }
 +    
 +	//----------- Client Side Functionality -----------//

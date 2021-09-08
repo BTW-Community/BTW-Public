@@ -1,6 +1,31 @@
 --- a/minecraft/net/minecraft/src/TextureMap.java
 +++ b/minecraft/net/minecraft/src/TextureMap.java
-@@ -66,11 +66,11 @@
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.hd.Wrapper15;
++import com.prupe.mcpatcher.mal.tile.TileLoader;
+ import java.awt.image.BufferedImage;
+ import java.io.BufferedReader;
+ import java.io.IOException;
+@@ -18,7 +20,7 @@
+     /** 0 = terrain.png, 1 = items.png */
+     private final int textureType;
+     private final String textureName;
+-    private final String basePath;
++    public final String basePath;
+     private final String textureExt;
+     private final HashMap mapTexturesStiched = new HashMap();
+     private BufferedImage missingImage = new BufferedImage(64, 64, 2);
+@@ -38,6 +40,7 @@
+ 
+     public void refreshTextures()
+     {
++    	Wrapper15.currentAtlas = this;
+         this.textureStichedMap.clear();
+         int var2;
+         int var3;
+@@ -66,11 +69,11 @@
  
          for (var3 = 0; var3 < var2; ++var3)
          {
@@ -15,12 +40,13 @@
              }
          }
  
-@@ -78,10 +78,10 @@
+@@ -78,16 +81,17 @@
          Stitcher var21 = TextureManager.instance().createStitcher(this.textureName);
          this.mapTexturesStiched.clear();
          this.listTextureStiched.clear();
 -        Texture var22 = TextureManager.instance().makeTexture("missingno", 2, this.missingImage.getWidth(), this.missingImage.getHeight(), 10496, 6408, 9728, 9728, false, this.missingImage);
 -        StitchHolder var24 = new StitchHolder(var22);
++        TileLoader.registerIcons(this, this.basePath, this.textureStichedMap);
 +        Texture var23 = TextureManager.instance().makeTexture("missingno", 2, this.missingImage.getWidth(), this.missingImage.getHeight(), 10496, 6408, 9728, 9728, false, this.missingImage);
 +        StitchHolder var24 = new StitchHolder(var23);
          var21.addStitchHolder(var24);
@@ -29,7 +55,14 @@
          Iterator var5 = this.textureStichedMap.keySet().iterator();
  
          while (var5.hasNext())
-@@ -112,8 +112,8 @@
+         {
+             String var6 = (String)var5.next();
+-            String var7 = this.basePath + var6 + this.textureExt;
++            String var7 = TileLoader.getOverridePath("", this.basePath, var6, this.textureExt);
+             List var8 = TextureManager.instance().createTexture(var7);
+ 
+             if (!var8.isEmpty())
+@@ -112,8 +116,8 @@
  
          while (var5.hasNext())
          {
@@ -40,7 +73,7 @@
              Texture var28 = var27.func_98150_a();
              String var29 = var28.getTextureName();
              List var10 = (List)var20.get(var27);
-@@ -131,7 +131,7 @@
+@@ -131,7 +135,7 @@
                  }
              }
  
@@ -49,7 +82,16 @@
              this.mapTexturesStiched.put(var29, var11);
  
              if (!var12)
-@@ -149,7 +149,9 @@
+@@ -142,14 +146,16 @@
+             if (var10.size() > 1)
+             {
+                 this.listTextureStiched.add(var11);
+-                String var13 = this.basePath + var29 + ".txt";
++                String var13 = TileLoader.getOverridePath("", this.basePath, var29, ".txt");
+                 ITexturePack var14 = Minecraft.getMinecraft().texturePackList.getSelectedTexturePack();
+-                boolean var15 = !var14.func_98138_b("/" + this.basePath + var29 + ".png", false);
++                boolean var15 = !var14.func_98138_b(TileLoader.getOverridePath("/", this.basePath, var29, ".png"), false);
+ 
                  try
                  {
                      InputStream var16 = var14.func_98137_a("/" + var13, var15);
@@ -60,7 +102,7 @@
                      var11.readAnimationInfo(new BufferedReader(new InputStreamReader(var16)));
                  }
                  catch (IOException var17)
-@@ -157,15 +159,21 @@
+@@ -157,15 +163,21 @@
                      ;
                  }
              }
@@ -84,7 +126,7 @@
          }
  
          this.atlasTexture.writeImage("debug.stitched_" + this.textureName + ".png");
-@@ -174,6 +182,10 @@
+@@ -174,6 +186,10 @@
  
      public void updateAnimations()
      {
@@ -95,7 +137,7 @@
          Iterator var1 = this.listTextureStiched.iterator();
  
          while (var1.hasNext())
-@@ -210,4 +222,26 @@
+@@ -210,4 +226,26 @@
      {
          return this.missingTextureStiched;
      }

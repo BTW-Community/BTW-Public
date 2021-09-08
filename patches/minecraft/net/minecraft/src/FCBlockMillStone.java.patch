@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockMillStone.java
-@@ -0,0 +1,485 @@
+@@ -0,0 +1,497 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -206,6 +206,18 @@
 +	{
 +		BreakMillStone( world, i, j, k );
 +	}
++	
++	@Override
++	public boolean hasComparatorInputOverride()
++    {
++        return true;
++    }
++
++	@Override
++    public int getComparatorInputOverride(World par1World, int par2, int par3, int par4, int par5)
++    {
++        return ((FCTileEntityMillStone) par1World.getBlockTileEntity(par2, par3, par4)).m_stackMilling == null ? 0 : 15;
++    }
 +	
 +    //------------- Class Specific Methods ------------//
 +    

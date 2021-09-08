@@ -24,12 +24,13 @@
      }
  
      public void renderVillager(EntityVillager par1EntityVillager, double par2, double par4, double par6, float par8, float par9)
-@@ -85,4 +94,42 @@
+@@ -85,4 +94,43 @@
      {
          this.renderVillager((EntityVillager)par1Entity, par2, par4, par6, par8, par9);
      }
 +    
 +    // FCMOD: Added (client only)
++    // TODO: make this generalizable
 +    protected int renderEyes( EntityVillager villager, int iRenderPass )
 +    {
 +        if ( iRenderPass == 0 && villager.getProfession() == 2 && villager.GetCurrentTradeLevel() >= 5 )

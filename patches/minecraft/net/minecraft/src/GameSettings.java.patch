@@ -1,6 +1,22 @@
 --- a/minecraft/net/minecraft/src/GameSettings.java
 +++ b/minecraft/net/minecraft/src/GameSettings.java
-@@ -328,7 +328,13 @@
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.Config;
+ import java.io.BufferedReader;
+ import java.io.File;
+ import java.io.FileReader;
+@@ -145,7 +146,7 @@
+         this.particleSetting = 0;
+         this.language = "en_US";
+         this.mc = par1Minecraft;
+-        this.optionsFile = new File(par2File, "options.txt");
++        this.optionsFile = Config.getOptionsTxt(par2File, "options.txt");
+         this.loadOptions();
+     }
+ 
+@@ -328,7 +329,13 @@
          if (par1EnumOptions == EnumOptions.DIFFICULTY)
          {
              this.difficulty = this.difficulty + par2 & 3;
@@ -14,7 +30,7 @@
  
          if (par1EnumOptions == EnumOptions.GRAPHICS)
          {
-@@ -585,7 +591,13 @@
+@@ -585,7 +592,13 @@
                      if (var3[0].equals("difficulty"))
                      {
                          this.difficulty = Integer.parseInt(var3[1]);
