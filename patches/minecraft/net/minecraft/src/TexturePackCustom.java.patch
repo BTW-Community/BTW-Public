@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/TexturePackCustom.java
++++ b/minecraft/net/minecraft/src/TexturePackCustom.java
+@@ -12,7 +12,7 @@
+ public class TexturePackCustom extends TexturePackImplementation
+ {
+     /** ZipFile object used to access the texture pack file's contents. */
+-    private ZipFile texturePackZipFile;
++    public ZipFile texturePackZipFile;
+ 
+     public TexturePackCustom(String par1Str, File par2File, ITexturePack par3ITexturePack)
+     {

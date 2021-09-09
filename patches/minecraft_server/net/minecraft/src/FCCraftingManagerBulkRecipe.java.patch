@@ -141,7 +141,7 @@
 +    			}
 +    		}
 +    		
-+    		for ( int iListIndex = 0; iListIndex < m_recipeInputStacks.size(); iListIndex++ )
++    		for ( int iListIndex = 0; iListIndex < m_recipeOutputStacks.size(); iListIndex++ )
 +    		{
 +    			if ( !DoStacksMatch( m_recipeOutputStacks.get( iListIndex ), recipe.m_recipeOutputStacks.get( iListIndex ) ) )
 +    			{

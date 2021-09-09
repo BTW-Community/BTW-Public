@@ -59,7 +59,22 @@
                  }
  
                  this.ridingEntity = true;
-@@ -359,9 +370,9 @@
+@@ -319,8 +330,12 @@
+ 
+             if (var2 >= (double)(-this.blocksDistanceThreshold) && var2 <= (double)this.blocksDistanceThreshold && var4 >= (double)(-this.blocksDistanceThreshold) && var4 <= (double)this.blocksDistanceThreshold)
+             {
+-                if (!this.trackingPlayers.contains(par1EntityPlayerMP) && (this.isPlayerWatchingThisChunk(par1EntityPlayerMP) || this.myEntity.field_98038_p))
+-                {
++            	// client
++            	if ((!this.trackingPlayers.contains(par1EntityPlayerMP) && (this.isPlayerWatchingThisChunk(par1EntityPlayerMP) || this.myEntity.field_98038_p))
++                        || (Math.abs(par1EntityPlayerMP.posX - this.myEntity.posX) > 120 || Math.abs(par1EntityPlayerMP.posZ - this.myEntity.posZ) > 120)) {
++            	// server
++            	//if ((!this.trackingPlayers.contains(par1EntityPlayerMP) && (this.isPlayerWatchingThisChunk(par1EntityPlayerMP) || this.trackedEntity.field_98038_p))
++                //		|| (Math.abs(par1EntityPlayerMP.posX - this.trackedEntity.posX) > 120 || Math.abs(par1EntityPlayerMP.posZ - this.trackedEntity.posZ) > 120)) {
+                     this.trackingPlayers.add(par1EntityPlayerMP);
+                     Packet var6 = this.getPacketForThisEntity();
+                     par1EntityPlayerMP.playerNetServerHandler.sendPacketToPlayer(var6);
+@@ -359,9 +374,9 @@
  
                      if (this.myEntity instanceof EntityPlayer)
                      {
@@ -71,7 +86,7 @@
                          {
                              par1EntityPlayerMP.playerNetServerHandler.sendPacketToPlayer(new Packet17Sleep(this.myEntity, 0, MathHelper.floor_double(this.myEntity.posX), MathHelper.floor_double(this.myEntity.posY), MathHelper.floor_double(this.myEntity.posZ)));
                          }
-@@ -369,8 +380,8 @@
+@@ -369,8 +384,8 @@
  
                      if (this.myEntity instanceof EntityLiving)
                      {
@@ -82,7 +97,7 @@
  
                          while (var12.hasNext())
                          {
-@@ -390,7 +401,15 @@
+@@ -390,7 +405,15 @@
  
      private boolean isPlayerWatchingThisChunk(EntityPlayerMP par1EntityPlayerMP)
      {
@@ -99,7 +114,7 @@
      }
  
      public void sendEventsToPlayers(List par1List)
-@@ -408,6 +427,21 @@
+@@ -408,6 +431,21 @@
              this.myEntity.worldObj.getWorldLogAgent().logWarning("Fetching addPacket for removed entity");
          }
  

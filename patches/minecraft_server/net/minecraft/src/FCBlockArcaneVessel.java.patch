@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockArcaneVessel.java
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,117 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -15,7 +15,7 @@
 +        super( iBlockID, Material.iron );
 +        
 +        setHardness( 3.5F );
-+        setResistance( 10F );
++        setResistance( 10F );    	
 +    	SetPicksEffectiveOn( true );
 +        
 +        setStepSound( soundMetalFootstep );
@@ -53,7 +53,9 @@
 +		{
 +			if ( entity instanceof EntityXPOrb )
 +			{
-+				OnEntityXPOrbCollidedWithBlock( world, i, j, k, (EntityXPOrb)entity );			
++				OnEntityXPOrbCollidedWithBlock( world, i, j, k, (EntityXPOrb)entity );
++				//Updates nearby comparator states
++	            world.func_96440_m(i, j, k, this.blockID);
 +			}
 +		}		
 +    }
@@ -95,6 +97,23 @@
 +	        	}
 +        	}
 +    	}
++    }
++
++    @Override
++    public boolean hasComparatorInputOverride()
++    {
++        return true;
++    }
++
++    @Override
++    public int getComparatorInputOverride(World par1World, int par2, int par3, int par4, int par5)
++    {
++    	FCTileEntityArcaneVessel tileEntity = (FCTileEntityArcaneVessel) par1World.getBlockTileEntity(par2, par3, par4);
++    	int currentXP = tileEntity.GetContainedTotalExperience();
++    	
++    	float xpPercent = currentXP / (float) tileEntity.m_iMaxContainedExperience;
++
++        return MathHelper.floor_float(xpPercent * 14.0F) + (currentXP > 0 ? 1 : 0);
 +    }
 +    
 +    //------------- Class Specific Methods -------------//

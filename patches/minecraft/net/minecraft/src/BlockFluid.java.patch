@@ -1,6 +1,13 @@
 --- a/minecraft/net/minecraft/src/BlockFluid.java
 +++ b/minecraft/net/minecraft/src/BlockFluid.java
-@@ -11,7 +11,10 @@
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeBlock;
+ import java.util.Random;
+ 
+ public abstract class BlockFluid extends Block
+@@ -11,7 +12,10 @@
          super(par1, par2Material);
          float var3 = 0.0F;
          float var4 = 0.0F;
@@ -12,7 +19,30 @@
          this.setTickRandomly(true);
      }
  
-@@ -148,11 +151,15 @@
+@@ -22,7 +26,7 @@
+ 
+     public int getBlockColor()
+     {
+-        return 16777215;
++        return ColorizeBlock.colorizeBlock(this) ? ColorizeBlock.blockColor : 16777215;
+     }
+ 
+     /**
+@@ -31,8 +35,12 @@
+      */
+     public int colorMultiplier(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
+     {
+-        if (this.blockMaterial != Material.water)
++    	if (ColorizeBlock.colorizeBlock(this, par1IBlockAccess, par2, par3, par4))
+         {
++            return ColorizeBlock.blockColor;
++        }
++        else if (this.blockMaterial != Material.water)
++        {
+             return 16777215;
+         }
+         else
+@@ -148,11 +156,15 @@
       * Returns true if the given side of this block type should be rendered, if the adjacent block is at the given
       * coordinates.  Args: blockAccess, x, y, z, side
       */
@@ -28,7 +58,7 @@
  
      /**
       * Returns a bounding box from the pool of bounding boxes (this means this box can change after the pool has been
-@@ -190,6 +197,8 @@
+@@ -190,6 +202,8 @@
      /**
       * Returns a vector indicating the direction and intensity of fluid flow.
       */
@@ -37,7 +67,7 @@
      private Vec3 getFlowVector(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
      {
          Vec3 var5 = par1IBlockAccess.getWorldVec3Pool().getVecFromPool(0.0D, 0.0D, 0.0D);
-@@ -296,6 +305,8 @@
+@@ -296,6 +310,8 @@
          var5 = var5.normalize();
          return var5;
      }
@@ -46,7 +76,7 @@
  
      /**
       * Can add to the passed in vector for a movement vector to be applied to the entity. Args: x, y, z, entity, vec3d
-@@ -459,8 +470,8 @@
+@@ -459,8 +475,8 @@
          }
  
          double var21;
@@ -56,7 +86,7 @@
  
          if (this.blockMaterial == Material.lava && par1World.getBlockMaterial(par2, par3 + 1, par4) == Material.air && !par1World.isBlockOpaqueCube(par2, par3 + 1, par4))
          {
-@@ -579,7 +590,11 @@
+@@ -579,7 +595,11 @@
                      }
                      else if (var6 <= 4)
                      {
@@ -69,7 +99,7 @@
                      }
  
                      this.triggerLavaMixEffects(par1World, par2, par3, par4);
-@@ -621,4 +636,107 @@
+@@ -621,4 +641,107 @@
      {
          return par0Str == "water" ? Block.waterMoving.theIcon[0] : (par0Str == "water_flow" ? Block.waterMoving.theIcon[1] : (par0Str == "lava" ? Block.lavaMoving.theIcon[0] : (par0Str == "lava_flow" ? Block.lavaMoving.theIcon[1] : null)));
      }

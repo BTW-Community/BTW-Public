@@ -1,14 +1,22 @@
 --- a/minecraft_server/net/minecraft/src/WorldServer.java
 +++ b/minecraft_server/net/minecraft/src/WorldServer.java
-@@ -3,6 +3,7 @@
+@@ -1,9 +1,15 @@
+ package net.minecraft.src;
+ 
++import java.io.File;
++import java.io.FileInputStream;
++import java.io.FileOutputStream;
  import java.util.ArrayList;
++import java.util.HashMap;
  import java.util.HashSet;
  import java.util.Iterator;
 +import java.util.LinkedList;
  import java.util.List;
++import java.util.Map;
  import java.util.Random;
  import java.util.Set;
-@@ -13,7 +14,12 @@
+ import java.util.TreeSet;
+@@ -13,7 +19,12 @@
  {
      private final MinecraftServer mcServer;
      private final EntityTracker theEntityTracker;
@@ -22,7 +30,7 @@
      private Set field_73064_N;
  
      /** All work to do in future ticks. */
-@@ -48,9 +54,19 @@
+@@ -48,9 +59,19 @@
      {
          super(par2ISaveHandler, par3Str, par5WorldSettings, WorldProvider.getProviderForDimension(par4), par6Profiler, par7ILogAgent);
          this.mcServer = par1MinecraftServer;
@@ -43,7 +51,7 @@
          if (this.entityIdMap == null)
          {
              this.entityIdMap = new IntHashMap();
-@@ -91,6 +107,12 @@
+@@ -91,6 +112,12 @@
          {
              this.difficultySetting = 3;
          }
@@ -56,7 +64,7 @@
  
          this.provider.worldChunkMgr.cleanupCache();
  
-@@ -115,7 +137,12 @@
+@@ -115,7 +142,12 @@
  
          if (this.getGameRules().getGameRuleBooleanValue("doMobSpawning"))
          {
@@ -69,7 +77,7 @@
          }
  
          this.theProfiler.endStartSection("chunkSource");
-@@ -134,10 +161,15 @@
+@@ -134,10 +166,15 @@
          this.theProfiler.endStartSection("tickTiles");
          this.tickBlocksAndAmbiance();
          this.theProfiler.endStartSection("chunkMap");
@@ -87,7 +95,7 @@
          this.theProfiler.endStartSection("portalForcer");
          this.field_85177_Q.removeStalePortalLocations(this.getTotalWorldTime());
          this.theProfiler.endSection();
-@@ -234,7 +266,10 @@
+@@ -234,7 +271,10 @@
          super.tickBlocksAndAmbiance();
          int var1 = 0;
          int var2 = 0;
@@ -99,7 +107,7 @@
  
          while (var3.hasNext())
          {
-@@ -252,7 +287,10 @@
+@@ -252,7 +292,10 @@
              int var10;
              int var11;
  
@@ -111,7 +119,7 @@
              {
                  this.updateLCG = this.updateLCG * 3 + 1013904223;
                  var8 = this.updateLCG >> 2;
-@@ -260,11 +298,25 @@
+@@ -260,11 +303,25 @@
                  var10 = var6 + (var8 >> 8 & 15);
                  var11 = this.getPrecipitationHeight(var9, var10);
  
@@ -139,7 +147,7 @@
  
              this.theProfiler.endStartSection("iceandsnow");
              int var13;
-@@ -286,12 +338,21 @@
+@@ -286,12 +343,21 @@
                  {
                      this.setBlock(var9 + var5, var11, var10 + var6, Block.snow.blockID);
                  }
@@ -162,7 +170,7 @@
                      {
                          var13 = this.getBlockId(var9 + var5, var11 - 1, var10 + var6);
  
-@@ -309,25 +370,30 @@
+@@ -309,25 +375,30 @@
  
              for (var10 = 0; var10 < var9; ++var10)
              {
@@ -198,7 +206,7 @@
                          }
                      }
                  }
-@@ -335,6 +401,10 @@
+@@ -335,6 +406,10 @@
  
              this.theProfiler.endSection();
          }
@@ -209,7 +217,7 @@
      }
  
      /**
-@@ -357,13 +427,21 @@
+@@ -357,13 +432,21 @@
      public void func_82740_a(int par1, int par2, int par3, int par4, int par5, int par6)
      {
          NextTickListEntry var7 = new NextTickListEntry(par1, par2, par3, par4);
@@ -232,7 +240,7 @@
                  {
                      int var9 = this.getBlockId(var7.xCoord, var7.yCoord, var7.zCoord);
  
-@@ -379,7 +457,13 @@
+@@ -379,7 +462,13 @@
              par5 = 1;
          }
  
@@ -246,7 +254,7 @@
          {
              if (par4 > 0)
              {
-@@ -420,6 +504,8 @@
+@@ -420,6 +509,8 @@
       */
      public void updateEntities()
      {
@@ -255,7 +263,7 @@
          if (this.playerEntities.isEmpty())
          {
              if (this.updateEntityTick++ >= 1200)
-@@ -431,6 +517,8 @@
+@@ -431,6 +522,8 @@
          {
              this.resetUpdateEntityTick();
          }
@@ -264,7 +272,7 @@
  
          super.updateEntities();
      }
-@@ -486,9 +574,16 @@
+@@ -486,9 +579,16 @@
              {
                  var4 = (NextTickListEntry)var14.next();
                  var14.remove();
@@ -281,7 +289,7 @@
                  {
                      int var6 = this.getBlockId(var4.xCoord, var4.yCoord, var4.zCoord);
  
-@@ -518,10 +613,19 @@
+@@ -518,10 +618,19 @@
                          }
                      }
                  }
@@ -302,7 +310,7 @@
              }
  
              this.theProfiler.endSection();
-@@ -600,6 +704,21 @@
+@@ -600,6 +709,21 @@
  
          if (!(par1Entity.riddenByEntity instanceof EntityPlayer))
          {
@@ -324,7 +332,7 @@
              super.updateEntityWithOptionalForce(par1Entity, par2);
          }
      }
-@@ -622,6 +741,12 @@
+@@ -622,6 +746,12 @@
          return this.theChunkProviderServer;
      }
  
@@ -337,7 +345,7 @@
      /**
       * get a list of tileEntity's
       */
-@@ -730,7 +855,10 @@
+@@ -730,7 +860,10 @@
       */
      protected void createBonusChest()
      {
@@ -349,7 +357,7 @@
  
          for (int var2 = 0; var2 < 10; ++var2)
          {
-@@ -773,6 +901,10 @@
+@@ -773,6 +906,10 @@
              }
  
              this.chunkProvider.saveChunks(par1, par2IProgressUpdate);
@@ -360,7 +368,7 @@
          }
      }
  
-@@ -845,7 +977,19 @@
+@@ -845,7 +982,19 @@
      {
          if (super.addWeatherEffect(par1Entity))
          {
@@ -381,7 +389,7 @@
              return true;
          }
          else
-@@ -962,6 +1106,8 @@
+@@ -962,6 +1111,8 @@
      /**
       * Updates all weather states.
       */
@@ -390,7 +398,7 @@
      protected void updateWeather()
      {
          boolean var1 = this.isRaining();
-@@ -979,6 +1125,8 @@
+@@ -979,6 +1130,8 @@
              }
          }
      }
@@ -399,7 +407,7 @@
  
      /**
       * Gets the MinecraftServer.
-@@ -996,13 +1144,393 @@
+@@ -996,13 +1149,460 @@
          return this.theEntityTracker;
      }
  
@@ -791,5 +799,72 @@
 +    {
 +    	return mcServer.getCurrentPlayerCount() > 0;
 +    }
++
++	//------------ Addon Data Handling -----------//
++
++	private Map<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> addonWorldDataMap = new HashMap();
++
++	public void saveWorldDataToNBT(File dimensionDirectory) {
++		for (Map.Entry<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> entry : addonWorldDataMap.entrySet()) {
++			NBTTagCompound modData = new NBTTagCompound();
++	        
++			entry.getValue().saveWorldDataToNBT(this, modData);
++	        
++	        NBTTagCompound fileData = new NBTTagCompound();
++	        
++	        fileData.setTag( "Data", modData );
++
++	        try {
++	            File modSaveFile = new File(dimensionDirectory, entry.getValue().getFilename() + ".dat");
++	            
++	            if (modSaveFile.exists()) {
++	            	modSaveFile.delete();
++	            }
++	            
++	            CompressedStreamTools.writeCompressed( fileData, new FileOutputStream(modSaveFile) );
++
++	        }
++	        catch (Exception e) {
++	            e.printStackTrace();
++	        }
++		}
++	}
++
++	public void loadWorldDataFromNBT(File dimensionDirectory) {
++		addonWorldDataMap = FCAddOnHandler.initWorldDataForAddon();
++		
++		for (Map.Entry<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> entry : addonWorldDataMap.entrySet()) {
++			File modSaveFile = null;
++			
++			try {
++				modSaveFile = new File(dimensionDirectory, entry.getValue().getFilename() + ".dat");
++			} catch (Exception e) {
++				e.printStackTrace();
++			}
++
++			if (modSaveFile != null && modSaveFile.exists()) {
++				try {
++					NBTTagCompound fileTag = CompressedStreamTools.readCompressed( new FileInputStream(modSaveFile));
++					NBTTagCompound dataTag = fileTag.getCompoundTag("Data");
++
++					entry.getValue().loadWorldDataFromNBT(this, dataTag);
++				}
++				catch (Exception e) {
++					e.printStackTrace();
++				}
++			}
++		}
++	}
++
++	public FCAddOnUtilsWorldData getWorldDataForMod(Class<? extends FCAddOn> mod) {
++		if (addonWorldDataMap.containsKey(mod))
++			return addonWorldDataMap.get(mod);
++		else
++			return null;
++	}
++
++	public void setWorldDataForMod(Class<? extends FCAddOn> mod, FCAddOnUtilsWorldData data) {
++		addonWorldDataMap.put(mod, data);
++	}
 +    // END FCMOD
 +}

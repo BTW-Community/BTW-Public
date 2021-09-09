@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockTorchNetherUnlit.java
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,28 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -14,6 +14,8 @@
 +    	super( iBlockID );    	
 +    	
 +    	setUnlocalizedName( "fcBlockTorchIdle" );
++    	
++        this.setCreativeTab(CreativeTabs.tabDecorations);
 +    }
 +    
 +	@Override

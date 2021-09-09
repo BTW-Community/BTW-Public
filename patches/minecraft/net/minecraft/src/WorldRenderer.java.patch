@@ -1,16 +1,125 @@
 --- a/minecraft/net/minecraft/src/WorldRenderer.java
 +++ b/minecraft/net/minecraft/src/WorldRenderer.java
-@@ -306,7 +306,12 @@
+@@ -1,5 +1,6 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.renderpass.RenderPass;
+ import java.util.ArrayList;
+ import java.util.HashSet;
+ import java.util.List;
+@@ -36,7 +37,7 @@
+     public boolean isInFrustum = false;
+ 
+     /** Should this renderer skip this render pass */
+-    public boolean[] skipRenderPass = new boolean[2];
++    public boolean[] skipRenderPass = new boolean[4];
+ 
+     /** Pos X plus */
+     public int posXPlus;
+@@ -108,7 +109,7 @@
+             this.posZMinus = par3 - this.posZClip;
+             float var4 = 6.0F;
+             this.rendererBoundingBox = AxisAlignedBB.getBoundingBox((double)((float)par1 - var4), (double)((float)par2 - var4), (double)((float)par3 - var4), (double)((float)(par1 + 16) + var4), (double)((float)(par2 + 16) + var4), (double)((float)(par3 + 16) + var4));
+-            GL11.glNewList(this.glRenderList + 2, GL11.GL_COMPILE);
++            GL11.glNewList(this.glRenderList + 4, GL11.GL_COMPILE);
+             RenderItem.renderAABB(AxisAlignedBB.getAABBPool().getAABB((double)((float)this.posXClip - var4), (double)((float)this.posYClip - var4), (double)((float)this.posZClip - var4), (double)((float)(this.posXClip + 16) + var4), (double)((float)(this.posYClip + 16) + var4), (double)((float)(this.posZClip + 16) + var4)));
+             GL11.glEndList();
+             this.markDirty();
+@@ -125,8 +126,12 @@
+      */
+     public void updateRenderer()
+     {
+-        if (this.needsUpdate)
++    	if (!this.needsUpdate)
+         {
++            RenderPass.finish();
++        }
++        else
++        {
+             this.needsUpdate = false;
+             int var1 = this.posX;
+             int var2 = this.posY;
+@@ -135,7 +140,7 @@
+             int var5 = this.posY + 16;
+             int var6 = this.posZ + 16;
+ 
+-            for (int var7 = 0; var7 < 2; ++var7)
++            for (int var7 = 0; var7 < 4; ++var7)
+             {
+                 this.skipRenderPass[var7] = true;
+             }
+@@ -153,11 +158,12 @@
+                 RenderBlocks var10 = new RenderBlocks(var9);
+                 this.bytesDrawn = 0;
+ 
+-                for (int var11 = 0; var11 < 2; ++var11)
++                for (int var11 = 0; var11 < 4; ++var11)
+                 {
+                     boolean var12 = false;
+                     boolean var13 = false;
+                     boolean var14 = false;
++                    RenderPass.start(var11);
+ 
+                     for (int var15 = var2; var15 < var5; ++var15)
+                     {
+@@ -198,13 +204,10 @@
+                                         }
+ 
+                                         int var24 = var23.getRenderBlockPass();
++                                        var12 = RenderPass.checkRenderPasses(var23, var12);
+ 
+-                                        if (var24 != var11)
++                                        if (RenderPass.canRenderInThisPass(var24 == var11))
+                                         {
+-                                            var12 = true;
+-                                        }
+-                                        else if (var24 == var11)
+-                                        {
+                                             var13 |= var10.renderBlockByRenderType(var23, var17, var15, var16);
+                                         }
+                                     }
+@@ -245,6 +248,7 @@
+             this.tileEntities.removeAll(var21);
+             this.isChunkLit = Chunk.isLit;
+             this.isInitialized = true;
++            RenderPass.finish();
+         }
+     }
+ 
+@@ -265,7 +269,7 @@
+      */
+     public void setDontDraw()
+     {
+-        for (int var1 = 0; var1 < 2; ++var1)
++    	for (int var1 = 0; var1 < 4; ++var1)
+         {
+             this.skipRenderPass[var1] = true;
+         }
+@@ -298,7 +302,7 @@
+      */
+     public void callOcclusionQueryList()
+     {
+-        GL11.glCallList(this.glRenderList + 2);
++    	GL11.glCallList(this.glRenderList + 4);
+     }
+ 
+     /**
+@@ -306,7 +310,17 @@
       */
      public boolean skipAllRenderPasses()
      {
 -        return !this.isInitialized ? false : this.skipRenderPass[0] && this.skipRenderPass[1];
 +    	// FCMOD: Changed to try and resolve https://bugs.mojang.com/browse/MC-129 as per
 +    	// Andr�s del Campo Novales' suggested fix in that thread.
-+        //return !this.isInitialized ? false : this.skipRenderPass[0] && this.skipRenderPass[1];
-+        return !isInitialized ? false : ( skipRenderPass[0] && skipRenderPass[1] ) && !needsUpdate;
++        //original: return !this.isInitialized ? false : this.skipRenderPass[0] && this.skipRenderPass[1];
++        
++    	//return !isInitialized ? false : ( skipRenderPass[0] && skipRenderPass[1] ) && !needsUpdate;
++        
 +        // END FCMOD
 +    	
++    	//MCPatcher: return !this.isInitialized ? false : RenderPass.skipAllRenderPasses(this.skipRenderPass);
++    	//MCPatcher + fix:
++    	return !this.isInitialized ? false : RenderPass.skipAllRenderPasses(this.skipRenderPass) && !needsUpdate;
      }
  
      /**

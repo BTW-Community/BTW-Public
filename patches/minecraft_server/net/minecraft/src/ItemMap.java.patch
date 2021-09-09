@@ -1,18 +1,54 @@
 --- a/minecraft_server/net/minecraft/src/ItemMap.java
 +++ b/minecraft_server/net/minecraft/src/ItemMap.java
-@@ -68,7 +68,10 @@
+@@ -51,6 +51,12 @@
+             MapInfo var12 = par3MapData.func_82568_a((EntityPlayer)par2Entity);
+             ++var12.field_82569_d;
+ 
++            // FCMOD: Changed
++            // Moved array allocation 
++            int[] var24 = new int[4096];
++            int[][] metaArray = new int[4096][16];
++            // END FCMOD
++
+             for (int var13 = var9 - var11 + 1; var13 < var9 + var11; ++var13)
+             {
+                 if ((var13 & 15) == (var12.field_82569_d & 15))
+@@ -68,7 +74,17 @@
                              boolean var21 = var19 * var19 + var20 * var20 > (var11 - 2) * (var11 - 2);
                              int var22 = (var7 / var6 + var13 - var4 / 2) * var6;
                              int var23 = (var8 / var6 + var18 - var5 / 2) * var6;
 -                            int[] var24 = new int[256];
-+                            // FCMOD: Change
++                            // FCMOD: Modified memory allocation
 +                            //int[] var24 = new int[256];
-+                            int[] var24 = new int[4096];
++                            for (int i = 0; i < 4096; i++) {
++                            	var24[i] = 0;
++                            	
++                            	for (int j = 0; j < 16; j++) {
++                            		metaArray[i][j] = 0;
++                            	}
++                            }
++                            
 +                            // END FCMOD
                              Chunk var25 = par1World.getChunkFromBlockCoords(var22, var23);
  
                              if (!var25.isEmpty())
-@@ -143,14 +146,14 @@
+@@ -106,6 +122,7 @@
+                                         {
+                                             var33 = var25.getHeightValue(var31 + var26, var32 + var27) + 1;
+                                             int var34 = 0;
++                                            int meta = 0;
+ 
+                                             if (var33 > 1)
+                                             {
+@@ -115,6 +132,7 @@
+                                                 {
+                                                     var35 = true;
+                                                     var34 = var25.getBlockID(var31 + var26, var33 - 1, var32 + var27);
++                                                    meta = var25.getBlockMetadata(var31 + var26, var33 - 1, var32 + var27);
+ 
+                                                     if (var34 == 0)
+                                                     {
+@@ -143,19 +161,20 @@
                                                  {
                                                      var36 = var33 - 1;
                                                      boolean var37 = false;
@@ -30,7 +66,14 @@
                                                  }
                                              }
  
-@@ -164,7 +167,10 @@
+                                             var29 += (double)var33 / (double)(var6 * var6);
+-                                            ++var24[var34];
++                                            var24[var34]++;
++                                            metaArray[var34][meta]++;
+                                         }
+                                     }
+                                 }
+@@ -164,7 +183,10 @@
                                  var31 = 0;
                                  var32 = 0;
  
@@ -42,16 +85,28 @@
                                  {
                                      if (var24[var33] > var31)
                                      {
-@@ -173,17 +179,17 @@
+@@ -173,38 +195,53 @@
                                      }
                                  }
  
 -                                double var39 = (var29 - var16) * 4.0D / (double)(var6 + 4) + ((double)(var13 + var18 & 1) - 0.5D) * 0.4D;
 -                                byte var40 = 1;
-+                                double var40 = (var29 - var16) * 4.0D / (double)(var6 + 4) + ((double)(var13 + var18 & 1) - 0.5D) * 0.4D;
-+                                byte var39 = 1;
++                                // FCMOD: Added
++                                int greatestMeta = 0;
++                                int greatestMetaCount = 0;
  
 -                                if (var39 > 0.6D)
++                                for (int i = 0; i < 16; i++) {
++                                	if (metaArray[var32][i] > greatestMetaCount) {
++                                		greatestMeta = i;
++                                		greatestMetaCount = metaArray[var32][i];
++                                	}
++                                }
++                                // END FCMOD
++
++                                double var40 = (var29 - var16) * 4.0D / (double)(var6 + 4) + ((double)(var13 + var18 & 1) - 0.5D) * 0.4D;
++                                byte var39 = 1;
++
 +                                if (var40 > 0.6D)
                                  {
 -                                    var40 = 2;
@@ -66,7 +121,14 @@
                                  }
  
                                  var36 = 0;
-@@ -194,17 +200,17 @@
+ 
+                                 if (var32 > 0)
+                                 {
+-                                    MapColor var42 = Block.blocksList[var32].blockMaterial.materialMapColor;
++                                	// FCMOD: Changed
++                                    //MapColor var42 = Block.blocksList[var32].blockMaterial.materialMapColor;
++                                    MapColor var42 = Block.blocksList[var32].getMapColor(greatestMeta);
++                                    // END FCMOD
  
                                      if (var42 == MapColor.waterColor)
                                      {
@@ -90,7 +152,7 @@
                                          }
                                      }
  
-@@ -215,10 +221,10 @@
+@@ -215,10 +252,10 @@
  
                                  if (var18 >= 0 && var19 * var19 + var20 * var20 < var11 * var11 && (!var21 || (var13 + var18 & 1) != 0))
                                  {
@@ -104,7 +166,7 @@
                                      {
                                          if (var14 > var18)
                                          {
-@@ -250,7 +256,11 @@
+@@ -250,7 +287,11 @@
       * Called each tick as long the item is on a player inventory. Uses by maps to check if is on a player hand and
       * update it's contents.
       */

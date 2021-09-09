@@ -1,12 +1,84 @@
 --- a/minecraft_server/net/minecraft/src/ServerCommandManager.java
 +++ b/minecraft_server/net/minecraft/src/ServerCommandManager.java
-@@ -30,6 +30,9 @@
+@@ -1,10 +1,14 @@
+ package net.minecraft.src;
+ 
++import java.util.ArrayList;
+ import java.util.Iterator;
+ import net.minecraft.server.MinecraftServer;
+ 
+ public class ServerCommandManager extends CommandHandler implements IAdminCommand
+ {
++	private static ArrayList<ICommand> commandsClient = new ArrayList<ICommand>();
++	private static ArrayList<ICommand> commandsServer = new ArrayList<ICommand>();
++	
+     public ServerCommandManager()
+     {
+         this.registerCommand(new CommandTime());
+@@ -30,6 +34,7 @@
          this.registerCommand(new CommandClearInventory());
          this.registerCommand(new ServerCommandTestFor());
          this.registerCommand(new ServerCommandScoreboard());
-+        // FCMOD: Code added
-+        registerCommand(new FCCommandServerLoc());
-+        // END FCMOD
++        this.registerCommand(new FCCommandServerLoc());
  
          if (MinecraftServer.getServer().isDedicatedServer())
          {
+@@ -47,11 +52,19 @@
+             this.registerCommand(new CommandServerKick());
+             this.registerCommand(new CommandServerList());
+             this.registerCommand(new CommandServerWhitelist());
++            
++            for (ICommand command : commandsServer) {
++    			this.registerCommand(command);
+         }
++        }
+         else
+         {
+             this.registerCommand(new CommandServerPublishLocal());
++            
++            for (ICommand command : commandsClient) {
++    			this.registerCommand(command);
+         }
++        }
+ 
+         CommandBase.setAdminCommander(this);
+     }
+@@ -86,7 +99,7 @@
+ 
+         if (par1ICommandSender != MinecraftServer.getServer())
+         {
+-            MinecraftServer.getServer().getLogAgent().func_98233_a("[" + par1ICommandSender.getCommandSenderName() + ": " + MinecraftServer.getServer().translateString(par3Str, par4ArrayOfObj) + "]");
++            MinecraftServer.getServer().getLogAgent().func_98236_b("[" + par1ICommandSender.getCommandSenderName() + ": " + MinecraftServer.getServer().translateString(par3Str, par4ArrayOfObj) + "]");
+         }
+ 
+         if ((par2 & 1) != 1)
+@@ -94,4 +107,29 @@
+             par1ICommandSender.sendChatToPlayer(par1ICommandSender.translateString(par3Str, par4ArrayOfObj));
+         }
+     }
++	
++    /**
++     * Register a command for both client and server
++     * @param command
++     */
++	public static void registerAddonCommand(ICommand command) {
++		commandsClient.add(command);
++		commandsServer.add(command);
+ }
++	
++	/**
++	 * Register a client only command
++	 * @param command
++	 */
++	public static void registerAddonCommandClient(ICommand command) {
++		commandsClient.add(command);
++	}
++	
++	/**
++	 * Register a server only command
++	 * @param command
++	 */
++	public static void registerAddonCommandServer(ICommand command) {
++		commandsClient.add(command);
++	}
++}

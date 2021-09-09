@@ -1,0 +1,28 @@
+--- /dev/null
++++ b/minecraft/com/prupe/mcpatcher/ProfilerAPI.java
+@@ -0,0 +1,25 @@
++package com.prupe.mcpatcher;
++
++import net.minecraft.client.Minecraft;
++
++public class ProfilerAPI {
++    private static final boolean enable = Config.getInstance().extraProfiling;
++
++    public static void startSection(String name) {
++        if (enable) {
++            Minecraft.getMinecraft().mcProfiler.startSection(name);
++        }
++    }
++
++    public static void endStartSection(String name) {
++        if (enable) {
++            Minecraft.getMinecraft().mcProfiler.endStartSection(name);
++        }
++    }
++
++    public static void endSection() {
++        if (enable) {
++            Minecraft.getMinecraft().mcProfiler.endSection();
++        }
++    }
++}

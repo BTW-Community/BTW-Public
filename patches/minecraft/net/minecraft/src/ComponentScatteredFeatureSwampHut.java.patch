@@ -31,7 +31,7 @@
              if (!this.hasWitch)
              {
                  var8 = this.getXWithOffset(2, 5);
-@@ -73,14 +86,115 @@
+@@ -73,14 +86,114 @@
                  if (par3StructureBoundingBox.isVecInside(var8, var9, var10))
                  {
                      this.hasWitch = true;
@@ -93,13 +93,12 @@
 +    	{
 +    		for ( int iTempTries = 0; iTempTries < 20; iTempTries++ )
 +    		{
-+    			int iTempX = iMinSpawnX + world.rand.nextInt( iSpawnZoneWidth );
-+    			int iTempZ = iMinSpawnZ + world.rand.nextInt( iSpawnZoneWidth );
++    			int x = iMinSpawnX + world.rand.nextInt( iSpawnZoneWidth );
++    			int z = iMinSpawnZ + world.rand.nextInt( iSpawnZoneWidth );
 +    			
-+    			int iTempY = world.getTopSolidOrLiquidBlock( iTempX, iTempZ );
++    			int y = world.getTopSolidOrLiquidBlock( x, z );
 +    			
-+    			if ( SpawnerAnimals.CanWitchSpawnAtLocationDuringWorldGen( 
-+    				world, iTempX, iTempY, iTempZ ) )
++    			if (SpawnerAnimals.canEntitySpawnDuringWorldGen(FCEntityWitch.class, world, x, y, z ))
 +				{
 +                    hasWitch = true;
 +                    
@@ -108,7 +107,7 @@
 +                    // FCMOD: Added
 +                    witch.PreInitCreature();
 +                    // END FCMOD
-+                    witch.setLocationAndAngles( (double)iTempX + 0.5D, (double)iTempY, (double)iTempZ + 0.5D, 0.0F, 0.0F);                    
++                    witch.setLocationAndAngles( (double)x + 0.5D, (double)y, (double)z + 0.5D, 0.0F, 0.0F);                    
 +                    witch.initCreature();                    
 +                    witch.SetPersistent( true );
 +                    

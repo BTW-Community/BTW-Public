@@ -1,16 +1,15 @@
 --- a/minecraft_server/net/minecraft/src/ServerConfigurationManager.java
 +++ b/minecraft_server/net/minecraft/src/ServerConfigurationManager.java
-@@ -116,6 +116,9 @@
+@@ -116,6 +116,8 @@
                  var10.field_98038_p = false;
              }
          }
-+        // FCMOD: Code added
-+        FCBetterThanWolves.ServerPlayerConnectionInitialized( var7, par2EntityPlayerMP );
-+        //END FCMOD
++        
++        FCAddOnHandler.serverPlayerConnectionInitialized(var7, par2EntityPlayerMP);
      }
  
      protected void func_96456_a(ServerScoreboard par1ServerScoreboard, EntityPlayerMP par2EntityPlayerMP)
-@@ -163,16 +166,25 @@
+@@ -163,16 +165,25 @@
  
          if (par2WorldServer != null)
          {
@@ -39,7 +38,7 @@
      }
  
      /**
-@@ -226,9 +238,16 @@
+@@ -226,9 +237,16 @@
      /**
       * using player's dimension, update their movement when in a vehicle (e.g. cart, boat)
       */
@@ -57,7 +56,7 @@
      }
  
      /**
-@@ -246,7 +265,10 @@
+@@ -246,7 +264,10 @@
          }
  
          var2.removeEntity(par1EntityPlayerMP);
@@ -69,7 +68,7 @@
          this.playerEntityList.remove(par1EntityPlayerMP);
          this.sendPacketToAllPlayers(new Packet201PlayerInfo(par1EntityPlayerMP.username, false, 9999));
      }
-@@ -340,6 +362,8 @@
+@@ -340,6 +361,8 @@
      /**
       * Called on respawn
       */
@@ -78,7 +77,7 @@
      public EntityPlayerMP recreatePlayerEntity(EntityPlayerMP par1EntityPlayerMP, int par2, boolean par3)
      {
          par1EntityPlayerMP.getServerForPlayer().getEntityTracker().removePlayerFromTrackers(par1EntityPlayerMP);
-@@ -404,7 +428,10 @@
+@@ -404,7 +427,10 @@
          var7.setEntityHealth(var7.getHealth());
          return var7;
      }
@@ -89,7 +88,7 @@
      /**
       * moves provided player from overworld to nether or vice versa
       */
-@@ -430,6 +457,11 @@
+@@ -430,6 +456,11 @@
              PotionEffect var7 = (PotionEffect)var6.next();
              par1EntityPlayerMP.playerNetServerHandler.sendPacket(new Packet41EntityEffect(par1EntityPlayerMP.entityId, var7));
          }
@@ -101,7 +100,7 @@
      }
  
      /**
-@@ -502,10 +534,21 @@
+@@ -502,10 +533,21 @@
  
              if (par1Entity.isEntityAlive())
              {
@@ -123,7 +122,7 @@
              }
  
              par3WorldServer.theProfiler.endSection();
-@@ -886,9 +929,21 @@
+@@ -886,9 +928,21 @@
  
          if (par2WorldServer.isRaining())
          {
@@ -145,7 +144,7 @@
  
      /**
       * sends the players inventory to himself
-@@ -1006,4 +1061,164 @@
+@@ -1006,4 +1060,164 @@
          this.mcServer.logInfo(par1Str);
          this.sendPacketToAllPlayers(new Packet3Chat(par1Str));
      }

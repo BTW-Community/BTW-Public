@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockDetectorBlock.java
-@@ -0,0 +1,378 @@
+@@ -0,0 +1,380 @@
 +//FCMOD
 +
 +package net.minecraft.src;
@@ -19,9 +19,11 @@
 +        
 +        setStepSound( Block.soundStoneFootstep );
 +        
-+        setUnlocalizedName( "fcBlockDetectorBlock" );        
++        setUnlocalizedName( "fcBlockDetectorBlock" );
 +        
-+        setTickRandomly( true );        
++        setTickRandomly( true );
++        
++        setCreativeTab( CreativeTabs.tabRedstone );
 +    }
 +
 +	@Override

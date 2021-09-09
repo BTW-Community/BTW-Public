@@ -1,6 +1,35 @@
 --- a/minecraft/net/minecraft/src/RenderGlobal.java
 +++ b/minecraft/net/minecraft/src/RenderGlobal.java
-@@ -433,7 +433,12 @@
+@@ -1,5 +1,10 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeWorld;
++import com.prupe.mcpatcher.mal.resource.FakeResourceLocation;
++import com.prupe.mcpatcher.renderpass.RenderPass;
++import com.prupe.mcpatcher.renderpass.RenderPassMap;
++import com.prupe.mcpatcher.sky.SkyRenderer;
+ import java.nio.IntBuffer;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+@@ -158,7 +163,7 @@
+         this.renderEngine = par2RenderEngine;
+         byte var3 = 34;
+         byte var4 = 32;
+-        this.glRenderListBase = GLAllocation.generateDisplayLists(var3 * var3 * var4 * 3);
++        this.glRenderListBase = GLAllocation.generateDisplayLists(var3 * var3 * var4 * 5);
+         this.occlusionEnabled = OpenGlCapsChecker.checkARBOcclusion();
+ 
+         if (this.occlusionEnabled)
+@@ -365,7 +370,7 @@
+                         this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4].markDirty();
+                         this.sortedWorldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4] = this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4];
+                         this.worldRenderersToUpdate.add(this.worldRenderers[(var6 * this.renderChunksTall + var5) * this.renderChunksWide + var4]);
+-                        var2 += 3;
++                        var2 += 5;
+                     }
+                 }
+             }
+@@ -433,7 +438,12 @@
              {
                  var7 = (Entity)var5.get(var6);
  
@@ -13,9 +42,76 @@
                  {
                      ++this.countEntitiesRendered;
                      RenderManager.instance.renderEntity(var7, par3);
-@@ -1034,12 +1039,12 @@
+@@ -565,6 +575,13 @@
+      */
+     public int sortAndRender(EntityLiving par1EntityLiving, int par2, double par3)
+     {
++        if (!RenderPass.preRenderPass(RenderPassMap.map17To18(par2)))
++        {
++            return RenderPass.postRenderPass(0);
++        }
++        else
++        {
++            par2 = RenderPassMap.map18To17(par2);
+         this.theWorld.theProfiler.startSection("sortchunks");
+ 
+         for (int var5 = 0; var5 < 10; ++var5)
+@@ -733,8 +750,9 @@
+         }
+ 
+         this.theWorld.theProfiler.endSection();
+-        return var34;
++            return RenderPass.postRenderPass(var34);
+     }
++    }
+ 
+     private void checkOcclusionQueryResult(int par1, int par2)
+     {
+@@ -844,7 +862,7 @@
+      */
+     public void renderAllRenderLists(int par1, double par2)
+     {
+-        this.mc.entityRenderer.enableLightmap(par2);
++    	RenderPass.enableDisableLightmap(this.mc.entityRenderer, par2);
+ 
+         for (int var4 = 0; var4 < this.allRenderLists.length; ++var4)
+         {
+@@ -880,6 +898,8 @@
+      */
+     public void renderSky(float par1)
+     {
++    	SkyRenderer.setup(this.theWorld, par1, this.theWorld.getCelestialAngle(par1));
++    	
+         if (this.mc.theWorld.provider.dimensionId == 1)
+         {
+             GL11.glDisable(GL11.GL_FOG);
+@@ -921,7 +941,7 @@
+                 }
+ 
+                 var21.startDrawingQuads();
+-                var21.setColorOpaque_I(2631720);
++                var21.setColorOpaque_I(ColorizeWorld.endSkyColor);
+                 var21.addVertexWithUV(-100.0D, -100.0D, -100.0D, 0.0D, 0.0D);
+                 var21.addVertexWithUV(-100.0D, -100.0D, 100.0D, 0.0D, 16.0D);
+                 var21.addVertexWithUV(100.0D, -100.0D, 100.0D, 16.0D, 16.0D);
+@@ -1022,9 +1042,10 @@
+             GL11.glColor4f(1.0F, 1.0F, 1.0F, var8);
+             GL11.glTranslatef(var9, var10, var11);
+             GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
++            SkyRenderer.renderAll();
+             GL11.glRotatef(this.theWorld.getCelestialAngle(par1) * 360.0F, 1.0F, 0.0F, 0.0F);
+             var12 = 30.0F;
+-            this.renderEngine.bindTexture("/environment/sun.png");
++            this.renderEngine.bindTexture(FakeResourceLocation.unwrap(SkyRenderer.setupCelestialObject(FakeResourceLocation.wrap("/environment/sun.png"))));
+             var23.startDrawingQuads();
+             var23.addVertexWithUV((double)(-var12), 100.0D, (double)(-var12), 0.0D, 0.0D);
+             var23.addVertexWithUV((double)var12, 100.0D, (double)(-var12), 1.0D, 0.0D);
+@@ -1032,14 +1053,14 @@
+             var23.addVertexWithUV((double)(-var12), 100.0D, (double)var12, 0.0D, 1.0D);
+             var23.draw();
              var12 = 20.0F;
-             this.renderEngine.bindTexture("/environment/moon_phases.png");
+-            this.renderEngine.bindTexture("/environment/moon_phases.png");
++            this.renderEngine.bindTexture(FakeResourceLocation.unwrap(SkyRenderer.setupCelestialObject(FakeResourceLocation.wrap("/environment/moon_phases.png"))));
              int var28 = this.theWorld.getMoonPhase();
 -            int var29 = var28 % 4;
 -            int var30 = var28 / 4 % 2;
@@ -32,7 +128,34 @@
              var23.startDrawingQuads();
              var23.addVertexWithUV((double)(-var12), -100.0D, (double)var12, (double)var18, (double)var19);
              var23.addVertexWithUV((double)var12, -100.0D, (double)var12, (double)var16, (double)var19);
-@@ -1217,8 +1222,8 @@
+@@ -1049,7 +1070,7 @@
+             GL11.glDisable(GL11.GL_TEXTURE_2D);
+             float var20 = this.theWorld.getStarBrightness(par1) * var8;
+ 
+-            if (var20 > 0.0F)
++            if (var20 > 0.0F && !SkyRenderer.active)
+             {
+                 GL11.glColor4f(var20, var20, var20, var20);
+                 GL11.glCallList(this.starGLCallList);
+@@ -1108,7 +1129,7 @@
+             }
+ 
+             GL11.glPushMatrix();
+-            GL11.glTranslatef(0.0F, -((float)(var25 - 16.0D)), 0.0F);
++            GL11.glTranslatef(0.0F, -((float)(var25 - SkyRenderer.horizonHeight)), 0.0F);
+             GL11.glCallList(this.glSkyList2);
+             GL11.glPopMatrix();
+             GL11.glEnable(GL11.GL_TEXTURE_2D);
+@@ -1120,7 +1141,7 @@
+     {
+         if (this.mc.theWorld.provider.isSurfaceWorld())
+         {
+-            if (this.mc.gameSettings.fancyGraphics)
++        	if (ColorizeWorld.drawFancyClouds(this.mc.gameSettings.fancyGraphics))
+             {
+                 this.renderCloudsFancy(par1);
+             }
+@@ -1217,8 +1238,8 @@
          float var17 = (float)var15.yCoord;
          float var18 = (float)var15.zCoord;
          float var19;
@@ -42,7 +165,7 @@
  
          if (this.mc.gameSettings.anaglyph)
          {
-@@ -1587,7 +1592,13 @@
+@@ -1587,7 +1608,13 @@
                          var19 = Block.stone;
                      }
  
@@ -56,7 +179,7 @@
                  }
              }
  
-@@ -1620,11 +1631,17 @@
+@@ -1620,11 +1647,17 @@
  
              if (var7 > 0)
              {
@@ -76,7 +199,7 @@
              }
  
              GL11.glDepthMask(true);
-@@ -1835,7 +1852,18 @@
+@@ -1835,7 +1868,18 @@
              {
                  this.mc.effectRenderer.addEffect(var21 = new EntityFireworkSparkFX(this.theWorld, par2, par4, par6, par8, par10, par12, this.mc.effectRenderer));
              }
@@ -95,7 +218,7 @@
              if (var21 != null)
              {
                  return (EntityFX)var21;
-@@ -2003,6 +2031,20 @@
+@@ -2003,6 +2047,23 @@
                          int var26 = Integer.parseInt(var28[2]);
                          var21 = (new EntityDiggingFX(this.theWorld, par2, par4, par6, par8, par10, par12, Block.blocksList[var25], 0, var26, this.renderEngine)).applyRenderColor(var26);
                      }
@@ -112,11 +235,14 @@
 +                    {
 +                        var21 = new FCClientEntitySmallFlameFX(theWorld, par2, par4, par6, par8, par10, par12);
 +                    }
++                    else {
++                    	var21 = FCAddOnHandler.spawnCustomParticle(this.theWorld, par1Str, par2, par4, par6, par8, par10, par12);
++                    }
 +                    // END FCMOD
  
                      if (var21 != null)
                      {
-@@ -2099,6 +2141,11 @@
+@@ -2099,6 +2160,11 @@
                  }
  
              default:
@@ -128,7 +254,7 @@
          }
      }
  
-@@ -2196,6 +2243,10 @@
+@@ -2196,6 +2262,10 @@
  
              case 1016:
                  this.theWorld.playSound((double)par3 + 0.5D, (double)par4 + 0.5D, (double)par5 + 0.5D, "mob.zombie.infect", 2.0F, (var7.nextFloat() - var7.nextFloat()) * 0.2F + 1.0F, false);
@@ -139,7 +265,7 @@
                  break;
  
              case 1017:
-@@ -2221,7 +2272,7 @@
+@@ -2221,7 +2291,7 @@
                  var12 = (double)par4 + 0.5D;
                  double var34 = (double)par5 + (double)var9 * 0.6D + 0.5D;
  
@@ -148,7 +274,7 @@
                  {
                      double var37 = var7.nextDouble() * 0.2D + 0.01D;
                      double var38 = var10 + (double)var33 * 0.01D + (var7.nextDouble() - 0.5D) * (double)var9 * 0.5D;
-@@ -2300,10 +2351,10 @@
+@@ -2300,10 +2370,10 @@
                      this.spawnParticle(var14, var8, var10, var12, var7.nextGaussian() * 0.15D, var7.nextDouble() * 0.2D, var7.nextGaussian() * 0.15D);
                  }
  
@@ -162,7 +288,7 @@
                  }
  
                  return;
-@@ -2322,6 +2373,14 @@
+@@ -2322,6 +2392,14 @@
  
              case 2005:
                  ItemDye.func_96603_a(this.theWorld, par3, par4, par5, par6);
@@ -177,7 +303,7 @@
          }
      }
  
-@@ -2359,4 +2418,16 @@
+@@ -2359,4 +2437,16 @@
              this.destroyBlockIcons[var2] = par1IconRegister.registerIcon("destroy_" + var2);
          }
      }

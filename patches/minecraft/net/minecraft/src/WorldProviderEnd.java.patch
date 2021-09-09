@@ -1,0 +1,25 @@
+--- a/minecraft/net/minecraft/src/WorldProviderEnd.java
++++ b/minecraft/net/minecraft/src/WorldProviderEnd.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeWorld;
++
+ public class WorldProviderEnd extends WorldProvider
+ {
+     /**
+@@ -57,10 +59,10 @@
+         float var5 = (float)(var3 >> 16 & 255) / 255.0F;
+         float var6 = (float)(var3 >> 8 & 255) / 255.0F;
+         float var7 = (float)(var3 & 255) / 255.0F;
+-        var5 *= var4 * 0.0F + 0.15F;
+-        var6 *= var4 * 0.0F + 0.15F;
+-        var7 *= var4 * 0.0F + 0.15F;
+-        return this.worldObj.getWorldVec3Pool().getVecFromPool((double)var5, (double)var6, (double)var7);
++        float var10000 = var5 * (var4 * 0.0F + 0.15F);
++        var10000 = var6 * (var4 * 0.0F + 0.15F);
++        var10000 = var7 * (var4 * 0.0F + 0.15F);
++        return this.worldObj.getWorldVec3Pool().getVecFromPool((double)ColorizeWorld.endFogColor[0], (double)ColorizeWorld.endFogColor[1], (double)ColorizeWorld.endFogColor[2]);
+     }
+ 
+     public boolean isSkyColored()

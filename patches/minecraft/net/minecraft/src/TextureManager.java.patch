@@ -1,0 +1,37 @@
+--- a/minecraft/net/minecraft/src/TextureManager.java
++++ b/minecraft/net/minecraft/src/TextureManager.java
+@@ -1,5 +1,8 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.hd.AAHelper;
++import com.prupe.mcpatcher.hd.Wrapper15;
++import com.prupe.mcpatcher.mal.tile.TileLoader;
+ import java.awt.image.BufferedImage;
+ import java.io.File;
+ import java.io.FileNotFoundException;
+@@ -70,7 +73,7 @@
+             BufferedImage var9 = ImageIO.read(var3.getResourceAsStream("/" + par1Str));
+             int var10 = var9.getHeight();
+             int var11 = var9.getWidth();
+-            String var12 = this.getBasename(par1Str);
++            String var12 = TileLoader.getOverrideBasename(this, par1Str);
+ 
+             if (this.hasAnimationTxt(par1Str, var3))
+             {
+@@ -128,7 +131,16 @@
+ 
+     public Texture makeTexture(String par1Str, int par2, int par3, int par4, int par5, int par6, int par7, int par8, boolean par9, BufferedImage par10BufferedImage)
+     {
++    	par10BufferedImage = Wrapper15.addAABorder(par1Str, par10BufferedImage);
++
++        if (par10BufferedImage != null)
++        {
++            par3 = par10BufferedImage.getWidth();
++            par4 = par10BufferedImage.getHeight();
++        }
++        
+         Texture var11 = new Texture(par1Str, par2, par3, par4, par5, par6, par7, par8, par10BufferedImage);
++        var11.border = AAHelper.lastBorder;
+         this.registerTexture(var11);
+         return var11;
+     }

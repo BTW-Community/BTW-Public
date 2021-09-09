@@ -1,6 +1,20 @@
 --- a/minecraft/net/minecraft/src/EntityLiving.java
 +++ b/minecraft/net/minecraft/src/EntityLiving.java
-@@ -12,16 +12,36 @@
+@@ -1,10 +1,13 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.mob.MobRandomizer.ExtraInfo;
+ import java.util.Collection;
+ import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Random;
++import java.util.Map;
++import java.util.HashMap;
+ 
+ public abstract class EntityLiving extends Entity
+ {
+@@ -12,16 +15,36 @@
       * An array of probabilities that determines whether a random enchantment should be added to the held item. Indexed
       * by difficulty.
       */
@@ -37,7 +51,7 @@
      public int maxHurtResistantTime = 20;
      public float field_70769_ao;
      public float field_70770_ap;
-@@ -97,10 +117,15 @@
+@@ -97,10 +120,15 @@
      public float prevCameraPitch;
      public float cameraPitch;
  
@@ -55,7 +69,7 @@
  
      /** The experience points the Entity gives. */
      protected int experienceValue;
-@@ -125,8 +150,14 @@
+@@ -125,8 +153,14 @@
      protected int recentlyHit = 0;
  
      /** is only being set, has no uses as of MC 1.1 */
@@ -70,7 +84,7 @@
      private EntityLiving lastAttackingEntity = null;
      public int arrowHitTimer = 0;
      protected HashMap activePotionsMap = new HashMap();
-@@ -241,6 +272,10 @@
+@@ -241,6 +275,10 @@
          }
  
          this.stepHeight = 0.5F;
@@ -81,7 +95,7 @@
      }
  
      protected int func_96121_ay()
-@@ -336,8 +371,11 @@
+@@ -336,8 +374,11 @@
  
      public boolean attackEntityAsMob(Entity par1Entity)
      {
@@ -95,7 +109,7 @@
      }
  
      /**
-@@ -352,7 +390,14 @@
+@@ -352,7 +393,14 @@
       * Sets the active target the Task system uses for tracking
       */
      public void setAttackTarget(EntityLiving par1EntityLiving)
@@ -110,7 +124,7 @@
          this.attackTarget = par1EntityLiving;
      }
  
-@@ -361,7 +406,12 @@
+@@ -361,7 +409,12 @@
       */
      public boolean canAttackClass(Class par1Class)
      {
@@ -123,7 +137,7 @@
      }
  
      /**
-@@ -464,11 +514,16 @@
+@@ -464,11 +517,16 @@
      /**
       * returns true if the entity provided in the argument can be seen. (Raytrace)
       */
@@ -140,7 +154,7 @@
      /**
       * Returns the texture's file path as a String.
       */
-@@ -569,7 +624,12 @@
+@@ -569,7 +627,12 @@
          }
          else
          {
@@ -153,7 +167,7 @@
          }
  
          this.prevCameraPitch = this.cameraPitch;
-@@ -624,6 +684,13 @@
+@@ -624,6 +687,13 @@
              }
          }
  
@@ -167,7 +181,7 @@
          this.updatePotionEffects();
          this.field_70763_ax = this.field_70764_aw;
          this.prevRenderYawOffset = this.renderYawOffset;
-@@ -655,7 +722,18 @@
+@@ -655,7 +725,18 @@
                      this.worldObj.spawnEntityInWorld(new EntityXPOrb(this.worldObj, this.posX, this.posY, this.posZ, var2));
                  }
              }
@@ -186,7 +200,7 @@
              this.setDead();
  
              for (var1 = 0; var1 < 20; ++var1)
-@@ -964,6 +1042,12 @@
+@@ -964,6 +1045,12 @@
              }
              else
              {
@@ -199,7 +213,7 @@
                  if ((par1DamageSource == DamageSource.anvil || par1DamageSource == DamageSource.fallingBlock) && this.getCurrentItemOrArmor(4) != null)
                  {
                      this.getCurrentItemOrArmor(4).damageItem(par2 * 4 + this.rand.nextInt(par2 * 2), this);
-@@ -1040,6 +1124,9 @@
+@@ -1040,6 +1127,9 @@
                          }
  
                          this.attackedAtYaw = (float)(Math.atan2(var7, var9) * 180.0D / Math.PI) - this.rotationYaw;
@@ -209,7 +223,7 @@
                          this.knockBack(var4, par2, var9, var7);
                      }
                      else
-@@ -1224,7 +1311,10 @@
+@@ -1224,7 +1314,10 @@
      {
          this.isAirBorne = true;
          float var7 = MathHelper.sqrt_double(par3 * par3 + par5 * par5);
@@ -221,7 +235,7 @@
          this.motionX /= 2.0D;
          this.motionY /= 2.0D;
          this.motionZ /= 2.0D;
-@@ -1241,6 +1331,8 @@
+@@ -1241,6 +1334,8 @@
      /**
       * Called when the mob's health reaches 0.
       */
@@ -230,7 +244,7 @@
      public void onDeath(DamageSource par1DamageSource)
      {
          Entity var2 = par1DamageSource.getEntity();
-@@ -1286,6 +1378,8 @@
+@@ -1286,6 +1381,8 @@
  
          this.worldObj.setEntityState(this, (byte)3);
      }
@@ -239,7 +253,7 @@
  
      protected void dropRareDrop(int par1) {}
  
-@@ -1294,7 +1388,14 @@
+@@ -1294,7 +1391,14 @@
       * par2 - Level of Looting used to kill this mob.
       */
      protected void dropFewItems(boolean par1, int par2)
@@ -254,7 +268,7 @@
          int var3 = this.getDropItemId();
  
          if (var3 > 0)
-@@ -1325,7 +1426,14 @@
+@@ -1325,7 +1429,14 @@
       * Called when the mob is falling. Calculates and applies fall damage.
       */
      protected void fall(float par1)
@@ -269,7 +283,7 @@
          super.fall(par1);
          int var2 = MathHelper.ceiling_float_int(par1 - 3.0F);
  
-@@ -1368,6 +1476,12 @@
+@@ -1368,6 +1479,12 @@
              this.motionZ *= 0.800000011920929D;
              this.motionY -= 0.02D;
  
@@ -282,7 +296,7 @@
              if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6000000238418579D - this.posY + var9, this.motionZ))
              {
                  this.motionY = 0.30000001192092896D;
-@@ -1394,12 +1508,25 @@
+@@ -1394,12 +1511,25 @@
  
              if (this.onGround)
              {
@@ -308,7 +322,7 @@
                  }
              }
  
-@@ -1429,12 +1556,25 @@
+@@ -1429,12 +1559,25 @@
  
              if (this.onGround)
              {
@@ -334,7 +348,7 @@
                  }
              }
  
-@@ -1475,6 +1615,10 @@
+@@ -1475,6 +1618,10 @@
                  {
                      this.motionY = 0.0D;
                  }
@@ -345,7 +359,7 @@
              }
  
              this.moveEntity(this.motionX, this.motionY, this.motionZ);
-@@ -1507,21 +1651,23 @@
+@@ -1507,21 +1654,23 @@
  
          this.prevLimbYaw = this.limbYaw;
          var9 = this.posX - this.prevPosX;
@@ -374,7 +388,7 @@
      public boolean isOnLadder()
      {
          int var1 = MathHelper.floor_double(this.posX);
-@@ -1530,6 +1676,8 @@
+@@ -1530,12 +1679,16 @@
          int var4 = this.worldObj.getBlockId(var1, var2, var3);
          return var4 == Block.ladder.blockID || var4 == Block.vine.blockID;
      }
@@ -383,7 +397,23 @@
  
      /**
       * (abstract) Protected helper method to write subclass entity data to NBT.
-@@ -1678,7 +1826,14 @@
+      */
+     public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound)
+     {
++    	ExtraInfo.writeToNBT(this, par1NBTTagCompound);
++    	
+         if (this.health < -32768)
+         {
+             this.health = -32768;
+@@ -1595,6 +1748,7 @@
+      */
+     public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound)
+     {
++    	ExtraInfo.readFromNBT(this, par1NBTTagCompound);
+         this.health = par1NBTTagCompound.getShort("Health");
+ 
+         if (!par1NBTTagCompound.hasKey("Health"))
+@@ -1678,7 +1832,14 @@
       * use this to react to sunlight and start to burn.
       */
      public void onLivingUpdate()
@@ -398,7 +428,7 @@
          if (this.jumpTicks > 0)
          {
              --this.jumpTicks;
-@@ -1749,9 +1904,19 @@
+@@ -1749,9 +1910,19 @@
  
          if (this.isJumping)
          {
@@ -418,7 +448,7 @@
                  {
                      this.jump();
                      this.jumpTicks = 10;
-@@ -1787,7 +1952,12 @@
+@@ -1787,7 +1958,12 @@
          this.worldObj.theProfiler.endSection();
          this.worldObj.theProfiler.startSection("looting");
  
@@ -431,7 +461,7 @@
          {
              List var2 = this.worldObj.getEntitiesWithinAABB(EntityItem.class, this.boundingBox.expand(1.0D, 0.0D, 1.0D));
              Iterator var12 = var2.iterator();
-@@ -1876,6 +2046,9 @@
+@@ -1876,6 +2052,9 @@
          }
  
          this.worldObj.theProfiler.endSection();
@@ -441,7 +471,7 @@
      }
  
      protected void func_85033_bc()
-@@ -1911,6 +2084,7 @@
+@@ -1911,6 +2090,7 @@
  
      /**
       * Returns whether the entity is in a local (client) world
@@ -449,7 +479,7 @@
       */
      protected boolean isClientWorld()
      {
-@@ -1942,7 +2116,12 @@
+@@ -1942,7 +2122,12 @@
              this.motionY += (double)((float)(this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F);
          }
  
@@ -462,7 +492,7 @@
          {
              float var1 = this.rotationYaw * 0.017453292F;
              this.motionX -= (double)(MathHelper.sin(var1) * 0.2F);
-@@ -1963,6 +2142,8 @@
+@@ -1963,6 +2148,8 @@
      /**
       * Makes the entity despawn if requirements are reached
       */
@@ -471,7 +501,7 @@
      protected void despawnEntity()
      {
          if (!this.persistenceRequired)
-@@ -1992,9 +2173,18 @@
+@@ -1992,9 +2179,18 @@
              }
          }
      }
@@ -490,7 +520,7 @@
          ++this.entityAge;
          this.worldObj.theProfiler.startSection("checkDespawn");
          this.despawnEntity();
-@@ -2382,6 +2572,12 @@
+@@ -2382,6 +2578,12 @@
  
          if (var12 > 0)
          {
@@ -503,7 +533,7 @@
              boolean var4 = false;
  
              if (!this.isInvisible())
-@@ -2470,6 +2666,8 @@
+@@ -2470,6 +2672,8 @@
  
      public boolean isPotionApplicable(PotionEffect par1PotionEffect)
      {
@@ -512,7 +542,7 @@
          if (this.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD)
          {
              int var2 = par1PotionEffect.getPotionID();
-@@ -2479,6 +2677,8 @@
+@@ -2479,6 +2683,8 @@
                  return false;
              }
          }
@@ -521,7 +551,7 @@
  
          return true;
      }
-@@ -2531,6 +2731,8 @@
+@@ -2531,6 +2737,8 @@
       * This method returns a value to be applied directly to entity speed, this factor is less than 1 when a slowdown
       * potion effect is applied, more than 1 when a haste potion effect is applied and 2 for fleeing entities.
       */
@@ -530,7 +560,7 @@
      public float getSpeedModifier()
      {
          float var1 = 1.0F;
-@@ -2552,6 +2754,8 @@
+@@ -2552,6 +2760,8 @@
  
          return var1;
      }
@@ -539,7 +569,7 @@
  
      /**
       * Move the entity to the coordinates informed, but keep yaw/pitch values.
-@@ -2605,6 +2809,8 @@
+@@ -2605,6 +2815,8 @@
          }
          else
          {
@@ -548,7 +578,7 @@
              int var1 = (int)((float)this.health - (float)this.getMaxHealth() * 0.33F);
              var1 -= (3 - this.worldObj.difficultySetting) * 4;
  
-@@ -2666,6 +2872,9 @@
+@@ -2666,6 +2878,9 @@
                  if (!var5 && var4.isItemStackDamageable())
                  {
                      int var6 = Math.max(var4.getMaxDamage() - 25, 1);
@@ -558,7 +588,7 @@
                      int var7 = var4.getMaxDamage() - this.rand.nextInt(this.rand.nextInt(var6) + 1);
  
                      if (var7 > var6)
-@@ -2690,12 +2899,23 @@
+@@ -2690,12 +2905,23 @@
       * Makes entity wear random armor based on difficulty
       */
      protected void addRandomArmor()
@@ -582,7 +612,7 @@
              if (this.rand.nextFloat() < 0.095F)
              {
                  ++var1;
-@@ -2727,6 +2947,10 @@
+@@ -2727,6 +2953,10 @@
                      if (var5 != null)
                      {
                          this.setCurrentItemOrArmor(var3 + 1, new ItemStack(var5));
@@ -593,7 +623,7 @@
                      }
                  }
              }
-@@ -2792,6 +3016,8 @@
+@@ -2792,6 +3022,8 @@
      /**
       * Params: Armor slot, Item tier
       */
@@ -602,7 +632,7 @@
      public static Item getArmorItemForSlot(int par0, int par1)
      {
          switch (par0)
-@@ -2888,12 +3114,19 @@
+@@ -2888,12 +3120,19 @@
                  return null;
          }
      }
@@ -622,7 +652,7 @@
          }
  
          for (int var1 = 0; var1 < 4; ++var1)
-@@ -2902,7 +3135,12 @@
+@@ -2902,7 +3141,12 @@
  
              if (var2 != null && this.rand.nextFloat() < armorEnchantmentProbability[this.worldObj.difficultySetting])
              {
@@ -635,7 +665,7 @@
              }
          }
      }
-@@ -2910,6 +3148,10 @@
+@@ -2910,6 +3154,10 @@
      /**
       * Initialize this creature.
       */
@@ -646,7 +676,7 @@
      public void initCreature() {}
  
      /**
-@@ -3021,8 +3263,614 @@
+@@ -3021,8 +3269,615 @@
          this.canPickUpLoot = par1;
      }
  
@@ -690,6 +720,10 @@
 +        if (this.isPotionActive(Potion.moveSlowdown))
 +        {
 +            fMoveSpeed *= 1.0F - 0.15F * (float)(this.getActivePotionEffect(Potion.moveSlowdown).getAmplifier() + 1);
++        }
++        else if (this.isPotionActive(Potion.moveSpeed))
++        {
++            fMoveSpeed *= 1.0F + 0.15F * (float)(this.getActivePotionEffect(Potion.moveSpeed).getAmplifier() + 1);
 +        }
 +
 +        if ( onGround && IsAffectedByMovementModifiers() )
@@ -874,10 +908,7 @@
 +
 +                CheckForHeadDrop( source, iLootingModifier );
 +                
-+            	if ( worldObj.getWorldInfo().getGameType() != EnumGameType.CREATIVE )
-+            	{
-+            		CheckForScrollDrop();
-+            	}
++            	CheckForScrollDrop();
 +            }
 +        }
 +

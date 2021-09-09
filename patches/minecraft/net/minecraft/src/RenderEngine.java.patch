@@ -1,0 +1,147 @@
+--- a/minecraft/net/minecraft/src/RenderEngine.java
++++ b/minecraft/net/minecraft/src/RenderEngine.java
+@@ -1,5 +1,9 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.hd.CustomAnimation;
++import com.prupe.mcpatcher.hd.Wrapper15;
++import com.prupe.mcpatcher.mal.resource.FakeResourceLocation;
++import com.prupe.mcpatcher.mal.resource.TexturePackChangeHandler;
+ import java.awt.Color;
+ import java.awt.Graphics;
+ import java.awt.image.BufferedImage;
+@@ -115,18 +119,25 @@
+ 
+     private int[] getImageContents(BufferedImage par1BufferedImage, int[] par2ArrayOfInteger)
+     {
++    	if (par1BufferedImage == null)
++        {
++            return par2ArrayOfInteger;
++        }
++        else
++        {
+         int var3 = par1BufferedImage.getWidth();
+         int var4 = par1BufferedImage.getHeight();
+         par1BufferedImage.getRGB(0, 0, var3, var4, par2ArrayOfInteger, 0, var3);
+         return par2ArrayOfInteger;
+     }
++    }
+ 
+     public void bindTexture(String par1Str)
+     {
+         this.bindTexture(this.getTexture(par1Str));
+     }
+ 
+-    private void bindTexture(int par1)
++    public void bindTexture(int par1)
+     {
+         if (par1 != this.boundTexture)
+         {
+@@ -140,7 +151,7 @@
+         this.boundTexture = -1;
+     }
+ 
+-    private int getTexture(String par1Str)
++    public int getTexture(String par1Str)
+     {
+         if (par1Str.equals("/terrain.png"))
+         {
+@@ -185,11 +196,11 @@
+ 
+                     if (var6 == null)
+                     {
+-                        this.setupTextureExt(this.missingTextureImage, var3, var9, var5);
++                    	Wrapper15.setupTexture(this, this.missingTextureImage, var3, var9, var5, FakeResourceLocation.wrap(par1Str));
+                     }
+                     else
+                     {
+-                        this.setupTextureExt(this.readTextureImage(var6), var3, var9, var5);
++                    	Wrapper15.setupTexture(this, this.readTextureImage(var6), var3, var9, var5, FakeResourceLocation.wrap(par1Str));
+                     }
+ 
+                     this.textureMap.put(var8, Integer.valueOf(var3));
+@@ -228,6 +239,8 @@
+ 
+     public void setupTextureExt(BufferedImage par1BufferedImage, int par2, boolean par3, boolean par4)
+     {
++    	if (par1BufferedImage != null)
++        {
+         this.bindTexture(par2);
+         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+@@ -259,11 +272,10 @@
+             var7 = this.colorToAnaglyph(var7);
+         }
+ 
+-        this.imageData.clear();
+-        this.imageData.put(var7);
+-        this.imageData.position(0).limit(var7.length);
++            this.imageData = FakeResourceLocation.getIntBuffer(this.imageData, var7);
+         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, var5, var6, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, this.imageData);
+     }
++    }
+ 
+     private int[] colorToAnaglyph(int[] par1ArrayOfInteger)
+     {
+@@ -297,9 +309,7 @@
+             par1ArrayOfInteger = this.colorToAnaglyph(par1ArrayOfInteger);
+         }
+ 
+-        this.imageData.clear();
+-        this.imageData.put(par1ArrayOfInteger);
+-        this.imageData.position(0).limit(par1ArrayOfInteger.length);
++        this.imageData = FakeResourceLocation.getIntBuffer(this.imageData, par1ArrayOfInteger);
+         GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, par2, par3, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, this.imageData);
+     }
+ 
+@@ -393,6 +403,7 @@
+     {
+         this.textureMapBlocks.updateAnimations();
+         this.textureMapItems.updateAnimations();
++        CustomAnimation.updateAll();
+     }
+ 
+     /**
+@@ -400,6 +411,7 @@
+      */
+     public void refreshTextures()
+     {
++    	TexturePackChangeHandler.beforeChange1();
+         ITexturePack var1 = this.texturePack.getSelectedTexturePack();
+         this.refreshTextureMaps();
+         Iterator var2 = this.textureNameToImageMap.getKeySet().iterator();
+@@ -444,7 +456,7 @@
+                 }
+ 
+                 BufferedImage var5 = this.readTextureImage(var1.getResourceAsStream(var11));
+-                this.setupTextureExt(var5, var12, var6, var7);
++                Wrapper15.setupTexture(this, var5, var12, var6, var7, FakeResourceLocation.wrap(var11));
+             }
+             catch (IOException var9)
+             {
+@@ -471,6 +483,7 @@
+ 
+         Minecraft.getMinecraft().fontRenderer.readFontData();
+         Minecraft.getMinecraft().standardGalacticFontRenderer.readFontData();
++        TexturePackChangeHandler.afterChange1();
+     }
+ 
+     /**
+@@ -478,10 +491,17 @@
+      */
+     private BufferedImage readTextureImage(InputStream par1InputStream) throws IOException
+     {
++    	if (par1InputStream == null)
++        {
++            return null;
++        }
++        else
++        {
+         BufferedImage var2 = ImageIO.read(par1InputStream);
+         par1InputStream.close();
+         return var2;
+     }
++    }
+ 
+     public void refreshTextureMaps()
+     {

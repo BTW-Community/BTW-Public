@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCItemBlockAestheticOpaqueEarth.java
-@@ -0,0 +1,51 @@
+@@ -0,0 +1,59 @@
 +// FCMOD 
 +
 +package net.minecraft.src;
@@ -32,19 +32,27 @@
 +    		case FCBlockAestheticOpaqueEarth.m_iSubtypeBlightLevel1:
 +    		case FCBlockAestheticOpaqueEarth.m_iSubtypeBlightLevel2:
 +    			
-+                return (new StringBuilder()).append(super.getUnlocalizedName()).append(".").append("blight").toString();
++                return super.getUnlocalizedName() + "." + "blight";
 +    			
 +    		case FCBlockAestheticOpaqueEarth.m_iSubtypeBlightLevel3:
++
++                return super.getUnlocalizedName() + "." + "blight3";
++                
++    		case FCBlockAestheticOpaqueEarth.m_iSubtypeBlightRootsLevel2:
 +    			
-+                return (new StringBuilder()).append(super.getUnlocalizedName()).append(".").append("blight3").toString();
++                return super.getUnlocalizedName() + "." + "blightRoots";
++    			
++    		case FCBlockAestheticOpaqueEarth.m_iSubtypeBlightRootsLevel3:
++
++                return super.getUnlocalizedName() + "." + "blightRoots3";
 +    			
 +    		case FCBlockAestheticOpaqueEarth.m_iSubtypePackedEarth:
-+    			
-+                return (new StringBuilder()).append(super.getUnlocalizedName()).append(".").append("packed").toString();
++
++                return super.getUnlocalizedName() + "." + "packed";
 +    			
 +    		case FCBlockAestheticOpaqueEarth.m_iSubtypeDung:
-+    			
-+                return (new StringBuilder()).append(super.getUnlocalizedName()).append(".").append("dung").toString();
++
++                return super.getUnlocalizedName() + "." + "dung";
 +    			
 +			default:
 +				

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityZombie.java
-@@ -0,0 +1,401 @@
+@@ -0,0 +1,397 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -39,7 +39,7 @@
 +        targetTasks.addTask( 2, new EntityAINearestAttackableTarget( this, EntityCreature.class, 16F, 0, 
 +        	false, false, m_targetEntitySelector ) );
 +    }
-+
++    
 +    @Override
 +    protected int func_96121_ay()
 +    {
@@ -189,20 +189,15 @@
 +    @Override
 +    protected void convertToVillager()
 +    {
-+        FCEntityVillager newVillager = new FCEntityVillager( worldObj );
++        FCEntityVillager newVillager = FCEntityVillager.createVillagerFromProfession(this.worldObj, this.m_iVillagerClass);
 +        
 +        newVillager.func_82149_j(this);  // set same position and ables as replaced entity
 +        
 +        newVillager.initCreature();
 +        
-+        if ( m_iVillagerClass >= 0 )
++        if (m_iVillagerClass == 0)
 +        {
-+        	newVillager.setProfession( m_iVillagerClass );
-+        }
-+        
-+        if ( m_iVillagerClass == 0  )
-+        {
-+        	newVillager.SetDirtyPeasant( 1 );
++        	newVillager.SetDirtyPeasant(1);
 +        }
 +        
 +        newVillager.func_82187_q();
@@ -284,6 +279,8 @@
 +    public void SpawnerInitCreature()
 +    {
 +    	setCanPickUpLoot( rand.nextFloat() < 0.15F );
++    	
++    	func_82162_bC();
 +    }
 +
 +    @Override
@@ -391,15 +388,13 @@
 +    
 +	//----------- Client Side Functionality -----------//
 +    
-+    @Override
-+    public void handleHealthUpdate( byte bUpdateType )
++    public void handleHealthUpdate(byte var1)
 +    {
-+        super.handleHealthUpdate( bUpdateType );
-+        
-+        if ( bUpdateType == 16 ) // cured
++        super.handleHealthUpdate(var1);
++
++        if (var1 == 16)
 +        {
-+            worldObj.playSound( posX + 0.5D, posY + 0.5D, posZ + 0.5D, "mob.zombie.say", 1.0F + this.rand.nextFloat(), rand.nextFloat() * 0.2F + 0.5F, false);
-+        }        
++            this.worldObj.playSound(this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D, "mob.zombie.say", 1.0F + this.rand.nextFloat(), this.rand.nextFloat() * 0.2F + 0.5F, false);
++        }
 +    }
 +}
-\ No newline at end of file

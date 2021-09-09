@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/TexturePackImplementation.java
++++ b/minecraft/net/minecraft/src/TexturePackImplementation.java
+@@ -24,7 +24,7 @@
+     /**
+      * File object for the texture pack's zip file in TexturePackCustom or the directory in TexturePackFolder.
+      */
+-    protected final File texturePackFile;
++    public final File texturePackFile;
+ 
+     /**
+      * First line of texture pack description (from /pack.txt) displayed in the GUI

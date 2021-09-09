@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockMillStone.java
-@@ -0,0 +1,278 @@
+@@ -0,0 +1,288 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -207,6 +207,18 @@
 +		BreakMillStone( world, i, j, k );
 +	}
 +	
++	@Override
++	public boolean hasComparatorInputOverride()
++    {
++        return true;
++    }
++
++	@Override
++    public int getComparatorInputOverride(World par1World, int par2, int par3, int par4, int par5)
++    {
++        return ((FCTileEntityMillStone) par1World.getBlockTileEntity(par2, par3, par4)).m_stackMilling == null ? 0 : 15;
++    }
++	
 +    //------------- Class Specific Methods ------------//
 +    
 +    public boolean GetIsMechanicalOn( IBlockAccess blockAccess, int i, int j, int k )
@@ -276,6 +288,4 @@
 +    	
 +    	return bOn == bReceivingPower;    	
 +	}
-+	
-+	//----------- Client Side Functionality -----------//
 +}

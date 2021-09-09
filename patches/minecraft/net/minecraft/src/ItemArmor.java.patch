@@ -1,6 +1,14 @@
 --- a/minecraft/net/minecraft/src/ItemArmor.java
 +++ b/minecraft/net/minecraft/src/ItemArmor.java
-@@ -14,7 +14,12 @@
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeEntity;
++
+ public class ItemArmor extends Item
+ {
+     /** Holds the 'base' maxDamage that each armorType have. */
+@@ -14,7 +16,12 @@
      public final int armorType;
  
      /** Holds the amount of damage that the armor reduces at full durability. */
@@ -13,7 +21,7 @@
  
      /**
       * Used on RenderPlayer to select the correspondent armor to be rendered on the player: 0 is cloth, 1 is chain, 2 is
-@@ -37,7 +42,11 @@
+@@ -37,7 +44,11 @@
          this.setMaxDamage(par2EnumArmorMaterial.getDurability(par4));
          this.maxStackSize = 1;
          this.setCreativeTab(CreativeTabs.tabCombat);
@@ -25,7 +33,22 @@
      }
  
      public int getColorFromItemStack(ItemStack par1ItemStack, int par2)
-@@ -235,4 +244,33 @@
+@@ -103,12 +114,12 @@
+ 
+             if (var2 == null)
+             {
+-                return 10511680;
++            	return ColorizeEntity.undyedLeatherColor;
+             }
+             else
+             {
+                 NBTTagCompound var3 = var2.getCompoundTag("display");
+-                return var3 == null ? 10511680 : (var3.hasKey("color") ? var3.getInteger("color") : 10511680);
++                return var3 == null ? ColorizeEntity.undyedLeatherColor : (var3.hasKey("color") ? var3.getInteger("color") : ColorizeEntity.undyedLeatherColor);
+             }
+         }
+     }
+@@ -235,4 +246,33 @@
      {
          return maxDamageArray;
      }

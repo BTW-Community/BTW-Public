@@ -1,6 +1,17 @@
 --- a/minecraft/net/minecraft/src/EntityRenderer.java
 +++ b/minecraft/net/minecraft/src/EntityRenderer.java
-@@ -88,8 +88,15 @@
+@@ -1,5 +1,10 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeWorld;
++import com.prupe.mcpatcher.cc.Colorizer;
++import com.prupe.mcpatcher.cc.Lightmap;
++import com.prupe.mcpatcher.renderpass.RenderPass;
++
+ import java.awt.image.BufferedImage;
+ import java.nio.FloatBuffer;
+ import java.util.List;
+@@ -88,8 +93,15 @@
  
      /** FOV multiplier temp */
      private float fovMultiplierTemp;
@@ -16,7 +27,16 @@
  
      /** Cloud fog mode */
      private boolean cloudFog = false;
-@@ -202,22 +209,23 @@
+@@ -109,7 +121,7 @@
+     private boolean lightmapUpdateNeeded = false;
+ 
+     /** Torch flicker X */
+-    float torchFlickerX = 0.0F;
++    public float torchFlickerX = 0.0F;
+ 
+     /** Torch flicker DX */
+     float torchFlickerDX = 0.0F;
+@@ -202,22 +214,23 @@
          ++this.rendererUpdateCount;
          this.itemRenderer.updateEquippedItem();
          this.addRainParticles();
@@ -46,7 +66,7 @@
          }
      }
  
-@@ -232,15 +240,31 @@
+@@ -232,15 +245,31 @@
              {
                  this.mc.pointedEntityLiving = null;
                  double var2 = (double)this.mc.playerController.getBlockReachDistance();
@@ -78,7 +98,21 @@
                  else
                  {
                      if (var2 > 3.0D)
-@@ -760,9 +784,9 @@
+@@ -735,8 +764,12 @@
+     {
+         WorldClient var2 = this.mc.theWorld;
+ 
+-        if (var2 != null)
++        if (Lightmap.computeLightmap(this, var2, this.lightmapColors, par1))
+         {
++            this.mc.renderEngine.createTextureFromBytes(this.lightmapColors, 16, 16, this.lightmapTexture);
++        }
++        else if (var2 != null)
++        {
+             for (int var3 = 0; var3 < 256; ++var3)
+             {
+                 float var4 = var2.getSunBrightness(1.0F) * 0.95F + 0.05F;
+@@ -760,9 +793,9 @@
                  var15 = var15 * 0.96F + 0.03F;
                  float var16;
  
@@ -90,7 +124,7 @@
                      var13 = var13 * (1.0F - var16) + var13 * 0.7F * var16;
                      var14 = var14 * (1.0F - var16) + var14 * 0.6F * var16;
                      var15 = var15 * (1.0F - var16) + var15 * 0.6F * var16;
-@@ -793,8 +817,12 @@
+@@ -793,8 +826,12 @@
                      }
  
                      var13 = var13 * (1.0F - var16) + var13 * var17 * var16;
@@ -103,7 +137,7 @@
                  }
  
                  if (var13 > 1.0F)
-@@ -873,6 +901,12 @@
+@@ -873,6 +910,12 @@
      private float getNightVisionBrightness(EntityPlayer par1EntityPlayer, float par2)
      {
          int var3 = par1EntityPlayer.getActivePotionEffect(Potion.nightVision).getDuration();
@@ -116,7 +150,7 @@
          return var3 > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)var3 - par2) * (float)Math.PI * 0.2F) * 0.3F;
      }
  
-@@ -885,7 +919,12 @@
+@@ -885,7 +928,12 @@
  
          if (this.lightmapUpdateNeeded)
          {
@@ -129,7 +163,7 @@
          }
  
          this.mc.mcProfiler.endSection();
-@@ -967,6 +1006,13 @@
+@@ -967,6 +1015,13 @@
                  {
                      this.mc.ingameGUI.renderGameOverlay(par1, this.mc.currentScreen != null, var16, var17);
                  }
@@ -143,7 +177,7 @@
  
                  this.mc.mcProfiler.endSection();
              }
-@@ -1013,7 +1059,12 @@
+@@ -1013,7 +1068,12 @@
  
          if (this.lightmapUpdateNeeded)
          {
@@ -156,7 +190,42 @@
          }
  
          GL11.glEnable(GL11.GL_CULL_FACE);
-@@ -1255,6 +1306,11 @@
+@@ -1071,7 +1131,7 @@
+             GL11.glEnable(GL11.GL_FOG);
+             this.setupFog(1, par1);
+ 
+-            if (this.mc.gameSettings.ambientOcclusion != 0)
++            if (RenderPass.setAmbientOcclusion(this.mc.gameSettings.ambientOcclusion != 0))
+             {
+                 GL11.glShadeModel(GL11.GL_SMOOTH);
+             }
+@@ -1108,6 +1168,7 @@
+             RenderHelper.disableStandardItemLighting();
+             this.mc.mcProfiler.endStartSection("terrain");
+             var5.sortAndRender(var4, 0, (double)par1);
++            var5.sortAndRender(var4, 4, (double)par1);
+             GL11.glShadeModel(GL11.GL_FLAT);
+             EntityPlayer var17;
+ 
+@@ -1149,7 +1210,7 @@
+             {
+                 this.mc.mcProfiler.endStartSection("water");
+ 
+-                if (this.mc.gameSettings.ambientOcclusion != 0)
++                if (RenderPass.setAmbientOcclusion(this.mc.gameSettings.ambientOcclusion != 0))
+                 {
+                     GL11.glShadeModel(GL11.GL_SMOOTH);
+                 }
+@@ -1186,6 +1247,8 @@
+                 var5.sortAndRender(var4, 1, (double)par1);
+             }
+ 
++            var5.sortAndRender(var4, 5, (double)par1);
++            this.renderRainSnow(par1);
+             GL11.glDepthMask(true);
+             GL11.glEnable(GL11.GL_CULL_FACE);
+             GL11.glDisable(GL11.GL_BLEND);
+@@ -1255,6 +1318,11 @@
      {
          float var1 = this.mc.theWorld.getRainStrength(1.0F);
  
@@ -168,7 +237,7 @@
          if (!this.mc.gameSettings.fancyGraphics)
          {
              var1 /= 2.0F;
-@@ -1292,7 +1348,11 @@
+@@ -1292,7 +1360,11 @@
                  int var20 = var3.getBlockId(var17, var19 - 1, var18);
                  BiomeGenBase var21 = var3.getBiomeGenForCoords(var17, var18);
  
@@ -181,7 +250,7 @@
                  {
                      float var22 = this.random.nextFloat();
                      float var23 = this.random.nextFloat();
-@@ -1326,11 +1386,21 @@
+@@ -1326,11 +1398,21 @@
  
                  if (var10 > var2.posY + 1.0D && var3.getPrecipitationHeight(MathHelper.floor_double(var2.posX), MathHelper.floor_double(var2.posZ)) > MathHelper.floor_double(var2.posY))
                  {
@@ -203,7 +272,7 @@
                  }
              }
          }
-@@ -1342,6 +1412,10 @@
+@@ -1342,6 +1424,10 @@
      protected void renderRainSnow(float par1)
      {
          float var2 = this.mc.theWorld.getRainStrength(par1);
@@ -214,7 +283,7 @@
  
          if (var2 > 0.0F)
          {
-@@ -1409,7 +1483,10 @@
+@@ -1409,7 +1495,10 @@
                      float var24 = this.rainYCoords[var22] * 0.5F;
                      BiomeGenBase var25 = var42.getBiomeGenForCoords(var21, var20);
  
@@ -226,7 +295,7 @@
                      {
                          int var26 = var42.getPrecipitationHeight(var21, var20);
                          int var27 = var44 - var16;
-@@ -1437,8 +1514,8 @@
+@@ -1437,8 +1526,8 @@
                          {
                              this.random.setSeed((long)(var21 * var21 * 3121 + var21 * 45238971 ^ var20 * var20 * 418711 + var20 * 13761));
                              float var31 = var25.getFloatTemperature();
@@ -236,7 +305,35 @@
  
                              if (var42.getWorldChunkManager().getTemperatureAtHeight(var31, var26) >= 0.15F)
                              {
-@@ -1639,6 +1716,12 @@
+@@ -1612,13 +1701,27 @@
+             this.fogColorRed = 0.02F;
+             this.fogColorGreen = 0.02F;
+             this.fogColorBlue = 0.2F;
++            
++            if (ColorizeWorld.computeUnderwaterColor())
++            {
++                this.fogColorRed = Colorizer.setColor[0];
++                this.fogColorGreen = Colorizer.setColor[1];
++                this.fogColorBlue = Colorizer.setColor[2];
+         }
++        }
+         else if (var21 != 0 && Block.blocksList[var21].blockMaterial == Material.lava)
+         {
+             this.fogColorRed = 0.6F;
+             this.fogColorGreen = 0.1F;
+             this.fogColorBlue = 0.0F;
++            
++            if (ColorizeWorld.computeUnderlavaColor())
++            {
++                this.fogColorRed = Colorizer.setColor[0];
++                this.fogColorGreen = Colorizer.setColor[1];
++                this.fogColorBlue = Colorizer.setColor[2];
+         }
++        }
+ 
+         float var22 = this.fogColor2 + (this.fogColor1 - this.fogColor2) * par1;
+         this.fogColorRed *= var22;
+@@ -1639,6 +1742,12 @@
                  var14 = 0.0D;
              }
          }
@@ -249,7 +346,7 @@
  
          if (var14 < 1.0D)
          {
-@@ -1655,9 +1738,9 @@
+@@ -1655,9 +1764,9 @@
  
          float var23;
  
@@ -261,7 +358,7 @@
              this.fogColorRed = this.fogColorRed * (1.0F - var23) + this.fogColorRed * 0.7F * var23;
              this.fogColorGreen = this.fogColorGreen * (1.0F - var23) + this.fogColorGreen * 0.6F * var23;
              this.fogColorBlue = this.fogColorBlue * (1.0F - var23) + this.fogColorBlue * 0.6F * var23;
-@@ -1681,8 +1764,12 @@
+@@ -1681,8 +1790,12 @@
              }
  
              this.fogColorRed = this.fogColorRed * (1.0F - var23) + this.fogColorRed * var17 * var23;
@@ -274,7 +371,7 @@
          }
  
          if (this.mc.gameSettings.anaglyph)
-@@ -1762,8 +1849,32 @@
+@@ -1762,8 +1875,32 @@
                      GL11.glFogi(34138, 34139);
                  }
              }
@@ -307,7 +404,7 @@
                  float var8;
                  float var9;
                  float var10;
-@@ -1923,4 +2034,218 @@
+@@ -1923,4 +2060,223 @@
      {
          return par0EntityRenderer.mc;
      }
@@ -525,4 +622,9 @@
 +    	return true;
 +    }    
 +    // END FCMOD
++    
++    public float getNightVisionStrength(float var1)
++    {
++        return this.mc.thePlayer.isPotionActive(Potion.nightVision) ? this.getNightVisionBrightness(this.mc.thePlayer, var1) : 0.0F;
++    }
 +}

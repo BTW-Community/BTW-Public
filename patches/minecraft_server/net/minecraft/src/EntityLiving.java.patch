@@ -644,7 +644,7 @@
      public void initCreature() {}
  
      /**
-@@ -2887,8 +3128,603 @@
+@@ -2887,8 +3128,604 @@
          this.canPickUpLoot = par1;
      }
  
@@ -700,6 +700,10 @@
 +        	{
 +        		fMoveSpeed *= 0.8F;
 +        	}
++            else if (this.isPotionActive(Potion.moveSpeed))
++            {
++                fMoveSpeed *= 1.0F + 0.15F * (float)(this.getActivePotionEffect(Potion.moveSpeed).getAmplifier() + 1);
++            }
 +        	
 +        	Block blockOn = Block.blocksList[worldObj.getBlockId( iGroundI, iGroundJ, iGroundK )];
 +        	
@@ -871,10 +875,7 @@
 +
 +                CheckForHeadDrop( source, iLootingModifier );
 +                
-+            	if ( worldObj.getWorldInfo().getGameType() != EnumGameType.CREATIVE )
-+            	{
-+            		CheckForScrollDrop();
-+            	}
++            	CheckForScrollDrop();
 +            }
 +        }
 +

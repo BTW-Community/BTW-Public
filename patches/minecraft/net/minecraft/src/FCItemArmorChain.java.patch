@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemArmorChain.java
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,28 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -14,7 +14,9 @@
 +        super( iItemID, EnumArmorMaterial.CHAIN, m_iRenderIndex, iArmorType, iWeight );
 +        
 +        SetInfernalMaxEnchantmentCost( 30 );
-+        SetInfernalMaxNumEnchants( 2 );        
++        SetInfernalMaxNumEnchants( 2 );
++        
++        this.setCreativeTab(CreativeTabs.tabCombat);
 +    }
 +    
 +    @Override

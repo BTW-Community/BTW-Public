@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCEntityAIMoveToGraze.java
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,53 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -26,26 +26,13 @@
 +     */
 +    public boolean shouldExecute()
 +    {
-+    	if ( m_myAnimal.IsSubjectToHunger() )
-+    	{    		
-+    		if ( m_myAnimal.IsHungryEnoughToForceMoveToGraze() )
-+			{    			
-+		        return !m_myAnimal.ShouldStayInPlaceToGraze() &&
-+			    	FCUtilsRandomPositionGenerator.FindSimpleRandomTargetBlock( m_myAnimal, 
-+			    	10, 7, m_destPos );
-+			}
-+			else if ( m_myAnimal.getRNG().nextInt( 120 ) == 0 )
-+			{
-+		        return FCUtilsRandomPositionGenerator.FindSimpleRandomTargetBlock( m_myAnimal, 
-+	    			10, 7, m_destPos );
-+			}
-+    	}    	
-+    	else
-+    	{
-+    		return m_myAnimal.getRNG().nextInt( 120 ) == 0 &&
++	
++		if ( m_myAnimal.IsSubjectToHunger() && m_myAnimal.IsHungryEnoughToForceMoveToGraze() )
++		{    			
++	        return !m_myAnimal.ShouldStayInPlaceToGraze() &&
 +		    	FCUtilsRandomPositionGenerator.FindSimpleRandomTargetBlock( m_myAnimal, 
 +		    	10, 7, m_destPos );
-+    	}
++		}
 +    	
 +    	return false;
 +    }

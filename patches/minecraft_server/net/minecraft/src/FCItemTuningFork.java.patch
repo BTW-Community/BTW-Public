@@ -47,7 +47,7 @@
 +
 +    	setUnlocalizedName( "fcItemTuningFork" );
 +    	
-+    	setCreativeTab( CreativeTabs.tabMisc );
++    	setCreativeTab( CreativeTabs.tabTools );
 +    }
 +    
 +    @Override

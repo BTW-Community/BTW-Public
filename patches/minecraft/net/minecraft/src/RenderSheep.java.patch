@@ -1,0 +1,19 @@
+--- a/minecraft/net/minecraft/src/RenderSheep.java
++++ b/minecraft/net/minecraft/src/RenderSheep.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.mal.resource.FakeResourceLocation;
++import com.prupe.mcpatcher.mob.MobRandomizer;
+ import org.lwjgl.opengl.GL11;
+ 
+ public class RenderSheep extends RenderLiving
+@@ -14,7 +16,7 @@
+     {
+         if (par2 == 0 && !par1EntitySheep.getSheared())
+         {
+-            this.loadTexture("/mob/sheep_fur.png");
++        	this.loadTexture(FakeResourceLocation.unwrap(MobRandomizer.randomTexture((Entity)par1EntitySheep, FakeResourceLocation.wrap("/mob/sheep_fur.png"))));
+             float var4 = 1.0F;
+             int var5 = par1EntitySheep.getFleeceColor();
+             GL11.glColor3f(var4 * EntitySheep.fleeceColorTable[var5][0], var4 * EntitySheep.fleeceColorTable[var5][1], var4 * EntitySheep.fleeceColorTable[var5][2]);

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityPig.java
-@@ -0,0 +1,264 @@
+@@ -0,0 +1,265 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -21,12 +21,13 @@
 +        tasks.addTask( 2, getAIControlledByPlayer() );
 +        tasks.addTask( 3, new EntityAIMate( this, 0.25F ) );
 +        tasks.addTask( 4, new FCEntityAIMultiTempt( this, 0.3F ) );
-+        tasks.addTask( 5, new EntityAIFollowParent( this, 0.28F ) );
-+        tasks.addTask( 6, new FCEntityAIGraze( this ) );
-+        tasks.addTask( 7, new FCEntityAIMoveToLooseFood( this, 0.25F ) );
-+        tasks.addTask( 8, new FCEntityAIMoveToGraze( this, 0.25F ) );        
-+        tasks.addTask( 9, new EntityAIWatchClosest( this, EntityPlayer.class, 6F ) );
-+        tasks.addTask( 10, new EntityAILookIdle( this ) );
++        tasks.addTask( 5, new FCEntityAIGraze( this ) );
++        tasks.addTask( 6, new FCEntityAIMoveToLooseFood( this, 0.25F ) );
++        tasks.addTask( 7, new FCEntityAIMoveToGraze( this, 0.25F ) );  
++        tasks.addTask( 8, new EntityAIFollowParent( this, 0.28F ) );
++        tasks.addTask( 9, new FCEntityAIWanderSimple( this, 0.25F ) );
++        tasks.addTask( 10, new EntityAIWatchClosest( this, EntityPlayer.class, 6F ) );
++        tasks.addTask( 11, new EntityAILookIdle( this ) );
 +    }
 +
 +    @Override

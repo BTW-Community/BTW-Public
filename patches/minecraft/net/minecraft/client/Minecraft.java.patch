@@ -1,6 +1,23 @@
 --- a/minecraft/net/minecraft/client/Minecraft.java
 +++ b/minecraft/net/minecraft/client/Minecraft.java
-@@ -300,6 +300,9 @@
+@@ -1,5 +1,8 @@
+ package net.minecraft.client;
+ 
++import com.prupe.mcpatcher.MCPatcherUtils;
++import com.prupe.mcpatcher.hd.AAHelper;
++import com.prupe.mcpatcher.mal.resource.TexturePackChangeHandler;
+ import java.awt.BorderLayout;
+ import java.awt.Canvas;
+ import java.awt.Color;
+@@ -287,6 +290,7 @@
+ 
+     public Minecraft(Canvas par1Canvas, MinecraftApplet par2MinecraftApplet, int par3, int par4, boolean par5)
+     {
++    	MCPatcherUtils.setMinecraft((File)null, (File)null, "1.5.2", "5.0.3");
+         StatList.nopInit();
+         this.tempDisplayHeight = par4;
+         this.fullscreen = par5;
+@@ -300,6 +304,9 @@
          theMinecraft = this;
          TextureManager.init();
          this.guiAchievement = new GuiAchievement(this);
@@ -10,7 +27,16 @@
      }
  
      private void startTimerHackThread()
-@@ -404,7 +407,12 @@
+@@ -376,7 +383,7 @@
+ 
+         try
+         {
+-            Display.create((new PixelFormat()).withDepthBits(24));
++            Display.create(AAHelper.setupPixelFormat((new PixelFormat()).withDepthBits(24)));
+         }
+         catch (LWJGLException var5)
+         {
+@@ -404,7 +411,12 @@
          this.fontRenderer = new FontRenderer(this.gameSettings, "/font/default.png", this.renderEngine, false);
          this.standardGalacticFontRenderer = new FontRenderer(this.gameSettings, "/font/alternate.png", this.renderEngine, false);
  
@@ -23,7 +49,32 @@
          {
              StringTranslate.getInstance().setLanguage(this.gameSettings.language, false);
              this.fontRenderer.setUnicodeFlag(StringTranslate.getInstance().isUnicode());
-@@ -1092,8 +1100,8 @@
+@@ -435,7 +447,15 @@
+         this.checkGLError("Startup");
+         this.sndManager.loadSoundSettings(this.gameSettings);
+         this.renderGlobal = new RenderGlobal(this, this.renderEngine);
++        TexturePackChangeHandler.earlyInitialize("com.prupe.mcpatcher.mal.tile.TileLoader", "init");
++        TexturePackChangeHandler.earlyInitialize("com.prupe.mcpatcher.ctm.CTMUtils", "reset");
++        TexturePackChangeHandler.earlyInitialize("com.prupe.mcpatcher.cit.CITUtils", "init");
++        TexturePackChangeHandler.earlyInitialize("com.prupe.mcpatcher.hd.FontUtils", "init");
++        TexturePackChangeHandler.earlyInitialize("com.prupe.mcpatcher.mob.MobRandomizer", "init");
++        TexturePackChangeHandler.earlyInitialize("com.prupe.mcpatcher.cc.Colorizer", "init");
++        TexturePackChangeHandler.beforeChange1();
+         this.renderEngine.refreshTextureMaps();
++        TexturePackChangeHandler.afterChange1();
+         GL11.glViewport(0, 0, this.displayWidth, this.displayHeight);
+         this.effectRenderer = new EffectRenderer(this.theWorld, this.renderEngine);
+ 
+@@ -789,6 +809,8 @@
+      */
+     private void runGameLoop()
+     {
++    	TexturePackChangeHandler.checkForTexturePackChange();
++    	
+         if (this.mcApplet != null && !this.mcApplet.isActive())
+         {
+             this.running = false;
+@@ -1092,8 +1114,8 @@
                  var5.addVertex((double)var7, (double)var8, 0.0D);
                  int var14;
                  float var15;
@@ -33,7 +84,7 @@
  
                  for (var14 = var13; var14 >= 0; --var14)
                  {
-@@ -1120,27 +1128,27 @@
+@@ -1120,27 +1142,27 @@
                  var9 += var12.field_76332_a;
              }
  
@@ -68,7 +119,7 @@
  
              for (int var21 = 0; var21 < var3.size(); ++var21)
              {
-@@ -1158,8 +1166,8 @@
+@@ -1158,8 +1180,8 @@
  
                  var22 = var22 + var20.field_76331_c;
                  this.fontRenderer.drawStringWithShadow(var22, var7 - var6, var8 + var6 / 2 + var21 * 8 + 20, var20.func_76329_a());
@@ -79,7 +130,7 @@
              }
          }
      }
-@@ -1228,7 +1236,11 @@
+@@ -1228,7 +1250,11 @@
  
          if (par1 != 0 || this.leftClickCounter <= 0)
          {
@@ -92,7 +143,7 @@
              {
                  int var3 = this.objectMouseOver.blockX;
                  int var4 = this.objectMouseOver.blockY;
-@@ -1793,6 +1805,11 @@
+@@ -1793,6 +1819,11 @@
  
              if (this.gameSettings.keyBindUseItem.pressed && this.rightClickDelayTimer == 0 && !this.thePlayer.isUsingItem())
              {
@@ -104,7 +155,7 @@
                  this.clickMouse(1);
              }
  
-@@ -2253,27 +2270,27 @@
+@@ -2253,27 +2284,27 @@
          var1.put("username", var6);
          var1.put("fullscreen", "" + var4);
          var1.put("sessionid", var7);

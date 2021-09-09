@@ -21,7 +21,15 @@
              GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 10497.0F);
              GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 10497.0F);
              GL11.glDisable(GL11.GL_LIGHTING);
-@@ -29,6 +41,12 @@
+@@ -22,13 +34,19 @@
+             GL11.glDisable(GL11.GL_BLEND);
+             GL11.glDepthMask(true);
+             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+-            float var11 = (float)par1TileEntityBeacon.getWorldObj().getTotalWorldTime() + par8;
++            float var11 = (float)(par1TileEntityBeacon.getWorldObj().getTotalWorldTime() % 8388471L) + par8;
+             float var12 = -var11 * 0.2F - (float)MathHelper.floor_float(-var11 * 0.1F);
+             byte var13 = 1;
+             double var14 = (double)var11 * 0.025D * (1.0D - (double)(var13 & 1) * 2.5D);
              var10.startDrawingQuads();
              var10.setColorRGBA(255, 255, 255, 32);
              double var16 = (double)var13 * 0.2D;

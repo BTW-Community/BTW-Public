@@ -1,9 +1,13 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,5774 @@
+@@ -0,0 +1,6148 @@
 +// FCMOD
 +
 +package net.minecraft.src;
++
++import net.minecraft.src.FCEntityVillager.TradeConditional;
++import net.minecraft.src.FCEntityVillager.TradeEffect;
++import net.minecraft.src.FCEntityVillager.WeightedMerchantRecipeEntry;
 +
 +public abstract class FCRecipes
 +{
@@ -30,7 +34,9 @@
 +		AddSubBlockRecipes();
 +		
 +		AddLegacyConversionRecipes();
-+		AddCustomRecipeClasses();		
++		AddCustomRecipeClasses();
++		
++		addVillagerTrades();
 +		
 +		AddDebugRecipes();
 +	}
@@ -1791,6 +1797,14 @@
 +    		"XXX", 
 +    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemHempCloth, 
 +    		Character.valueOf( 'X' ), Block.planks 
++		} );
++		
++		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new Object[] {
++			new ItemStack( FCBetterThanWolves.fcItemWindMill ) 
++		} );
++		
++		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new Object[] {
++			new ItemStack( FCBetterThanWolves.fcItemWindMillVertical ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemWindMill ), new Object[] {
@@ -5094,6 +5108,366 @@
 +		CraftingManager.getInstance().getRecipeList().add( new FCRecipesFishingRodBaiting() );
 +		CraftingManager.getInstance().getRecipeList().add( new FCRecipesLogChopping() );
 +		CraftingManager.getInstance().getRecipeList().add( new FCRecipesKnitting() );
++	}
++	
++	private static void addVillagerTrades() {
++		//Aliased for readability
++		int farmer = FCEntityVillager.professionIDFarmer;
++		int librarian = FCEntityVillager.professionIDLibrarian;
++		int priest = FCEntityVillager.professionIDPriest;
++		int blacksmith = FCEntityVillager.professionIDBlacksmith;
++		int butcher = FCEntityVillager.professionIDButcher;
++		
++		// TODO: Rebalance some of the outlier values in trades
++		
++		// ------ Farmer ------ //
++		//Level 1
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, FCBetterThanWolves.fcBlockDirtLoose.blockID, 48, 64, 1F, 1).setDefault(farmer);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, Block.wood.blockID, 0, 32, 48, 0.15F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, Block.wood.blockID, 1, 32, 48, 0.15F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, Block.wood.blockID, 2, 32, 48, 0.15F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, Block.wood.blockID, 3, 32, 48, 0.15F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, FCBetterThanWolves.fcItemWool.itemID, 3, 16, 24, 1F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, Item.dyePowder.itemID, 15, 32, 48, 1F, 1);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(farmer, Item.hoeIron.itemID, 1, 1, 1);
++		
++		//Level 2
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, FCBetterThanWolves.fcItemFlour.itemID, 24, 32, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, Item.sugar.itemID, 10, 20, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, FCBetterThanWolves.fcItemCocoaBeans.itemID, 10, 16, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, FCBetterThanWolves.fcItemMushroomBrown.itemID, 10, 16, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, FCBetterThanWolves.fcItemHempSeeds.itemID, 24, 32, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, Item.egg.itemID, 12, 12, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, Block.thinGlass.blockID, 16, 32, 1F, 2);
++		FCEntityVillager.addTradeToBuySingleItem(farmer, Item.bucketMilk.itemID, 1, 2, 0.25F, 2);
++		
++		FCEntityVillager.addTradeToSellMultipleItems(farmer, FCBetterThanWolves.fcItemWheat.itemID, 8, 16, 1F, 2);
++		FCEntityVillager.addTradeToSellMultipleItems(farmer, Item.appleRed.itemID, 2, 4, 0.5F, 2);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(farmer, FCBetterThanWolves.fcMillStone.blockID, 2, 2, 2);
++		
++		//Level 3
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, Block.melon.blockID, 8, 10, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, FCBetterThanWolves.fcBlockPumpkinFresh.blockID, 10, 16, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, FCBetterThanWolves.fcItemStumpRemover.itemID, 8, 12, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, FCBetterThanWolves.fcItemChocolate.itemID, 1, 2, 1F, 3);
++		FCEntityVillager.addTradeToBuySingleItem(farmer, Item.shears.itemID, 1, 1, 0.5F, 3);
++		FCEntityVillager.addTradeToBuySingleItem(farmer, Item.flintAndSteel.itemID, 1, 1, 0.5F, 3);
++		FCEntityVillager.addComplexTrade(
++				farmer,
++				FCBetterThanWolves.fcItemStake.itemID, 0, 1, 1,
++				Item.silk.itemID, 0, 16, 32,
++				Item.emerald.itemID, 0, 1, 1,
++				0.5F, 3
++			);
++		FCEntityVillager.addTradeToBuySingleItem(farmer, FCBetterThanWolves.fcItemSoap.itemID, 1, 2, 1F, 3)
++			.registerEffectForTrade(FCEntityVillager.professionIDFarmer, new TradeEffect() {
++				@Override
++				public void playEffect(FCEntityVillager villager) {
++					villager.worldObj.playSoundAtEntity(villager, "mob.slime.attack", 1.0F, (villager.rand.nextFloat() - villager.rand.nextFloat()) * 0.2F + 1.0F);
++					
++					villager.SetDirtyPeasant(0);
++				}
++			})
++			.setConditional(new TradeConditional() {
++				@Override
++				public boolean shouldAddTrade(FCEntityVillager villager) {
++					return villager.GetDirtyPeasant() > 0;
++				}
++			});
++		
++		FCEntityVillager.addTradeToSellMultipleItems(farmer, Item.bread.itemID, 4, 6, 1F, 3);
++		FCEntityVillager.addTradeToSellMultipleItems(farmer, FCBetterThanWolves.fcItemCookedMushroomOmelet.itemID, 8, 12, 0.5F, 3);
++		FCEntityVillager.addTradeToSellMultipleItems(farmer, FCBetterThanWolves.fcItemCookedScrambledEggs.itemID, 8, 12, 0.5F, 3);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(farmer, FCBetterThanWolves.fcItemWaterWheel.itemID, 3, 3, 3);
++		
++		//Level 4
++		FCEntityVillager.addTradeToBuySingleItem(farmer, FCBetterThanWolves.fcItemBucketCement.itemID, 2, 4, 1F, 4);
++		FCEntityVillager.addTradeToBuyMultipleItems(farmer, FCBetterThanWolves.fcLightBulbOff.blockID, 2, 4, 1F, 4);
++		
++		FCEntityVillager.addTradeToSellMultipleItems(farmer, Item.cookie.itemID, 8, 16, 1F, 4);
++		FCEntityVillager.addTradeToSellMultipleItems(farmer, Item.pumpkinPie.itemID, 1, 2, 1F, 4);
++		FCEntityVillager.addTradeToSellSingleItem(farmer, Item.cake.itemID, 2, 4, 1F, 4);
++		
++		FCEntityVillager.addLevelUpTradeToBuy(farmer, FCBetterThanWolves.fcBlockPlanterSoil.blockID, 0, 8, 12, 4, 4, 4);
++		
++		//Level 5
++		FCEntityVillager.addTradeToSellSingleItem(farmer, Block.mycelium.blockID, 10, 20, 1F, 5);
++		FCEntityVillager.addArcaneScrollTrade(farmer, Enchantment.looting.effectId, 16, 32, 1F, 5);
++		
++		// ------ Librarian ------ //
++		//Level 1
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.paper.itemID, 27, 38, 1F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.dyePowder.itemID, 0, 27, 38, 1F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.feather.itemID, 27, 38, 1F, 1);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(librarian, Item.enchantedBook.itemID, 2, 2, 1);
++		
++		//Level 2
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.book.itemID, 1, 3, 1F, 2);
++		FCEntityVillager.addTradeToBuySingleItem(librarian, Item.writableBook.itemID, 1, 1, 1F, 2);
++		FCEntityVillager.addTradeToBuySingleItem(librarian, Block.bookShelf.blockID, 1, 1, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.netherStalkSeeds.itemID, 16, 24, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.lightStoneDust.itemID, 24, 32, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcItemNitre.itemID, 32, 48, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcItemBatWing.itemID, 14, 16, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.spiderEye.itemID, 4, 8, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.redstone.itemID, 32, 48, 1F, 2);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(librarian, Item.brewingStand.itemID, 2, 2, 2);
++		
++		//Level 3
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcItemWitchWart.itemID, 6, 10, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcItemMysteriousGland.itemID, 14, 16, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.fermentedSpiderEye.itemID, 4, 8, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.ghastTear.itemID, 4, 6, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.magmaCream.itemID, 8, 12, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.blazePowder.itemID, 4, 6, 1F, 3);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(librarian, FCBetterThanWolves.fcBlockDispenser.blockID, 4, 4, 3);
++		
++		//Level 4
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcBlockDetector.blockID, 2, 3, 1F, 4);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcBuddyBlock.blockID, 2, 3, 1F, 4);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcBlockDispenser.blockID, 2, 3, 1F, 4);
++		FCEntityVillager.addTradeToBuySingleItem(librarian, FCBetterThanWolves.fcLens.blockID, 2, 3, 1F, 4);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(librarian, FCBetterThanWolves.fcItemEnderSpectacles.itemID, 3, 3, 4);
++		
++		//Level 5
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcItemBrimstone.itemID, 16, 32, 1F, 5);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcAestheticVegetation.blockID, 
++				FCBlockAestheticVegetation.m_iSubtypeBloodWoodSapling, 8, 16, 1F, 5);
++		FCEntityVillager.addTradeToBuySingleItem(librarian, FCBetterThanWolves.fcItemBloodMossSpores.itemID, 2, 3, 1F, 5);
++		
++		FCEntityVillager.addArcaneScrollTrade(librarian, Enchantment.power.effectId, 32, 48, 1F, 5);
++		
++		//Mandatory trades
++		FCEntityVillager.addItemConversionTrade(librarian, Item.enderPearl.itemID, 6, 8, Item.eyeOfEnder.itemID, 1F, 5).setMandatory();
++		
++		// ------ Priest ------ //
++		//Level 1
++		FCEntityVillager.addTradeToBuyMultipleItems(priest, FCBetterThanWolves.fcItemHemp.itemID, 18, 22, 1F, 1).setDefault(priest);
++		FCEntityVillager.addTradeToBuyMultipleItems(priest, FCBetterThanWolves.fcItemMushroomRed.itemID, 10, 16, 1F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(priest, Block.cactus.blockID, 32, 64, 1F, 1);
++		FCEntityVillager.addTradeToBuySingleItem(priest, Item.painting.itemID, 2, 3, 0.5F, 1);
++		FCEntityVillager.addTradeToBuySingleItem(priest, Item.flintAndSteel.itemID, 1, 1, 1F, 1);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(priest, Block.enchantmentTable.blockID, 2, 2, 1);
++		
++		//Level 2
++		FCEntityVillager.addEnchantmentTrade(priest, Item.swordIron.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.axeIron.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.pickaxeIron.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.helmetIron.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.plateIron.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.legsIron.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.bootsIron.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.swordDiamond.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.axeDiamond.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.pickaxeDiamond.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.helmetDiamond.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.plateDiamond.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.legsDiamond.itemID, 2, 4, 0.25F, 2);
++		FCEntityVillager.addEnchantmentTrade(priest, Item.bootsDiamond.itemID, 2, 4, 0.25F, 2);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(priest, FCBetterThanWolves.fcBlockArcaneVessel.blockID, 2, 2, 2);
++		
++		//Level 3
++		((FCEntityVillager.WeightedMerchantRecipeEntry) FCEntityVillager.addTradeToBuyMultipleItems(
++				priest, 
++				FCBetterThanWolves.fcItemCandle.itemID, 4, 8, 
++				1F, 3))
++				.setRandomMetas(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, 0);
++		// TODO: Make skulls equal with other head trades
++		FCEntityVillager.addTradeToBuyMultipleItems(priest, Item.skull.itemID, 0, 3, 5, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(priest, Item.skull.itemID, 2, 2, 4, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(priest, Item.skull.itemID, 4, 2, 4, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(priest, FCBetterThanWolves.fcAestheticOpaque.blockID, FCBlockAestheticOpaque.m_iSubtypeBone, 2, 3, 1F, 3);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(priest, Item.skull.itemID, 1, 3, 3, 3);
++		
++		//Level 4
++		FCEntityVillager.addTradeToBuyMultipleItems(priest, FCBetterThanWolves.fcItemSoulUrn.itemID, 2, 3, 1F, 4);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(priest, FCBetterThanWolves.fcInfernalEnchanter.blockID, 4, 4, 4);
++		
++		//Mandatory trades
++		FCEntityVillager.addSkullconversionTrade(priest, 1, 6, 8, 5, 1F, 4).setMandatory();
++		FCEntityVillager.addComplexTrade(
++				priest, 
++				FCBetterThanWolves.fcBlockSoulforgeDormant.blockID, 0, 1, 1, 
++				Item.netherStar.itemID, 0, 1, 1, 
++				FCBetterThanWolves.fcAnvil.blockID, 0, 1, 1, 
++				1F, 4
++			)
++			.setMandatory()
++			.registerEffectForTrade(priest, new TradeEffect() {
++				@Override
++				public void playEffect(FCEntityVillager villager) {
++					villager.worldObj.playSoundAtEntity(villager, "random.anvil_land", 0.3F, villager.rand.nextFloat() * 0.1F + 0.9F);
++					villager.worldObj.playSoundAtEntity(villager, "ambient.cave.cave4", 0.5F, villager.rand.nextFloat() * 0.05F + 0.5F);
++				}
++			});
++		
++		//Level 5
++		FCEntityVillager.addTradeToBuySingleItem(priest, FCBetterThanWolves.fcItemCanvas.itemID, 2, 3, 1F, 5);
++		
++		FCEntityVillager.addArcaneScrollTrade(priest, Enchantment.fortune.effectId, 48, 64, 1F, 5);
++		
++		// ------ Blacksmith ------ //
++		//Level 1
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, Item.coal.itemID, 16, 24, 1F, 1).setDefault(blacksmith);
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, Block.wood.blockID, 2, 32, 48, 1F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcItemNuggetIron.itemID, 18, 27, 1F, 1);
++		FCEntityVillager.addTradeToBuySingleItem(blacksmith, FCBetterThanWolves.fcBlockFurnaceBrickIdle.blockID, 1, 1, 1F, 1);
++		
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.swordIron.itemID, 4, 6, 1F, 1);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.axeIron.itemID, 4, 6, 1F, 1);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.pickaxeIron.itemID, 6, 9, 1F, 1);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.shovelIron.itemID, 2, 3, 1F, 1);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.hoeIron.itemID, 2, 3, 1F, 1);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(blacksmith, FCBetterThanWolves.fcBBQ.blockID, 1, 1, 1);
++		
++		//Level 2
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcItemNethercoal.itemID, 12, 20, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcBBQ.blockID, 2, 3, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcItemCreeperOysters.itemID, 14, 16, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, Item.goldNugget.itemID, 18, 27, 1F, 2);
++		FCEntityVillager.addTradeToBuySingleItem(blacksmith, Item.diamond.itemID, 2, 3, 1F, 2);
++		
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.bootsIron.itemID, 4, 6, 1F, 2);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.helmetIron.itemID, 10, 15, 1F, 2);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.plateIron.itemID, 16, 24, 1F, 2);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.legsIron.itemID, 14, 21, 1F, 2);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(blacksmith, FCBetterThanWolves.fcBellows.blockID, 2, 2, 2);
++		
++		//Level 3
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.swordDiamond.itemID, 8, 12, 1F, 3);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.axeDiamond.itemID, 8, 12, 1F, 3);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.pickaxeDiamond.itemID, 12, 18, 1F, 3);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.shovelDiamond.itemID, 4, 6, 1F, 3);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.hoeDiamond.itemID, 4, 6, 1F, 3);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(blacksmith, FCBetterThanWolves.fcCrucible.blockID, 3, 3, 3);
++		
++		//Level 4
++		// TODO: Feels weird to have soul urns and hafts traded earlier than steel
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcItemSoulUrn.itemID, 2, 3, 1F, 4);
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcItemHaft.itemID, 6, 8, 1F, 4);
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcBlockMiningCharge.blockID, 4, 6, 1F, 4);
++		
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.bootsDiamond.itemID, 8, 12, 1F, 4);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.helmetDiamond.itemID, 20, 30, 1F, 4);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.plateDiamond.itemID, 32, 48, 1F, 4);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.legsDiamond.itemID, 28, 42, 1F, 4);
++
++		FCEntityVillager.addLevelUpTradeToBuy(blacksmith, FCBetterThanWolves.fcItemSteel.itemID, 0, 8, 8, 4, 4, 4);
++		
++		//Level 5
++		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcItemSoulFlux.itemID, 16, 24, 1F, 5);
++		
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.bootsChain.itemID, 4, 6, 1F, 5);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.helmetChain.itemID, 10, 15, 1F, 5);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.plateChain.itemID, 16, 24, 1F, 5);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, Item.legsChain.itemID, 14, 21, 1F, 5);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, FCBetterThanWolves.fcItemRefinedSword.itemID, 16, 24, 1F, 5);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, FCBetterThanWolves.fcItemRefinedAxe.itemID, 16, 24, 1F, 5);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, FCBetterThanWolves.fcItemRefinedPickAxe.itemID, 24, 36, 1F, 5);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, FCBetterThanWolves.fcItemRefinedShovel.itemID, 8, 16, 1F, 5);
++		FCEntityVillager.addTradeToSellSingleItem(blacksmith, FCBetterThanWolves.fcItemRefinedHoe.itemID, 16, 24, 1F, 5);
++		FCEntityVillager.addArcaneScrollTrade(blacksmith, Enchantment.unbreaking.effectId, 32, 48, 1F, 5);
++		
++		// ------ Butcher ------ //
++		//Level 1
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, Item.arrow.itemID, 24, 32, 1F, 1);
++		FCEntityVillager.addTradeToBuySingleItem(butcher, Item.shears.itemID, 1, 1, 0.5F, 1);
++		FCEntityVillager.addTradeToBuySingleItem(butcher, Item.fishingRod.itemID, 1, 1, 0.5F, 1);
++		
++		// TODO: Weird inconsistent item counts for raw meat trade - not consistent with food values
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.beefRaw.itemID, 7, 9, 1F, 1).setDefault(butcher);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.porkRaw.itemID, 8, 11, 1F, 1);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.chickenRaw.itemID, 9, 12, 1F, 1);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.fishRaw.itemID, 10, 13, 1F, 1);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemMuttonRaw.itemID, 10, 13, 1F, 1);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.leather.itemID, 7, 9, 1F, 1);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(butcher, FCBetterThanWolves.fcCauldron.blockID, 1, 1, 1);
++		
++		//Level 2
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemDung.itemID, 10, 16, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemWolfRaw.itemID, 6, 8, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemBark.itemID, 1, 48, 64, 1F, 2);
++		
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemSteakAndPotatoes.itemID, 4, 8, 1F, 2);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemHamAndEggs.itemID, 4, 8, 1F, 2);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemTastySandwich.itemID, 4, 8, 1F, 2);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemFishSoup.itemID, 10, 12, 1F, 2);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemCookedKebab.itemID, 4, 8, 1F, 2);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(butcher, FCBetterThanWolves.fcSaw.blockID, 2, 2, 2);
++		
++		//Level 3
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, Item.carrot.itemID, 10, 16, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, Item.potato.itemID, 10, 16, 1F, 3);
++		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemBeastLiverRaw.itemID, 1, 2, 1F, 3);
++
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemTannedLeather.itemID, 4, 8, 1F, 3);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemPorkDinner.itemID, 4, 6, 1F, 3);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemSteakDinner.itemID, 4, 6, 1F, 3);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemWolfDinner.itemID, 4, 6, 1F, 3);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemChickenSoup.itemID, 4, 6, 1F, 3);
++		// TODO: Price seems egregious
++		FCEntityVillager.addTradeToSellSingleItem(butcher, Item.saddle.itemID, 6, 8, 1F, 3);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemBreedingHarness.itemID, 3, 3, 3);
++		
++		//Level 4
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemRawMysteryMeat.itemID, 2, 4, 1F, 4);
++		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemScrew.itemID, 2, 3, 1F, 4);
++		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemCompositeBow.itemID, 2, 3, 1F, 4);
++		
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemHeartyStew.itemID, 3, 4, 1F, 4);
++		FCEntityVillager.addTradeToSellSingleItem(butcher, FCBetterThanWolves.fcItemArmorTannedBoots.itemID, 2, 3, 0.5F, 4);
++		FCEntityVillager.addTradeToSellSingleItem(butcher, FCBetterThanWolves.fcItemArmorTannedChest.itemID, 6, 8, 0.5F, 4);
++		FCEntityVillager.addTradeToSellSingleItem(butcher, FCBetterThanWolves.fcItemArmorTannedHelm.itemID, 3, 4, 0.5F, 4);
++		FCEntityVillager.addTradeToSellSingleItem(butcher, FCBetterThanWolves.fcItemArmorTannedLeggings.itemID, 4, 6, 0.5F, 4);
++		
++		FCEntityVillager.addLevelUpTradeToBuySingleItem(butcher, FCBetterThanWolves.fcAestheticOpaque.blockID, FCBlockAestheticOpaque.m_iSubtypeChoppingBlockDirty, 4, 4, 4);
++		
++		//Mandatory trades
++		FCEntityVillager.addSkullconversionTrade(butcher, 0, 6, 8, 1, 1F, 4).setMandatory();
++		
++		//Level 5
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemDynamite.itemID, 4, 6, 1F, 5);
++		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemBattleAxe.itemID, 4, 5, 1F, 5);
++		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcCompanionCube.blockID, 1, 2, 1F, 5)
++				.registerEffectForTrade(butcher, new TradeEffect() {
++					@Override
++					public void playEffect(FCEntityVillager villager) {
++						villager.worldObj.playSoundAtEntity(villager, "mob.wolf.hurt", 5.0F, (villager.rand.nextFloat() - villager.rand.nextFloat()) * 0.2F + 1.0F);
++					}
++				});
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemBroadheadArrow.itemID, 6, 12, 1F, 5);
++		FCEntityVillager.addComplexTrade(
++				butcher,
++				FCBetterThanWolves.fcBlockLightningRod.blockID, 0, 1, 1,
++				FCBetterThanWolves.fcItemSoap.itemID, 0, 1, 1,
++				Item.emerald.itemID, 0, 3, 5,
++				0.5F, 5
++			)
++			.registerEffectForTrade(butcher, new TradeEffect() {
++				@Override
++				public void playEffect(FCEntityVillager villager) {
++					villager.worldObj.playSoundAtEntity(villager, "random.classic_hurt", 1F, villager.getSoundPitch() * 2.0F);
++				}
++			});
++			
++		FCEntityVillager.addArcaneScrollTrade(butcher, Enchantment.sharpness.effectId, 32, 48, 1F, 5);
 +	}
 +
 +	private static void RemoveVanillaRecipes()

@@ -85,31 +85,58 @@
  
      public boolean canInteractWith(EntityPlayer par1EntityPlayer)
      {
-@@ -87,6 +121,15 @@
+@@ -75,62 +109,86 @@
+     /**
+      * Called when a player shift-clicks on a slot. You must override this or you will crash when someone does that.
+      */
+-    public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2)
++    public ItemStack transferStackInSlot(EntityPlayer player, int slotNum)
+     {
+-        ItemStack var3 = null;
+-        Slot var4 = (Slot)this.inventorySlots.get(par2);
++        ItemStack stackCopy = null;
++        Slot slot = (Slot)this.inventorySlots.get(slotNum);
  
-             if (par2 == 2)
+-        if (var4 != null && var4.getHasStack())
++        if (slot != null && slot.getHasStack())
+         {
+-            ItemStack var5 = var4.getStack();
+-            var3 = var5.copy();
++            ItemStack stack = slot.getStack();
++            stackCopy = stack.copy();
+ 
+-            if (par2 == 2)
++            if (slotNum == 2)
              {
+-                if (!this.mergeItemStack(var5, 3, 39, true))
 +            	// FCMOD: Code added to abort trade if it's used up
 +            	if ( merchantInventory.getCurrentRecipe().func_82784_g() )
-+            	{
-+                    var4.putStack((ItemStack)null);
-+
-+            		return null;
-+            	}
-+            	// END FCMOD
-+            	
-                 if (!this.mergeItemStack(var5, 3, 39, true))
                  {
++                    slot.putStack((ItemStack)null);
++
                      return null;
-@@ -98,17 +141,32 @@
+                 }
++            	// END FCMOD
+ 
+-                var4.onSlotChange(var5, var3);
++                if (!this.mergeItemStack(stack, 3, 39, true))
++                {
++                    return null;
+             }
+-            else if (par2 != 0 && par2 != 1)
++
++                slot.onSlotChange(stack, stackCopy);
++            }
++            else if (slotNum != 0 && slotNum != 1)
              {
-                 if (par2 >= 3 && par2 < 30)
+-                if (par2 >= 3 && par2 < 30)
++                if (slotNum >= 3 && slotNum < 30)
                  {
 +                	// FCMOD: Changed to allow shift-click transfer to merchant slots
 +                	/*
                      if (!this.mergeItemStack(var5, 30, 39, false))
 +                	*/
-+                    if (!this.mergeItemStack(var5, 0, 2, false))
++                    if (!this.mergeItemStack(stack, 0, 2, false))
 +                	// END FCMOD
                      {
                          return null;
@@ -119,7 +146,7 @@
 +                /*
                  else if (par2 >= 30 && par2 < 39 && !this.mergeItemStack(var5, 3, 30, false))
 +                */
-+                else if (par2 >= 30 && par2 < 39 && !this.mergeItemStack(var5, 0, 2, false))
++                else if (slotNum >= 30 && slotNum < 39 && !this.mergeItemStack(stack, 0, 2, false))
 +            	// END FCMOD
                  {
                      return null;
@@ -129,11 +156,39 @@
 +        	/*
              else if (!this.mergeItemStack(var5, 3, 39, false))
 +            */
-+            else if (!this.mergeItemStack(var5, 3, 39, true))
++            else if (!this.mergeItemStack(stack, 3, 39, true))
 +        	// END FCMOD
              {
                  return null;
              }
+ 
+-            if (var5.stackSize == 0)
++            if (stack.stackSize == 0)
+             {
+-                var4.putStack((ItemStack)null);
++                slot.putStack((ItemStack)null);
+             }
+             else
+             {
+-                var4.onSlotChanged();
++                slot.onSlotChanged();
+             }
+ 
+-            if (var5.stackSize == var3.stackSize)
++            if (stack.stackSize == stackCopy.stackSize)
+             {
+                 return null;
+             }
+ 
+-            var4.onPickupFromSlot(par1EntityPlayer, var5);
++            slot.onPickupFromSlot(player, stack);
+         }
+ 
+-        return var3;
++        return stackCopy;
+     }
+ 
+     /**
 @@ -159,4 +217,78 @@
              }
          }

@@ -1,0 +1,11 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCEntityVillagerBlacksmith.java
+@@ -0,0 +1,7 @@
++package net.minecraft.src;
++
++public class FCEntityVillagerBlacksmith extends FCEntityVillager {
++	public FCEntityVillagerBlacksmith(World world) {
++		super(world, FCEntityVillager.professionIDBlacksmith);
++	}
++}
+\ No newline at end of file

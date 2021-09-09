@@ -1,0 +1,52 @@
+--- a/minecraft/net/minecraft/src/BlockRedstoneWire.java
++++ b/minecraft/net/minecraft/src/BlockRedstoneWire.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeBlock;
++import com.prupe.mcpatcher.cc.Colorizer;
+ import java.util.ArrayList;
+ import java.util.HashSet;
+ import java.util.Random;
+@@ -64,7 +66,7 @@
+      */
+     public int colorMultiplier(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
+     {
+-        return 8388608;
++    	return ColorizeBlock.colorizeBlock(this, par1IBlockAccess, par2, par3, par4) ? ColorizeBlock.blockColor : ColorizeBlock.colorizeRedstoneWire(par1IBlockAccess, par2, par3, par4, 8388608);
+     }
+ 
+     /**
+@@ -450,16 +452,28 @@
+             double var7 = (double)par2 + 0.5D + ((double)par5Random.nextFloat() - 0.5D) * 0.2D;
+             double var9 = (double)((float)par3 + 0.0625F);
+             double var11 = (double)par4 + 0.5D + ((double)par5Random.nextFloat() - 0.5D) * 0.2D;
+-            float var13 = (float)var6 / 15.0F;
+-            float var14 = var13 * 0.6F + 0.4F;
++            float var14;
++            float var15;
++            float var16;
+ 
++            if (ColorizeBlock.computeRedstoneWireColor(var6))
++            {
++            	var14 = Colorizer.setColor[0];
++                var15 = Colorizer.setColor[1];
++                var16 = Colorizer.setColor[2];
++            }
++            else
++            {
++                float var13 = (float)var6 / 15.0F;
++                var14 = var13 * 0.6F + 0.4F;
+             if (var6 == 0)
+             {
+                 var14 = 0.0F;
+             }
+ 
+-            float var15 = var13 * var13 * 0.7F - 0.5F;
+-            float var16 = var13 * var13 * 0.6F - 0.7F;
++                var15 = var13 * var13 * 0.7F - 0.5F;
++                var16 = var13 * var13 * 0.6F - 0.7F;
++            }
+ 
+             if (var15 < 0.0F)
+             {

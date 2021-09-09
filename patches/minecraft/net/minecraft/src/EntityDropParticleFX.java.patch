@@ -1,0 +1,60 @@
+--- a/minecraft/net/minecraft/src/EntityDropParticleFX.java
++++ b/minecraft/net/minecraft/src/EntityDropParticleFX.java
+@@ -1,5 +1,9 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cc.ColorizeBlock;
++import com.prupe.mcpatcher.cc.ColorizeEntity;
++import com.prupe.mcpatcher.cc.Colorizer;
++
+ public class EntityDropParticleFX extends EntityFX
+ {
+     /** the material type for dropped items/blocks */
+@@ -15,10 +19,19 @@
+ 
+         if (par8Material == Material.water)
+         {
+-            this.particleRed = 0.0F;
+-            this.particleGreen = 0.0F;
++        	if (ColorizeBlock.computeWaterColor(true, (int)this.posX, (int)this.posY, (int)this.posZ))
++            {
++                this.particleRed = Colorizer.setColor[0];
++                this.particleGreen = Colorizer.setColor[1];
++                this.particleBlue = Colorizer.setColor[2];
++            }
++            else
++            {
++                this.particleRed = 0.2F;
++                this.particleGreen = 0.3F;
+             this.particleBlue = 1.0F;
+         }
++        }
+         else
+         {
+             this.particleRed = 1.0F;
+@@ -57,11 +70,13 @@
+         this.prevPosY = this.posY;
+         this.prevPosZ = this.posZ;
+ 
+-        if (this.materialType == Material.water)
++        if (this.materialType != Material.water)
+         {
+-            this.particleRed = 0.2F;
+-            this.particleGreen = 0.3F;
+-            this.particleBlue = 1.0F;
++        	if (ColorizeEntity.computeLavaDropColor(40 - this.bobTimer))
++            {
++                this.particleRed = Colorizer.setColor[0];
++                this.particleGreen = Colorizer.setColor[1];
++                this.particleBlue = Colorizer.setColor[2];
+         }
+         else
+         {
+@@ -69,6 +84,7 @@
+             this.particleGreen = 16.0F / (float)(40 - this.bobTimer + 16);
+             this.particleBlue = 4.0F / (float)(40 - this.bobTimer + 8);
+         }
++        }
+ 
+         this.motionY -= (double)this.particleGravity;
+ 

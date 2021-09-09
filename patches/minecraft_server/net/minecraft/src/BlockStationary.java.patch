@@ -1,0 +1,13 @@
+--- a/minecraft_server/net/minecraft/src/BlockStationary.java
++++ b/minecraft_server/net/minecraft/src/BlockStationary.java
+@@ -66,7 +66,10 @@
+                 {
+                     if (this.isFlammable(par1World, par2 - 1, par3, par4) || this.isFlammable(par1World, par2 + 1, par3, par4) || this.isFlammable(par1World, par2, par3, par4 - 1) || this.isFlammable(par1World, par2, par3, par4 + 1) || this.isFlammable(par1World, par2, par3 - 1, par4) || this.isFlammable(par1World, par2, par3 + 1, par4))
+                     {
++                    	if (par1World.getGameRules().getGameRuleBooleanValue("doFireTick")) {
+                         par1World.setBlock(par2, par3, par4, Block.fire.blockID);
++                    	}
++                    	
+                         return;
+                     }
+                 }

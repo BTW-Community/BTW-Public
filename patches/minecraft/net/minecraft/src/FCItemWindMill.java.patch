@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemWindMill.java
-@@ -0,0 +1,77 @@
+@@ -0,0 +1,92 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -76,5 +76,20 @@
 +        }        
 +        
 +        return false;
-+    }    
++    }
++    
++    @Override
++    public void OnUsedInCrafting( int iItemDamage, EntityPlayer player, ItemStack outputStack )
++    {
++    	if ( !player.worldObj.isRemote )
++    	{
++    		if ( outputStack.itemID == FCBetterThanWolves.fcItemWindMillBlade.itemID )
++    		{
++    			for (int i = 0; i < 3; i++) {
++	    			FCUtilsItem.EjectStackWithRandomVelocity( player.worldObj, player.posX, player.posY, player.posZ, 
++	    				new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ) );
++    			}
++    		}
++    	}
++    }
 +} 

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockStoneBrick.java
-@@ -0,0 +1,89 @@
+@@ -0,0 +1,95 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -89,4 +89,10 @@
 +    //------------- Class Specific Methods ------------//    
 +    
 +	//----------- Client Side Functionality -----------//
++
++	@Override
++    public int getDamageValue(World world, int x, int y, int z) {
++		// used only by pick block
++		return world.getBlockMetadata(x, y, z);
++    }
 +}

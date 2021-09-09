@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockWoodMouldingAndDecorative.java
-@@ -0,0 +1,188 @@
+@@ -0,0 +1,186 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -39,52 +39,8 @@
 +    }
 +	
 +	@Override
-+    public int damageDropped( int iMetadata )
-+    {
-+		int iWoodType;
-+		
-+		if ( blockID == FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative.blockID )
-+		{
-+			iWoodType = 0;
-+		}
-+		else if ( blockID == FCBetterThanWolves.fcBlockWoodSpruceMouldingAndDecorative.blockID )
-+		{
-+			iWoodType = 1;
-+		}
-+		else if ( blockID == FCBetterThanWolves.fcBlockWoodBirchMouldingAndDecorative.blockID )
-+		{
-+			iWoodType = 2;
-+		}
-+		else if ( blockID == FCBetterThanWolves.fcBlockWoodJungleMouldingAndDecorative.blockID )
-+		{
-+			iWoodType = 3;
-+		}
-+		else  // blood
-+		{
-+			iWoodType = 4;
-+		}
-+		
-+    	if ( !IsDecorative( iMetadata ) )
-+    	{
-+    		return iWoodType;
-+    	}
-+    	
-+		int iBlockType;
-+		
-+	    if ( iMetadata == m_iSubtypeColumn )
-+	    {
-+	    	iBlockType =  FCItemBlockWoodMouldingDecorativeStub.m_iTypeColumn;
-+	    }
-+	    else if ( iMetadata == m_iSubtypePedestalUp || iMetadata == m_iSubtypePedestalDown )
-+	    {
-+	    	iBlockType = FCItemBlockWoodMouldingDecorativeStub.m_iTypePedestal;
-+	    }
-+	    else // table
-+	    {
-+	    	iBlockType = FCItemBlockWoodMouldingDecorativeStub.m_iTypeTable;
-+	    }
-+	    
-+	    return FCItemBlockWoodMouldingDecorativeStub.GetItemDamageForType( iWoodType, iBlockType );		
++    public int damageDropped(int metadata) {
++		return this.damageDropped(this.blockID, metadata);
 +    }
 +	
 +	@Override
@@ -177,6 +133,28 @@
 +	
 +    //------------- Class Specific Methods ------------//
 +	
++	protected int GetWoodTypeFromBlockID(int blockID) {
++	    int woodType;
++		
++		if (blockID == FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative.blockID) {
++			woodType = 0;
++		}
++		else if (blockID == FCBetterThanWolves.fcBlockWoodSpruceMouldingAndDecorative.blockID) {
++			woodType = 1;
++		}
++		else if (blockID == FCBetterThanWolves.fcBlockWoodBirchMouldingAndDecorative.blockID) {
++			woodType = 2;
++		}
++		else if (blockID == FCBetterThanWolves.fcBlockWoodJungleMouldingAndDecorative.blockID) {
++			woodType = 3;
++		}
++		else { // blood
++			woodType = 4;
++		}
++		
++		return woodType;
++	}
++	
 +	public int GetNumSawDustDroppedForType( int iMetadata )
 +	{
 +    	if ( IsDecorative( iMetadata ) )
@@ -187,5 +165,25 @@
 +		return 1; // moulding
 +	}
 +	
-+	//----------- Client Side Functionality -----------//
++	private int damageDropped(int blockID, int metadata) {
++		int woodType = this.GetWoodTypeFromBlockID(blockID);
++		
++    	if (!IsDecorative(metadata)) {
++    		return woodType;
++    	}
++    	
++		int iBlockType;
++		
++	    if (metadata == m_iSubtypeColumn) {
++	    	iBlockType =  FCItemBlockWoodMouldingDecorativeStub.m_iTypeColumn;
++	    }
++	    else if (metadata == m_iSubtypePedestalUp || metadata == m_iSubtypePedestalDown) {
++	    	iBlockType = FCItemBlockWoodMouldingDecorativeStub.m_iTypePedestal;
++	    }
++	    else { // table
++	    	iBlockType = FCItemBlockWoodMouldingDecorativeStub.m_iTypeTable;
++	    }
++	    
++	    return FCItemBlockWoodMouldingDecorativeStub.GetItemDamageForType(woodType, iBlockType);
++	}
 +}

@@ -1,59 +1,21 @@
 --- a/minecraft_server/net/minecraft/src/SaveHandler.java
 +++ b/minecraft_server/net/minecraft/src/SaveHandler.java
-@@ -342,4 +342,138 @@
+@@ -342,4 +342,34 @@
      {
          return this.saveDirectoryName;
      }
 +    
-+    // FCMOD: Added    
++    // FCMOD: Added
 +    @Override
 +    public void LoadModSpecificData( WorldServer world )
 +    {
-+        File modSaveFile = new File( GetDimensionDirectory( world ), "FCWorld.dat");
-+        
-+        if ( modSaveFile.exists() )
-+        {
-+            try
-+            {
-+            	NBTTagCompound fileTag = CompressedStreamTools.readCompressed( new FileInputStream(modSaveFile) );
-+            	NBTTagCompound dataTag = fileTag.getCompoundTag("Data");
-+            	
-+                LoadModSpecificDataFromNBT( world, dataTag );
++        world.loadWorldDataFromNBT(GetDimensionDirectory(world));
  }
-+            catch ( Exception exception )
-+            {
-+                exception.printStackTrace();
-+            }
-+        }
-+    }
 +    
 +    @Override
 +    public void SaveModSpecificData( WorldServer world )
 +    {
-+        NBTTagCompound modData = new NBTTagCompound();
-+        
-+        SaveModSpecificDataToNBT( world, modData );
-+        
-+        NBTTagCompound fileData = new NBTTagCompound();
-+        
-+        fileData.setTag( "Data", modData );
-+
-+        try
-+        {
-+            File modSaveFile = new File( GetDimensionDirectory( world ), "FCWorld.dat");
-+            
-+            if ( modSaveFile.exists() )
-+            {
-+            	modSaveFile.delete();
-+            }
-+            
-+            CompressedStreamTools.writeCompressed( fileData, new FileOutputStream( modSaveFile ) );
-+
-+        }
-+        catch ( Exception exception )
-+        {
-+            exception.printStackTrace();
-+        }
++        world.saveWorldDataToNBT(GetDimensionDirectory(world));
 +    }
 +    
 +    private File GetDimensionDirectory( WorldServer world )
@@ -71,71 +33,5 @@
 +            return worldDirectory;
 +        }        
 +    }
-+
-+    private void LoadModSpecificDataFromNBT( WorldServer world, NBTTagCompound tag )
-+    {
-+	    if ( tag.hasKey( "FCMagneticPoints" ) )
-+	    {
-+	        NBTTagList nbttaglist1 = tag.getTagList( "FCMagneticPoints" );
-+	        
-+	    	world.GetMagneticPointList().loadFromNBT( nbttaglist1 );
-+	    }
-+	    
-+	    if ( tag.hasKey( "FCEnderItems" ) )
-+	    {
-+	        NBTTagList itemList = tag.getTagList( "FCEnderItems" );
-+	        
-+	    	world.GetLocalEnderChestInventory().loadInventoryFromNBT( itemList );
-+	    }
-+	    
-+	    if ( tag.hasKey( "FCLPEnderItems" ) )
-+	    {
-+	        NBTTagList itemList = tag.getTagList( "FCLPEnderItems" );
-+	        
-+	    	world.GetLocalLowPowerEnderChestInventory().loadInventoryFromNBT( itemList );
-+	    }
-+	    
-+	    if ( tag.hasKey( "FCLootingBeacons" ) )
-+	    {
-+	        NBTTagList nbttaglist1 = tag.getTagList( "FCLootingBeacons" );
-+	        
-+	    	world.GetLootingBeaconLocationList().loadFromNBT( nbttaglist1 );
-+	    }	    
-+	    
-+	    if ( tag.hasKey( "FCSpawnLocations" ) )
-+	    {
-+	        NBTTagList nbttaglist1 = tag.getTagList( "FCSpawnLocations" );
-+	        
-+	    	world.GetSpawnLocationList().loadFromNBT( nbttaglist1 );
-+	    }	    
-+    }
-+    
-+    private void SaveModSpecificDataToNBT( WorldServer world, NBTTagCompound tag )
-+    {
-+	    if ( world.GetMagneticPointList() != null )
-+	    {
-+	    	tag.setTag( "FCMagneticPoints", world.GetMagneticPointList().saveToNBT() );
-+	    }
-+	    
-+	    if ( world.GetLocalEnderChestInventory() != null )
-+	    {
-+	    	tag.setTag( "FCEnderItems", world.GetLocalEnderChestInventory().saveInventoryToNBT() );
-+	    }
-+	    
-+	    if ( world.GetLocalLowPowerEnderChestInventory() != null )
-+	    {
-+	    	tag.setTag( "FCLPEnderItems", world.GetLocalLowPowerEnderChestInventory().saveInventoryToNBT() );
-+	    }
-+	    
-+	    if ( world.GetLootingBeaconLocationList() != null )
-+	    {
-+	    	tag.setTag( "FCLootingBeacons", world.GetLootingBeaconLocationList().saveToNBT() );
-+	    }	    
-+	    
-+	    if ( world.GetSpawnLocationList() != null )
-+	    {
-+	    	tag.setTag( "FCSpawnLocations", world.GetSpawnLocationList().saveToNBT() );
-+	    }	    
-+    }    
 +    // END FCMOD
 +}

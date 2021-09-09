@@ -1,6 +1,86 @@
 --- a/minecraft/net/minecraft/src/Texture.java
 +++ b/minecraft/net/minecraft/src/Texture.java
-@@ -387,4 +387,13 @@
+@@ -1,9 +1,11 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.hd.Wrapper15;
+ import java.awt.image.BufferedImage;
+ import java.io.File;
+ import java.io.IOException;
+ import java.nio.ByteBuffer;
++import java.nio.IntBuffer;
+ import javax.imageio.ImageIO;
+ import net.minecraft.client.Minecraft;
+ import org.lwjgl.opengl.GL11;
+@@ -21,12 +23,12 @@
+     /** Height of this texture in pixels. */
+     private final int height;
+     private final int textureDepth;
+-    private final int textureFormat;
++    public int textureFormat;
+     private final int textureTarget;
+-    private final int textureMinFilter;
++    public int textureMinFilter;
+     private final int textureMagFilter;
+     private final int textureWrap;
+-    private final boolean mipmapActive;
++    public boolean mipmapActive;
+     private final String textureName;
+     private Rect2i textureRect;
+     private boolean transferred;
+@@ -41,7 +43,9 @@
+      * False if the texture has been modified since it was last uploaded to the GPU.
+      */
+     private boolean textureNotModified;
+-    private ByteBuffer textureData;
++    public ByteBuffer textureData;
++    public int border;
++    public IntBuffer[] mipmapData;
+ 
+     private Texture(String par1Str, int par2, int par3, int par4, int par5, int par6, int par7, int par8, int par9)
+     {
+@@ -213,8 +217,12 @@
+ 
+     public void copyFrom(int par1, int par2, Texture par3Texture, boolean par4)
+     {
+-        if (this.textureTarget != 32879)
++    	if (this.textureNotModified)
+         {
++            Wrapper15.copySubTexture(this, par3Texture, par1, par2, par4);
++        }
++        else if (this.textureTarget != 32879)
++        {
+             ByteBuffer var5 = par3Texture.getTextureData();
+             this.textureData.position(0);
+             var5.position(0);
+@@ -262,10 +270,17 @@
+ 
+     public void func_104062_b(int par1, int par2, Texture par3Texture)
+     {
++    	if (this.textureNotModified)
++        {
++            Wrapper15.copySubTexture(this, par3Texture, par1, par2, false);
++        }
++        else
++        {
+         GL11.glBindTexture(this.textureTarget, this.glTextureId);
+         GL11.glTexSubImage2D(this.textureTarget, 0, par1, par2, par3Texture.getWidth(), par3Texture.getHeight(), this.textureFormat, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)par3Texture.getTextureData().position(0));
+         this.textureNotModified = true;
+     }
++    }
+ 
+     public void transferFromImage(BufferedImage par1BufferedImage)
+     {
+@@ -373,7 +388,7 @@
+         }
+         else if (this.height != 1)
+         {
+-            GL11.glTexImage2D(this.textureTarget, 0, this.textureFormat, this.width, this.height, 0, this.textureFormat, GL11.GL_UNSIGNED_BYTE, this.textureData);
++        	Wrapper15.setupTexture(this, this.getTextureName());
+         }
+         else
+         {
+@@ -387,4 +402,13 @@
      {
          return this.textureData;
      }

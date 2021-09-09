@@ -1,19 +1,29 @@
 --- a/minecraft/net/minecraft/src/RenderBiped.java
 +++ b/minecraft/net/minecraft/src/RenderBiped.java
-@@ -45,6 +45,12 @@
+@@ -1,5 +1,7 @@
+ package net.minecraft.src;
+ 
++import com.prupe.mcpatcher.cit.CITUtils;
++import com.prupe.mcpatcher.mal.resource.FakeResourceLocation;
+ import org.lwjgl.opengl.GL11;
+ 
+ public class RenderBiped extends RenderLiving
+@@ -45,7 +47,13 @@
              if (var5 instanceof ItemArmor)
              {
                  ItemArmor var6 = (ItemArmor)var5;
+-                this.loadTexture("/armor/" + bipedArmorFilenamePrefix[var6.renderIndex] + "_" + (par2 == 2 ? 2 : 1) + ".png");
 +                // FCMOD: Code added
 +                if ( var5 instanceof FCItemArmorMod )
 +                {
 +                	return ShouldRenderPassModArmor( var4, par2, (FCItemArmorMod)var5 );
 +                }
 +            	// END FCMOD
-                 this.loadTexture("/armor/" + bipedArmorFilenamePrefix[var6.renderIndex] + "_" + (par2 == 2 ? 2 : 1) + ".png");
++                this.loadTexture(FakeResourceLocation.unwrap(CITUtils.getArmorTexture(FakeResourceLocation.wrap("/armor/" + bipedArmorFilenamePrefix[var6.renderIndex] + "_" + (par2 == 2 ? 2 : 1) + ".png"), par1EntityLiving, var4)));
                  ModelBiped var7 = par2 == 2 ? this.field_82425_h : this.field_82423_g;
                  var7.bipedHead.showModel = par2 == 0;
-@@ -113,6 +119,14 @@
+                 var7.bipedHeadwear.showModel = par2 == 0;
+@@ -113,8 +121,16 @@
  
              if (var5 instanceof ItemArmor)
              {
@@ -26,9 +36,12 @@
 +            	}
 +            	// END FCMOD
                  ItemArmor var6 = (ItemArmor)var5;
-                 this.loadTexture("/armor/" + bipedArmorFilenamePrefix[var6.renderIndex] + "_" + (par2 == 2 ? 2 : 1) + "_b.png");
+-                this.loadTexture("/armor/" + bipedArmorFilenamePrefix[var6.renderIndex] + "_" + (par2 == 2 ? 2 : 1) + "_b.png");
++                this.loadTexture(FakeResourceLocation.unwrap(CITUtils.getArmorTexture(FakeResourceLocation.wrap("/armor/" + bipedArmorFilenamePrefix[var6.renderIndex] + "_" + (par2 == 2 ? 2 : 1) + "_b.png"), par1EntityLiving, var4)));
                  float var7 = 1.0F;
-@@ -160,9 +174,17 @@
+                 GL11.glColor3f(var7, var7, var7);
+             }
+@@ -160,9 +176,17 @@
              GL11.glPushMatrix();
              this.modelBipedMain.bipedHead.postRender(0.0625F);
  
@@ -47,7 +60,7 @@
                  {
                      var6 = 0.625F;
                      GL11.glTranslatef(0.0F, -0.25F, 0.0F);
-@@ -204,7 +226,12 @@
+@@ -204,7 +228,12 @@
              this.modelBipedMain.bipedRightArm.postRender(0.0625F);
              GL11.glTranslatef(-0.0625F, 0.4375F, 0.0625F);
  
@@ -60,7 +73,7 @@
              {
                  var6 = 0.5F;
                  GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
-@@ -273,4 +300,71 @@
+@@ -273,4 +302,71 @@
      {
          this.doRenderLiving((EntityLiving)par1Entity, par2, par4, par6, par8, par9);
      }
