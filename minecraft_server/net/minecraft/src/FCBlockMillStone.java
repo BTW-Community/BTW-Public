@@ -1,0 +1,288 @@
+// FCMOD
+
+package net.minecraft.src;
+
+import java.util.Random;
+
+public class FCBlockMillStone extends BlockContainer
+	implements FCIBlockMechanical 
+{
+	private static int m_iTickRate = 10;
+	
+	public static final int m_iContentsNothing = 0;
+	public static final int m_iContentsNormalGrinding = 1;
+	public static final int m_iContentsNetherrack = 2;
+	public static final int m_iContentsCompanionCube = 3;
+	public static final int m_iContentsJammed = 4;
+	
+	public static final FCModelBlockMillStone m_model = new FCModelBlockMillStone();
+	
+    protected FCBlockMillStone( int iBlockID )
+    {
+	    super( iBlockID, Material.rock );
+	    
+        setHardness( 3.5F );
+        
+        setStepSound( soundStoneFootstep );
+        setUnlocalizedName( "fcBlockMillStone" );
+        
+        setTickRandomly( true );
+        
+        setCreativeTab( CreativeTabs.tabRedstone );
+    }
+    
+	@Override
+    public boolean isOpaqueCube()
+    {
+        return false;
+    }
+
+	@Override
+    public boolean renderAsNormalBlock()
+    {
+        return false;
+    }
+    
+	@Override
+    public int tickRate( World world )
+    {
+    	return m_iTickRate;
+    }
+    
+	@Override
+    public void onBlockAdded( World world, int i, int j, int k )
+    {
+        super.onBlockAdded( world, i, j, k );
+        
+    	world.scheduleBlockUpdate( i, j, k, blockID, tickRate( world ) );
+    }
+
+	@Override
+    public boolean onBlockActivated( World world, int i, int j, int k, EntityPlayer player, int iFacing, float fXClick, float fYClick, float fZClick )
+    {		
+		int iState = this.GetCurrentGrindingType( world, i, j, k );
+		
+        FCTileEntityMillStone tileEntity = (FCTileEntityMillStone)world.getBlockTileEntity( i, j, k );
+        
+		if ( iState == m_iContentsNothing )
+		{
+	    	ItemStack heldStack = player.getCurrentEquippedItem();
+
+	    	if ( heldStack != null )
+	    	{
+				if ( !world.isRemote )
+				{
+			        world.playAuxSFX( FCBetterThanWolves.m_iItemCollectionPopSoundAuxFXID, i, j, k, 0 );
+			        
+					tileEntity.AttemptToAddSingleItemFromStack( heldStack );
+				}
+				else
+				{				
+					heldStack.stackSize--;
+				}
+	    	}
+		}
+		else if ( !world.isRemote )
+    	{
+	        world.playAuxSFX( FCBetterThanWolves.m_iItemCollectionPopSoundAuxFXID, i, j, k, 0 );
+	        
+			tileEntity.EjectContents( iFacing );
+    	}
+		
+		return true;		
+    }
+
+	@Override
+    public void breakBlock( World world, int i, int j, int k, int iBlockID, int iMetadata )
+    {
+        FCUtilsInventory.EjectInventoryContents( world, i, j, k, (IInventory)world.getBlockTileEntity( i, j, k ) );
+
+        super.breakBlock( world, i, j, k, iBlockID, iMetadata );
+    }
+
+	@Override
+    public TileEntity createNewTileEntity( World world )
+    {
+        return new FCTileEntityMillStone();
+    }
+
+	@Override
+    public void updateTick( World world, int i, int j, int k, Random random )
+    {
+    	boolean bReceivingPower = IsInputtingMechanicalPower( world, i, j, k );
+    	boolean bOn = GetIsMechanicalOn( world, i, j, k );
+    	
+    	if ( bOn != bReceivingPower )
+    	{
+    		SetIsMechanicalOn( world, i, j, k, bReceivingPower );
+    	}
+    }
+    
+	@Override
+    public void RandomUpdateTick( World world, int i, int j, int k, Random rand )
+    {
+		if ( !IsCurrentStateValid( world, i, j, k ) )
+		{
+			// verify we have a tick already scheduled to prevent jams on chunk load
+			
+			if ( !world.IsUpdateScheduledForBlock( i, j, k, blockID ) )
+			{
+		        world.scheduleBlockUpdate( i, j, k, blockID, tickRate( world ) );        
+			}
+		}
+    }
+	
+	@Override
+    public void onNeighborBlockChange( World world, int i, int j, int k, int iBlockID )
+    {
+    	if ( !IsCurrentStateValid( world, i, j, k ) &&
+			!world.IsUpdatePendingThisTickForBlock( i, j, k, blockID ) )
+    	{    		
+	        world.scheduleBlockUpdate( i, j, k, blockID, tickRate( world ) );
+    	}
+    }
+    
+    @Override
+    public MovingObjectPosition collisionRayTrace( World world, int i, int j, int k, Vec3 startRay, Vec3 endRay )
+    {
+    	FCUtilsRayTraceVsComplexBlock rayTrace = new FCUtilsRayTraceVsComplexBlock( world, i, j, k, startRay, endRay );
+    	
+    	m_model.AddToRayTrace( rayTrace );
+    	
+    	rayTrace.AddBoxWithLocalCoordsToIntersectionList( m_model.m_boxBase );    	
+		
+        return rayTrace.GetFirstIntersection();
+    }
+
+    @Override
+	public boolean HasCenterHardPointToFacing( IBlockAccess blockAccess, int i, int j, int k, int iFacing, boolean bIgnoreTransparency )
+	{
+		return true;
+	}
+    
+    @Override
+	public boolean HasLargeCenterHardPointToFacing( IBlockAccess blockAccess, int i, int j, int k, int iFacing, boolean bIgnoreTransparency )
+	{
+		return iFacing == 0 || bIgnoreTransparency;
+	}
+	
+	//------------- FCIBlockMechanical -------------//
+    
+	@Override
+    public boolean CanOutputMechanicalPower()
+    {
+    	return false;
+    }
+
+	@Override
+    public boolean CanInputMechanicalPower()
+    {
+    	return true;
+    }
+
+	@Override
+    public boolean IsInputtingMechanicalPower( World world, int i, int j, int k )
+    {
+    	return FCUtilsMechPower.IsBlockPoweredByAxle( world, i, j, k, this ) || 
+			FCUtilsMechPower.IsBlockPoweredByHandCrank( world, i, j, k );  	
+    }    
+
+	@Override
+	public boolean CanInputAxlePowerToFacing( World world, int i, int j, int k, int iFacing )
+	{
+		return iFacing < 2;
+	}
+	@Override
+    public boolean IsOutputtingMechanicalPower( World world, int i, int j, int k )
+    {
+    	return false;
+    }
+    
+	@Override
+	public void Overpower( World world, int i, int j, int k )
+	{
+		BreakMillStone( world, i, j, k );
+	}
+	
+	@Override
+	public boolean hasComparatorInputOverride()
+    {
+        return true;
+    }
+
+	@Override
+    public int getComparatorInputOverride(World par1World, int par2, int par3, int par4, int par5)
+    {
+        return ((FCTileEntityMillStone) par1World.getBlockTileEntity(par2, par3, par4)).m_stackMilling == null ? 0 : 15;
+    }
+	
+    //------------- Class Specific Methods ------------//
+    
+    public boolean GetIsMechanicalOn( IBlockAccess blockAccess, int i, int j, int k )
+    {
+    	return GetIsMechanicalOn( blockAccess.getBlockMetadata( i, j, k ) );    
+	}
+    
+    public boolean GetIsMechanicalOn( int iMetadata )
+    {
+    	return ( iMetadata & 1 ) > 0;    
+    }
+    
+    public void SetIsMechanicalOn( World world, int i, int j, int k, boolean bOn )
+    {
+    	int iMetadata = SetIsMechanicalOn( world.getBlockMetadata( i, j, k ), bOn );
+    	
+		world.setBlockMetadataWithNotify( i, j, k, iMetadata );
+    }
+    
+    public int SetIsMechanicalOn( int iMetadata, boolean bOn )
+    {
+    	if ( bOn )
+    	{
+            return iMetadata | 1;
+    	}
+    	
+    	return iMetadata & (~1);
+    }
+    
+    public int GetCurrentGrindingType( IBlockAccess blockAccess, int i, int j, int k )
+    {
+    	return GetCurrentGrindingType( blockAccess.getBlockMetadata( i, j, k ) );
+    }
+    
+    public int GetCurrentGrindingType( int iMetadata )
+    {
+    	return ( iMetadata & 14 ) >> 1;
+    }
+    
+    public void SetCurrentGrindingType( World world, int i, int j, int k, int iGrindingType )
+    {
+    	int iMetadata = SetCurrentGrindingType( world.getBlockMetadata( i, j, k ), iGrindingType );
+    	
+		world.setBlockMetadataWithClient( i, j, k, iMetadata );
+    }
+    
+    public int SetCurrentGrindingType( int iMetadata, int iGrindingType )
+    {
+    	iMetadata &= ~14; // filter out old state
+    	
+    	return iMetadata | ( iGrindingType << 1 );    	
+    }
+    
+	private void BreakMillStone( World world, int i, int j, int k )
+	{
+    	DropItemsIndividualy( world, i, j, k, FCBetterThanWolves.fcItemStone.itemID, 16, 0, 0.75F );
+		
+        world.playAuxSFX( FCBetterThanWolves.m_iMechanicalDeviceExplodeAuxFXID, i, j, k, 0 );							        
+        
+		world.setBlockWithNotify( i, j, k, 0 );
+	}
+	
+	public boolean IsCurrentStateValid( World world, int i, int j, int k )
+	{
+    	boolean bReceivingPower = IsInputtingMechanicalPower( world, i, j, k );
+    	boolean bOn = GetIsMechanicalOn( world, i, j, k );
+    	
+    	return bOn == bReceivingPower;    	
+	}
+}

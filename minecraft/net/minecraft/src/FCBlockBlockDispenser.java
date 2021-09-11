@@ -1,0 +1,602 @@
+// FCMOD
+
+package net.minecraft.src;
+
+import java.util.List;
+import java.util.Random;
+
+public class FCBlockBlockDispenser extends BlockContainer
+{
+	private final int iBlockDispenserTickRate = 4;
+
+    protected FCBlockBlockDispenser( int iBlockID )
+    {
+        super( iBlockID, Material.rock );
+
+        setHardness( 3.5F );
+        
+        setTickRandomly( true );
+        
+        setStepSound( Block.soundStoneFootstep );
+        
+        setUnlocalizedName( "fcBlockBlockDispenser" );
+        
+        setCreativeTab( CreativeTabs.tabRedstone );
+    }
+
+	@Override
+    public int tickRate( World world )
+    {
+        return iBlockDispenserTickRate;
+    }
+
+	@Override
+    public int idDropped( int i, Random random, int iFortuneModifier )
+    {
+        return FCBetterThanWolves.fcBlockDispenser.blockID;
+    }
+
+	@Override
+    public void onBlockAdded( World world, int i, int j, int k ) 
+	{
+        world.scheduleBlockUpdate( i, j, k, blockID, tickRate( world ) );		
+	}
+
+	@Override
+    public int onBlockPlaced( World world, int i, int j, int k, int iFacing, float fClickX, float fClickY, float fClickZ, int iMetadata )
+    {
+        return SetFacing( iMetadata, Block.GetOppositeFacing( iFacing ) );        
+    }
+    
+	@Override
+	public void onBlockPlacedBy( World world, int i, int j, int k, EntityLiving entityLiving, ItemStack stack )
+	{
+		int iFacing = FCUtilsMisc.ConvertPlacingEntityOrientationToBlockFacingReversed( entityLiving );
+		
+		SetFacing( world, i, j, k, iFacing );
+		
+        world.scheduleBlockUpdate( i, j, k, blockID, tickRate( world ) );
+	}
+	
+	@Override
+    public boolean onBlockActivated( World world, int i, int j, int k, EntityPlayer player, int iFacing, float fXClick, float fYClick, float fZClick )
+    {
+        if ( !world.isRemote )
+        {
+            FCTileEntityBlockDispenser tileEntity = (FCTileEntityBlockDispenser)world.getBlockTileEntity( i, j, k );
+            
+        	if ( player instanceof EntityPlayerMP ) // should always be true
+        	{
+        		FCContainerBlockDispenser container = new FCContainerBlockDispenser( player.inventory, tileEntity );
+
+        		FCBetterThanWolves.ServerOpenCustomInterface( (EntityPlayerMP)player, container, FCBetterThanWolves.fcBlockDispenserContainerID );
+        	}
+        }
+        
+        return true;
+    }
+
+	@Override
+    public TileEntity createNewTileEntity( World world )
+    {
+        return new FCTileEntityBlockDispenser();
+    }
+    
+	@Override
+    public void breakBlock( World world, int i, int j, int k, int iBlockID, int iMetadata )
+    {
+        FCUtilsInventory.EjectInventoryContents( world, i, j, k, (IInventory)world.getBlockTileEntity(i, j, k) );
+
+        super.breakBlock( world, i, j, k, iBlockID, iMetadata );
+    }
+
+	@Override
+    public void updateTick( World world, int i, int j, int k, Random random )
+    {
+    	ValidateBlockDispenser( world, i, j, k );
+    	
+    	boolean bIsPowered = IsReceivingRedstonePower( world, i, j, k );
+    	
+    	if ( bIsPowered )
+    	{
+    		if ( !IsRedstoneOn( world, i, j, k ) )
+    		{
+    			SetRedstoneOn( world, i, j, k, true );
+    			
+	        	DispenseBlockOrItem( world, i, j, k );
+    		}
+    	}
+    	else
+    	{
+    		if ( IsRedstoneOn( world, i, j, k ) )
+    		{
+    			SetRedstoneOn( world, i, j, k, false );
+    			
+	        	ConsumeFacingBlock( world, i, j, k );
+    		}
+    	}    	
+    }
+    
+	@Override
+    public void onNeighborBlockChange( World world, int i, int j, int k, int iChangedBlockID )
+    {
+    	if ( !IsCurrentStateValid( world, i, j, k ) &&
+			!world.IsUpdatePendingThisTickForBlock( i, j, k, blockID ) )    		
+    	{
+    		world.scheduleBlockUpdate( i, j, k, blockID, tickRate( world ) );
+    	}
+    }
+    
+	@Override
+    public void RandomUpdateTick( World world, int i, int j, int k, Random rand )
+    {
+		if ( !IsCurrentStateValid( world, i, j, k ) )
+		{
+			// verify we have a tick already scheduled to prevent jams on chunk load
+			
+			if ( !world.IsUpdateScheduledForBlock( i, j, k, blockID ) )
+			{
+		        world.scheduleBlockUpdate( i, j, k, blockID, tickRate( world ) );        
+			}
+		}
+    }
+	
+	@Override
+	public int GetFacing( int iMetadata )
+	{
+    	return ( iMetadata & ~8 );
+	}
+	
+	@Override
+	public int SetFacing( int iMetadata, int iFacing )
+	{
+    	iMetadata &= 8;	// filter out old state
+    	
+    	iMetadata |= iFacing;
+    	
+        return iMetadata;
+	}
+	
+	@Override
+	public boolean RotateAroundJAxis( World world, int i, int j, int k, boolean bReverse )
+	{
+		if ( super.RotateAroundJAxis( world, i, j, k, bReverse ) )
+		{
+			world.markBlockForUpdate( i, j, k );
+			
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean ToggleFacing( World world, int i, int j, int k, boolean bReverse )
+	{		
+		int iFacing = GetFacing( world, i, j, k );
+		
+		iFacing = Block.CycleFacing( iFacing, bReverse );
+		
+		SetFacing( world, i, j, k, iFacing );
+		
+        world.markBlockRangeForRenderUpdate( i, j, k, i, j, k );
+        
+        return true;
+	}
+
+	@Override
+    public boolean hasComparatorInputOverride()
+    {
+        return true;
+    }
+
+	@Override
+    public int getComparatorInputOverride(World par1World, int par2, int par3, int par4, int par5)
+    {
+        return Container.calcRedstoneFromInventory(((IInventory) par1World.getBlockTileEntity(par2, par3, par4)));
+    }
+	
+    //------------- Class Specific Methods ------------//
+    
+	public boolean IsCurrentStateValid( World world, int i, int j, int k )
+	{
+		return IsRedstoneOn( world, i, j, k ) == IsReceivingRedstonePower( world, i, j, k );
+	}
+	
+    public boolean IsRedstoneOn( World world, int i, int j, int k )
+    {
+        int iMetaData = world.getBlockMetadata( i, j, k );
+        
+        return ( ( iMetaData & 8 ) > 0 );
+    }
+    
+    private void SetRedstoneOn( World world, int i, int j, int k, boolean bOn )
+    {
+        int iMetaData = world.getBlockMetadata( i, j, k );
+        
+        if ( bOn )
+        {
+        	iMetaData = iMetaData | 8;
+        }
+        else
+        {
+        	iMetaData = iMetaData & (~8);
+        }
+        
+        world.setBlockMetadataWithNotify( i, j, k, iMetaData );        
+    }
+    
+    private boolean IsReceivingRedstonePower( World world, int i, int j, int k )
+    {
+    	return ( world.isBlockGettingPowered( i, j, k ) || world.isBlockGettingPowered( i, j + 1, k ) );
+    }
+    
+    private boolean AddBlockToInventory( World world, int i, int j, int k, 
+    	Block targetBlock, FCUtilsBlockPos targetPos )
+    {
+    	ValidateBlockDispenser( world, i, j, k );
+    	
+		ItemStack stack = targetBlock.GetStackRetrievedByBlockDispenser( world, 
+			targetPos.i, targetPos.j, targetPos.k );
+
+		if ( stack != null )
+		{
+	        FCTileEntityBlockDispenser tileEntityDispenser = 
+	        	(FCTileEntityBlockDispenser)world.getBlockTileEntity( i, j, k );
+	        
+	        int iInitialSize = stack.stackSize;
+	        
+	        boolean bWholeStackAdded = FCUtilsInventory.AddItemStackToInventory( 
+	        	tileEntityDispenser, stack );
+
+	        // partial stack swallows count for the BD, with the excess items being lost
+	        
+			return bWholeStackAdded || stack.stackSize < iInitialSize;
+		}
+		
+		return false;
+    }
+    
+    private boolean ConsumeEntityAtTargetLoc( World world, int i, int j, int k, int targeti, int targetj, int targetk )
+    {    	
+    	ValidateBlockDispenser( world, i, j, k );
+    	
+        List list = null;
+        
+        list = world.getEntitiesWithinAABB( Entity.class, 
+        		AxisAlignedBB.getAABBPool().getAABB( (double)targeti, (double)targetj, (double)targetk, 
+				(double)(targeti + 1), (double)(targetj + 1), (double)(targetk + 1) ) );
+        
+        if( list != null && list.size() > 0 )
+        {            	
+        	FCTileEntityBlockDispenser tileEentityDispenser = 
+        		(FCTileEntityBlockDispenser)world.getBlockTileEntity( i, j, k );
+
+            for(int listIndex = 0; listIndex < list.size(); listIndex++)
+            {
+            	Entity targetEntity = (Entity)list.get( listIndex );
+        
+            	if ( !targetEntity.isDead )
+            	{
+	            	if ( targetEntity instanceof EntityMinecart )
+	            	{
+	            		EntityMinecart targetMinecart = (EntityMinecart)targetEntity;
+	            		
+	            		int minecartType = targetMinecart.getMinecartType();
+
+	            		// dismount any entities riding the minecart
+	            		
+	                    if( targetMinecart.riddenByEntity != null)
+	                    {
+	                    	targetMinecart.riddenByEntity.mountEntity( targetMinecart );
+	                    }
+	                    
+	        			targetMinecart.setDead();
+	        			
+	            		switch ( minecartType )
+	            		{            			
+	            			case 1: // chest cart
+	            				
+	            				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.minecartCrate.itemID, 0 );
+	            				
+	            				break;
+	            				
+	            			case 2: // furnace
+	        					
+	            				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.minecartPowered.itemID, 0 );
+	            				
+	        					break;
+	        					
+	            			default: // 0 = empty cart, and this also covers the new minecart types (tnt, hopper & mob-spawner)
+	            				
+	            				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.minecartEmpty.itemID, 0 );
+	            				
+	            				break;	            				
+	            		}
+	            		
+	        	        world.playAuxSFX( 1001, i, j, k, 0 ); // high pitch click							        
+	            	
+	            		return true;
+	            	}
+	            	else if ( targetEntity instanceof EntityBoat )
+	            	{
+	            		targetEntity.setDead();
+	            		
+	    				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.boat.itemID, 0 );
+	    				
+	        	        world.playAuxSFX( 1001, i, j, k, 0 ); // high pitch click							        
+		            	
+	            		return true;
+	            	}
+	            	else if ( targetEntity instanceof FCEntityWolf )
+	            	{
+	            		FCEntityWolf targetWolf = (FCEntityWolf)targetEntity;
+	            		
+	        	        world.playAuxSFX( FCBetterThanWolves.m_iWolfHurtSoundAuxFXID, i, j, k, 0 );	        	        
+	                    
+	            		targetEntity.setDead();
+	            		
+	            		FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, FCBetterThanWolves.fcCompanionCube.blockID, 0 );
+	
+	    				for ( int tempCount = 0; tempCount < 2; tempCount++ )
+	    				{
+	    					SpitOutItem( world, i, j, k, new ItemStack( Item.silk ) );
+	    				}
+	    				
+	            		return true;
+	            	}
+	            	else if ( targetEntity instanceof FCEntityChicken )
+	            	{
+	            		FCEntityChicken targetChicken = (FCEntityChicken)targetEntity;
+	            		
+	        	        world.playAuxSFX( FCBetterThanWolves.m_iChickenHurtSoundAuxFXID, i, j, k, 0 );							        
+	                    
+	            		targetEntity.setDead();
+	            		
+	            		FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.egg.itemID, 0 );
+	
+	            		return true;
+	            	}
+	            	else if ( targetEntity instanceof FCEntitySheep )
+	            	{
+	            		FCEntitySheep targetSheep = (FCEntitySheep)targetEntity;
+	            		
+	            		if ( !targetSheep.getSheared() && !targetSheep.isChild() )
+	            		{
+	            			targetSheep.setSheared( true );
+	            			
+		            		FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, 
+		            			FCBetterThanWolves.fcItemWool.itemID, 
+		            			BlockCloth.getDyeFromBlock( targetSheep.getFleeceColor() ) );
+		            		
+		                    targetEntity.attackEntityFrom( DamageSource.generic, 0 );
+		                    
+		    				for ( int tempCount = 0; tempCount < 2; tempCount++ )
+		    				{
+		    					SpitOutItem( world, i, j, k, new ItemStack( Item.silk ) );
+		    				}
+		    				
+		                    return true;
+	            		}
+	            	}
+            	}
+            }                
+        }                
+
+    	return false;
+    }
+    
+    private void ConsumeFacingBlock( World world, int i, int j, int k )
+    {
+        int iFacingDirection = GetFacing( world, i, j, k );
+        
+        FCUtilsBlockPos targetPos = new FCUtilsBlockPos( i, j, k );
+        
+        targetPos.AddFacingAsOffset( iFacingDirection );
+        
+        if ( !ConsumeEntityAtTargetLoc( world, i, j, k, targetPos.i, targetPos.j, targetPos.k ) )
+        {    	
+	    	if ( !world.isAirBlock( targetPos.i, targetPos.j, targetPos.k ) )
+	    	{
+		    	int iTargetBlockID = world.getBlockId( targetPos.i, targetPos.j, targetPos.k);
+		    	
+	    		Block targetBlock = Block.blocksList[iTargetBlockID];
+	    		
+	    		if ( targetBlock != null )
+	    		{
+    				int iTargetMetadata = world.getBlockMetadata( targetPos.i, targetPos.j, targetPos.k );
+    				
+					if ( AddBlockToInventory( world, i, j, k, targetBlock, targetPos ) ||
+						targetBlock.IsBlockDestroyedByBlockDispenser( iTargetMetadata ) )
+    				{
+						targetBlock.OnRemovedByBlockDispenser( world, 
+							targetPos.i, targetPos.j, targetPos.k );
+    				}
+	    		}
+	    	}
+        }
+    }
+
+    @Override
+    public void OnRemovedByBlockDispenser( World world, int i, int j, int k )
+    {
+		// destroy our inventory when swallowd by another BD to prevent exploits
+		
+        FCTileEntityBlockDispenser tileEntity = 
+        	(FCTileEntityBlockDispenser)world.getBlockTileEntity( 
+    		i, j, k );
+        
+        FCUtilsInventory.ClearInventoryContents( tileEntity );
+        
+        super.OnRemovedByBlockDispenser( world, i, j, k );
+    }
+    
+    private boolean DispenseBlockOrItem( World world, int i, int j, int k )
+    {
+    	ValidateBlockDispenser( world, i, j, k );
+    	
+        int iFacing = GetFacing( world, i, j, k);
+        
+        FCUtilsBlockPos targetPos = new FCUtilsBlockPos( i, j, k, iFacing );        
+        
+        Block targetBlock = Block.blocksList[world.getBlockId( 
+        	targetPos.i, targetPos.j, targetPos.k )];
+        
+        if ( targetBlock == null || targetBlock.blockMaterial.isReplaceable() || 
+        	!targetBlock.blockMaterial.isSolid() )
+        {
+	        FCTileEntityBlockDispenser tileEntityBlockDispenser = 
+	        	(FCTileEntityBlockDispenser)world.getBlockTileEntity(i, j, k);
+	        
+	        ItemStack itemstack = tileEntityBlockDispenser.GetCurrentItemToDispense();
+	
+	        if ( itemstack != null )
+	        {
+            	Block newBlock = null;
+            	int iNewBlockMetadata = -1;
+            	
+            	if ( itemstack.getItem().OnItemUsedByBlockDispenser( 
+            		itemstack, world, i, j, k, iFacing ) )
+    	        {
+    		        world.playAuxSFX( FCBetterThanWolves.m_iBlockDispenserSmokeEffectAuxFXID, 
+    		        	i, j, k, iFacing );
+    		        
+    		        tileEntityBlockDispenser.OnDispenseCurrentSlot();
+    		        
+    		        return true;
+    	        }
+	        }	        
+        }
+        
+        world.playAuxSFX( FCBetterThanWolves.m_iClickLowPitchSoundAuxFXID, i, j, k, 0 );
+        
+        return false;
+    }   
+    
+    // this function is necessary because of the conversion from using TileEntityBlockDispenser
+    // to a custom tile entity for the block dispenser.  Returns false if the block isn't valid,
+    // after it performs a conversion to it being a valid one
+    private boolean ValidateBlockDispenser( World world, int i, int j, int k )
+    {
+    	TileEntity oldTileEntity = world.getBlockTileEntity( i, j, k );
+    	
+    	if ( !( oldTileEntity instanceof FCTileEntityBlockDispenser ) )
+    	{
+			FCTileEntityBlockDispenser newTileEntity = new FCTileEntityBlockDispenser();
+			
+    		// the following condition should always be the case, but just to be safe...
+    		
+    		if ( oldTileEntity instanceof TileEntityDispenser )
+    		{
+    			// copy the inventory contents of the old entity into the new one
+    			TileEntityDispenser oldTileEntityDispenser = (TileEntityDispenser)oldTileEntity;
+    			int iOldInventorySize = oldTileEntityDispenser.getSizeInventory();
+    			int iNewInventorySize = newTileEntity.getSizeInventory();
+    			
+    		    for ( int tempSlot = 0; tempSlot < iOldInventorySize && tempSlot < iNewInventorySize; tempSlot++ )
+    		    {
+    		    	ItemStack tempStack = oldTileEntityDispenser.getStackInSlot( tempSlot );
+    		    	
+    		    	if ( tempStack != null )
+    		    	{
+    		    		newTileEntity.setInventorySlotContents( tempSlot, tempStack.copy() );
+    		    	}
+    		    }
+    		}
+
+			world.setBlockTileEntity( i, j, k, newTileEntity );
+			
+    		return false;
+    	}
+    	
+    	return true;
+    }
+    
+    public void SpitOutItem( World world, int i, int j, int k, ItemStack itemstack )
+    {
+        int iFacing = GetFacing( world, i, j, k);
+        FCUtilsBlockPos offsetPos = new FCUtilsBlockPos( 0, 0, 0, iFacing );
+        
+        double dXPos = i + ( offsetPos.i * 0.5D ) + 0.5D;
+        double dYPos = j + offsetPos.j + 0.2D;
+        double dZPos = k + ( offsetPos.k * 0.5D ) + 0.5D;
+
+    	double dYHeading;
+    	
+    	if ( iFacing > 2 )
+    	{
+    		// slight upwards trajectory when fired sideways
+    		
+    		dYHeading = 0.1D;
+    	}
+    	else
+    	{
+    		dYHeading = offsetPos.j;
+    	}
+    	
+        EntityItem entityitem = new EntityItem( world, dXPos, dYPos, dZPos, itemstack );
+        
+        double dRandVel = world.rand.nextDouble() * 0.1D + 0.2D;
+        
+        entityitem.motionX = offsetPos.i * dRandVel;
+        entityitem.motionY = dYHeading * dRandVel + 0.2D;
+        entityitem.motionZ = offsetPos.k * dRandVel;
+        
+        entityitem.motionX += world.rand.nextGaussian() * 0.0075D * 6D;
+        entityitem.motionY += world.rand.nextGaussian() * 0.0075D * 6D;
+        entityitem.motionZ += world.rand.nextGaussian() * 0.0075D * 6D;
+        
+        world.spawnEntityInWorld( entityitem );
+    }
+	
+	//----------- Client Side Functionality -----------//
+    
+    private Icon[] m_IconBySideArray = new Icon[6];
+    private Icon m_IconFront;
+
+	@Override
+    public void registerIcons( IconRegister register )
+    {
+        Icon topIcon = register.registerIcon( "fcBlockBlockDispenser_top" );
+        
+        blockIcon = topIcon; // for hit effects
+        
+        m_IconFront = register.registerIcon( "fcBlockBlockDispenser_front" );
+        
+        m_IconBySideArray[0] = register.registerIcon( "fcBlockBlockDispenser_bottom" );
+        m_IconBySideArray[1] = topIcon;
+        
+        Icon sideIcon = register.registerIcon( "fcBlockBlockDispenser_side" );
+        
+        m_IconBySideArray[2] = sideIcon;
+        m_IconBySideArray[3] = sideIcon;
+        m_IconBySideArray[4] = sideIcon;
+        m_IconBySideArray[5] = sideIcon;
+    }
+	
+	@Override
+    public Icon getIcon( int iSide, int iMetadata )
+    {
+		// item render
+		
+		if ( iSide == 3 )
+		{
+			return m_IconFront;
+		}
+		
+		return m_IconBySideArray[iSide];
+    }
+	
+	@Override
+    public Icon getBlockTexture( IBlockAccess blockAccess, int i, int j, int k, int iSide )
+	{
+		int iFacing = GetFacing( blockAccess, i, j, k );
+		
+		if ( iFacing == iSide )
+		{
+			return m_IconFront;
+		}
+		
+		return m_IconBySideArray[iSide];
+	}
+}
