@@ -1,0 +1,74 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCBlockDirectional.java
+@@ -0,0 +1,70 @@
++package net.minecraft.src;
++
++/**
++ * Extend this class to enable directional functionality like logs.
++ * Metadata 0-3 available for different types.
++ * 4-7 and 8-11 used for orientation of those types.
++ */
++public class FCBlockDirectional extends Block {
++	public String[] topTextures;
++	public String[] sideTextures;
++
++	protected FCBlockDirectional(int id, Material material, String[] topTextures, String[] sideTextures) {
++		super(id, material);
++        this.topTextures = topTextures;
++        this.sideTextures = sideTextures;
++	}
++	
++	public boolean CanRotateOnTurntable(IBlockAccess access, int x, int y, int z) {
++		return (access.getBlockMetadata(x,y,z) & 12) != 0;
++	}
++
++    public int RotateMetadataAroundJAxis(int meta, boolean var2) {
++        int directionMeta = meta & 12;
++
++        if (directionMeta != 0) {
++            if (directionMeta == 4) {
++                directionMeta = 8;
++            }
++            else if (directionMeta == 8) {
++                directionMeta = 4;
++            }
++
++            meta = meta & -13 | directionMeta;
++        }
++
++        return meta;
++    }
++	 
++    
++    public int onBlockPlaced(World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int meta) {
++        int type = meta & 3;
++        byte directionMeta = 0;
++
++        switch (side) {
++            case 0:
++            case 1:
++                directionMeta = 0;
++                break;
++            case 2:
++            case 3:
++                directionMeta = 8;
++                break;
++            case 4:
++            case 5:
++                directionMeta = 4;
++        }
++
++        return type | directionMeta;
++    }
++
++    
++    public int damageDropped(int meta) {
++        return meta & 3;
++    }
++
++    
++    public static int limitToValidMetadata(int meta) {
++        return meta & 3;
++    }
++}
+\ No newline at end of file

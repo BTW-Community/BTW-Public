@@ -1,3 +1,19 @@
+## Version 1.0.1: ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- Hiracho
+
+/--General--/
+- Fixed an issue where MCPatcher's Better Grass did not function, and added a config option to enable it (it is disabled by default).
+
+/--Gameplay--/
+- Fixed an issue where endermen aggro was calculated incorrectly and could aggro from behind 2 high walls even without line of sight.
+- Fixed an issue where mining a piston in the same tick as it extended would cause the game to crash.
+
+/--Addon API--/
+- Added hooks to define how many babies should spawn when breeding.
+- Fixed an issue where the FCBlockDirectional template was absent.
+
 ## Version 1.0.0: ##
 This version WILL break any addons using the Extended Addon API, which has been deprecated, with functionality now being integrated into BTW itself. Most changes that are addon-facing are relavtively minor though so updating should be easy. Addons not using the API should be unaffected.
 

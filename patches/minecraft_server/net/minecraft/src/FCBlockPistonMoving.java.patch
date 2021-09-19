@@ -82,7 +82,7 @@
 +        	
 +            Block block = Block.blocksList[pistonEntity.getStoredBlockID()];
 +
-+            if ( block != null || block != this )
++            if ( block != null && block != this )
 +            {
 +	            AxisAlignedBB bounds = block.GetBlockBoundsFromPoolBasedOnState(
 +	            	blockAccess, i, j, k );

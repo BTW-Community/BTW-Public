@@ -2419,7 +2419,7 @@
      }
  
      public Icon getBlockIcon(Block par1Block)
-@@ -8088,4 +8510,2394 @@
+@@ -8088,4 +8510,2423 @@
      {
          return par1Icon == null ? this.minecraftRB.renderEngine.getMissingIcon(0) : par1Icon;
      }
@@ -3486,101 +3486,130 @@
 +        return var8;
 +    }
 +    
-+    public boolean renderGrassBlockWithColorMultiplier( Block par1Block, int par2, int par3, int par4, float par5, float par6, float par7, Icon sideOverlayIcon )
++    public boolean renderGrassBlockWithColorMultiplier( Block grassBlock, int x, int y, int z, float red, float green, float blue, Icon sideOverlayIcon )
 +    {
 +        this.enableAO = false;
-+        Tessellator var8 = Tessellator.instance;
-+        boolean var9 = false;
-+        float var10 = 0.5F;
-+        float var11 = 1.0F;
++        Tessellator tessellator = Tessellator.instance;
++        boolean renderSuccess = false;
++        float colorBottom = 0.5F;
++        float colorMultiplierTop = 1.0F;
 +        float var12 = 0.8F;
 +        float var13 = 0.6F;
-+        float var14 = var11 * par5;
-+        float var15 = var11 * par6;
-+        float var16 = var11 * par7;
-+        float var17 = var10;
++        float redTop = colorMultiplierTop * red;
++        float greenTop = colorMultiplierTop * green;
++        float blueTop = colorMultiplierTop * blue;
++        float redBottom = colorBottom;
 +        float var18 = var12;
 +        float var19 = var13;
-+        float var20 = var10;
++        float greenBottom = colorBottom;
 +        float var21 = var12;
 +        float var22 = var13;
-+        float var23 = var10;
++        float blueBottom = colorBottom;
 +        float var24 = var12;
 +        float var25 = var13;
 +
-+        int var26 = par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4);
++        int mixedBrightness = grassBlock.getMixedBrightnessForBlock(this.blockAccess, x, y, z);
 +
-+        if ( par1Block.shouldSideBeRendered(this.blockAccess, par2, par3 - 1, par4, 0))
++        if ( grassBlock.shouldSideBeRendered(this.blockAccess, x, y - 1, z, 0))
 +        {
-+            var8.setBrightness(this.renderMinY > 0.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3 - 1, par4));
-+            var8.setColorOpaque_F(var17, var20, var23);
-+            this.renderFaceYNeg(par1Block, (double)par2, (double)par3, (double)par4, this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 0));
-+            var9 = true;
++            tessellator.setBrightness(this.renderMinY > 0.0D ? mixedBrightness : grassBlock.getMixedBrightnessForBlock(this.blockAccess, x, y - 1, z));
++            tessellator.setColorOpaque_F(redBottom, greenBottom, blueBottom);
++            this.renderFaceYNeg(grassBlock, (double)x, (double)y, (double)z, this.getBlockIcon(grassBlock, this.blockAccess, x, y, z, 0));
++            renderSuccess = true;
 +        }
 +
-+        if ( par1Block.shouldSideBeRendered(this.blockAccess, par2, par3 + 1, par4, 1))
++        if ( grassBlock.shouldSideBeRendered(this.blockAccess, x, y + 1, z, 1))
 +        {
-+            var8.setBrightness(this.renderMaxY < 1.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3 + 1, par4));
-+            var8.setColorOpaque_F(var14, var15, var16);
-+            this.renderFaceYPos(par1Block, (double)par2, (double)par3, (double)par4, this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 1));
-+            var9 = true;
++            tessellator.setBrightness(this.renderMaxY < 1.0D ? mixedBrightness : grassBlock.getMixedBrightnessForBlock(this.blockAccess, x, y + 1, z));
++            tessellator.setColorOpaque_F(redTop, greenTop, blueTop);
++            this.renderFaceYPos(grassBlock, (double)x, (double)y, (double)z, this.getBlockIcon(grassBlock, this.blockAccess, x, y, z, 1));
++            renderSuccess = true;
 +        }
 +
-+        Icon var27;
++        Icon blockIcon;
++        Icon grassTopIcon = this.getBlockIcon(grassBlock, this.blockAccess, x, y, z, 1);
 +
-+        if ( par1Block.shouldSideBeRendered(this.blockAccess, par2, par3, par4 - 1, 2))
++        if ( grassBlock.shouldSideBeRendered(this.blockAccess, x, y, z - 1, 2))
 +        {
-+            var8.setBrightness(this.renderMinZ > 0.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4 - 1));
-+            var8.setColorOpaque_F(var18, var21, var24);
-+            var27 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 2);
-+            this.renderFaceZNeg(par1Block, (double)par2, (double)par3, (double)par4, var27);
++            tessellator.setBrightness(this.renderMinZ > 0.0D ? mixedBrightness : grassBlock.getMixedBrightnessForBlock(this.blockAccess, x, y, z - 1));
++            blockIcon = this.getBlockIcon(grassBlock, this.blockAccess, x, y, z, 2);
++            
++            if (RenderBlocksUtils.enableBetterGrass && blockIcon == grassTopIcon) {
++                tessellator.setColorOpaque_F(var18 * red, var21 * green, var24 * blue);
++                this.renderFaceZNeg(grassBlock, (double)x, (double)y, (double)z, blockIcon);
++            }
++            else {
++                tessellator.setColorOpaque_F(var18, var21, var24);
++                this.renderFaceZNeg(grassBlock, (double)x, (double)y, (double)z, blockIcon);
++                
++                tessellator.setColorOpaque_F(var18 * red, var21 * green, var24 * blue);
++                this.renderFaceZNeg(grassBlock, (double)x, (double)y, (double)z, sideOverlayIcon);
 +
-+            var8.setColorOpaque_F(var18 * par5, var21 * par6, var24 * par7);
-+            this.renderFaceZNeg(par1Block, (double)par2, (double)par3, (double)par4, sideOverlayIcon);
-+
-+            var9 = true;
++                renderSuccess = true;
++            }
 +        }
 +
-+        if ( par1Block.shouldSideBeRendered(this.blockAccess, par2, par3, par4 + 1, 3))
++        if ( grassBlock.shouldSideBeRendered(this.blockAccess, x, y, z + 1, 3))
 +        {
-+            var8.setBrightness(this.renderMaxZ < 1.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4 + 1));
-+            var8.setColorOpaque_F(var18, var21, var24);
-+            var27 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 3);
-+            this.renderFaceZPos(par1Block, (double)par2, (double)par3, (double)par4, var27);
++            tessellator.setBrightness(this.renderMaxZ < 1.0D ? mixedBrightness : grassBlock.getMixedBrightnessForBlock(this.blockAccess, x, y, z + 1));
++            blockIcon = this.getBlockIcon(grassBlock, this.blockAccess, x, y, z, 3);
++            
++            if (RenderBlocksUtils.enableBetterGrass && blockIcon == grassTopIcon) {
++	            tessellator.setColorOpaque_F(var18 * red, var21 * green, var24 * blue);
++	            this.renderFaceZPos(grassBlock, (double)x, (double)y, (double)z, blockIcon);
++            }
++            else {
++	            tessellator.setColorOpaque_F(var18, var21, var24);
++	            this.renderFaceZPos(grassBlock, (double)x, (double)y, (double)z, blockIcon);
++	
++	            tessellator.setColorOpaque_F(var18 * red, var21 * green, var24 * blue);
++	            this.renderFaceZPos(grassBlock, (double)x, (double)y, (double)z, sideOverlayIcon);
++            }
 +
-+            var8.setColorOpaque_F(var18 * par5, var21 * par6, var24 * par7);
-+            this.renderFaceZPos(par1Block, (double)par2, (double)par3, (double)par4, sideOverlayIcon);
-+
-+            var9 = true;
++            renderSuccess = true;
 +        }
 +
-+        if ( par1Block.shouldSideBeRendered(this.blockAccess, par2 - 1, par3, par4, 4))
++        if ( grassBlock.shouldSideBeRendered(this.blockAccess, x - 1, y, z, 4))
 +        {
-+            var8.setBrightness(this.renderMinX > 0.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2 - 1, par3, par4));
-+            var8.setColorOpaque_F(var19, var22, var25);
-+            var27 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 4);
-+            this.renderFaceXNeg(par1Block, (double)par2, (double)par3, (double)par4, var27);
++            tessellator.setBrightness(this.renderMinX > 0.0D ? mixedBrightness : grassBlock.getMixedBrightnessForBlock(this.blockAccess, x - 1, y, z));
++            blockIcon = this.getBlockIcon(grassBlock, this.blockAccess, x, y, z, 4);
++            
++            if (RenderBlocksUtils.enableBetterGrass && blockIcon == grassTopIcon) {
++	            tessellator.setColorOpaque_F(var19 * red, var22 * green, var25 * blue);
++	            this.renderFaceXNeg(grassBlock, (double)x, (double)y, (double)z, blockIcon);
++            }
++            else {
++	            tessellator.setColorOpaque_F(var19, var22, var25);
++	            this.renderFaceXNeg(grassBlock, (double)x, (double)y, (double)z, blockIcon);
++	
++	            tessellator.setColorOpaque_F(var19 * red, var22 * green, var25 * blue);
++	            this.renderFaceXNeg(grassBlock, (double)x, (double)y, (double)z, sideOverlayIcon);
++            }
 +
-+            var8.setColorOpaque_F(var19 * par5, var22 * par6, var25 * par7);
-+            this.renderFaceXNeg(par1Block, (double)par2, (double)par3, (double)par4, sideOverlayIcon);
-+
-+            var9 = true;
++            renderSuccess = true;
 +        }
 +
-+        if (par1Block.shouldSideBeRendered(this.blockAccess, par2 + 1, par3, par4, 5))
++        if (grassBlock.shouldSideBeRendered(this.blockAccess, x + 1, y, z, 5))
 +        {
-+            var8.setBrightness(this.renderMaxX < 1.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2 + 1, par3, par4));
-+            var8.setColorOpaque_F(var19, var22, var25);
-+            var27 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 5);
-+            this.renderFaceXPos(par1Block, (double)par2, (double)par3, (double)par4, var27);
++            tessellator.setBrightness(this.renderMaxX < 1.0D ? mixedBrightness : grassBlock.getMixedBrightnessForBlock(this.blockAccess, x + 1, y, z));
++            blockIcon = this.getBlockIcon(grassBlock, this.blockAccess, x, y, z, 5);
 +
-+            var8.setColorOpaque_F(var19 * par5, var22 * par6, var25 * par7);
-+            this.renderFaceXPos(par1Block, (double)par2, (double)par3, (double)par4, sideOverlayIcon);
++            if (RenderBlocksUtils.enableBetterGrass && blockIcon == grassTopIcon) {
++	            tessellator.setColorOpaque_F(var19 * red, var22 * green, var25 * blue);
++	            this.renderFaceXPos(grassBlock, (double)x, (double)y, (double)z, blockIcon);
++            }
++            else {
++	            tessellator.setColorOpaque_F(var19, var22, var25);
++	            this.renderFaceXPos(grassBlock, (double)x, (double)y, (double)z, blockIcon);
++	
++	            tessellator.setColorOpaque_F(var19 * red, var22 * green, var25 * blue);
++	            this.renderFaceXPos(grassBlock, (double)x, (double)y, (double)z, sideOverlayIcon);
++            }
 +
-+            var9 = true;
++            renderSuccess = true;
 +        }
 +
-+        return var9;
++        return renderSuccess;
 +    }
 +    
 +    public boolean renderBlockByRenderType( Block block, int i, int j, int k )

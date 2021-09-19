@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityEnderman.java
-@@ -0,0 +1,603 @@
+@@ -0,0 +1,604 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -313,9 +313,10 @@
 +        {
 +            Vec3 vLook = player.getLook( 1F ).normalize();
 +            
-+            Vec3 vDelta = worldObj.getWorldVec3Pool().getVecFromPool( posX - player.posX, 
-+            	boundingBox.minY + ( height / 2F ) - ( player.posY + player.getEyeHeight() ), 
-+            	posZ - player.posZ );
++            Vec3 vDelta = worldObj.getWorldVec3Pool().getVecFromPool( 
++            		posX - player.posX, 
++            		(posY + getEyeHeight()) - ( player.posY + player.getEyeHeight()), 
++            		posZ - player.posZ );
 +            
 +            double dDist = vDelta.lengthVector();
 +            

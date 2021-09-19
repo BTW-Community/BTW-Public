@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,4251 @@
+@@ -0,0 +1,4256 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -25,7 +25,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.0.0";
++	public static final String fcVersionString = "1.0.1";
 +	
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +	
@@ -2038,6 +2038,9 @@
 +		this.registerProperty("DisableEndText", "True", "Set the following to false to re-enable the end game text when leaving the end dimension. You'll regret it though.");
 +		this.registerProperty("DisableGearBoxPowerDrain", "False", "Set the following to true to stop gearboxes from shortening the length of mechanical power pulses through time.");
 +		
++		//Client only config
++		this.registerProperty("UseBetterGrass", "False", "Set to true to enable MCPatcher's Better Grass, which renders the grass top texture on the sides of grass blocks on 1 block tall slopes");
++		
 +		//Server only config
 +		this.registerProperty("EnableHardcorePlayerNames", "2", "***Standalone Server Settings (do not apply to singleplayer or LAN***\n\n"
 +																+ "# Set to 0 to allow players to always see the names of other players\n"
@@ -2465,6 +2468,8 @@
 +		fcDisableGearBoxPowerDrain = Boolean.parseBoolean(this.propertyValues.get("DisableGearBoxPowerDrain"));
 +		
 +		fcLocalHardcorePlayerNamesLevel = Integer.parseInt(this.propertyValues.get("EnableHardcorePlayerNames"));
++		
++		com.prupe.mcpatcher.mal.block.RenderBlocksUtils.enableBetterGrass = Boolean.parseBoolean(this.propertyValues.get("UseBetterGrass"));
 +	}
 +    
 +    private int parseID(String name) {

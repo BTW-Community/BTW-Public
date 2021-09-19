@@ -1,12 +1,9 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,2631 @@
+@@ -0,0 +1,2630 @@
 +// FCMOD
 +
 +package net.minecraft.src;
-+
-+// client only
-+//import net.minecraft.client.Minecraft;
 +
 +import net.minecraft.server.MinecraftServer;
 +
@@ -25,7 +22,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.0.0";
++	public static final String fcVersionString = "1.0.1";
 +	
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +	
@@ -2631,5 +2628,7 @@
 +	public FCAddOnUtilsWorldData createWorldData() {
 +		return new FCUtilsWorldData();
 +	}
++	
++	//----------- Client Side Functionality -----------//
 +}
 \ No newline at end of file
