@@ -263,7 +263,7 @@
      }
  
      /**
-@@ -375,4 +483,994 @@
+@@ -375,4 +483,1004 @@
      {
          return par1EntityAnimal == this ? false : (par1EntityAnimal.getClass() != this.getClass() ? false : this.isInLove() && par1EntityAnimal.isInLove());
      }
@@ -677,20 +677,30 @@
 +    		MathHelper.floor_double( dChildX ), MathHelper.floor_double( dChildY ), MathHelper.floor_double( dChildZ ), 
 +    		0 );            
 +    }
-+    
-+    protected void GiveBirthAtTargetLocation( EntityAnimal targetMate, double dChildX, double dChildY, double dChildZ )
-+    {
-+        EntityAgeable childEntity = createChild( targetMate );
 +
-+        if ( childEntity != null )
-+        {
-+            childEntity.setGrowingAge( -GetTicksForChildToGrow() );
-+            
-+        	childEntity.setLocationAndAngles( dChildX, dChildY, dChildZ, rotationYaw, rotationPitch );
-+            
-+            worldObj.spawnEntityInWorld( childEntity );            
-+        }
-+    }
++	public int getNestSize()
++	{
++		return 1;
++	}
++
++	protected void GiveBirthAtTargetLocation( EntityAnimal targetMate, double dChildX, double dChildY, double dChildZ )
++	{
++		int nestSize = getNestSize();
++		
++		for (int nestTempCount = 0; nestTempCount < nestSize; ++nestTempCount)
++		{
++			EntityAgeable childEntity = createChild( targetMate );
++
++			if ( childEntity != null )
++			{
++				childEntity.setGrowingAge( -GetTicksForChildToGrow() );
++
++				childEntity.setLocationAndAngles( dChildX, dChildY, dChildZ, rotationYaw, rotationPitch );
++
++				worldObj.spawnEntityInWorld( childEntity );            
++			}
++		}
++	}
 +    
 +    protected void ResetMatingStateOfBothParents( EntityAnimal targetMate )
 +    {

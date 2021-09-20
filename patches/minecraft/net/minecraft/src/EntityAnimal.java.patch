@@ -12,7 +12,7 @@
  {
 -    private int inLove;
 +	// FCMOD: Removed and replaced with a watchable value
-+    //private int inLove;
++	//private int inLove;
 +	// END FCMOD
  
      /**
@@ -21,9 +21,9 @@
       */
 -    private int breeding = 0;
 +	// FCMOD: Changed
-+    //private int breeding = 0;
-+    protected int breeding = 0;
-+    // END FCMOD
++	//private int breeding = 0;
++	protected int breeding = 0;
++	// END FCMOD
  
      public EntityAnimal(World par1World)
      {
@@ -31,12 +31,12 @@
      {
          if (this.getGrowingAge() != 0)
          {
-+        	// FCMOD: Change
-+        	/*
++			// FCMOD: Change
++			/*
              this.inLove = 0;
-+            */
-+        	resetInLove();
-+        	// END FCMOD
++			 */
++			resetInLove();
++			// END FCMOD
          }
  
          super.updateAITick();
@@ -44,35 +44,35 @@
  
          if (this.getGrowingAge() != 0)
          {
-+        	// FCMOD: Change
-+        	/*
++			// FCMOD: Change
++			/*
              this.inLove = 0;
-+            */
-+        	resetInLove();
-+        	// END FCMOD
++			 */
++			resetInLove();
++			// END FCMOD
          }
  
-+        // FCMOD: Change
-+        /*
++		// FCMOD: Change
++		/*
          if (this.inLove > 0)
-+        */
-+        if ( isInLove() )
-+    	// END FCMOD
++		 */
++		if ( isInLove() )
++			// END FCMOD
          {
-+            // FCMOD: Change
-+            /*
++			// FCMOD: Change
++			/*
              --this.inLove;
-+            */
-+            setInLove( getInLove() - 1 );
-+        	// END FCMOD
++			 */
++			setInLove( getInLove() - 1 );
++			// END FCMOD
              String var1 = "heart";
  
-+            // FCMOD: Change
-+            /*
++			// FCMOD: Change
++			/*
              if (this.inLove % 10 == 0)
-+            */
-+            if ( getInLove() % 10 == 0 )
-+        	// END FCMOD
++			 */
++			if ( getInLove() % 10 == 0 )
++				// END FCMOD
              {
                  double var2 = this.rand.nextGaussian() * 0.02D;
                  double var4 = this.rand.nextGaussian() * 0.02D;
@@ -80,12 +80,12 @@
                      this.hasAttacked = true;
                  }
              }
-+            // FCMOD: Change
-+            /*
++			// FCMOD: Change
++			/*
              else if (this.inLove > 0 && var8.inLove > 0)
-+            */
-+            else if ( isInLove() && var8.isInLove() )
-+        	// END FCMOD
++			 */
++			else if ( isInLove() && var8.isInLove() )
++				// END FCMOD
              {
                  if (var8.entityToAttack == null)
                  {
@@ -93,14 +93,14 @@
  
                  if (var8.entityToAttack == this && (double)par2 < 3.5D)
                  {
-+                	// FCMOD: Code change: 
-+                	/*
++					// FCMOD: Code change: 
++					/*
                      ++var8.inLove;
                      ++this.inLove;
-+                    */
-+                    setInLove( getInLove() + 1 );
-+                    var8.setInLove( var8.getInLove() + 1 );
-+                    // END FCMOD
++					 */
++					setInLove( getInLove() + 1 );
++					var8.setInLove( var8.getInLove() + 1 );
++					// END FCMOD
                      ++this.breeding;
  
                      if (this.breeding % 4 == 0)
@@ -108,8 +108,8 @@
       * Creates a baby animal according to the animal type of the target at the actual position and spawns 'love'
       * particles.
       */
-+    // FCMOD: Code removed and replaced later
-+    /*
++	// FCMOD: Code removed and replaced later
++	/*
      private void procreate(EntityAnimal par1EntityAnimal)
      {
          EntityAgeable var2 = this.createChild(par1EntityAnimal);
@@ -117,8 +117,8 @@
              this.worldObj.spawnEntityInWorld(var2);
          }
      }
-+    */
-+    // END FCMOD
++	 */
++	// END FCMOD
  
      /**
       * Called when the entity is attacked.
@@ -126,13 +126,13 @@
          {
              this.fleeingTick = 60;
              this.entityToAttack = null;
-+            // FCMOD: Code change
-+            /*
++			// FCMOD: Code change
++			/*
              this.inLove = 0;
-+            */
-+        	resetInLove();
-+        	PanickNearbyAnimals( par1DamageSource );
-+        	// END FCMOD
++			 */
++			resetInLove();
++			PanickNearbyAnimals( par1DamageSource );
++			// END FCMOD
              return super.attackEntityFrom(par1DamageSource, par2);
          }
      }
@@ -140,40 +140,40 @@
       * Takes a coordinate in and returns a weight to determine how likely this creature will try to path to the block.
       * Args: x, y, z
       */
-+    // FCMOD: Removed and replaced
-+    /*
++	// FCMOD: Removed and replaced
++	/*
      public float getBlockPathWeight(int par1, int par2, int par3)
      {
          return this.worldObj.getBlockId(par1, par2 - 1, par3) == Block.grass.blockID ? 10.0F : this.worldObj.getLightBrightness(par1, par2, par3) - 0.5F;
      }
-+    */
-+    // END FCMOD
++	 */
++	// END FCMOD
  
      /**
       * (abstract) Protected helper method to write subclass entity data to NBT.
       */
-+    // FCMOD: Removed and replaced
-+    /*
++	// FCMOD: Removed and replaced
++	/*
      public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound)
      {
          super.writeEntityToNBT(par1NBTTagCompound);
          par1NBTTagCompound.setInteger("InLove", this.inLove);
      }
-+    */
-+    // END FCMOD
++	 */
++	// END FCMOD
  
      /**
       * (abstract) Protected helper method to read subclass entity data from NBT.
       */
-+    // FCMOD: Removed and replaced
-+    /*
++	// FCMOD: Removed and replaced
++	/*
      public void readEntityFromNBT(NBTTagCompound par1NBTTagCompound)
      {
          super.readEntityFromNBT(par1NBTTagCompound);
          this.inLove = par1NBTTagCompound.getInteger("InLove");
      }
-+    */
-+    // END FCMOD
++	 */
++	// END FCMOD
  
      /**
       * Finds the closest player within 16 blocks to attack, or null if this Entity isn't interested in attacking
@@ -181,15 +181,15 @@
              int var3;
              EntityAnimal var4;
  
-+            // FCMOD: Change
-+            /*
++			// FCMOD: Change
++			/*
              if (this.inLove > 0)
-+            */
-+            if ( isInLove() )
-+        	// END FCMOD
++			 */
++			if ( isInLove() )
++				// END FCMOD
              {
-+	        	// FCMOD: Changed the following to find the closest animal instead of just a random one
-+	        	/*	        	
++				// FCMOD: Changed the following to find the closest animal instead of just a random one
++				/*	        	
                  var2 = this.worldObj.getEntitiesWithinAABB(this.getClass(), this.boundingBox.expand((double)var1, (double)var1, (double)var1));
  
                  for (var3 = 0; var3 < var2.size(); ++var3)
@@ -197,31 +197,31 @@
                          return var4;
                      }
                  }
-+                */
-+	        	double dClosestAnimalDistanceSq = 0.0F;
-+	        	EntityAnimal closestValidAnimal = null;
-+	        	
-+	            List list = worldObj.getEntitiesWithinAABB(getClass(), boundingBox.expand( var1, var1, var1 ));
++				 */
++				double dClosestAnimalDistanceSq = 0.0F;
++				EntityAnimal closestValidAnimal = null;
 +
-+	            for (int i = 0; i < list.size(); i++)
-+	            {
-+	                EntityAnimal entityanimal = (EntityAnimal)list.get(i);
-+	                
-+	                if (entityanimal != this && entityanimal.isInLove() )
-+	                {
-+	                	double dDistanceSqToAnimal = getDistanceSqToEntity( entityanimal );
-+	                	
-+	                	if ( closestValidAnimal == null || dDistanceSqToAnimal < dClosestAnimalDistanceSq )
-+	                	{
-+	                		dClosestAnimalDistanceSq = dDistanceSqToAnimal;
-+	                		closestValidAnimal = entityanimal;
++				List list = worldObj.getEntitiesWithinAABB(getClass(), boundingBox.expand( var1, var1, var1 ));
++
++				for (int i = 0; i < list.size(); i++)
++				{
++					EntityAnimal entityanimal = (EntityAnimal)list.get(i);
++
++					if (entityanimal != this && entityanimal.isInLove() )
++					{
++						double dDistanceSqToAnimal = getDistanceSqToEntity( entityanimal );
++
++						if ( closestValidAnimal == null || dDistanceSqToAnimal < dClosestAnimalDistanceSq )
++						{
++							dClosestAnimalDistanceSq = dDistanceSqToAnimal;
++							closestValidAnimal = entityanimal;
              }
-+	        		}
-+	            }
-+            
-+            	return closestValidAnimal;
-+	            // END FCMOD
-+            }
++					}
++				}
++
++				return closestValidAnimal;
++				// END FCMOD
++			}
              else if (this.getGrowingAge() == 0)
              {
                  var2 = this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, this.boundingBox.expand((double)var1, (double)var1, (double)var1));
@@ -229,8 +229,8 @@
      /**
       * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
       */
-+    // FCMOD: Removed and replaced
-+    /*
++	// FCMOD: Removed and replaced
++	/*
      public boolean interact(EntityPlayer par1EntityPlayer)
      {
          ItemStack var2 = par1EntityPlayer.inventory.getCurrentItem();
@@ -238,8 +238,8 @@
              return super.interact(par1EntityPlayer);
          }
      }
-+    */
-+    // END FCMOD
++	 */
++	// END FCMOD
  
      /**
       * Returns if the entity is currently in 'love mode'.
@@ -247,344 +247,344 @@
      public boolean isInLove()
      {
 -        return this.inLove > 0;
-+    	// FCMOD: Changed
-+        //return this.inLove > 0;
-+    	return getInLove() > 0;
-+    	// END FCMOD    	
++		// FCMOD: Changed
++		//return this.inLove > 0;
++		return getInLove() > 0;
++		// END FCMOD    	
      }
  
      public void resetInLove()
      {
 -        this.inLove = 0;
-+    	// FCMOD: Changed
-+        //this.inLove = 0;
-+    	setInLove( 0 );
-+    	// END FCMOD
++		// FCMOD: Changed
++		//this.inLove = 0;
++		setInLove( 0 );
++		// END FCMOD
      }
  
      /**
-@@ -375,4 +483,1007 @@
+@@ -375,4 +483,1017 @@
      {
          return par1EntityAnimal == this ? false : (par1EntityAnimal.getClass() != this.getClass() ? false : this.isInLove() && par1EntityAnimal.isInLove());
      }
-+    
-+    // FCMOD: Added New
-+    protected static final int m_iHungerLevelDataWatcherID = 21;
++
++	// FCMOD: Added New
++	protected static final int m_iHungerLevelDataWatcherID = 21;
 +	protected static final int m_iInLoveDataWatcherID = 22;
 +	protected static final int m_iWearingBreedingHarnessDataWatcherID = 23;
-+	
-+    @Override
-+    protected void entityInit()
-+    {
-+        super.entityInit();
-+        
-+        dataWatcher.addObject( m_iHungerLevelDataWatcherID, new Byte( (byte)0 ) );
-+        dataWatcher.addObject( m_iInLoveDataWatcherID, new Integer( 0 ) );
-+        dataWatcher.addObject( m_iWearingBreedingHarnessDataWatcherID, Byte.valueOf( (byte)0 ) );
- }
-+    
-+    @Override
-+    public void writeEntityToNBT( NBTTagCompound tag )
-+    {
-+        super.writeEntityToNBT( tag );
-+        
-+        tag.setInteger( "InLove", getInLove() );
-+        tag.setByte( "fcHungerLvl", (byte)GetHungerLevel() );
-+        tag.setBoolean( "BreedingHarness", getWearingBreedingHarness() );
-+        tag.setInteger( "fcHungerCnt", m_iHungerCountdown );
-+        tag.setInteger( "fcHealCnt", m_iHealingCountdown );
-+    }
 +
-+    @Override
-+    public void readEntityFromNBT( NBTTagCompound tag )
-+    {
-+        super.readEntityFromNBT( tag );
-+        
-+        setInLove( tag.getInteger( "InLove" ) );
-+        
-+        if ( tag.hasKey( "BreedingHarness" ) )
-+        {
-+        	setWearingBreedingHarness( tag.getBoolean( "BreedingHarness" ) );
-+        }
-+        
-+        if ( tag.hasKey( "fcHungerLvl" ) )
-+        {
-+            SetHungerLevel( tag.getByte( "fcHungerLvl" ) );
-+        }
-+        
-+        if ( tag.hasKey( "fcHungerCnt" ) )
-+        {
-+        	m_iHungerCountdown = tag.getInteger( "fcHungerCnt" );
-+        }
-+        else
-+        {
-+        	ResetHungerCountdown();
-+        }
-+        
-+        if ( tag.hasKey( "fcHealCnt" ) )
-+        {
-+        	m_iHealingCountdown = tag.getInteger( "fcHealCnt" );
-+        }
-+        else
-+        {
-+        	ResetHealingCountdown();
-+        }
-+    }
-+    
-+    @Override
-+    protected void ModSpecificOnLivingUpdate()
-+    {
-+    	super.ModSpecificOnLivingUpdate();
-+    	
-+	    if ( !worldObj.isRemote )
-+	    {
-+	    	if ( isEntityAlive() )
-+	    	{
-+		        CheckForLooseFood();
-+		        CheckForIntersectingBreedingHarnesses();
-+	
-+		        UpdateHealing();
-+		        UpdateHungerState();
-+	    	}
-+	    }
-+	    else
-+	    {
-+	        if ( m_iGrazeProgressCounter > 0 )
-+	        {
-+	        	// update the graze counter on the client as we only get an initial 
-+	        	// notification when it starts in a healthUpdate
-+	        	
-+	            m_iGrazeProgressCounter--;
-+	        }
-+	    }
-+	    
-+	    if ( isInLove() )
-+	    {
-+	    	if ( entityToAttack != null && entityToAttack instanceof EntityAnimal )
-+	    	{
-+	            EntityAnimal entityanimal = (EntityAnimal)entityToAttack;
-+	            
-+	            if ( !entityanimal.isInLove() )
-+	            {
-+	            	// the targeted animal is no longer in love mode.  Reset the target so another will be selected on the following update
-+	            	
-+	            	entityToAttack = null;
-+	            }
-+	    	}
-+	    }
-+    }
-+    
 +	@Override
-+    protected void jump()
-+    {
-+    	if ( isChild() )
-+    	{
-+    		// jump half height if child or starving
-+    		
-+            motionY = 0.21D;
-+            isAirBorne = true;    		
-+    	}
-+    	else
-+    	{
-+    		super.jump();
-+    	}
-+    }
-+    
++	protected void entityInit()
++	{
++		super.entityInit();
++
++		dataWatcher.addObject( m_iHungerLevelDataWatcherID, new Byte( (byte)0 ) );
++		dataWatcher.addObject( m_iInLoveDataWatcherID, new Integer( 0 ) );
++		dataWatcher.addObject( m_iWearingBreedingHarnessDataWatcherID, Byte.valueOf( (byte)0 ) );
+ }
++
 +	@Override
-+    public void onDeath( DamageSource damageSource )
-+    {
-+    	super.onDeath( damageSource );
-+    	
-+    	if ( !worldObj.isRemote && getWearingBreedingHarness() )
-+    	{
-+            dropItem( FCBetterThanWolves.fcItemBreedingHarness.itemID, 1 );
-+    	}        
-+    }
-+    
++	public void writeEntityToNBT( NBTTagCompound tag )
++	{
++		super.writeEntityToNBT( tag );
++
++		tag.setInteger( "InLove", getInLove() );
++		tag.setByte( "fcHungerLvl", (byte)GetHungerLevel() );
++		tag.setBoolean( "BreedingHarness", getWearingBreedingHarness() );
++		tag.setInteger( "fcHungerCnt", m_iHungerCountdown );
++		tag.setInteger( "fcHealCnt", m_iHealingCountdown );
++	}
++
 +	@Override
-+    protected void updateEntityActionState()
-+    {
++	public void readEntityFromNBT( NBTTagCompound tag )
++	{
++		super.readEntityFromNBT( tag );
++
++		setInLove( tag.getInteger( "InLove" ) );
++
++		if ( tag.hasKey( "BreedingHarness" ) )
++		{
++			setWearingBreedingHarness( tag.getBoolean( "BreedingHarness" ) );
++		}
++
++		if ( tag.hasKey( "fcHungerLvl" ) )
++		{
++			SetHungerLevel( tag.getByte( "fcHungerLvl" ) );
++		}
++
++		if ( tag.hasKey( "fcHungerCnt" ) )
++		{
++			m_iHungerCountdown = tag.getInteger( "fcHungerCnt" );
++		}
++		else
++		{
++			ResetHungerCountdown();
++		}
++
++		if ( tag.hasKey( "fcHealCnt" ) )
++		{
++			m_iHealingCountdown = tag.getInteger( "fcHealCnt" );
++		}
++		else
++		{
++			ResetHealingCountdown();
++		}
++	}
++
++	@Override
++	protected void ModSpecificOnLivingUpdate()
++	{
++		super.ModSpecificOnLivingUpdate();
++
++		if ( !worldObj.isRemote )
++		{
++			if ( isEntityAlive() )
++			{
++				CheckForLooseFood();
++				CheckForIntersectingBreedingHarnesses();
++
++				UpdateHealing();
++				UpdateHungerState();
++			}
++		}
++		else
++		{
++			if ( m_iGrazeProgressCounter > 0 )
++			{
++				// update the graze counter on the client as we only get an initial 
++				// notification when it starts in a healthUpdate
++
++				m_iGrazeProgressCounter--;
++			}
++		}
++
++		if ( isInLove() )
++		{
++			if ( entityToAttack != null && entityToAttack instanceof EntityAnimal )
++			{
++				EntityAnimal entityanimal = (EntityAnimal)entityToAttack;
++
++				if ( !entityanimal.isInLove() )
++				{
++					// the targeted animal is no longer in love mode.  Reset the target so another will be selected on the following update
++
++					entityToAttack = null;
++				}
++			}
++		}
++	}
++
++	@Override
++	protected void jump()
++	{
++		if ( isChild() )
++		{
++			// jump half height if child or starving
++
++			motionY = 0.21D;
++			isAirBorne = true;    		
++		}
++		else
++		{
++			super.jump();
++		}
++	}
++
++	@Override
++	public void onDeath( DamageSource damageSource )
++	{
++		super.onDeath( damageSource );
++
++		if ( !worldObj.isRemote && getWearingBreedingHarness() )
++		{
++			dropItem( FCBetterThanWolves.fcItemBreedingHarness.itemID, 1 );
++		}        
++	}
++
++	@Override
++	protected void updateEntityActionState()
++	{
 +		super.updateEntityActionState();
-+		
-+    	if ( getWearingBreedingHarness() )
-+    	{
-+            moveStrafing = 0F;
-+            moveForward = 0F;
-+    	}
-+    }
-+	
++
++		if ( getWearingBreedingHarness() )
++		{
++			moveStrafing = 0F;
++			moveForward = 0F;
++		}
++	}
++
 +	@Override
-+    public void CheckForScrollDrop()
-+    {
++	public void CheckForScrollDrop()
++	{
 +		// this is overridden to prevent potentially expensive (and useless) checks every 
 +		// time an animal dies, since none of them drop scrolls
-+    }
++	}
 +
-+    @Override
-+    protected float getSoundPitch()
-+    {
-+    	float fPitch = super.getSoundPitch();
-+
-+    	if ( IsPossessed() )
-+    	{
-+    		fPitch *= 0.60F;
-+    	}
-+    	
-+        return fPitch;
-+    }
-+    
 +	@Override
-+    public void setRevengeTarget( EntityLiving targetEntity )
-+    {
++	protected float getSoundPitch()
++	{
++		float fPitch = super.getSoundPitch();
++
++		if ( IsPossessed() )
++		{
++			fPitch *= 0.60F;
++		}
++
++		return fPitch;
++	}
++
++	@Override
++	public void setRevengeTarget( EntityLiving targetEntity )
++	{
 +		// override to lengthen panic time on animals
-+    	
-+        entityLivingToAttack = targetEntity;
-+        
-+        if ( entityLivingToAttack != null )
-+        {
-+        	revengeTimer = 300; // 15 seconds
-+        }
-+        else
-+        {
-+        	revengeTimer = 0;
-+        }
-+    }
-+    
-+    @Override
-+    public float getBlockPathWeight( int i, int j, int k )
-+    {
-+    	if ( CanGrazeOnBlock( i, j - 1, k ) || CanGrazeOnBlock( i, j, k ) )
-+    	{
-+    		return 10F;
-+    	}
-+    	
-+    	return worldObj.GetNaturalLightBrightness( i, j, k ) - 0.5F;
-+    }
-+    
-+    @Override
-+    public boolean IsSecondaryTargetForSquid()
-+    {
-+    	return true;
-+    }
-+    
-+    @Override
-+    public void OnFlungBySquidTentacle( FCEntitySquid squid )
-+    {
++
++		entityLivingToAttack = targetEntity;
++
++		if ( entityLivingToAttack != null )
++		{
++			revengeTimer = 300; // 15 seconds
++		}
++		else
++		{
++			revengeTimer = 0;
++		}
++	}
++
++	@Override
++	public float getBlockPathWeight( int i, int j, int k )
++	{
++		if ( CanGrazeOnBlock( i, j - 1, k ) || CanGrazeOnBlock( i, j, k ) )
++		{
++			return 10F;
++		}
++
++		return worldObj.GetNaturalLightBrightness( i, j, k ) - 0.5F;
++	}
++
++	@Override
++	public boolean IsSecondaryTargetForSquid()
++	{
++		return true;
++	}
++
++	@Override
++	public void OnFlungBySquidTentacle( FCEntitySquid squid )
++	{
 +		DamageSource squidSource = DamageSource.causeMobDamage( squid );
-+		
++
 +		attackEntityFrom( squidSource, 0 );
-+    }
-+    
-+    @Override
-+    public void OnHeadCrabbedBySquid( FCEntitySquid squid )
-+    {
++	}
++
++	@Override
++	public void OnHeadCrabbedBySquid( FCEntitySquid squid )
++	{
 +		DamageSource squidSource = DamageSource.causeMobDamage( squid );
-+		
++
 +		attackEntityFrom( squidSource, 0 );
-+    }
-+    
-+    @Override
-+    protected void AttemptToPossessNearbyCreatureOnDeath()
-+    {
++	}
++
++	@Override
++	protected void AttemptToPossessNearbyCreatureOnDeath()
++	{
 +		AttemptToPossessNearbyCreature( 16D, true );
-+    }
-+    
-+    @Override
-+    public float getSpeedModifier()
-+    {
-+    	return super.getSpeedModifier() * GetHungerSpeedModifier();    	
-+    }
-+    
-+    @Override
-+    public boolean CanChildGrow()
-+    {
-+    	return super.CanChildGrow() && !IsTooHungryToGrow();
-+    }
-+    
-+    @Override
-+    public boolean CanLoveJuiceRegenerate()
-+    {
-+    	return IsFullyFed();
-+    }
-+    
-+    @Override
-+    protected int GetTicksForChildToGrow()
-+    {
-+    	return FCUtilsMisc.m_iTicksPerGameDay * 2;
-+    }
-+    
-+    @Override
-+    public boolean interact( EntityPlayer player )
-+    {
-+    	return EntityAnimalInteract( player );
-+    }
-+    
-+    @Override
-+    public void initCreature() 
-+    {
-+    	InitHungerWithVariance();
-+    }
-+    
-+    //------------- Class Specific Methods ------------//
-+    
-+    public int getInLove()
-+    {
-+        return dataWatcher.getWatchableObjectInt( m_iInLoveDataWatcherID );
-+    }
-+    
-+    public void setInLove( int iInLove )
-+    {
-+        dataWatcher.updateObject( m_iInLoveDataWatcherID, Integer.valueOf( iInLove ) );
-+    }
-+   
-+    public boolean getWearingBreedingHarness()
-+    {
-+        return ( dataWatcher.getWatchableObjectByte( m_iWearingBreedingHarnessDataWatcherID ) > 0 );
-+    }
-+    
-+    public void setWearingBreedingHarness( boolean bWearingHarness )
-+    {
-+    	Byte wearing = 0;
-+    	
-+    	if ( bWearingHarness )
-+    	{
-+    		wearing = 1;
-+    	}
-+    	
-+        dataWatcher.updateObject( m_iWearingBreedingHarnessDataWatcherID, Byte.valueOf( wearing ) );
-+    }
-+   
-+    public void CheckForIntersectingBreedingHarnesses()
-+    {    
-+    	if ( getWearingBreedingHarness()  )
-+    	{
-+            AxisAlignedBB tempBoundingBox = boundingBox.copy();
-+            
-+            tempBoundingBox.contract(0.1D, 0.1D, 0.1D );
-+            
-+		    List collisionList = worldObj.getEntitiesWithinAABB( EntityAnimal.class, 
-+	    		tempBoundingBox );
-+		    
-+		    if ( !collisionList.isEmpty() )
-+		    {
-+	            for ( int listIndex = 0; listIndex < collisionList.size(); listIndex++ )
-+	            {
-+		    		EntityAnimal entityAnimal = (EntityAnimal)collisionList.get( listIndex );;
-+		    		
-+		    		if ( entityAnimal != this )
-+		    		{		    		
-+				        if ( entityAnimal.getWearingBreedingHarness() && !(entityAnimal.isLivingDead) )
-+				        {
-+				        	attackEntityFrom( DamageSource.inWall, 1 );
-+				        	
-+			    			break;				            
-+			    		}
-+		    		}
-+	            }
-+		    }
-+    	}
-+    }
-+    
++	}
++
++	@Override
++	public float getSpeedModifier()
++	{
++		return super.getSpeedModifier() * GetHungerSpeedModifier();    	
++	}
++
++	@Override
++	public boolean CanChildGrow()
++	{
++		return super.CanChildGrow() && !IsTooHungryToGrow();
++	}
++
++	@Override
++	public boolean CanLoveJuiceRegenerate()
++	{
++		return IsFullyFed();
++	}
++
++	@Override
++	protected int GetTicksForChildToGrow()
++	{
++		return FCUtilsMisc.m_iTicksPerGameDay * 2;
++	}
++
++	@Override
++	public boolean interact( EntityPlayer player )
++	{
++		return EntityAnimalInteract( player );
++	}
++
++	@Override
++	public void initCreature() 
++	{
++		InitHungerWithVariance();
++	}
++
++	//------------- Class Specific Methods ------------//
++
++	public int getInLove()
++	{
++		return dataWatcher.getWatchableObjectInt( m_iInLoveDataWatcherID );
++	}
++
++	public void setInLove( int iInLove )
++	{
++		dataWatcher.updateObject( m_iInLoveDataWatcherID, Integer.valueOf( iInLove ) );
++	}
++
++	public boolean getWearingBreedingHarness()
++	{
++		return ( dataWatcher.getWatchableObjectByte( m_iWearingBreedingHarnessDataWatcherID ) > 0 );
++	}
++
++	public void setWearingBreedingHarness( boolean bWearingHarness )
++	{
++		Byte wearing = 0;
++
++		if ( bWearingHarness )
++		{
++			wearing = 1;
++		}
++
++		dataWatcher.updateObject( m_iWearingBreedingHarnessDataWatcherID, Byte.valueOf( wearing ) );
++	}
++
++	public void CheckForIntersectingBreedingHarnesses()
++	{    
++		if ( getWearingBreedingHarness()  )
++		{
++			AxisAlignedBB tempBoundingBox = boundingBox.copy();
++
++			tempBoundingBox.contract(0.1D, 0.1D, 0.1D );
++
++			List collisionList = worldObj.getEntitiesWithinAABB( EntityAnimal.class, 
++					tempBoundingBox );
++
++			if ( !collisionList.isEmpty() )
++			{
++				for ( int listIndex = 0; listIndex < collisionList.size(); listIndex++ )
++				{
++					EntityAnimal entityAnimal = (EntityAnimal)collisionList.get( listIndex );;
++
++					if ( entityAnimal != this )
++					{		    		
++						if ( entityAnimal.getWearingBreedingHarness() && !(entityAnimal.isLivingDead) )
++						{
++							attackEntityFrom( DamageSource.inWall, 1 );
++
++							break;				            
++						}
++					}
++				}
++			}
++		}
++	}
++
 +	public void PanickNearbyAnimals( DamageSource damageSource )
 +	{
 +		Entity attackingEntity = damageSource.getEntity();
@@ -592,32 +592,32 @@
 +		if ( attackingEntity != null && ( attackingEntity instanceof EntityLiving ) )
 +		{
 +			EntityLiving attackingEntityLiving = (EntityLiving)attackingEntity;
-+			
-+	        List animalList = worldObj.getEntitiesWithinAABB( EntityAnimal.class, boundingBox.expand( 16D, 8D, 16D ) );
-+	        
-+	        Iterator itemIterator = animalList.iterator();
-+	
-+	        while ( itemIterator.hasNext())
-+	        {
-+	    		EntityAnimal tempAnimal = (EntityAnimal)itemIterator.next();
-+	    		
-+		        if ( !(tempAnimal.isLivingDead) && tempAnimal != this && tempAnimal != attackingEntityLiving )
-+		        {
-+		        	tempAnimal.OnNearbyAnimalAttacked( this, attackingEntityLiving ); 
-+		        }
-+		        
-+	        }
++
++			List animalList = worldObj.getEntitiesWithinAABB( EntityAnimal.class, boundingBox.expand( 16D, 8D, 16D ) );
++
++			Iterator itemIterator = animalList.iterator();
++
++			while ( itemIterator.hasNext())
++			{
++				EntityAnimal tempAnimal = (EntityAnimal)itemIterator.next();
++
++				if ( !(tempAnimal.isLivingDead) && tempAnimal != this && tempAnimal != attackingEntityLiving )
++				{
++					tempAnimal.OnNearbyAnimalAttacked( this, attackingEntityLiving ); 
++				}
++
++			}
 +		}
 +	}
-+	
++
 +	public void OnNearbyAnimalAttacked( EntityAnimal attackedAnimal, EntityLiving attackSource )
 +	{
 +		// only freak the animal out if it isn't already freaked by something else
-+		
++
 +		if ( entityLivingToAttack == null )
 +		{
-+	        entityLivingToAttack = attackSource;	        
-+        	revengeTimer = 150; // 7.5 seconds
++			entityLivingToAttack = attackSource;	        
++			revengeTimer = 150; // 7.5 seconds
 +		}
 +		else if ( revengeTimer < 150 )
 +		{
@@ -629,645 +629,655 @@
 +	{
 +		OnNearbyPlayerStartles( player );
 +	}
-+	
++
 +	public void OnNearbyPlayerBlockAddOrRemove( EntityPlayer player )
 +	{
 +		OnNearbyPlayerStartles( player );
 +	}
-+	
++
 +	protected void OnNearbyPlayerStartles( EntityPlayer player )
 +	{
 +		// only freak the animal out if it isn't already freaked by something else
-+		
++
 +		if ( entityLivingToAttack == null )
 +		{
-+	        entityLivingToAttack = player;	        
-+        	revengeTimer = 150; // 7.5 seconds
++			entityLivingToAttack = player;	        
++			revengeTimer = 150; // 7.5 seconds
 +		}
 +		else if ( revengeTimer < 150 )
 +		{
 +			revengeTimer = 150;
 +		}
 +	}
-+	
-+    protected void procreate( EntityAnimal targetMate )
-+    {
-+    	// Replacement for vanilla function above
-+    	
++
++	protected void procreate( EntityAnimal targetMate )
++	{
++		// Replacement for vanilla function above
++
 +		double dChildX = posX;
 +		double dChildY = posY;
 +		double dChildZ = posZ;
-+		
-+        if ( getWearingBreedingHarness() )
-+        {
-+        	dChildX = ( posX + targetMate.posX ) / 2.0F;
-+        	dChildY = ( posY + targetMate.posY ) / 2.0F;
-+        	dChildZ = ( posZ + targetMate.posZ ) / 2.0F;                	
-+        }
-+        
-+        GiveBirthAtTargetLocation( targetMate, dChildX, dChildY, dChildZ );
-+        
-+    	ResetMatingStateOfBothParents( targetMate );
-+    	
-+        SpawnBirthHeartParticles();
 +
-+        worldObj.playSoundAtEntity( this, getDeathSound(), getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F );
-+        
-+        worldObj.playAuxSFX( FCBetterThanWolves.m_iAnimalBirthingAuxFXID,  
-+    		MathHelper.floor_double( dChildX ), MathHelper.floor_double( dChildY ), MathHelper.floor_double( dChildZ ), 
-+    		0 );            
-+    }
-+    
-+    protected void GiveBirthAtTargetLocation( EntityAnimal targetMate, double dChildX, double dChildY, double dChildZ )
-+    {
-+        EntityAgeable childEntity = createChild( targetMate );
-+
-+        if ( childEntity != null )
-+        {
-+            childEntity.setGrowingAge( -GetTicksForChildToGrow() );
-+            
-+        	childEntity.setLocationAndAngles( dChildX, dChildY, dChildZ, rotationYaw, rotationPitch );
-+            
-+            worldObj.spawnEntityInWorld( childEntity );            
-+        }
-+    }
-+    
-+    protected void ResetMatingStateOfBothParents( EntityAnimal targetMate )
-+    {
-+        setGrowingAge( GetTicksToRegenerateLoveJuice() );
-+        targetMate.setGrowingAge( targetMate.GetTicksToRegenerateLoveJuice() );
-+        
-+        resetInLove();            
-+        breeding = 0;
-+        entityToAttack = null;
-+        
-+        targetMate.resetInLove();            
-+        targetMate.entityToAttack = null;
-+        targetMate.breeding = 0;        
-+    }
-+    
-+    protected void SpawnBirthHeartParticles()
-+    {
-+        for ( int iTempCount = 0; iTempCount < 7; ++iTempCount )
-+        {
-+            double dParticleVelX = this.rand.nextGaussian() * 0.02D;
-+            double dParticleVelY = this.rand.nextGaussian() * 0.02D;
-+            double dParticleVelZ = this.rand.nextGaussian() * 0.02D;
-+            
-+            worldObj.spawnParticle( "heart", 
-+            	this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 
-+            	this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), 
-+            	this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 
-+            	dParticleVelX, dParticleVelY, dParticleVelZ);
-+        }
-+    }
-+    
-+    //-------------- Hunger related functionality ------------//
-+    
-+    protected static final int m_iFullHungerCount = ( FCUtilsMisc.m_iTicksPerGameDay );
-+    protected static final int m_iLevelUpHungerCount = ( m_iFullHungerCount + 
-+    	( m_iFullHungerCount / 16 ) );
-+    
-+    protected static final int m_iMaxHealingCount = ( FCUtilsMisc.m_iTicksPerGameDay );
-+    
-+    protected int m_iHungerCountdown = m_iFullHungerCount;
-+    protected int m_iHealingCountdown = m_iFullHungerCount;
-+    
-+    public static final int m_iBaseGrazeFoodValue = 200;
-+    
-+    protected static final int m_iDelayBetweenEatLoose = ( FCUtilsMisc.m_iTicksPerSecond / 2 );
-+    
-+    protected static final int m_iDelayBetweenEatLooseVariance = 
-+    	( FCUtilsMisc.m_iTicksPerSecond / 2 );
-+    
-+    protected int m_iEatLooseCooldownCounter = ( m_iDelayBetweenEatLoose + 
-+    	m_iDelayBetweenEatLooseVariance );
-+    
-+    protected int m_iGrazeProgressCounter = 0;
-+    
-+    public void InitHungerWithVariance()
-+    {
-+    	// prevent initially spawned animals from all eating at the same time.
-+    	
-+    	if ( IsSubjectToHunger() )
-+    	{
-+    		m_iHungerCountdown = m_iFullHungerCount - rand.nextInt( GetGrazeHungerGain() );
-+    	}
-+    }
-+    
-+    protected int GetHungerLevel()
-+    {
-+        return dataWatcher.getWatchableObjectByte( m_iHungerLevelDataWatcherID );
-+    }
-+    
-+    protected void SetHungerLevel( int iHungerLevel )
-+    {
-+        dataWatcher.updateObject( m_iHungerLevelDataWatcherID, Byte.valueOf( (byte)iHungerLevel ) );
-+    }
-+    
-+    protected boolean IsFullyFed()
-+    {
-+        return GetHungerLevel() == 0;
-+    }
-+    
-+    protected boolean IsFamished()
-+    {
-+        return GetHungerLevel() == 1;
-+    }
-+    
-+    protected boolean IsStarving()
-+    {
-+        return GetHungerLevel() >= 2;
-+    }    
-+    
-+    protected void OnBecomeFamished()
-+    {
-+		SetHungerLevel( 1 );
-+    }
-+    
-+    public void OnBecomeStarving()
-+    {
-+		SetHungerLevel( 2 );
-+    }
-+    
-+    protected void OnStarvingCountExpired()
-+    {
-+		// max health 20 wolves, 15 cows, 10 pigs, 8 sheep, 4 chicken
-+		
-+		attackEntityFrom( DamageSource.starve, 5 );
-+    }
-+    
-+    public boolean IsSubjectToHunger()
-+    {
-+    	return false;
-+    }
-+    
-+    protected void UpdateHungerState()
-+    {
-+    	if ( IsSubjectToHunger() )
-+    	{
-+    		if ( !isChild() )
-+    		{
-+    			m_iHungerCountdown--;
-+    		}
-+    		else    			
-+    		{
-+    			// children burn more energy
-+    			
-+    			m_iHungerCountdown -= 2;
-+    		}
-+	    	
-+	    	if ( m_iHungerCountdown <= 0 )
-+	    	{
-+	    		if ( !isChild() )
-+	        	{
-+		    		if ( IsFullyFed() )
-+		    		{
-+	    				OnBecomeFamished();
-+		    		}
-+		    		else if ( IsFamished() )
-+		    		{
-+		    			OnBecomeStarving();
-+		    		}
-+		    		else // starving
-+		    		{
-+		    			OnStarvingCountExpired();
-+		    		}
-+		    		
-+		    		ResetHungerCountdown();
-+	        	}
-+	    		else 
-+	    		{ 
-+	    			// children can not survive being famished.  They'll
-+	    			// just keep taking damage once their countdown expires
-+	    			
-+	    			attackEntityFrom( DamageSource.starve, 1 );
-+	    		}		
-+	    	}
-+    	}
-+    }
-+    
-+    protected void ResetHungerCountdown()
-+    {
-+    	m_iHungerCountdown = m_iFullHungerCount; 
-+    }    
-+    
-+    protected void AddToHungerCount( int iAddedHunger )
-+    {
-+    	m_iHungerCountdown += iAddedHunger;
-+    	
-+    	// don't level up immediately when full to prevent flickering state
-+    	
-+    	if ( m_iHungerCountdown > m_iLevelUpHungerCount )
-+    	{
-+    		int iHungerLevel = GetHungerLevel();
-+    		
-+    		if ( iHungerLevel > 0 )
-+    		{
-+        		m_iHungerCountdown -= m_iFullHungerCount;
-+        		
-+    			SetHungerLevel( iHungerLevel - 1 );
-+    		}
-+    	}    	
-+    }
-+    
-+    protected int GetGrazeHungerGain()
-+    {
-+    	return m_iBaseGrazeFoodValue * GetFoodValueMultiplier();
-+    }
-+    
-+    protected int GetFoodValueMultiplier()
-+    {
-+    	return 2;
-+    }
-+    
-+    public void OnGrazeBlock( int i, int j, int k )
-+    {
-+    	AddToHungerCount( GetGrazeHungerGain() );
-+    }
-+    
-+    public boolean ShouldNotifyBlockOnGraze()
-+    {
-+    	return true;
-+    }
-+    
-+    public void PlayGrazeFX( int i, int j, int k, int iBlockID )
-+    {
-+		worldObj.playAuxSFX( 2001, i, j, k, iBlockID ); 
-+    }
-+    
-+    public int GetGrazeDuration()
-+    {
-+    	return 40;
-+    }
-+    
-+    public boolean IsHungryEnoughToGraze()
-+    {
-+		return !IsFullyFed() || m_iHungerCountdown + GetGrazeHungerGain() <= 
-+			m_iFullHungerCount;
-+    }
-+    
-+    public boolean IsHungryEnoughToForceMoveToGraze()
-+    {
-+		return isChild() || !IsFullyFed() || m_iHungerCountdown < m_iFullHungerCount / 2;
-+    }
-+    
-+    protected boolean IsTooHungryToGrow()
-+    {
-+    	return !IsFullyFed() || m_iHungerCountdown < ( m_iFullHungerCount * 3 ) / 4;    	
-+    }
-+    
-+    protected boolean IsTooHungryToHeal()
-+    {
-+    	return !IsFullyFed() || m_iHungerCountdown < ( m_iFullHungerCount * 3 ) / 4;    	
-+    }
-+    
-+    public boolean CanGrazeMycelium()
-+    {
-+    	return false;
-+    }
-+    
-+    public boolean GetDisruptsEarthOnGraze()
-+    {
-+    	return false;
-+    }
-+    
-+    public boolean CanGrazeOnRoughVegetation()
-+    {
-+    	return false;
-+    }
-+    
-+    /**
-+     * Returns null if no valid graze block exists at location
-+     */    
-+    public FCUtilsBlockPos GetGrazeBlockForPos()
-+    {
-+    	FCUtilsBlockPos targetPos = new FCUtilsBlockPos( MathHelper.floor_double( posX ), 
-+    		(int)boundingBox.minY, MathHelper.floor_double( posZ ) );
-+    	
-+    	if ( CanGrazeOnBlock( targetPos.i, targetPos.j, targetPos.k ) )
-+    	{
-+    		return targetPos;
-+    	}
-+    	else
-+    	{
-+    		targetPos.j--;
-+    		
-+        	if ( CanGrazeOnBlock( targetPos.i, targetPos.j, targetPos.k ) )
-+        	{
-+        		return targetPos;
-+        	}
-+    	}
-+        
-+        return null;
-+    }
-+    
-+    public boolean ShouldStayInPlaceToGraze()
-+    {
-+    	return GetGrazeBlockForPos() != null;
-+    }
-+    
-+    public boolean CanGrazeOnBlock( int i, int j, int k )
-+    {
-+    	Block block = Block.blocksList[worldObj.getBlockId( i, j, k )];
-+    	
-+    	if ( block != null )
-+    	{
-+    		return block.CanBeGrazedOn( worldObj, i, j, k, this );
-+    	}
-+    	
-+    	return false;
-+    }
-+    
-+    protected float GetHungerSpeedModifier()
-+    {
-+    	if ( IsStarving() )
-+    	{
-+    		return 0.5F;
-+    	}
-+    	else if ( IsFamished() )
-+    	{
-+    		return 0.75F;
-+    	}
-+    	
-+    	return 1F;
-+    }
-+
-+    public boolean IsTemptingItem( ItemStack stack )
-+    {
-+    	return GetItemFoodValue( stack ) > 0 || 
-+    		( isBreedingItem( stack ) && IsReadyToEatBreedingItem() );
-+    }
-+    
-+    public boolean IsEdibleItem( ItemStack stack )
-+    {
-+    	return isBreedingItem( stack ) || GetItemFoodValue( stack ) > 0;
-+    }
-+
-+    protected boolean IsHungryEnoughToEatLooseFood()
-+    {
-+		return !IsFullyFed() || m_iHungerCountdown <= m_iFullHungerCount;
-+    }
-+    
-+    protected boolean IsReadyToEatBreedingItem()
-+    {
-+    	return IsFullyFed() && getGrowingAge() == 0 && !isInLove();
-+    }
-+    
-+    protected int GetItemFoodValue( ItemStack stack )
-+    {
-+    	return stack.getItem().GetHerbivoreFoodValue( stack.getItemDamage() ) * 
-+    		GetFoodValueMultiplier();
-+    }
-+    
-+    protected boolean AttemptToEatItemForBreeding( ItemStack stack )
-+    {
-+        if ( isBreedingItem( stack ) && IsReadyToEatBreedingItem() )
-+        {
-+        	OnEatBreedingItem();
-+			
-+			return true;
-+        }
-+        
-+        return false;
-+    }
-+    
-+    protected void OnEatBreedingItem()
-+    {
-+        setInLove( 600 );
-+        entityToAttack = null;
-+        
-+        for( int iTempCount = 0; iTempCount < 7; iTempCount++ )
-+        {
-+            worldObj.spawnParticle( "heart", 
-+            	posX + (double)( ( rand.nextFloat() * width * 2F ) - width ), 
-+            	posY + 0.5D + (double)( rand.nextFloat() * height ), 
-+            	posZ + (double)( ( rand.nextFloat() * width * 2.0F ) - width ), 
-+        		rand.nextGaussian() * 0.02D, rand.nextGaussian() * 0.02D, 
-+        		rand.nextGaussian() * 0.02D ); // last 3 are velocity
-+        }
-+    }
-+    
-+    protected boolean AttemptToEatItem( ItemStack stack )
-+    {
-+    	int iFoodValue = GetItemFoodValue( stack );
-+    	
-+		if ( AttemptToEatItemForBreeding( stack ) || ( iFoodValue > 0 && 
-+			IsHungryEnoughToEatLooseFood() ) )
++		if ( getWearingBreedingHarness() )
 +		{
-+        	AddToHungerCount( iFoodValue );
-+            
-+            worldObj.setEntityState( this, (byte)10 ); // trigger eating anim on client
-+            
-+	        worldObj.playAuxSFX( FCBetterThanWolves.m_iAnimalEatAuxFXID,	                
-+                MathHelper.floor_double( posX ), (int)( posY + height ),
-+                MathHelper.floor_double( posZ ), 0 );
-+	        
-+        	return true;
++			dChildX = ( posX + targetMate.posX ) / 2.0F;
++			dChildY = ( posY + targetMate.posY ) / 2.0F;
++			dChildZ = ( posZ + targetMate.posZ ) / 2.0F;                	
 +		}
-+		
-+        return false;
-+    }
-+    
-+    public boolean AttemptToBeHandFedItem( ItemStack stack )
-+    {
-+    	return AttemptToEatItem( stack );
-+    }
 +
-+    protected boolean AttemptToEatLooseItem( ItemStack stack )
-+    {
-+    	return AttemptToEatItem( stack );
-+    }
-+    
-+    public boolean IsReadyToEatLooseFood()
-+    {
-+    	return IsHungryEnoughToEatLooseFood() || IsReadyToEatBreedingItem();
-+    }
-+    
-+    public boolean IsReadyToEatLooseItem( ItemStack stack )
-+    {
-+    	return ( GetItemFoodValue( stack ) > 0 && IsHungryEnoughToEatLooseFood() ) || 
-+			( isBreedingItem( stack ) && IsReadyToEatBreedingItem() );
-+    }
-+    
-+    protected void CheckForLooseFood()
-+    {    
-+    	if ( m_iEatLooseCooldownCounter > 0 )
-+    	{
-+    		m_iEatLooseCooldownCounter--;
-+    	}
-+    	else if ( IsReadyToEatLooseFood() )
-+    	{
-+		    List<EntityItem> entityList = worldObj.getEntitiesWithinAABB( 
-+		    	EntityItem.class, AxisAlignedBB.getAABBPool().getAABB( 
-+				boundingBox.minX - 1.5F, boundingBox.minY - 1F, boundingBox.minZ - 1.5F, 
-+				boundingBox.maxX + 1.5F, boundingBox.maxY + 1F, boundingBox.maxZ + 1.5F ) );
-+		    
-+		    if ( !entityList.isEmpty() )
-+		    {
-+		    	Iterator<EntityItem> entityIterator = entityList.iterator();
++		GiveBirthAtTargetLocation( targetMate, dChildX, dChildY, dChildZ );
 +
-+		    	while ( entityIterator.hasNext() )
-+	            {
-+		    		EntityItem tempEntity = entityIterator.next();
-+		    		
-+			        if ( tempEntity.delayBeforeCanPickup == 0 && tempEntity.isEntityAlive() )
-+			        {
-+			        	ItemStack tempStack = tempEntity.getEntityItem();
-+			        	
-+			        	if ( AttemptToEatLooseItem( tempEntity.getEntityItem() ) )
-+		        		{
-+			                tempStack.stackSize--;
-+			                
-+			                if ( tempStack.stackSize <= 0 )
-+			                {
-+			    	            tempEntity.setDead();					            
-+			                }
-+			                else
-+			                {
-+			                	// slight delay on pickup so animals don't all eat from a stack
-+			                	// at once
-+			                	
-+			                	tempEntity.delayBeforeCanPickup = 2; 			                	
-+			                }
-+			                
-+		    	            m_iEatLooseCooldownCounter = m_iDelayBetweenEatLoose +
-+		    	            	rand.nextInt( m_iDelayBetweenEatLooseVariance + 1 );
-+					        
-+			    			break;				            
-+		        		}			        		
-+		    		}
-+	            }
-+		    }
-+    	}
-+    }
-+    
-+    public boolean EntityAnimalInteract( EntityPlayer player )
-+    {
-+        ItemStack heldItem = player.inventory.getCurrentItem();
++		ResetMatingStateOfBothParents( targetMate );
 +
-+        if ( heldItem != null )
-+        {
-+        	if ( IsEdibleItem( heldItem ) )
-+        	{
-+	        	if ( !worldObj.isRemote && AttemptToBeHandFedItem( heldItem ) )
-+	        	{
-+	                heldItem.stackSize--;
-+	
-+	                if ( heldItem.stackSize <= 0 )
-+	                {
-+	                    player.inventory.setInventorySlotContents( player.inventory.currentItem, 
-+	                    	null );
-+	                }
-+	        	}
-+	        	
-+	            return true;
-+        	}
-+        }
-+        
-+        return super.interact( player );
-+    }
-+    
-+    protected int GetTicksToRegenerateLoveJuice()
-+    {
-+    	return FCUtilsMisc.m_iTicksPerGameDay;
-+    }
-+    
-+    public float GetGrazeHeadVerticalOffset( float fPartialTick )
-+    {
-+    	int iGrazeDuration = GetGrazeDuration(); 
++		SpawnBirthHeartParticles();
++
++		worldObj.playSoundAtEntity( this, getDeathSound(), getSoundVolume(), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F );
++
++		worldObj.playAuxSFX( FCBetterThanWolves.m_iAnimalBirthingAuxFXID,  
++				MathHelper.floor_double( dChildX ), MathHelper.floor_double( dChildY ), MathHelper.floor_double( dChildZ ), 
++				0 );            
++	}
++
++	public int getNestSize()
++	{
++		return 1;
++	}
++
++	protected void GiveBirthAtTargetLocation( EntityAnimal targetMate, double dChildX, double dChildY, double dChildZ )
++	{
++		int nestSize = getNestSize();
 +		
-+    	if ( getWearingBreedingHarness() || m_iGrazeProgressCounter <= 0 )
-+    	{
-+            return 0F;
-+    	}
-+    	else if ( m_iGrazeProgressCounter >= 4 && m_iGrazeProgressCounter <= iGrazeDuration - 4 )
-+    	{
-+    		return 1F;
-+    	}
-+    	else if ( m_iGrazeProgressCounter < 4 )
-+    	{
-+    		return ( (float)m_iGrazeProgressCounter - fPartialTick ) / 4F;
-+    	}
-+    	else
-+    	{
-+            return -( (float)( m_iGrazeProgressCounter - iGrazeDuration ) - fPartialTick ) / 4F;
-+    	}    	
-+    }
-+    
-+    public float GetGrazeHeadRotation( float fPartialTick )
-+    {
-+    	int iGrazeDuration = GetGrazeDuration(); 
-+		
-+    	if ( getWearingBreedingHarness() || m_iGrazeProgressCounter <= 0 )
-+    	{
-+            return rotationPitch / ( 180F / (float)Math.PI );
-+    	}
-+    	else if ( m_iGrazeProgressCounter > 4 && m_iGrazeProgressCounter <= iGrazeDuration - 4 )
-+        {
-+            float fProgress = ((float)( m_iGrazeProgressCounter - 4 ) - fPartialTick ) / 
-+            	(float)( iGrazeDuration - 8 );
-+            
-+            return ( (float)Math.PI / GetGrazeHeadRotationMagnitudeDivisor() ) + 
-+            	( (float)Math.PI * 7F / 100F ) * 
-+            	MathHelper.sin( fProgress * GetGrazeHeadRotationRateMultiplier() );
-+        }
-+        else
-+        {
-+            return (float)Math.PI / GetGrazeHeadRotationMagnitudeDivisor(); 
-+        }
-+    }
-+    
-+    protected float GetGrazeHeadRotationMagnitudeDivisor()
-+    {
-+    	return 5F;
-+    }
-+    
-+    protected float GetGrazeHeadRotationRateMultiplier()
-+    {
-+    	return 28.7F;
-+    }
-+    
-+    protected void UpdateHealing()
-+    {
-+    	if ( IsSubjectToHunger() && !isChild() )
-+    	{
-+    		if ( IsTooHungryToHeal() )
-+    		{
-+    			ResetHealingCountdown();
-+    		}
-+    		else
-+    		{
-+    			m_iHealingCountdown--;
-+    			
-+    			if ( m_iHealingCountdown <= 0 )
-+    			{
-+    				heal( 1 );
-+    				
-+        			ResetHealingCountdown();
-+    			}
-+    		}
-+    	}
-+    }
-+    
-+    protected void ResetHealingCountdown()
-+    {
-+    	m_iHealingCountdown = m_iMaxHealingCount; 
-+    }    
-+    
++		for (int nestTempCount = 0; nestTempCount < nestSize; ++nestTempCount)
++		{
++			EntityAgeable childEntity = createChild( targetMate );
++
++			if ( childEntity != null )
++			{
++				childEntity.setGrowingAge( -GetTicksForChildToGrow() );
++
++				childEntity.setLocationAndAngles( dChildX, dChildY, dChildZ, rotationYaw, rotationPitch );
++
++				worldObj.spawnEntityInWorld( childEntity );            
++			}
++		}
++	}
++
++	protected void ResetMatingStateOfBothParents( EntityAnimal targetMate )
++	{
++		setGrowingAge( GetTicksToRegenerateLoveJuice() );
++		targetMate.setGrowingAge( targetMate.GetTicksToRegenerateLoveJuice() );
++
++		resetInLove();            
++		breeding = 0;
++		entityToAttack = null;
++
++		targetMate.resetInLove();            
++		targetMate.entityToAttack = null;
++		targetMate.breeding = 0;        
++	}
++
++	protected void SpawnBirthHeartParticles()
++	{
++		for ( int iTempCount = 0; iTempCount < 7; ++iTempCount )
++		{
++			double dParticleVelX = this.rand.nextGaussian() * 0.02D;
++			double dParticleVelY = this.rand.nextGaussian() * 0.02D;
++			double dParticleVelZ = this.rand.nextGaussian() * 0.02D;
++
++			worldObj.spawnParticle( "heart", 
++					this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 
++					this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), 
++					this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 
++					dParticleVelX, dParticleVelY, dParticleVelZ);
++		}
++	}
++
++	//-------------- Hunger related functionality ------------//
++
++	protected static final int m_iFullHungerCount = ( FCUtilsMisc.m_iTicksPerGameDay );
++	protected static final int m_iLevelUpHungerCount = ( m_iFullHungerCount + 
++			( m_iFullHungerCount / 16 ) );
++
++	protected static final int m_iMaxHealingCount = ( FCUtilsMisc.m_iTicksPerGameDay );
++
++	protected int m_iHungerCountdown = m_iFullHungerCount;
++	protected int m_iHealingCountdown = m_iFullHungerCount;
++
++	public static final int m_iBaseGrazeFoodValue = 200;
++
++	protected static final int m_iDelayBetweenEatLoose = ( FCUtilsMisc.m_iTicksPerSecond / 2 );
++
++	protected static final int m_iDelayBetweenEatLooseVariance = 
++			( FCUtilsMisc.m_iTicksPerSecond / 2 );
++
++	protected int m_iEatLooseCooldownCounter = ( m_iDelayBetweenEatLoose + 
++			m_iDelayBetweenEatLooseVariance );
++
++	protected int m_iGrazeProgressCounter = 0;
++
++	public void InitHungerWithVariance()
++	{
++		// prevent initially spawned animals from all eating at the same time.
++
++		if ( IsSubjectToHunger() )
++		{
++			m_iHungerCountdown = m_iFullHungerCount - rand.nextInt( GetGrazeHungerGain() );
++		}
++	}
++
++	protected int GetHungerLevel()
++	{
++		return dataWatcher.getWatchableObjectByte( m_iHungerLevelDataWatcherID );
++	}
++
++	protected void SetHungerLevel( int iHungerLevel )
++	{
++		dataWatcher.updateObject( m_iHungerLevelDataWatcherID, Byte.valueOf( (byte)iHungerLevel ) );
++	}
++
++	protected boolean IsFullyFed()
++	{
++		return GetHungerLevel() == 0;
++	}
++
++	protected boolean IsFamished()
++	{
++		return GetHungerLevel() == 1;
++	}
++
++	protected boolean IsStarving()
++	{
++		return GetHungerLevel() >= 2;
++	}    
++
++	protected void OnBecomeFamished()
++	{
++		SetHungerLevel( 1 );
++	}
++
++	public void OnBecomeStarving()
++	{
++		SetHungerLevel( 2 );
++	}
++
++	protected void OnStarvingCountExpired()
++	{
++		// max health 20 wolves, 15 cows, 10 pigs, 8 sheep, 4 chicken
++
++		attackEntityFrom( DamageSource.starve, 5 );
++	}
++
++	public boolean IsSubjectToHunger()
++	{
++		return false;
++	}
++
++	protected void UpdateHungerState()
++	{
++		if ( IsSubjectToHunger() )
++		{
++			if ( !isChild() )
++			{
++				m_iHungerCountdown--;
++			}
++			else    			
++			{
++				// children burn more energy
++
++				m_iHungerCountdown -= 2;
++			}
++
++			if ( m_iHungerCountdown <= 0 )
++			{
++				if ( !isChild() )
++				{
++					if ( IsFullyFed() )
++					{
++						OnBecomeFamished();
++					}
++					else if ( IsFamished() )
++					{
++						OnBecomeStarving();
++					}
++					else // starving
++					{
++						OnStarvingCountExpired();
++					}
++
++					ResetHungerCountdown();
++				}
++				else 
++				{ 
++					// children can not survive being famished.  They'll
++					// just keep taking damage once their countdown expires
++
++					attackEntityFrom( DamageSource.starve, 1 );
++				}		
++			}
++		}
++	}
++
++	protected void ResetHungerCountdown()
++	{
++		m_iHungerCountdown = m_iFullHungerCount; 
++	}    
++
++	protected void AddToHungerCount( int iAddedHunger )
++	{
++		m_iHungerCountdown += iAddedHunger;
++
++		// don't level up immediately when full to prevent flickering state
++
++		if ( m_iHungerCountdown > m_iLevelUpHungerCount )
++		{
++			int iHungerLevel = GetHungerLevel();
++
++			if ( iHungerLevel > 0 )
++			{
++				m_iHungerCountdown -= m_iFullHungerCount;
++
++				SetHungerLevel( iHungerLevel - 1 );
++			}
++		}    	
++	}
++
++	protected int GetGrazeHungerGain()
++	{
++		return m_iBaseGrazeFoodValue * GetFoodValueMultiplier();
++	}
++
++	protected int GetFoodValueMultiplier()
++	{
++		return 2;
++	}
++
++	public void OnGrazeBlock( int i, int j, int k )
++	{
++		AddToHungerCount( GetGrazeHungerGain() );
++	}
++
++	public boolean ShouldNotifyBlockOnGraze()
++	{
++		return true;
++	}
++
++	public void PlayGrazeFX( int i, int j, int k, int iBlockID )
++	{
++		worldObj.playAuxSFX( 2001, i, j, k, iBlockID ); 
++	}
++
++	public int GetGrazeDuration()
++	{
++		return 40;
++	}
++
++	public boolean IsHungryEnoughToGraze()
++	{
++		return !IsFullyFed() || m_iHungerCountdown + GetGrazeHungerGain() <= 
++				m_iFullHungerCount;
++	}
++
++	public boolean IsHungryEnoughToForceMoveToGraze()
++	{
++		return isChild() || !IsFullyFed() || m_iHungerCountdown < m_iFullHungerCount / 2;
++	}
++
++	protected boolean IsTooHungryToGrow()
++	{
++		return !IsFullyFed() || m_iHungerCountdown < ( m_iFullHungerCount * 3 ) / 4;    	
++	}
++
++	protected boolean IsTooHungryToHeal()
++	{
++		return !IsFullyFed() || m_iHungerCountdown < ( m_iFullHungerCount * 3 ) / 4;    	
++	}
++
++	public boolean CanGrazeMycelium()
++	{
++		return false;
++	}
++
++	public boolean GetDisruptsEarthOnGraze()
++	{
++		return false;
++	}
++
++	public boolean CanGrazeOnRoughVegetation()
++	{
++		return false;
++	}
++
++	/**
++	 * Returns null if no valid graze block exists at location
++	 */    
++	public FCUtilsBlockPos GetGrazeBlockForPos()
++	{
++		FCUtilsBlockPos targetPos = new FCUtilsBlockPos( MathHelper.floor_double( posX ), 
++				(int)boundingBox.minY, MathHelper.floor_double( posZ ) );
++
++		if ( CanGrazeOnBlock( targetPos.i, targetPos.j, targetPos.k ) )
++		{
++			return targetPos;
++		}
++		else
++		{
++			targetPos.j--;
++
++			if ( CanGrazeOnBlock( targetPos.i, targetPos.j, targetPos.k ) )
++			{
++				return targetPos;
++			}
++		}
++
++		return null;
++	}
++
++	public boolean ShouldStayInPlaceToGraze()
++	{
++		return GetGrazeBlockForPos() != null;
++	}
++
++	public boolean CanGrazeOnBlock( int i, int j, int k )
++	{
++		Block block = Block.blocksList[worldObj.getBlockId( i, j, k )];
++
++		if ( block != null )
++		{
++			return block.CanBeGrazedOn( worldObj, i, j, k, this );
++		}
++
++		return false;
++	}
++
++	protected float GetHungerSpeedModifier()
++	{
++		if ( IsStarving() )
++		{
++			return 0.5F;
++		}
++		else if ( IsFamished() )
++		{
++			return 0.75F;
++		}
++
++		return 1F;
++	}
++
++	public boolean IsTemptingItem( ItemStack stack )
++	{
++		return GetItemFoodValue( stack ) > 0 || 
++				( isBreedingItem( stack ) && IsReadyToEatBreedingItem() );
++	}
++
++	public boolean IsEdibleItem( ItemStack stack )
++	{
++		return isBreedingItem( stack ) || GetItemFoodValue( stack ) > 0;
++	}
++
++	protected boolean IsHungryEnoughToEatLooseFood()
++	{
++		return !IsFullyFed() || m_iHungerCountdown <= m_iFullHungerCount;
++	}
++
++	protected boolean IsReadyToEatBreedingItem()
++	{
++		return IsFullyFed() && getGrowingAge() == 0 && !isInLove();
++	}
++
++	protected int GetItemFoodValue( ItemStack stack )
++	{
++		return stack.getItem().GetHerbivoreFoodValue( stack.getItemDamage() ) * 
++				GetFoodValueMultiplier();
++	}
++
++	protected boolean AttemptToEatItemForBreeding( ItemStack stack )
++	{
++		if ( isBreedingItem( stack ) && IsReadyToEatBreedingItem() )
++		{
++			OnEatBreedingItem();
++
++			return true;
++		}
++
++		return false;
++	}
++
++	protected void OnEatBreedingItem()
++	{
++		setInLove( 600 );
++		entityToAttack = null;
++
++		for( int iTempCount = 0; iTempCount < 7; iTempCount++ )
++		{
++			worldObj.spawnParticle( "heart", 
++					posX + (double)( ( rand.nextFloat() * width * 2F ) - width ), 
++					posY + 0.5D + (double)( rand.nextFloat() * height ), 
++					posZ + (double)( ( rand.nextFloat() * width * 2.0F ) - width ), 
++					rand.nextGaussian() * 0.02D, rand.nextGaussian() * 0.02D, 
++					rand.nextGaussian() * 0.02D ); // last 3 are velocity
++		}
++	}
++
++	protected boolean AttemptToEatItem( ItemStack stack )
++	{
++		int iFoodValue = GetItemFoodValue( stack );
++
++		if ( AttemptToEatItemForBreeding( stack ) || ( iFoodValue > 0 && 
++				IsHungryEnoughToEatLooseFood() ) )
++		{
++			AddToHungerCount( iFoodValue );
++
++			worldObj.setEntityState( this, (byte)10 ); // trigger eating anim on client
++
++			worldObj.playAuxSFX( FCBetterThanWolves.m_iAnimalEatAuxFXID,	                
++					MathHelper.floor_double( posX ), (int)( posY + height ),
++					MathHelper.floor_double( posZ ), 0 );
++
++			return true;
++		}
++
++		return false;
++	}
++
++	public boolean AttemptToBeHandFedItem( ItemStack stack )
++	{
++		return AttemptToEatItem( stack );
++	}
++
++	protected boolean AttemptToEatLooseItem( ItemStack stack )
++	{
++		return AttemptToEatItem( stack );
++	}
++
++	public boolean IsReadyToEatLooseFood()
++	{
++		return IsHungryEnoughToEatLooseFood() || IsReadyToEatBreedingItem();
++	}
++
++	public boolean IsReadyToEatLooseItem( ItemStack stack )
++	{
++		return ( GetItemFoodValue( stack ) > 0 && IsHungryEnoughToEatLooseFood() ) || 
++				( isBreedingItem( stack ) && IsReadyToEatBreedingItem() );
++	}
++
++	protected void CheckForLooseFood()
++	{    
++		if ( m_iEatLooseCooldownCounter > 0 )
++		{
++			m_iEatLooseCooldownCounter--;
++		}
++		else if ( IsReadyToEatLooseFood() )
++		{
++			List<EntityItem> entityList = worldObj.getEntitiesWithinAABB( 
++					EntityItem.class, AxisAlignedBB.getAABBPool().getAABB( 
++							boundingBox.minX - 1.5F, boundingBox.minY - 1F, boundingBox.minZ - 1.5F, 
++							boundingBox.maxX + 1.5F, boundingBox.maxY + 1F, boundingBox.maxZ + 1.5F ) );
++
++			if ( !entityList.isEmpty() )
++			{
++				Iterator<EntityItem> entityIterator = entityList.iterator();
++
++				while ( entityIterator.hasNext() )
++				{
++					EntityItem tempEntity = entityIterator.next();
++
++					if ( tempEntity.delayBeforeCanPickup == 0 && tempEntity.isEntityAlive() )
++					{
++						ItemStack tempStack = tempEntity.getEntityItem();
++
++						if ( AttemptToEatLooseItem( tempEntity.getEntityItem() ) )
++						{
++							tempStack.stackSize--;
++
++							if ( tempStack.stackSize <= 0 )
++							{
++								tempEntity.setDead();					            
++							}
++							else
++							{
++								// slight delay on pickup so animals don't all eat from a stack
++								// at once
++
++								tempEntity.delayBeforeCanPickup = 2; 			                	
++							}
++
++							m_iEatLooseCooldownCounter = m_iDelayBetweenEatLoose +
++									rand.nextInt( m_iDelayBetweenEatLooseVariance + 1 );
++
++							break;				            
++						}			        		
++					}
++				}
++			}
++		}
++	}
++
++	public boolean EntityAnimalInteract( EntityPlayer player )
++	{
++		ItemStack heldItem = player.inventory.getCurrentItem();
++
++		if ( heldItem != null )
++		{
++			if ( IsEdibleItem( heldItem ) )
++			{
++				if ( !worldObj.isRemote && AttemptToBeHandFedItem( heldItem ) )
++				{
++					heldItem.stackSize--;
++
++					if ( heldItem.stackSize <= 0 )
++					{
++						player.inventory.setInventorySlotContents( player.inventory.currentItem, 
++								null );
++					}
++				}
++
++				return true;
++			}
++		}
++
++		return super.interact( player );
++	}
++
++	protected int GetTicksToRegenerateLoveJuice()
++	{
++		return FCUtilsMisc.m_iTicksPerGameDay;
++	}
++
++	public float GetGrazeHeadVerticalOffset( float fPartialTick )
++	{
++		int iGrazeDuration = GetGrazeDuration(); 
++
++		if ( getWearingBreedingHarness() || m_iGrazeProgressCounter <= 0 )
++		{
++			return 0F;
++		}
++		else if ( m_iGrazeProgressCounter >= 4 && m_iGrazeProgressCounter <= iGrazeDuration - 4 )
++		{
++			return 1F;
++		}
++		else if ( m_iGrazeProgressCounter < 4 )
++		{
++			return ( (float)m_iGrazeProgressCounter - fPartialTick ) / 4F;
++		}
++		else
++		{
++			return -( (float)( m_iGrazeProgressCounter - iGrazeDuration ) - fPartialTick ) / 4F;
++		}    	
++	}
++
++	public float GetGrazeHeadRotation( float fPartialTick )
++	{
++		int iGrazeDuration = GetGrazeDuration(); 
++
++		if ( getWearingBreedingHarness() || m_iGrazeProgressCounter <= 0 )
++		{
++			return rotationPitch / ( 180F / (float)Math.PI );
++		}
++		else if ( m_iGrazeProgressCounter > 4 && m_iGrazeProgressCounter <= iGrazeDuration - 4 )
++		{
++			float fProgress = ((float)( m_iGrazeProgressCounter - 4 ) - fPartialTick ) / 
++					(float)( iGrazeDuration - 8 );
++
++			return ( (float)Math.PI / GetGrazeHeadRotationMagnitudeDivisor() ) + 
++					( (float)Math.PI * 7F / 100F ) * 
++					MathHelper.sin( fProgress * GetGrazeHeadRotationRateMultiplier() );
++		}
++		else
++		{
++			return (float)Math.PI / GetGrazeHeadRotationMagnitudeDivisor(); 
++		}
++	}
++
++	protected float GetGrazeHeadRotationMagnitudeDivisor()
++	{
++		return 5F;
++	}
++
++	protected float GetGrazeHeadRotationRateMultiplier()
++	{
++		return 28.7F;
++	}
++
++	protected void UpdateHealing()
++	{
++		if ( IsSubjectToHunger() && !isChild() )
++		{
++			if ( IsTooHungryToHeal() )
++			{
++				ResetHealingCountdown();
++			}
++			else
++			{
++				m_iHealingCountdown--;
++
++				if ( m_iHealingCountdown <= 0 )
++				{
++					heal( 1 );
++
++					ResetHealingCountdown();
++				}
++			}
++		}
++	}
++
++	protected void ResetHealingCountdown()
++	{
++		m_iHealingCountdown = m_iMaxHealingCount; 
++	}    
++
 +	//----------- Client Side Functionality -----------//
-+    
-+    @Override
-+    public void handleHealthUpdate( byte bUpdateType )
-+    {
-+        if ( bUpdateType == 10 )
-+        {
-+        	m_iGrazeProgressCounter = GetGrazeDuration();
-+        }
-+        else
-+        {
-+            super.handleHealthUpdate( bUpdateType );
-+        }
-+    }
-+    // END FCMOD
++
++	@Override
++	public void handleHealthUpdate( byte bUpdateType )
++	{
++		if ( bUpdateType == 10 )
++		{
++			m_iGrazeProgressCounter = GetGrazeDuration();
++		}
++		else
++		{
++			super.handleHealthUpdate( bUpdateType );
++		}
++	}
++	// END FCMOD
 +}

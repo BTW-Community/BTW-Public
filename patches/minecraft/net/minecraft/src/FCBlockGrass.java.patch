@@ -1,11 +1,13 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockGrass.java
-@@ -0,0 +1,285 @@
+@@ -0,0 +1,294 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
 +import java.util.Random;
++
++import com.prupe.mcpatcher.mal.block.RenderBlocksUtils;
 +
 +import net.minecraft.client.Minecraft; // client only
 +
@@ -238,7 +240,13 @@
 +    @Override
 +    public Icon getBlockTexture( IBlockAccess blockAccess, int i, int j, int k, int iSide )
 +    {
-+        if ( iSide == 1 )
++    	Icon betterGrassIcon = RenderBlocksUtils.getGrassTexture(this, blockAccess, i, j, k, iSide, this.iconGrassTop);
++
++        if (betterGrassIcon != null)
++        {
++            return betterGrassIcon;
++        }
++        else if ( iSide == 1 )
 +        {
 +            return iconGrassTop;
 +        }
@@ -277,7 +285,8 @@
 +	
 +	        if ( Minecraft.isAmbientOcclusionEnabled() )
 +	        {
-+	        	return renderer.renderGrassBlockWithAmbientOcclusion( this, i, j, k, var6, var7, var8, BlockGrass.getIconSideOverlay() );
++	        	//return renderer.renderGrassBlockWithAmbientOcclusion( this, i, j, k, var6, var7, var8, BlockGrass.getIconSideOverlay() );
++	        	return renderer.renderGrassBlockWithColorMultiplier( this, i, j, k, var6, var7, var8, BlockGrass.getIconSideOverlay() );
 +	        }
 +	        else
 +	        {
