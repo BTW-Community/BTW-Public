@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCRecipesKnitting.java
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,113 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -57,6 +57,11 @@
 +    public boolean HasSecondaryOutput()
 +    {
 +    	return false;
++    }
++    
++    @Override
++    public ItemStack[] getSecondaryOutput(IInventory inventory) {
++    	return null;
 +    }
 +    
 +	//------------- Class Specific Methods ------------//

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemBrick.java
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,21 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -20,23 +20,5 @@
 +    public int getBlockID()
 +    {
 +        return FCBetterThanWolves.fcBlockCookedBrick.blockID;
-+    }
-+
-+    @Override
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return true;
-+    }
-+    
-+    @Override
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 8;
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return FCBetterThanWolves.fcBlockBrickLoose.blockID;
 +    }
 +}

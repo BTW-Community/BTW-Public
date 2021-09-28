@@ -1,8 +1,11 @@
 --- a/minecraft_server/net/minecraft/src/ComponentMineshaftCorridor.java
 +++ b/minecraft_server/net/minecraft/src/ComponentMineshaftCorridor.java
-@@ -199,6 +199,9 @@
+@@ -197,8 +197,11 @@
+         if (par2StructureBoundingBox.isVecInside(var9, var10, var11) && par1World.getBlockId(var9, var10, var11) == 0)
+         {
              par1World.setBlock(var9, var10, var11, Block.rail.blockID, this.getMetadataWithOffset(Block.rail.blockID, par3Random.nextBoolean() ? 1 : 0), 2);
-             EntityMinecartChest var12 = new EntityMinecartChest(par1World, (double)((float)var9 + 0.5F), (double)((float)var10 + 0.5F), (double)((float)var11 + 0.5F));
+-            EntityMinecartChest var12 = new EntityMinecartChest(par1World, (double)((float)var9 + 0.5F), (double)((float)var10 + 0.5F), (double)((float)var11 + 0.5F));
++            EntityMinecartChest var12 = (EntityMinecartChest) EntityList.createEntityOfType(EntityMinecartChest.class, par1World, (double)((float)var9 + 0.5F), (double)((float)var10 + 0.5F), (double)((float)var11 + 0.5F));
              WeightedRandomChestContent.generateChestContents(par3Random, par7ArrayOfWeightedRandomChestContent, var12, par8);
 +            // FCMOD: Added
 +            FilterChestMinecartContents( var12 );

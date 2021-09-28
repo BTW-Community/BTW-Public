@@ -1,0 +1,11 @@
+--- a/minecraft_server/net/minecraft/src/ItemExpBottle.java
++++ b/minecraft_server/net/minecraft/src/ItemExpBottle.java
+@@ -22,7 +22,7 @@
+ 
+         if (!par2World.isRemote)
+         {
+-            par2World.spawnEntityInWorld(new EntityExpBottle(par2World, par3EntityPlayer));
++        	par2World.spawnEntityInWorld(EntityList.createEntityOfType(EntityExpBottle.class, par2World, par3EntityPlayer));
+         }
+ 
+         return par1ItemStack;

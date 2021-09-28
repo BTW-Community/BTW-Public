@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCContainerSoulforge.java
-@@ -0,0 +1,238 @@
+@@ -0,0 +1,242 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -128,14 +128,18 @@
 +	@Override
 +    public void onCraftMatrixChanged(IInventory iinventory)
 +    {
-+    	ItemStack craftedStack = CraftingManager.getInstance().findMatchingRecipe( craftMatrix, m_localWorld );
-+    	
++		ItemStack craftedStack = CraftingManager.getInstance().findMatchingRecipe( craftMatrix, m_localWorld );
++        IRecipe recipe = CraftingManager.getInstance().FindMatchingRecipe(this.craftMatrix, m_localWorld);
++
 +    	if ( craftedStack == null )
 +    	{
 +    		craftedStack = FCCraftingManagerAnvil.getInstance().findMatchingRecipe( craftMatrix, m_localWorld );
++            recipe = FCCraftingManagerAnvil.getInstance().FindMatchingRecipe(this.craftMatrix, m_localWorld);
 +    	}
-+    	
++
 +        craftResult.setInventorySlotContents( 0, craftedStack );
++
++        ((SlotCrafting) this.getSlot(0)).setRecipe(recipe);
 +    }
 +
 +	@Override

@@ -30,7 +30,7 @@
 +    public void harvestBlock( World world, EntityPlayer player, int i, int j, int k, int iMetadata )
 +    {
 +        if ( player.getCurrentEquippedItem() != null && 
-+    		player.getCurrentEquippedItem().itemID == Item.shears.itemID && 
++    		player.getCurrentEquippedItem().getItem() instanceof FCItemShears && 
 +    		GetDamageLevel( iMetadata ) == 0 )
 +        {
 +            player.addStat( StatList.mineBlockStatArray[this.blockID], 1 );

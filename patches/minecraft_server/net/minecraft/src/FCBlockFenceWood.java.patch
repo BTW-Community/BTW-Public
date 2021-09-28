@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockFenceWood.java
-@@ -0,0 +1,52 @@
+@@ -0,0 +1,40 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -24,18 +24,6 @@
 +        
 +        setUnlocalizedName( "fence" );
 +    }
-+    
-+	@Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		return FCBetterThanWolves.fcBlockWoodCornerItemStubID;
-+    }
-+	
-+	@Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		return 2;
-+    }	
 +	
 +    @Override
 +    public int GetHarvestToolLevel( IBlockAccess blockAccess, int i, int j, int k )

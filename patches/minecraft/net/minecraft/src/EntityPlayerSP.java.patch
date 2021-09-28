@@ -7,7 +7,7 @@
 -            this.skinUrl = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par3Session.username) + ".png";
 +        	// FCMOD: Changed, client only        	
 +            //this.skinUrl = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par3Session.username) + ".png";
-+            this.skinUrl = FCBetterThanWolves.fcPlayerSkinURL + StringUtils.stripControlCodes(par3Session.username) + ".png";
++            this.skinUrl = FCBetterThanWolves.fcPlayerSkinURL + fetchUuid(par3Session.username);
 +            // END FCMOD
          }
  
@@ -55,7 +55,7 @@
 -        this.cloakUrl = "http://skins.minecraft.net/MinecraftCloaks/" + StringUtils.stripControlCodes(this.username) + ".png";
 +    	// FCMOD: Changed, client only        	
 +        //this.cloakUrl = "http://skins.minecraft.net/MinecraftCloaks/" + StringUtils.stripControlCodes(this.username) + ".png";
-+        this.cloakUrl = FCBetterThanWolves.fcPlayerCloakURL + StringUtils.stripControlCodes(this.username) + ".png";
++        this.cloakUrl = FCBetterThanWolves.fcPlayerCloakURL + fetchUuid(this.username);
 +        // END FCMOD
      }
  
@@ -86,6 +86,30 @@
      }
  
      public void displayGUIEnchantment(int par1, int par2, int par3, String par4Str)
+@@ -403,12 +436,12 @@
+      */
+     public void onCriticalHit(Entity par1Entity)
+     {
+-        this.mc.effectRenderer.addEffect(new EntityCrit2FX(this.mc.theWorld, par1Entity));
++        this.mc.effectRenderer.addEffect((EntityFX) EntityList.createEntityOfType(EntityCrit2FX.class, this.mc.theWorld, par1Entity));
+     }
+ 
+     public void onEnchantmentCritical(Entity par1Entity)
+     {
+-        EntityCrit2FX var2 = new EntityCrit2FX(this.mc.theWorld, par1Entity, "magicCrit");
++        EntityCrit2FX var2 = (EntityCrit2FX) EntityList.createEntityOfType(EntityCrit2FX.class, this.mc.theWorld, par1Entity, "magicCrit");
+         this.mc.effectRenderer.addEffect(var2);
+     }
+ 
+@@ -417,7 +450,7 @@
+      */
+     public void onItemPickup(Entity par1Entity, int par2)
+     {
+-        this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc.theWorld, par1Entity, this, -0.5F));
++        this.mc.effectRenderer.addEffect((EntityFX) EntityList.createEntityOfType(EntityPickupFX.class, this.mc.theWorld, par1Entity, this, -0.5F));
+     }
+ 
+     /**
 @@ -617,4 +650,183 @@
      {
          this.worldObj.playSound(this.posX, this.posY - (double)this.yOffset, this.posZ, par1Str, par2, par3, false);

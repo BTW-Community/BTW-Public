@@ -1,6 +1,14 @@
 --- a/minecraft/net/minecraft/src/EntityPlayerMP.java
 +++ b/minecraft/net/minecraft/src/EntityPlayerMP.java
-@@ -33,6 +33,10 @@
+@@ -10,6 +10,7 @@
+ import java.util.LinkedList;
+ import java.util.List;
+ import net.minecraft.server.MinecraftServer;
++import net.minecraft.src.EntityPlayer.BeaconRespawnValidationResult.BeaconStatus;
+ 
+ public class EntityPlayerMP extends EntityPlayer implements ICrafting
+ {
+@@ -33,6 +34,10 @@
      public double managedPosZ;
  
      /** LinkedList that holds the loaded chunks. */
@@ -11,7 +19,7 @@
      public final List loadedChunks = new LinkedList();
  
      /** entities added to this list will  be packet29'd to the player */
-@@ -188,6 +192,8 @@
+@@ -188,6 +193,8 @@
              this.playerNetServerHandler.sendPacketToPlayer(new Packet29DestroyEntity(var2));
          }
  
@@ -20,7 +28,7 @@
          if (!this.loadedChunks.isEmpty())
          {
              ArrayList var6 = new ArrayList();
-@@ -209,23 +215,30 @@
+@@ -209,23 +216,30 @@
              if (!var6.isEmpty())
              {
                  this.playerNetServerHandler.sendPacketToPlayer(new Packet56MapChunks(var6));
@@ -58,7 +66,7 @@
      }
  
      public void setEntityHealth(int par1)
-@@ -262,12 +275,21 @@
+@@ -262,12 +276,21 @@
                  }
              }
  
@@ -80,7 +88,15 @@
              }
  
              if (this.experienceTotal != this.lastExperience)
-@@ -297,6 +319,10 @@
+@@ -290,6 +313,7 @@
+      */
+     public void onDeath(DamageSource par1DamageSource)
+     {
++        EntityLivingOnDeath(par1DamageSource);
+         this.mcServer.getConfigurationManager().sendChatMsg(this.field_94063_bt.func_94546_b());
+ 
+         if (!this.worldObj.getGameRules().getGameRuleBooleanValue("keepInventory"))
+@@ -297,6 +321,10 @@
              this.inventory.dropAllItems();
          }
  
@@ -91,7 +107,7 @@
          Collection var2 = this.worldObj.getScoreboard().func_96520_a(ScoreObjectiveCriteria.field_96642_c);
          Iterator var3 = var2.iterator();
  
-@@ -405,7 +431,10 @@
+@@ -405,7 +433,10 @@
      /**
       * called from onUpdate for all tileEntity in specific chunks
       */
@@ -102,7 +118,7 @@
      {
          if (par1TileEntity != null)
          {
-@@ -499,7 +528,10 @@
+@@ -499,7 +530,10 @@
      {
          this.incrementWindowID();
          this.playerNetServerHandler.sendPacketToPlayer(new Packet100OpenWindow(this.currentWindowId, 1, "Crafting", 9, true));
@@ -114,7 +130,7 @@
          this.openContainer.windowId = this.currentWindowId;
          this.openContainer.addCraftingToCrafters(this);
      }
-@@ -613,9 +645,16 @@
+@@ -613,9 +647,16 @@
          this.incrementWindowID();
          this.openContainer = new ContainerMerchant(this.inventory, par1IMerchant, this.worldObj);
          this.openContainer.windowId = this.currentWindowId;
@@ -131,7 +147,7 @@
          MerchantRecipeList var4 = par1IMerchant.getRecipes(this);
  
          if (var4 != null)
-@@ -923,4 +962,560 @@
+@@ -923,4 +964,563 @@
      {
          return new ChunkCoordinates(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY + 0.5D), MathHelper.floor_double(this.posZ));
      }
@@ -219,10 +235,13 @@
 +				{
 +					iDropItemID = FCBetterThanWolves.fcItemMeatBurned.itemID;
 +				}
++				else if (validateBoundRespawnBeacon(this.worldObj, this.dimension, this.m_iSpawnDimension).beaconStatus != BeaconStatus.MISSING) {
++					iDropItemID = Item.rottenFlesh.itemID;
++				}
 +		    	
-+		        int iFat = ( (int)foodStats.getSaturationLevel() ) / 2;
++		        int iFat = GetFatPenaltyLevel() / 2;
 +		        
-+		        int iNumDropped = 1 + iFat;
++		        int iNumDropped = 2 + iFat;
 +		
 +		        for ( int iTempCount = 0; iTempCount < iNumDropped; ++iTempCount )
 +		        {        	

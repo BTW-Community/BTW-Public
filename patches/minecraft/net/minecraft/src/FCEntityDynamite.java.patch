@@ -358,11 +358,11 @@
 +        
 +        if ( FCBetterThanWolves.IsHardcoreBuoyEnabled( worldObj ) )
 +        {
-+        	entityItem = new EntityItem( worldObj, (float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, stack );
++        	entityItem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, worldObj, (float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, stack );
 +        }
 +        else
 +        {
-+        	entityItem = new FCEntityItemFloating( worldObj, (float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, stack );
++        	entityItem = (EntityItem) EntityList.createEntityOfType(FCEntityItemFloating.class, worldObj, (float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, stack );
 +        }
 +        
 +        worldObj.spawnEntityInWorld( entityItem );

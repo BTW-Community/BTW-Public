@@ -1,0 +1,20 @@
+--- a/minecraft/net/minecraft/src/BlockSkull.java
++++ b/minecraft/net/minecraft/src/BlockSkull.java
+@@ -199,7 +199,7 @@
+ 
+                     if (!par1World.isRemote)
+                     {
+-                        var8 = new EntityWither(par1World);
++                        var8 = (EntityWither) EntityList.createEntityOfType(EntityWither.class, par1World);
+                         var8.setLocationAndAngles((double)par2 + 0.5D, (double)par3 - 1.45D, (double)(par4 + var7) + 1.5D, 90.0F, 0.0F);
+                         var8.renderYawOffset = 90.0F;
+                         var8.func_82206_m();
+@@ -239,7 +239,7 @@
+ 
+                     if (!par1World.isRemote)
+                     {
+-                        var8 = new EntityWither(par1World);
++                        var8 = (EntityWither) EntityList.createEntityOfType(EntityWither.class, par1World);
+                         var8.setLocationAndAngles((double)(par2 + var7) + 1.5D, (double)par3 - 1.45D, (double)par4 + 0.5D, 0.0F, 0.0F);
+                         var8.func_82206_m();
+                         par1World.spawnEntityInWorld(var8);

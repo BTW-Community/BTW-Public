@@ -118,16 +118,18 @@
                  {
                      var25 = (float)((double)var25 * 0.9D);
                      this.motionY *= 0.8D;
-@@ -384,6 +410,16 @@
+@@ -383,7 +409,17 @@
+             }
              else if (this.ticksCatchable > 0)
              {
-                 EntityItem var13 = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.fishRaw));
+-                EntityItem var13 = new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.fishRaw));
++            	EntityItem var13 = (EntityItem) EntityList.createEntityOfType(EntityItem.class, this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.fishRaw));
 +            	// FCMOD: Added
 +            	LoseBait();
-+            	
++
 +            	if ( this.rand.nextInt( 100 ) == 0 )
 +            	{
-+            		var13 = new EntityItem( worldObj, posX, posY, posZ, new ItemStack( Item.bootsLeather ) );
++            		var13 = (EntityItem) EntityList.createEntityOfType(EntityItem.class, worldObj, posX, posY, posZ, new ItemStack( Item.bootsLeather ) );
 +            		
 +            		var13.getEntityItem().setItemDamage( var13.getEntityItem().getMaxDamage() - ( 1 + this.rand.nextInt( 10 ) ) );
 +            	}

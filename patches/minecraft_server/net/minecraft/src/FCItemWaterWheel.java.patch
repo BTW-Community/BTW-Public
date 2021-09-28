@@ -39,7 +39,7 @@
 +	            	bIAligned = true;
 +        		}
 +
-+            	FCEntityWaterWheel waterWheel = new FCEntityWaterWheel( world, 
++        		FCEntityWaterWheel waterWheel = (FCEntityWaterWheel) EntityList.createEntityOfType(FCEntityWaterWheel.class, world,
 +            		(float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, bIAligned );
 +
 +        		if ( waterWheel.ValidateAreaAroundDevice() )

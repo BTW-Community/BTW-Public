@@ -25,14 +25,14 @@
 +    protected void SpawnThrownEntity( ItemStack stack, World world, 
 +    	EntityPlayer player )
 +    {
-+        world.spawnEntityInWorld( new EntityEgg( world, player ) );
++        world.spawnEntityInWorld( EntityList.createEntityOfType(EntityEgg.class, world, player ) );
 +    }
 +    
 +    @Override
 +    protected EntityThrowable GetEntityFiredByByBlockDispenser( World world, 
 +    	double dXPos, double dYPos, double dZPos )
 +    {
-+    	return new EntityEgg( world, dXPos, dYPos, dZPos );
++    	return (EntityThrowable) EntityList.createEntityOfType(EntityEgg.class, world, dXPos, dYPos, dZPos );
 +    }
 +    
 +    //------------- Class Specific Methods ------------//

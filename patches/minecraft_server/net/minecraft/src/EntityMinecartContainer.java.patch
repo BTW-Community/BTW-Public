@@ -1,0 +1,20 @@
+--- a/minecraft_server/net/minecraft/src/EntityMinecartContainer.java
++++ b/minecraft_server/net/minecraft/src/EntityMinecartContainer.java
+@@ -43,7 +43,7 @@
+                     }
+ 
+                     var3.stackSize -= var7;
+-                    EntityItem var8 = new EntityItem(this.worldObj, this.posX + (double)var4, this.posY + (double)var5, this.posZ + (double)var6, new ItemStack(var3.itemID, var7, var3.getItemDamage()));
++                    EntityItem var8 = (EntityItem) EntityList.createEntityOfType(EntityItem.class, this.worldObj, this.posX + (double)var4, this.posY + (double)var5, this.posZ + (double)var6, new ItemStack(var3.itemID, var7, var3.getItemDamage()));
+                     float var9 = 0.05F;
+                     var8.motionX = (double)((float)this.rand.nextGaussian() * var9);
+                     var8.motionY = (double)((float)this.rand.nextGaussian() * var9 + 0.2F);
+@@ -202,7 +202,7 @@
+                         }
+ 
+                         var2.stackSize -= var6;
+-                        EntityItem var7 = new EntityItem(this.worldObj, this.posX + (double)var3, this.posY + (double)var4, this.posZ + (double)var5, new ItemStack(var2.itemID, var6, var2.getItemDamage()));
++                        EntityItem var7 = (EntityItem) EntityList.createEntityOfType(EntityItem.class, this.worldObj, this.posX + (double)var3, this.posY + (double)var4, this.posZ + (double)var5, new ItemStack(var2.itemID, var6, var2.getItemDamage()));
+ 
+                         if (var2.hasTagCompound())
+                         {

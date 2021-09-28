@@ -18,7 +18,7 @@
 +     */
 +    protected IProjectile getProjectileEntity( World world, IPosition position)
 +    {
-+    	FCEntityRottenArrow arrow = new FCEntityRottenArrow( world, position.getX(), position.getY(), position.getZ() );
++    	FCEntityRottenArrow arrow = (FCEntityRottenArrow) EntityList.createEntityOfType(FCEntityRottenArrow.class, world, position.getX(), position.getY(), position.getZ() );
 +        
 +        arrow.canBePickedUp = 2;
 +        

@@ -6,3 +6,12 @@
  package net.minecraft.src;
  
  public class EntityWolf extends EntityTameable
+@@ -440,7 +442,7 @@
+      */
+     public EntityWolf spawnBabyAnimal(EntityAgeable par1EntityAgeable)
+     {
+-        EntityWolf var2 = new EntityWolf(this.worldObj);
++    	EntityWolf var2 = (EntityWolf) EntityList.createEntityOfType(EntityWolf.class, this.worldObj);
+         String var3 = this.getOwnerName();
+ 
+         if (var3 != null && var3.trim().length() > 0)

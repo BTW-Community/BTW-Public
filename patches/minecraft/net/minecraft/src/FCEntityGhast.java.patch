@@ -229,10 +229,8 @@
 +    @Override
 +    public boolean getCanSpawnHere()
 +    {
-+        return worldObj.checkNoEntityCollision( boundingBox ) && 
-+        	worldObj.getCollidingBoundingBoxes( this, boundingBox ).isEmpty() && 
-+        	!worldObj.isAnyLiquid( boundingBox ) &&
-+        	worldObj.getClosestPlayer( posX, posY, posZ, 64D ) == null;    	
++        return this.GetCanSpawnHereNoPlayerDistanceRestrictions() &&
++        	worldObj.getClosestPlayer( posX, posY, posZ, 64D ) == null;
 +    }
 +
 +    @Override
@@ -279,7 +277,9 @@
 +    public boolean GetCanSpawnHereNoPlayerDistanceRestrictions()
 +    {
 +        return worldObj.checkNoEntityCollision( boundingBox ) && 
-+    		worldObj.getCollidingBoundingBoxes( this, boundingBox ).isEmpty();
++    		worldObj.getCollidingBoundingBoxes( this, boundingBox ).isEmpty() &&
++        	!worldObj.isAnyLiquid( boundingBox ) &&
++            (this.rand.nextInt(5) == 0 || FCBetterThanWolves.increaseGhastSpawns);
 +    }
 +    
 +    private void SetMouthOpen( boolean bOpen )
@@ -308,7 +308,7 @@
 +        double dDeltaY = ( m_entityTargeted.posY + m_entityTargeted.getEyeHeight() ) - dFireballY;
 +        double dDeltaZ = m_entityTargeted.posZ - dFireballZ;
 +        
-+	    EntityLargeFireball fireball = new EntityLargeFireball( worldObj, this, dDeltaX, dDeltaY, dDeltaZ );
++	    EntityLargeFireball fireball = (EntityLargeFireball) EntityList.createEntityOfType(EntityLargeFireball.class, worldObj, this, dDeltaX, dDeltaY, dDeltaZ );
 +	    
 +	    fireball.field_92057_e = m_iFireballExplosionPower;
 +	    

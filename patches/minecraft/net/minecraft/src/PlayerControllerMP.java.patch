@@ -150,6 +150,15 @@
  
          this.netClientHandler.addToSendQueue(new Packet15Place(par4, par5, par6, par7, par1EntityPlayer.inventory.getCurrentItem(), var9, var10, var11));
  
+@@ -398,7 +470,7 @@
+ 
+     public EntityClientPlayerMP func_78754_a(World par1World)
+     {
+-        return new EntityClientPlayerMP(this.mc, par1World, this.mc.session, this.netClientHandler);
++        return (EntityClientPlayerMP) EntityList.createEntityOfType(EntityClientPlayerMP.class, this.mc, par1World, this.mc.session, this.netClientHandler);
+     }
+ 
+     /**
 @@ -418,6 +490,7 @@
          return par1EntityPlayer.interactWith(par2Entity);
      }

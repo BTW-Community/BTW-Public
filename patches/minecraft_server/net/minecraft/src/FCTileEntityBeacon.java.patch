@@ -604,7 +604,7 @@
 +		        
 +		        if ( !targetMaterial.isSolid() && !targetMaterial.isLiquid() && worldObj.doesBlockHaveSolidTopSurface( iTargetX, iTargetY - 1, iTargetZ ) )
 +		        {
-+		        	FCEntityEnderman enderman = new FCEntityEnderman( worldObj );
++		        	FCEntityEnderman enderman = (FCEntityEnderman) EntityList.createEntityOfType(FCEntityEnderman.class, worldObj);
 +		        	
 +		        	double dTargetPosX = (double)iTargetX + 0.5D;
 +		        	double dTargetPosY = (double)iTargetY;
@@ -669,7 +669,7 @@
 +		        
 +		        if ( !targetMaterial.isSolid() && !targetMaterial.isLiquid() && worldObj.doesBlockHaveSolidTopSurface( iTargetX, iTargetY - 1, iTargetZ ) )
 +		        {
-+		            EntitySilverfish silverfish = new EntitySilverfish( worldObj);
++		            EntitySilverfish silverfish = (EntitySilverfish) EntityList.createEntityOfType(EntitySilverfish.class, worldObj);
 +		            
 +		        	
 +		        	double dTargetPosX = (double)iTargetX + 0.5D;

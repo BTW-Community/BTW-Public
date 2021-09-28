@@ -57,7 +57,7 @@
 +	        
 +	        itemStack.stackSize--;
 +	        
-+        	FCEntityDynamite dynamiteEnt = new FCEntityDynamite( world, entityPlayer, itemID, bLit );
++        	FCEntityDynamite dynamiteEnt = (FCEntityDynamite) EntityList.createEntityOfType(FCEntityDynamite.class, world, entityPlayer, itemID, bLit );
 +        	
 +            world.spawnEntityInWorld( dynamiteEnt );
 +            
@@ -97,7 +97,7 @@
 +    		dYHeading = offsetPos.j;
 +    	}
 +    	
-+    	FCEntityDynamite entity = new FCEntityDynamite( world, dXPos, dYPos, dZPos, itemID );
++    	FCEntityDynamite entity = (FCEntityDynamite) EntityList.createEntityOfType(FCEntityDynamite.class, world, dXPos, dYPos, dZPos, itemID );
 +    	
 +        entity.setThrowableHeading( offsetPos.i, dYHeading, offsetPos.k, 1.1F, 6F );
 +        

@@ -39,7 +39,7 @@
 +	            	bIAligned = true;
 +        		}
 +
-+    			FCEntityWindMill windMill = new FCEntityWindMill( world, 
++        		FCEntityWindMill windMill = (FCEntityWindMill) EntityList.createEntityOfType(FCEntityWindMill.class, world,
 +            		(float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, bIAligned );
 +			
 +        		if ( windMill.ValidateAreaAroundDevice() )

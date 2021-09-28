@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockMelon.java
-@@ -0,0 +1,49 @@
+@@ -0,0 +1,37 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -10,18 +10,6 @@
 +    protected FCBlockMelon( int iBlockID )
 +    {
 +        super( iBlockID );        
-+    }
-+
-+    @Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	return Item.melon.itemID;
-+    }
-+    
-+    @Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	return 5;
 +    }
 +    
 +    //------------- FCBlockGourd ------------//

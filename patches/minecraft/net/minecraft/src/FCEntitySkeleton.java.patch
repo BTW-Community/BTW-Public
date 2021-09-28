@@ -135,11 +135,11 @@
 +    	
 +    	if ( worldObj.provider.dimensionId == -1 ) // the nether
 +    	{
-+    		arrow = new FCEntityInfiniteArrow( worldObj, this, target, 1.6F, 12F );
++    		arrow = (EntityArrow) EntityList.createEntityOfType(FCEntityInfiniteArrow.class, worldObj, this, target, 1.6F, 12F );
 +    	}
 +    	else
 +    	{
-+    		arrow = new FCEntityRottenArrow( worldObj, this, target, 1.6F, 12F );
++    		arrow = (EntityArrow) EntityList.createEntityOfType(FCEntityRottenArrow.class, worldObj, this, target, 1.6F, 12F );
 +    	}
 +    	
 +        int iPowerLevel = EnchantmentHelper.getEnchantmentLevel(

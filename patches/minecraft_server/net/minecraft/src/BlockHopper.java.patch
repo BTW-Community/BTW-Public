@@ -1,0 +1,11 @@
+--- a/minecraft_server/net/minecraft/src/BlockHopper.java
++++ b/minecraft_server/net/minecraft/src/BlockHopper.java
+@@ -164,7 +164,7 @@
+                         }
+ 
+                         var9.stackSize -= var13;
+-                        EntityItem var14 = new EntityItem(par1World, (double)((float)par2 + var10), (double)((float)par3 + var11), (double)((float)par4 + var12), new ItemStack(var9.itemID, var13, var9.getItemDamage()));
++                        EntityItem var14 = (EntityItem) EntityList.createEntityOfType(EntityItem.class, par1World, (double)((float)par2 + var10), (double)((float)par3 + var11), (double)((float)par4 + var12), new ItemStack(var9.itemID, var13, var9.getItemDamage()));
+ 
+                         if (var9.hasTagCompound())
+                         {

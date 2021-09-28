@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockReed.java
-@@ -0,0 +1,107 @@
+@@ -0,0 +1,110 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -58,12 +58,15 @@
 +    @Override
 +    public boolean canPlaceBlockAt( World world, int i, int j, int k )
 +    {
-+        int iBlockBelowID = world.getBlockId( i, j - 1, k );
-+        Block blockBelow = Block.blocksList[iBlockBelowID];        
++    	if (world.getBlockMaterial(i, j, k) == Material.water)
++    		return false;
++    	
++        int blockBelowID = world.getBlockId( i, j - 1, k );
++        Block blockBelow = Block.blocksList[blockBelowID];
 +
-+    	return iBlockBelowID == blockID || ( blockBelow != null && 
-+    		blockBelow.CanReedsGrowOnBlock( world, i, j - 1, k ) &&
-+    		blockBelow.IsConsideredNeighbouringWaterForReedGrowthOn( world, i, j - 1, k ) );
++    	return blockBelowID == blockID || (blockBelow != null && 
++    		blockBelow.CanReedsGrowOnBlock(world, i, j - 1, k) &&
++    		blockBelow.IsConsideredNeighbouringWaterForReedGrowthOn(world, i, j - 1, k));
 +    }
 +    
 +    @Override
@@ -85,7 +88,7 @@
 +    @Override
 +	public boolean GetPreventsFluidFlow( World world, int i, int j, int k, Block fluidBlock )
 +	{
-+    	return true;
++    	return false;
 +	}
 +    
 +    @Override

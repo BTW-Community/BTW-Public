@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockLog.java
-@@ -0,0 +1,266 @@
+@@ -0,0 +1,256 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -18,10 +18,6 @@
 +		SetChiselsEffectiveOn();
 +		
 +        SetBuoyant();
-+        
-+		SetCanBeCookedByKiln( true );
-+		SetItemIndexDroppedWhenCookedByKiln( 256 + 7 ); // Item.coal.itemID not initialized yet
-+		SetItemDamageDroppedWhenCookedByKiln( 1 ); // charcoal
 +		
 +		SetFireProperties( FCEnumFlammability.LOGS );
 +		
@@ -143,12 +139,6 @@
 +        
 +        return iMetadata;
 +	}
-+
-+    @Override
-+    public int GetCookTimeMultiplierInKiln( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+    	return 8;
-+    }
 +    
 +    @Override
 +    public int GetFurnaceBurnTime( int iItemDamage )

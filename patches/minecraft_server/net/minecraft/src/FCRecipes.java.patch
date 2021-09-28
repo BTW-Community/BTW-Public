@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,6148 @@
+@@ -0,0 +1,6857 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -30,6 +30,10 @@
 +		AddCauldronRecipes();
 +		AddCrucibleRecipes();
 +		AddMillStoneRecipes();
++		addKilnRecipes();
++		addSawRecipes();
++		addPistonPackingRecipes();
++		addHopperFilteringRecipes();
 +		AddTuningForkRecipes();
 +		AddSubBlockRecipes();
 +		
@@ -51,14 +55,33 @@
 +    	return CraftingManager.getInstance().AddShapelessRecipe( itemStack, aobj );
 +	}
 +    
++    public static ShapelessRecipes AddShapelessRecipeWithSecondaryOutputIndicator( ItemStack itemStack, ItemStack secondaryOutput, Object aobj[] )
++	{
++    	return AddShapelessRecipeWithSecondaryOutputIndicator(itemStack, new ItemStack[] {secondaryOutput}, aobj);
++	}
++    
++    public static ShapelessRecipes AddShapelessRecipeWithSecondaryOutputIndicator( ItemStack itemStack, ItemStack[] secondaryOutputs, Object aobj[] )
++	{
++    	ShapelessRecipes recipe = CraftingManager.getInstance().AddShapelessRecipe( itemStack, aobj );
++    	
++    	if ( recipe != null )
++    	{
++    		recipe.SetSecondaryOutput(secondaryOutputs);
++    	}
++    	
++    	return recipe;
++	}
++    
 +    public static ShapelessRecipes AddShapelessRecipeWithSecondaryOutputIndicator( ItemStack itemStack, Object aobj[] )
 +	{
 +    	ShapelessRecipes recipe = CraftingManager.getInstance().AddShapelessRecipe( itemStack, aobj );
 +    	
 +    	if ( recipe != null )
 +    	{
-+    		recipe.SetHasSecondaryOutput( true );
++    		recipe.SetSecondaryOutput(null);
 +    	}
++    	
++    	FCAddOnHandler.LogWarning("Warning: Secondary output recipes have changed. Call made to deprecated method.");
 +    	
 +    	return recipe;
 +	}
@@ -156,6 +179,111 @@
 +    public static void AddCampfireRecipe( int iInputItemID, ItemStack outputStack ) 
 +    {
 +    	FCCraftingManagerCampfire.instance.AddRecipe( iInputItemID, outputStack );
++    }
++    
++    //Kiln recipes
++    //Cook time multiplier is a byte just so that the method signatures are all different
++    public static void addKilnRecipe(ItemStack outputStack, Block block) {
++    	addKilnRecipe(outputStack, block, m_iIgnoreMetadata, (byte) 1);
++    }
++    
++    public static void addKilnRecipe(ItemStack outputStack, Block block, int metadata) {
++    	addKilnRecipe(outputStack, block, metadata, (byte) 1);
++    }
++    
++    public static void addKilnRecipe(ItemStack outputStack, Block block, byte cookTimeMultiplier) {
++    	addKilnRecipe(outputStack, block, m_iIgnoreMetadata, cookTimeMultiplier);
++    }
++    
++    public static void addKilnRecipe(ItemStack outputStack, Block block, int metadata, byte cookTimeMultiplier) {
++    	addKilnRecipe(new ItemStack[] {outputStack}, block, metadata, cookTimeMultiplier);
++    }
++    
++    public static void addKilnRecipe(ItemStack[] outputStacks, Block block) {
++    	addKilnRecipe(outputStacks, block, m_iIgnoreMetadata, (byte) 1);
++    }
++    
++    public static void addKilnRecipe(ItemStack[] outputStacks, Block block, int metadata) {
++    	addKilnRecipe(outputStacks, block, metadata, (byte) 1);
++    }
++    
++    public static void addKilnRecipe(ItemStack[] outputStacks, Block block, byte cookTimeMultiplier) {
++    	addKilnRecipe(outputStacks, block, m_iIgnoreMetadata, cookTimeMultiplier);
++    }
++    
++    public static void addKilnRecipe(ItemStack[] outputStacks, Block block, int metadata, byte cookTimeMultiplier) {
++    	FCCraftingManagerKiln.instance.addRecipe(outputStacks, block, metadata, cookTimeMultiplier);
++    }
++    
++    //Saw recipes
++    public static void addSawRecipe(ItemStack outputStack, Block block) {
++    	addSawRecipe(outputStack, block, m_iIgnoreMetadata);
++    }
++    
++    public static void addSawRecipe(ItemStack outputStack, Block block, int metadata) {
++    	addSawRecipe(new ItemStack[] {outputStack}, block, metadata);
++    }
++    
++    public static void addSawRecipe(ItemStack[] outputStacks, Block block) {
++    	addSawRecipe(outputStacks, block, m_iIgnoreMetadata);
++    }
++    
++    public static void addSawRecipe(ItemStack[] outputStacks, Block block, int metadata) {
++    	FCCraftingManagerSaw.instance.addRecipe(outputStacks, block, metadata);
++    }
++    
++    //Piston Packing Recipes
++    public static void addPistonPackingRecipe(Block output, ItemStack inputStack) {
++    	addPistonPackingRecipe(output, 0, inputStack);
++    }
++    
++    public static void addPistonPackingRecipe(Block output, int outputMetadata, ItemStack inputStack) {
++    	addPistonPackingRecipe(output, outputMetadata, new ItemStack[] {inputStack});
++    }
++    
++    public static void addPistonPackingRecipe(Block output, ItemStack[] inputStacks) {
++    	addPistonPackingRecipe(output, 0, inputStacks);
++    }
++    
++    public static void addPistonPackingRecipe(Block output, int outputMetadata, ItemStack[] inputStacks) {
++    	FCCraftingManagerPistonPacking.instance.addRecipe(output, outputMetadata, inputStacks);
++    }
++    
++    //Hopper filtering
++    /**
++     * Note that hopper recipe inputs are limited to stack sizes of 1 (which is enforced upon adding the recipe)
++     * @param hopperOutput The item that goes inside the hopper
++     * @param input The item to be filtered
++     * @param filterUsed The filter to use
++     */
++    public static void addHopperFilteringRecipe(
++    		ItemStack hopperOutput,
++    		ItemStack input, ItemStack filterUsed)
++    {
++    	FCCraftingManagerHopperFilter.instance.addRecipe(hopperOutput, null, input, filterUsed);
++    }
++    
++    /**
++     * Note that hopper recipe inputs are limited to stack sizes of 1 (which is enforced upon adding the recipe)
++     * @param hopperOutput The item that goes inside the hopper
++     * @param filteredOutput The item that stays outside the hopper
++     * @param input The item to be filtered
++     * @param filterUsed The filter to use
++     */
++    public static void addHopperFilteringRecipe(
++    		ItemStack hopperOutput, ItemStack filteredOutput,
++    		ItemStack input, ItemStack filterUsed)
++    {
++    	FCCraftingManagerHopperFilter.instance.addRecipe(hopperOutput, filteredOutput, input, filterUsed);
++    }
++    
++    /**
++     * Note that hopper recipe inputs are limited to stack sizes of 1 (which is enforced upon adding the recipe)
++     * @param filteredOutput The item that stays outside the hopper
++     * @param input The item to be filtered
++     */
++    public static void addHopperSoulRecipe(ItemStack filteredOutput, ItemStack input) {
++    	FCCraftingManagerHopperFilter.instance.addSoulRecipe(filteredOutput, input);
 +    }
 +    
 +	private static void AddClusteredRecipes()
@@ -262,7 +390,7 @@
 +		AddLooseNetherBrickRecipes();
 +		AddTorchRecipes();
 +		AddWickerRecipes();
-+		AddWoodStairRecipes();
++		AddStairRecipes();
 +		AddWoolAndKnittingRecipes();
 +		AddSawDustRecipes();
 +		AddMeatCuringRecipes();
@@ -288,13 +416,26 @@
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemChiselStone ), new Object[] {	    		
 +    		new ItemStack( FCBetterThanWolves.fcItemStone )
-+		} );		
++		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemChiselIron ), new Object[] {
 +    		"XX", 
 +    		"XX", 
 +    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemNuggetIron
 +		} );
++		
++		AddRecipe(new ItemStack(FCBetterThanWolves.fcItemChiselDiamond), new Object[] {
++    		"X", 
++    		'X', FCBetterThanWolves.fcItemIngotDiamond
++		});
++		
++		// shears
++		
++		AddRecipe(new ItemStack(FCBetterThanWolves.fcItemShearsDiamond), new Object[] {
++    		"X ",
++    		" X",
++    		'X', FCBetterThanWolves.fcItemIngotDiamond
++		});
 +
 +		// clubs
 +		
@@ -335,7 +476,7 @@
 +    		Character.valueOf( 'X' ), Item.stick
 +		} );
 +		
-+		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( Item.stick ), new Object[] {	    		
++		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( Item.stick ), new ItemStack(Item.silk), new Object[] {	    		
 +    		new ItemStack( Item.bow, 1, m_iIgnoreMetadata )
 +		} );		
 +		
@@ -375,14 +516,14 @@
 +		
 +		// arrows
 +		
-+		AddShapelessRecipe( new ItemStack( Item.arrow ), new Object[] {
++		AddShapelessRecipe( new ItemStack( Item.arrow , 4 ), new Object[] {
 +    		new ItemStack( Item.feather ),
 +    		new ItemStack( Item.stick ),
 +    		new ItemStack( Item.silk ),
 +    		new ItemStack( Item.flint )
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( Item.arrow ), new Object[] {
++		AddShapelessRecipe( new ItemStack( Item.arrow , 4 ), new Object[] {
 +    		new ItemStack( Item.feather ),
 +    		new ItemStack( Item.stick ),
 +    		new ItemStack( FCBetterThanWolves.fcItemHempFibers ),
@@ -687,7 +828,7 @@
 +		} );
 +		
 +		AddShapelessRecipeWithSecondaryOutputIndicator(
-+			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), new Object[] {	    		
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), new ItemStack(FCBetterThanWolves.fcItemPileGravel), new Object[] {	    		
 +    		new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, m_iIgnoreMetadata ),
 +    		new ItemStack( Block.stone )
 +		} );		
@@ -866,31 +1007,77 @@
 +		} );
 +	}
 +	
-+	private static void AddWoodStairRecipes()
++	private static void AddStairRecipes()
 +	{
-+		AddRecipe( new ItemStack( Block.stairsWoodOak, 6 ), new Object[] {
++		AddRecipe(new ItemStack(Block.stairsWoodOak, 6), new Object[] {
 +			"#  ", 
 +			"## ", 
 +			"###", 
-+			'#', new ItemStack(Block.planks, 1, 0)});
++			'#', new ItemStack(Block.planks, 1, 0)
++		});
 +		
-+		AddRecipe( new ItemStack( Block.stairsWoodBirch, 6 ), new Object[] {
++		AddRecipe(new ItemStack(Block.stairsWoodBirch, 6), new Object[] {
 +			"#  ", 
 +			"## ", 
 +			"###", 
-+			'#', new ItemStack(Block.planks, 1, 2)});
++			'#', new ItemStack(Block.planks, 1, 2)
++		});
 +		
-+		AddRecipe( new ItemStack( Block.stairsWoodSpruce, 6 ), new Object[] {
++		AddRecipe(new ItemStack(Block.stairsWoodSpruce, 6), new Object[] {
 +			"#  ", 
 +			"## ", 
 +			"###", 
-+			'#', new ItemStack(Block.planks, 1, 1)});
++			'#', new ItemStack(Block.planks, 1, 1)
++		});
 +		
-+		AddRecipe( new ItemStack( Block.stairsWoodJungle, 6 ), new Object[] {
++		AddRecipe(new ItemStack(Block.stairsWoodJungle, 6), new Object[] {
 +			"#  ", 
 +			"## ", 
 +			"###", 
-+			'#', new ItemStack(Block.planks, 1, 3)});
++			'#', new ItemStack(Block.planks, 1, 3)
++		});
++		
++		AddRecipe(new ItemStack(Block.stairsBrick, 6), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.brick)
++		});
++		
++		AddRecipe(new ItemStack(Block.stairsCobblestone, 6), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.cobblestone)
++		});
++		
++		AddRecipe(new ItemStack(Block.stairsNetherBrick, 6), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.netherBrick)
++		});
++		
++		AddRecipe(new ItemStack(Block.stairsNetherQuartz, 6), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.blockNetherQuartz)
++		});
++		
++		AddRecipe(new ItemStack(Block.stairsSandStone, 6), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.sandStone)
++		});
++		
++		AddRecipe(new ItemStack(Block.stairsStoneBrick, 6), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.stoneBrick)
++		});
 +	}
 +	
 +	private static void AddWoolAndKnittingRecipes()
@@ -1095,7 +1282,32 @@
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemChickenFeed ), new Object[] {	    		
 +    		new ItemStack( Item.dyePowder, 1, 15 ), // bone meal 
 +    		new ItemStack( Item.melonSeeds )
-+		} );		
++		} );
++		
++		AddCauldronRecipe(new ItemStack(FCBetterThanWolves.fcItemChickenFeed), new ItemStack[] {
++				new ItemStack(Item.dyePowder, 1, 15),
++				new ItemStack(Item.seeds)
++		});
++		
++		AddCauldronRecipe(new ItemStack(FCBetterThanWolves.fcItemChickenFeed), new ItemStack[] {
++				new ItemStack(Item.dyePowder, 1, 15),
++				new ItemStack(FCBetterThanWolves.fcItemWheatSeeds)
++		});
++		
++		AddCauldronRecipe(new ItemStack(FCBetterThanWolves.fcItemChickenFeed), new ItemStack[] {
++				new ItemStack(Item.dyePowder, 1, 15),
++				new ItemStack(FCBetterThanWolves.fcItemHempSeeds)
++		});
++		
++		AddCauldronRecipe(new ItemStack(FCBetterThanWolves.fcItemChickenFeed), new ItemStack[] {
++				new ItemStack(Item.dyePowder, 1, 15),
++				new ItemStack(Item.pumpkinSeeds)
++		});
++		
++		AddCauldronRecipe(new ItemStack(FCBetterThanWolves.fcItemChickenFeed), new ItemStack[] {
++				new ItemStack(Item.dyePowder, 1, 15),
++				new ItemStack(Item.melonSeeds)
++		});
 +	}
 +	
 +	private static void AddFishingRecipes()
@@ -1629,23 +1841,49 @@
 +    		Character.valueOf( 'X' ), Item.bucketWater, 
 +    		Character.valueOf( 'Y' ), Item.bone 
 +		} );
++		
++		AddRecipe( new ItemStack( Block.rail, 12 ), new Object[] {
++            "X X", 
++            "XSX", 
++            "X X", 
++            'X', FCBetterThanWolves.fcItemNuggetIron, 
++            'S', Item.stick
++        });
++		
++		AddRecipe( new ItemStack( Block.railPowered, 6 ), new Object[] {
++            "X X", 
++            "XSX", 
++            "XRX", 
++            'X', FCBetterThanWolves.fcItemNuggetIron, 
++            'S', Item.stick,
++            'R', FCBetterThanWolves.fcItemRedstoneLatch
++        });
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcDetectorRailWood, 6 ), new Object[] {
 +            "X X", 
 +            "X#X", 
 +            "XRX", 
-+            Character.valueOf( 'X' ), Item.ingotIron, 
-+            Character.valueOf( 'R' ), Item.redstone, 
-+            Character.valueOf( '#' ), Block.pressurePlatePlanks
++            'X', FCBetterThanWolves.fcItemNuggetIron, 
++            'R', Item.redstone, 
++            '#', Block.pressurePlatePlanks
++        });
++		
++		AddRecipe( new ItemStack( Block.railDetector, 6 ), new Object[] {
++            "X X", 
++            "X#X", 
++            "XRX", 
++            'X', FCBetterThanWolves.fcItemNuggetIron, 
++            'R', Item.redstone, 
++            '#', Block.pressurePlateStone
 +        });
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockDetectorRailSoulforgedSteel, 6 ), new Object[] {
 +            "X X", 
 +            "X#X", 
 +            "XRX", 
-+            Character.valueOf( 'X' ), Item.ingotIron, 
-+            Character.valueOf( 'R' ), Item.redstone, 
-+            Character.valueOf( '#' ), FCBetterThanWolves.fcBlockPressurePlateSoulforgedSteel
++            'X', FCBetterThanWolves.fcItemNuggetIron, 
++            'R', Item.redstone, 
++            '#', FCBetterThanWolves.fcBlockPressurePlateSoulforgedSteel
 +        });
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockPlanterSoil ), new Object[] {
@@ -1799,11 +2037,11 @@
 +    		Character.valueOf( 'X' ), Block.planks 
 +		} );
 +		
-+		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new Object[] {
++		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new ItemStack(FCBetterThanWolves.fcItemWindMillBlade , 3), new Object[] {
 +			new ItemStack( FCBetterThanWolves.fcItemWindMill ) 
 +		} );
 +		
-+		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new Object[] {
++		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new ItemStack(FCBetterThanWolves.fcItemWindMillBlade , 7), new Object[] {
 +			new ItemStack( FCBetterThanWolves.fcItemWindMillVertical ) 
 +		} );
 +		
@@ -1890,14 +2128,14 @@
 +    		Character.valueOf( 'Z' ), Item.silk, 
 +		} );		
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemBroadheadArrow ), new Object[] {
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemBroadheadArrow , 4 ), new Object[] {
 +    		new ItemStack( Item.feather ),
 +    		new ItemStack( Item.stick ),
 +    		new ItemStack( Item.silk ),
 +    		new ItemStack( FCBetterThanWolves.fcItemBroadheadArrowhead )
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemBroadheadArrow ), new Object[] {
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemBroadheadArrow , 4 ), new Object[] {
 +    		new ItemStack( Item.feather ),
 +    		new ItemStack( Item.stick ),
 +    		new ItemStack( FCBetterThanWolves.fcItemHempFibers ),
@@ -2149,7 +2387,7 @@
 +    		new ItemStack( Item.stick ),
 +		} );
 +		
-+		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( Block.pumpkin ), new Object[] {
++		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( Block.pumpkin ), new ItemStack(Item.pumpkinSeeds, 4), new Object[] {
 +			new ItemStack( FCBetterThanWolves.fcBlockPumpkinFresh )
 +		} );
 +		
@@ -2314,6 +2552,35 @@
 +    		new ItemStack( FCBetterThanWolves.fcItemMushroomRed ),
 +    		new ItemStack( Item.rottenFlesh )
 +		} );
++		
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemPolishedLapis, 2 ), new Object[] {
++    		"###", 
++    		"GGG", 
++    		" R ", 
++    		Character.valueOf( '#' ), new ItemStack( Item.dyePowder, 1, 4 ), 
++    		Character.valueOf( 'G' ), Item.goldNugget, 
++    		Character.valueOf( 'R' ), Item.redstone 
++		} );
++		
++		AddRecipe(new ItemStack(Item.comparator), new Object[] {
++	    	" R ",
++    		"RER",
++    		"SSS",
++    		'E', FCBetterThanWolves.fcItemPolishedLapis,
++    		'S', FCBetterThanWolves.fcItemStoneBrick,
++    		'R', Item.redstone
++		});
++		
++		// Recipe awaiting renaming functionality to be enabled
++		//AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemNameTag), new Object[] {	    		
++	    //	new ItemStack(Item.leather),
++	    //	new ItemStack(FCBetterThanWolves.fcItemNuggetIron)
++		//});
++		
++		//AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemNameTag), new Object[] {	    		
++	    //	new ItemStack(FCBetterThanWolves.fcItemLeatherCut),
++	    //	new ItemStack(FCBetterThanWolves.fcItemNuggetIron)
++		//});
 +	}
 +	
 +	private static void AddDyeRecipes()
@@ -3153,7 +3420,7 @@
 +    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemArmorPlate 
 +		} );
 +		
-+		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemBroadheadArrowhead, 6 ), new Object[] {
++		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemBroadheadArrowhead, 2 ), new Object[] {
 +    		" # ", 
 +    		" # ", 
 +    		"###", 
@@ -3166,17 +3433,7 @@
 +            " rr ", 
 +            Character.valueOf('#'), FCBetterThanWolves.fcItemSteel,
 +            Character.valueOf('r'), Item.redstone
-+        } );
-+		
-+		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemPolishedLapis, 2 ), new Object[] {
-+    		"###", 
-+    		"###", 
-+    		"GGG", 
-+    		" R ", 
-+    		Character.valueOf( '#' ), new ItemStack( Item.dyePowder, 1, 4 ), 
-+    		Character.valueOf( 'G' ), Item.goldNugget, 
-+    		Character.valueOf( 'R' ), Item.redstone 
-+		} );		
++        } );		
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcBlockDetector ), new Object[] {
 +    		"####", 
@@ -4103,9 +4360,12 @@
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotGold, 1 ), 
-+			new ItemStack( Item.goldNugget, 6 ), 
 +			new ItemStack[] {
-+				new ItemStack( Block.railPowered )
++				new ItemStack( Item.goldNugget, 1 ),
++				new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 2 ),
++			},
++			new ItemStack[] {
++				new ItemStack( Block.railPowered, 2 )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
@@ -4339,14 +4599,14 @@
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 1 ), 
-+			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 6 ), 
++			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 1 ), 
 +			new ItemStack[] {
 +				new ItemStack( Block.railDetector )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 1 ), 
-+			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 6 ), 
++			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 1 ), 
 +			new ItemStack[] {
 +				new ItemStack( FCBetterThanWolves.fcDetectorRailWood )
 +		} );
@@ -4354,7 +4614,7 @@
 +		AddStokedCrucibleRecipe(
 +			new ItemStack[] {
 +				//new ItemStack( Item.ingotIron, 1 ), 
-+				new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 6 ), 
++				new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 1 ), 
 +				new ItemStack( FCBetterThanWolves.fcItemNuggetSteel, 3 ), 
 +			},
 +			new ItemStack[] {
@@ -4404,9 +4664,9 @@
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 3 ), 
-+			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 18 ), 
++			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 1 ), 
 +			new ItemStack[] {
-+				new ItemStack( Block.rail, 8 )
++				new ItemStack( Block.rail, 2 )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
@@ -4490,7 +4750,7 @@
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 2 ), 
 +			new ItemStack[] {
 +				new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, m_iIgnoreMetadata )
-+			} );
++		} );
 +			
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 1 ), 
@@ -4514,6 +4774,18 @@
 +		} );
 +		
 +		// diamond melting recipes
++		
++		AddStokedCrucibleRecipe(
++			new ItemStack(FCBetterThanWolves.fcItemIngotDiamond, 1), 
++			new ItemStack[] {
++				new ItemStack(FCBetterThanWolves.fcItemChiselDiamond, 1, m_iIgnoreMetadata)
++		});
++		
++		AddStokedCrucibleRecipe(
++			new ItemStack(FCBetterThanWolves.fcItemIngotDiamond, 2), 
++			new ItemStack[] {
++				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, m_iIgnoreMetadata)
++		});
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 3 ), 
@@ -4644,15 +4916,15 @@
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
-+			new ItemStack( FCBetterThanWolves.fcItemNuggetSteel, 1 ), 
++			new ItemStack( FCBetterThanWolves.fcItemNuggetSteel, 3 ), 
 +			new ItemStack[] {
 +				new ItemStack( FCBetterThanWolves.fcItemBroadheadArrowhead, 1 )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
-+			new ItemStack( FCBetterThanWolves.fcItemNuggetSteel, 1 ), 
++			new ItemStack( FCBetterThanWolves.fcItemNuggetSteel, 3 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemBroadheadArrow, 1 )
++				new ItemStack( FCBetterThanWolves.fcItemBroadheadArrow, 4 )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
@@ -4801,7 +5073,379 @@
 +		AddMillStoneRecipe( new ItemStack( Item.dyePowder, 6, 15 ), new ItemStack( Item.skull.itemID, 1, 0 ) );
 +		AddMillStoneRecipe( new ItemStack( Item.dyePowder, 6, 15 ), new ItemStack( Item.skull.itemID, 1, 1 ) );
 +		
-+		AddMillStoneRecipe( new ItemStack( FCBetterThanWolves.fcItemGroundNetherrack ), new ItemStack( Block.netherrack ) );		
++		AddMillStoneRecipe( new ItemStack( FCBetterThanWolves.fcItemGroundNetherrack ), new ItemStack( Block.netherrack ) );
++		
++		AddMillStoneRecipe(new ItemStack(Item.blazePowder, 2), new ItemStack(Item.blazeRod));
++	}
++	
++	public static final byte cookTimeMultiplierClay = 4;
++	public static final byte cookTimeMultiplierOre = 8;
++	
++	private static void addKilnRecipes() {
++		//Ore
++		addKilnRecipe(new ItemStack(Item.goldNugget),
++				FCBetterThanWolves.fcBlockChunkOreGold,
++				cookTimeMultiplierOre);
++		
++		addKilnRecipe(new ItemStack(Item.ingotGold),
++				FCBetterThanWolves.fcBlockChunkOreStorageGold,
++				cookTimeMultiplierOre);
++		
++		addKilnRecipe(new ItemStack(Item.goldNugget),
++				Block.oreGold,
++				cookTimeMultiplierOre);
++		
++		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcItemNuggetIron),
++				FCBetterThanWolves.fcBlockChunkOreIron,
++				cookTimeMultiplierOre);
++		
++		addKilnRecipe(new ItemStack(Item.ingotIron),
++				FCBetterThanWolves.fcBlockChunkOreStorageIron,
++				cookTimeMultiplierOre);
++		
++		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcItemNuggetIron),
++				Block.oreIron,
++				cookTimeMultiplierOre);
++
++		//Charcoal
++		addKilnRecipe(new ItemStack(Item.coal, 1, 1),
++				FCBetterThanWolves.fcBloodWood,
++				cookTimeMultiplierOre);
++		
++		addKilnRecipe(new ItemStack(Item.coal, 1, 1),
++				Block.wood,
++				cookTimeMultiplierOre);
++		
++		//Pottery
++		addKilnRecipe(new ItemStack(Item.brick),
++				FCBetterThanWolves.fcBlockUnfiredBrick,
++				cookTimeMultiplierClay);
++		
++		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcCrucible),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeCrucible,
++				cookTimeMultiplierClay);
++		
++		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcPlanter),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypePlanter,
++				cookTimeMultiplierClay);
++		
++		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcVase),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeVase,
++				cookTimeMultiplierClay);
++		
++		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcItemUrn),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUrn,
++				cookTimeMultiplierClay);
++		
++		//Disabled until moulds are re-implemented
++		//addKilnRecipe(new ItemStack(FCBetterThanWolves.fcItemMould),
++		//		FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeMould,
++		//		cookTimeMultiplierClay);
++		
++		addKilnRecipe(new ItemStack(Item.brick),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeClayBrick,
++				cookTimeMultiplierClay);
++		addKilnRecipe(new ItemStack(Item.brick),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeClayBrickIAligned,
++				cookTimeMultiplierClay);
++		
++		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcItemNetherBrick),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeNetherBrick,
++				cookTimeMultiplierClay);
++		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcItemNetherBrick),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeNetherBrickIAligned,
++				cookTimeMultiplierClay);
++		
++		//Baking
++		addKilnRecipe(new ItemStack(Item.cake),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedCake);
++
++		addKilnRecipe(new ItemStack(Item.pumpkinPie),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedPumpkinPie);
++
++		addKilnRecipe(new ItemStack(Item.bread),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedBread);
++		addKilnRecipe(new ItemStack(Item.bread),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedBreadIAligned);
++
++		addKilnRecipe(new ItemStack(Item.cookie, 8),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedCookies);
++		addKilnRecipe(new ItemStack(Item.cookie, 8),
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedCookiesIAligned);
++		
++		//Other
++		addKilnRecipe(new ItemStack[] {
++					new ItemStack(FCBetterThanWolves.fcItemEnderSlag), 
++					new ItemStack(FCBetterThanWolves.fcAestheticOpaque, 1, FCBlockAestheticOpaque.m_iSubtypeWhiteCobble)
++				},
++				Block.whiteStone,
++				cookTimeMultiplierOre);
++	}
++	
++	private static void addSawRecipes() {
++		//Logs
++		for (int i = 0; i < 4; i++) {
++			addSawRecipe(new ItemStack[] {
++						new ItemStack(Block.planks, 4, 0),
++						new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
++						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 0)
++					},
++					Block.wood, i * 4);
++			
++			addSawRecipe(new ItemStack[] {
++						new ItemStack(Block.planks, 4, 1),
++						new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
++						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 1)
++					},
++					Block.wood, i * 4 + 1);
++			
++			addSawRecipe(new ItemStack[] {
++						new ItemStack(Block.planks, 4, 2),
++						new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
++						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 2)
++					},
++					Block.wood, i * 4 + 2);
++			
++			addSawRecipe(new ItemStack[] {
++						new ItemStack(Block.planks, 4, 3),
++						new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
++						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 3)
++					},
++					Block.wood, i * 4 + 3);
++		}
++
++		addSawRecipe(new ItemStack[] {
++					new ItemStack(Block.planks, 4, 4),
++					new ItemStack(FCBetterThanWolves.fcItemSoulDust, 1),
++					new ItemStack(FCBetterThanWolves.fcItemSawDust, 1),
++					new ItemStack(FCBetterThanWolves.fcItemBark, 1, 4)
++				},
++				FCBetterThanWolves.fcBloodWood);
++		
++		//Planks
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2, 0),
++				Block.planks, 0);
++		
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2, 1),
++				Block.planks, 1);
++
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2, 2),
++				Block.planks, 2);
++
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2, 3),
++				Block.planks, 3);
++
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2, 4),
++				Block.planks, 4);
++		
++		//Siding
++		//Shared block id with other types requires enumerating siding metadata
++		for (int i = 0; i < 16; i++) {
++			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
++					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
++					!((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
++			{
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2, 0),
++						FCBetterThanWolves.fcBlockWoodOakSidingAndCorner, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2, 1),
++						FCBetterThanWolves.fcBlockWoodSpruceSidingAndCorner, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2, 2),
++						FCBetterThanWolves.fcBlockWoodBirchSidingAndCorner, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2, 3),
++						FCBetterThanWolves.fcBlockWoodJungleSidingAndCorner, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2, 4),
++						FCBetterThanWolves.fcBlockWoodBloodSidingAndCorner, i);
++			}
++		}
++		
++		//Moulding
++		//Shared block id with other types requires enumerating moulding metadata
++		for (int i = 0; i < 16; i++) {
++			if (!((FCBlockWoodMouldingAndDecorative) FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative).IsDecorative(i)) {
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 2, 0),
++						FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 2, 1),
++						FCBetterThanWolves.fcBlockWoodSpruceMouldingAndDecorative, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 2, 2),
++						FCBetterThanWolves.fcBlockWoodBirchMouldingAndDecorative, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 2, 3),
++						FCBetterThanWolves.fcBlockWoodJungleMouldingAndDecorative, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 2, 4),
++						FCBetterThanWolves.fcBlockWoodBloodMouldingAndDecorative, i);
++			}
++		}
++		
++		//Corners
++		//Shared block id with other types requires enumerating corner metadata
++		for (int i = 0; i < 16; i++) {
++			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
++					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
++					((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
++			{
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 0),
++						FCBetterThanWolves.fcBlockWoodOakSidingAndCorner, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 1),
++						FCBetterThanWolves.fcBlockWoodSpruceSidingAndCorner, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 2),
++						FCBetterThanWolves.fcBlockWoodBirchSidingAndCorner, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 3),
++						FCBetterThanWolves.fcBlockWoodJungleSidingAndCorner, i);
++
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 4),
++						FCBetterThanWolves.fcBlockWoodBloodSidingAndCorner, i);
++			}
++		}
++		
++		//Decorative Wood
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, 0),
++				Block.fence);
++
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, 1),
++				FCBetterThanWolves.fcBlockWoodSpruceSidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
++
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, 2),
++				FCBetterThanWolves.fcBlockWoodBirchSidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
++
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, 3),
++				FCBetterThanWolves.fcBlockWoodJungleSidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
++
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, 4),
++				FCBetterThanWolves.fcBlockWoodBloodSidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
++		
++		//Slabs
++		//TODO: Make sure these slab recipes are actually functioning
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWickerSlab, 2),
++				FCBetterThanWolves.fcBlockWicker);
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWickerSlab, 2),
++				FCBetterThanWolves.fcAestheticOpaque, FCBlockAestheticOpaque.m_iSubtypeWicker);
++
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWickerPane, 2),
++				FCBetterThanWolves.fcBlockWickerSlab);
++		
++		addSawRecipe(new ItemStack(Item.bone, 5),
++				FCBetterThanWolves.fcAestheticOpaque, FCBlockAestheticOpaque.m_iSubtypeBone);
++		
++		addSawRecipe(new ItemStack(Item.bone, 2),
++				FCBetterThanWolves.fcBlockBoneSlab);
++		
++		addSawRecipe(new ItemStack(Item.rottenFlesh, 5),
++				FCBetterThanWolves.fcBlockRottenFlesh);
++		
++		addSawRecipe(new ItemStack(Item.rottenFlesh, 2),
++				FCBetterThanWolves.fcBlockRottenFleshSlab);
++		
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemCreeperOysters, 8),
++				FCBetterThanWolves.fcBlockCreeperOysters);
++
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemCreeperOysters, 4),
++				FCBetterThanWolves.fcBlockCreeperOystersSlab);
++		
++		//Other
++		addSawRecipe(new ItemStack(Item.melon, 5),
++				Block.melon);
++
++		addSawRecipe(new ItemStack(Block.vine),
++				Block.vine);
++	}
++	
++	private static void addPistonPackingRecipes() {
++		//Soil
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockAestheticOpaqueEarth, FCBlockAestheticOpaqueEarth.m_iSubtypePackedEarth,
++				new ItemStack(FCBetterThanWolves.fcBlockDirtLoose, 2));
++		
++		addPistonPackingRecipe(Block.dirt,
++				new ItemStack(FCBetterThanWolves.fcItemPileDirt, 8));
++		
++		addPistonPackingRecipe(Block.gravel,
++				new ItemStack(FCBetterThanWolves.fcItemPileGravel, 8));
++		
++		addPistonPackingRecipe(Block.sand,
++				new ItemStack(FCBetterThanWolves.fcItemPileSand, 8));
++		
++		addPistonPackingRecipe(Block.slowSand,
++				new ItemStack(FCBetterThanWolves.fcItemPileSoulSand, 8));
++
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockUnfiredClay,
++				new ItemStack(Item.clay, 9));
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockUnfiredClay,
++				new ItemStack(FCBetterThanWolves.fcItemBrickUnfired, 9));
++		
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockSnowSolid,
++				new ItemStack(Item.snowball, 8));
++		
++		//Stone and Ore
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockChunkOreStorageGold,
++				new ItemStack(FCBetterThanWolves.fcItemChunkGoldOre, 9));
++
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockChunkOreStorageIron,
++				new ItemStack(FCBetterThanWolves.fcItemChunkIronOre, 9));
++
++		addPistonPackingRecipe(Block.sandStone,
++				new ItemStack(Block.sand, 2));
++
++		addPistonPackingRecipe(FCBetterThanWolves.fcAestheticOpaque, FCBlockAestheticOpaque.m_iSubtypeFlint,
++				new ItemStack(Item.flint, 9));
++
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockCobblestoneLoose,
++				new ItemStack(FCBetterThanWolves.fcItemStone, 8));
++		
++		//Bricks
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockBrickLoose,
++				new ItemStack(Item.brick, 8));
++
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockNetherBrickLoose,
++				new ItemStack(FCBetterThanWolves.fcItemNetherBrick, 8));
++		
++		//Mob Drops
++		addPistonPackingRecipe(FCBetterThanWolves.fcAestheticOpaque, FCBlockAestheticOpaque.m_iSubtypeBone,
++				new ItemStack(Item.bone, 9));
++
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockCreeperOysters,
++				new ItemStack(FCBetterThanWolves.fcItemCreeperOysters, 16));
++
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockRottenFlesh,
++				new ItemStack(Item.rottenFlesh, 9));
++		
++		addPistonPackingRecipe(FCBetterThanWolves.fcAestheticOpaque, FCBlockAestheticOpaque.m_iSubtypeEnderBlock,
++				new ItemStack(Item.enderPearl, 9));
++		
++		//Other
++		addPistonPackingRecipe(FCBetterThanWolves.fcBlockAestheticOpaqueEarth, FCBlockAestheticOpaqueEarth.m_iSubtypeDung,
++				new ItemStack(FCBetterThanWolves.fcItemDung, 9));
++
++		addPistonPackingRecipe(FCBetterThanWolves.fcAestheticOpaque, FCBlockAestheticOpaque.m_iSubtypeSoap,
++				new ItemStack(FCBetterThanWolves.fcItemSoap, 9));
++	}
++	
++	private static void addHopperFilteringRecipes() {
++		addHopperFilteringRecipe(new ItemStack(Block.sand), new ItemStack(Item.flint), 
++				new ItemStack(Block.gravel),
++				new ItemStack(FCBetterThanWolves.fcBlockWickerPane));
++
++		addHopperFilteringRecipe(new ItemStack(FCBetterThanWolves.fcItemWheatSeeds, 2), new ItemStack(FCBetterThanWolves.fcItemStraw), 
++				new ItemStack(FCBetterThanWolves.fcItemWheat),
++				new ItemStack(FCBetterThanWolves.fcBlockWickerPane));
++		
++		//Soul filtering
++		addHopperSoulRecipe(new ItemStack(FCBetterThanWolves.fcItemHellfireDust),
++				new ItemStack(FCBetterThanWolves.fcItemGroundNetherrack));
++
++		addHopperSoulRecipe(new ItemStack(FCBetterThanWolves.fcItemSawDust),
++				new ItemStack(FCBetterThanWolves.fcItemSoulDust));
++
++		addHopperSoulRecipe(new ItemStack(FCBetterThanWolves.fcItemBrimstone),
++				new ItemStack(Item.lightStoneDust));
 +	}
 +	
 +	private static void AddTuningForkRecipes()
@@ -5199,9 +5843,9 @@
 +		
 +		// ------ Librarian ------ //
 +		//Level 1
-+		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.paper.itemID, 27, 38, 1F, 1);
-+		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.dyePowder.itemID, 0, 27, 38, 1F, 1);
-+		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.feather.itemID, 27, 38, 1F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.paper.itemID, 24, 32, 1F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.dyePowder.itemID, 0, 24, 32, 1F, 1);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.feather.itemID, 16, 24, 1F, 1);
 +		
 +		FCEntityVillager.addLevelUpTradeToBuySingleItem(librarian, Item.enchantedBook.itemID, 2, 2, 1);
 +		
@@ -5212,7 +5856,7 @@
 +		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.netherStalkSeeds.itemID, 16, 24, 1F, 2);
 +		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.lightStoneDust.itemID, 24, 32, 1F, 2);
 +		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcItemNitre.itemID, 32, 48, 1F, 2);
-+		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcItemBatWing.itemID, 14, 16, 1F, 2);
++		FCEntityVillager.addTradeToBuyMultipleItems(librarian, FCBetterThanWolves.fcItemBatWing.itemID, 8, 12, 1F, 2);
 +		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.spiderEye.itemID, 4, 8, 1F, 2);
 +		FCEntityVillager.addTradeToBuyMultipleItems(librarian, Item.redstone.itemID, 32, 48, 1F, 2);
 +		
@@ -5281,8 +5925,7 @@
 +				FCBetterThanWolves.fcItemCandle.itemID, 4, 8, 
 +				1F, 3))
 +				.setRandomMetas(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, 0);
-+		// TODO: Make skulls equal with other head trades
-+		FCEntityVillager.addTradeToBuyMultipleItems(priest, Item.skull.itemID, 0, 3, 5, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(priest, Item.skull.itemID, 0, 2, 4, 1F, 3);
 +		FCEntityVillager.addTradeToBuyMultipleItems(priest, Item.skull.itemID, 2, 2, 4, 1F, 3);
 +		FCEntityVillager.addTradeToBuyMultipleItems(priest, Item.skull.itemID, 4, 2, 4, 1F, 3);
 +		FCEntityVillager.addTradeToBuyMultipleItems(priest, FCBetterThanWolves.fcAestheticOpaque.blockID, FCBlockAestheticOpaque.m_iSubtypeBone, 2, 3, 1F, 3);
@@ -5356,7 +5999,6 @@
 +		FCEntityVillager.addLevelUpTradeToBuySingleItem(blacksmith, FCBetterThanWolves.fcCrucible.blockID, 3, 3, 3);
 +		
 +		//Level 4
-+		// TODO: Feels weird to have soul urns and hafts traded earlier than steel
 +		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcItemSoulUrn.itemID, 2, 3, 1F, 4);
 +		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcItemHaft.itemID, 6, 8, 1F, 4);
 +		FCEntityVillager.addTradeToBuyMultipleItems(blacksmith, FCBetterThanWolves.fcBlockMiningCharge.blockID, 4, 6, 1F, 4);
@@ -5388,12 +6030,11 @@
 +		FCEntityVillager.addTradeToBuySingleItem(butcher, Item.shears.itemID, 1, 1, 0.5F, 1);
 +		FCEntityVillager.addTradeToBuySingleItem(butcher, Item.fishingRod.itemID, 1, 1, 0.5F, 1);
 +		
-+		// TODO: Weird inconsistent item counts for raw meat trade - not consistent with food values
-+		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.beefRaw.itemID, 7, 9, 1F, 1).setDefault(butcher);
-+		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.porkRaw.itemID, 8, 11, 1F, 1);
-+		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.chickenRaw.itemID, 9, 12, 1F, 1);
-+		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.fishRaw.itemID, 10, 13, 1F, 1);
-+		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemMuttonRaw.itemID, 10, 13, 1F, 1);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.beefRaw.itemID, 8, 10, 1F, 1).setDefault(butcher);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.porkRaw.itemID, 8, 10, 1F, 1);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.chickenRaw.itemID, 10, 12, 1F, 1);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.fishRaw.itemID, 10, 12, 1F, 1);
++		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemMuttonRaw.itemID, 10, 12, 1F, 1);
 +		FCEntityVillager.addTradeToSellMultipleItems(butcher, Item.leather.itemID, 7, 9, 1F, 1);
 +		
 +		FCEntityVillager.addLevelUpTradeToBuySingleItem(butcher, FCBetterThanWolves.fcCauldron.blockID, 1, 1, 1);
@@ -5421,13 +6062,12 @@
 +		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemSteakDinner.itemID, 4, 6, 1F, 3);
 +		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemWolfDinner.itemID, 4, 6, 1F, 3);
 +		FCEntityVillager.addTradeToSellMultipleItems(butcher, FCBetterThanWolves.fcItemChickenSoup.itemID, 4, 6, 1F, 3);
-+		// TODO: Price seems egregious
-+		FCEntityVillager.addTradeToSellSingleItem(butcher, Item.saddle.itemID, 6, 8, 1F, 3);
++		FCEntityVillager.addTradeToSellSingleItem(butcher, Item.saddle.itemID, 2, 3, 1F, 3);
 +		
 +		FCEntityVillager.addLevelUpTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemBreedingHarness.itemID, 3, 3, 3);
 +		
 +		//Level 4
-+		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemRawMysteryMeat.itemID, 2, 4, 1F, 4);
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemRawMysteryMeat.itemID, 2, 3, 1F, 4);
 +		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemScrew.itemID, 2, 3, 1F, 4);
 +		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemCompositeBow.itemID, 2, 3, 1F, 4);
 +		
@@ -5663,6 +6303,29 @@
 +        	'I', Item.ingotIron, 
 +        	'C', Block.chest
 +    	} );
++        
++        RemoveVanillaRecipe( new ItemStack( Block.rail, 16 ), new Object[] {
++        	"X X", 
++        	"XSX", 
++        	"X X", 
++        	'X', Item.ingotIron, 
++        	'S', Item.stick } );
++        
++        RemoveVanillaRecipe( new ItemStack( Block.railPowered, 6 ), new Object[] {
++        	"X X", 
++        	"XSX", 
++        	"XRX", 
++        	'X', Item.ingotGold, 
++        	'R', Item.redstone, 
++        	'S', Item.stick } );
++        
++        RemoveVanillaRecipe( new ItemStack( Block.railDetector, 6 ), new Object[] {
++        	"X X", 
++        	"XSX", 
++        	"XRX", 
++        	'X', Item.ingotIron, 
++        	'R', Item.redstone, 
++        	'S', Block.pressurePlateStone } );
 +        
 +        RemoveVanillaRecipe( new ItemStack( Block.railActivator, 6 ), new Object[] {
 +        	"XSX", 
@@ -6002,6 +6665,10 @@
 +			Item.blazePowder
 +		} );
 +        
++		RemoveVanillaShapelessRecipe(new ItemStack(Item.blazePowder, 2), new Object[] {
++			Item.blazeRod
++		});
++        
 +		RemoveVanillaRecipe( new ItemStack( Item.bed, 1 ), new Object[] {
 +			"###", 
 +			"XXX", 
@@ -6092,6 +6759,48 @@
 +			"###", 
 +			'#', new ItemStack(Block.planks, 1, 3)
 +		} );
++		
++		RemoveVanillaRecipe(new ItemStack(Block.stairsBrick, 4), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.brick)
++		});
++		
++		RemoveVanillaRecipe(new ItemStack(Block.stairsCobblestone, 4), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.cobblestone)
++		});
++		
++		RemoveVanillaRecipe(new ItemStack(Block.stairsNetherBrick, 4), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.netherBrick)
++		});
++		
++		RemoveVanillaRecipe(new ItemStack(Block.stairsNetherQuartz, 4), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.blockNetherQuartz)
++		});
++		
++		RemoveVanillaRecipe(new ItemStack(Block.stairsSandStone, 4), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.sandStone)
++		});
++		
++		RemoveVanillaRecipe(new ItemStack(Block.stairsStoneBrick, 4), new Object[] {
++			"#  ", 
++			"## ", 
++			"###", 
++			'#', new ItemStack(Block.stoneBrick)
++		});
 +		
 +		RemoveVanillaRecipe( new ItemStack( Block.workbench ), new Object[] {
 +			"##", 

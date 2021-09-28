@@ -45,7 +45,7 @@
  
      /**
       * Returns the unlocalized name of this item. This version accepts an ItemStack so different stacks can have
-@@ -210,4 +221,150 @@
+@@ -210,4 +221,120 @@
              this.field_94588_b = par1IconRegister.registerIcon(var2);
          }
      }
@@ -71,30 +71,6 @@
 +    	Block.blocksList[blockID].SetBuoyancy( fBuoyancy );
 +    	
 +    	return super.SetBuoyancy( fBuoyancy );
-+    }
-+    
-+    @Override
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return Block.blocksList[blockID].IsPistonPackable( stack );
-+    }
-+    
-+    @Override
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return Block.blocksList[blockID].GetRequiredItemCountToPistonPack( stack );
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return Block.blocksList[blockID].GetResultingBlockIDOnPistonPack( stack );
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockMetadataOnPistonPack( ItemStack stack )
-+    {
-+    	return Block.blocksList[blockID].GetResultingBlockMetadataOnPistonPack( stack );
 +    }
 +
 +    @Override
@@ -177,12 +153,6 @@
 +    public int GetFilterableProperties( ItemStack stack )
 +    {
 +    	return Block.blocksList[blockID].GetFilterableProperties( stack );
-+    }
-+    
-+    @Override
-+    public boolean CanTransformItemIfFilter( ItemStack filteredItem )
-+    {
-+    	return Block.blocksList[blockID].CanTransformItemIfFilter( filteredItem );
 +    }
 +    
 +    //------------- Class Specific Methods ------------//

@@ -88,7 +88,7 @@
 +    
 +    private void ConvertToEntity( World world, int i, int j, int k, FCEntityMovingAnchor associatedAnchorEntity )
 +    {
-+		FCEntityMovingPlatform entityPlatform = new FCEntityMovingPlatform( world, 
++    	FCEntityMovingPlatform entityPlatform = (FCEntityMovingPlatform) EntityList.createEntityOfType(FCEntityMovingPlatform.class, world,
 +	    		(float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, 
 +	    		associatedAnchorEntity ); 
 +				
@@ -105,7 +105,7 @@
 +    {
 +        if ( FCEntityBlockLiftedByPlatform.CanBlockBeConvertedToEntity( world, i, j, k ) )
 +        {
-+        	new FCEntityBlockLiftedByPlatform( world, i, j, k );
++        	EntityList.createEntityOfType(FCEntityBlockLiftedByPlatform.class, world, i, j, k );
 +        }
 +    }
 +    

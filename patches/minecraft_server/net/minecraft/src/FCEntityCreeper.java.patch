@@ -105,7 +105,7 @@
 +    {
 +        ItemStack playersCurrentItem = player.inventory.getCurrentItem();
 +
-+        if ( playersCurrentItem != null && playersCurrentItem.itemID == Item.shears.itemID && GetNeuteredState() == 0 )
++        if ( playersCurrentItem != null && playersCurrentItem.getItem() instanceof FCItemShears && GetNeuteredState() == 0 )
 +        {
 +            if ( !worldObj.isRemote )
 +            {

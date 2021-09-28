@@ -144,7 +144,7 @@
  
      /**
       * Checks to see if the rainfall level of the biome is extremely high
-@@ -352,4 +390,16 @@
+@@ -352,4 +390,20 @@
          double var3 = (double)MathHelper.clamp_float(this.getFloatRainfall(), 0.0F, 1.0F);
          return ColorizerFoliage.getFoliageColor(var1, var3);
      }
@@ -158,6 +158,10 @@
 +    public boolean CanLightningStrikeInBiome()
 +    {
 +    	return CanRainInBiome();
++    }
++    
++    public boolean canSlimesSpawnOnSurface() {
++    	return false;
 +    }
 +    // END FCMOD
 +}

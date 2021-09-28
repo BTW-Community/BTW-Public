@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemPileSoulSand.java
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,90 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -70,7 +70,7 @@
 +        		}
 +        	}
 +        	
-+            FCEntitySoulSand sandEntity = new FCEntitySoulSand( world, player.posX, player.posY + 2.0D - (double)player.yOffset, player.posZ );
++            FCEntitySoulSand sandEntity = (FCEntitySoulSand) EntityList.createEntityOfType(FCEntitySoulSand.class, world, player.posX, player.posY + 2.0D - (double)player.yOffset, player.posZ );
 +
 +        	sandEntity.MoveTowards( dTargetXPos, dTargetZPos );
 +                
@@ -89,23 +89,5 @@
 +        }
 +
 +        return stack;
-+    }
-+    
-+    @Override
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return true;
-+    }
-+    
-+    @Override
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 4;
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return Block.slowSand.blockID;
 +    }
 +}

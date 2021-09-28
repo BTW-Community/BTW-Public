@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCItemBone.java
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,23 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -22,29 +22,5 @@
 +        setUnlocalizedName( "bone" );
 +        
 +        setCreativeTab( CreativeTabs.tabMisc );
-+    }
-+    
-+    @Override
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return true;
-+    }
-+    
-+    @Override
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 9;
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return FCBetterThanWolves.fcAestheticOpaque.blockID;
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockMetadataOnPistonPack( ItemStack stack )
-+    {
-+    	return FCBlockAestheticOpaque.m_iSubtypeBone;
 +    }
 +}

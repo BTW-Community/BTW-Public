@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockUnfiredBrick.java
-@@ -0,0 +1,272 @@
+@@ -0,0 +1,258 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -24,8 +24,6 @@
 +        SetShovelsEffectiveOn( true );
 +        
 +        setStepSound( FCBetterThanWolves.fcStepSoundSquish );        
-+        
-+		SetCanBeCookedByKiln( true );
 +        
 +        setUnlocalizedName( "fcBlockUnfiredBrick" );
 +    }
@@ -108,12 +106,6 @@
 +            world.setBlockWithNotify(i, j, k, 0);
 +    	}
 +    }
-+    
-+	@Override
-+    public int GetItemIndexDroppedWhenCookedByKiln( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+		return Item.brick.itemID;
-+    }
 +
 +    @Override
 +    public boolean CanGroundCoverRestOnBlock( World world, int i, int j, int k )
@@ -177,12 +169,6 @@
 +	{
 +		return SetIAligned( iMetadata, !GetIsIAligned( iMetadata ) );
 +	}
-+
-+    @Override
-+    public int GetCookTimeMultiplierInKiln( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+    	return 4;
-+    }
 +    
 +	//------------- Class Specific Methods ------------//
 +	

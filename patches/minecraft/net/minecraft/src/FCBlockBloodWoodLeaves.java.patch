@@ -68,7 +68,7 @@
 +    public void harvestBlock( World world, EntityPlayer player, int i, int j, int k, int iMetadata )
 +    {
 +        if( !world.isRemote && player.getCurrentEquippedItem() != null && 
-+    		player.getCurrentEquippedItem().itemID == Item.shears.itemID )
++    		player.getCurrentEquippedItem().getItem() instanceof FCItemShears)
 +        {
 +            dropBlockAsItem_do( world, i, j, k, new ItemStack( FCBetterThanWolves.fcBlockBloodLeaves.blockID, 1, iMetadata & 3 ) );
 +            
@@ -129,7 +129,7 @@
 +	            double d1 = (double)( world.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
 +	            double d2 = (double)( world.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
 +	            
-+	            EntityItem entityitem = new FCEntityItemBloodWoodSapling( world, (double)i + d, (double)j + d1, (double)k + d2, itemStack );
++	            EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(FCEntityItemBloodWoodSapling.class, world, (double)i + d, (double)j + d1, (double)k + d2, itemStack );
 +	            
 +	            entityitem.delayBeforeCanPickup = 10;
 +	            world.spawnEntityInWorld(entityitem);

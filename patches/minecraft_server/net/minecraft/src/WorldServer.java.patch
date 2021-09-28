@@ -138,7 +138,7 @@
 +            		
 +                    if ( IsBlockPosActive( strikePos.i, strikePos.j, strikePos.k ) )
 +                    {
-+                        addWeatherEffect( new FCEntityLightningBolt( this, (double)strikePos.i + 0.5D, 
++                    	addWeatherEffect(EntityList.createEntityOfType(FCEntityLightningBolt.class, this, (double)strikePos.i + 0.5D, 
 +                        	(double)strikePos.j, (double)strikePos.k + 0.5D ) );
                  }
 +                	// END FCMOD
@@ -407,7 +407,7 @@
  
      /**
       * Gets the MinecraftServer.
-@@ -996,13 +1149,460 @@
+@@ -996,13 +1149,445 @@
          return this.theEntityTracker;
      }
  
@@ -802,10 +802,8 @@
 +
 +	//------------ Addon Data Handling -----------//
 +
-+	private Map<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> addonWorldDataMap = new HashMap();
-+
-+	public void saveWorldDataToNBT(File dimensionDirectory) {
-+		for (Map.Entry<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> entry : addonWorldDataMap.entrySet()) {
++    public void saveWorldDataToNBT(File dimensionDirectory) {
++		for (Map.Entry<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> entry : FCAddOnHandler.addonWorldDataMap.entrySet()) {
 +			NBTTagCompound modData = new NBTTagCompound();
 +	        
 +			entry.getValue().saveWorldDataToNBT(this, modData);
@@ -831,9 +829,7 @@
 +	}
 +
 +	public void loadWorldDataFromNBT(File dimensionDirectory) {
-+		addonWorldDataMap = FCAddOnHandler.initWorldDataForAddon();
-+		
-+		for (Map.Entry<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> entry : addonWorldDataMap.entrySet()) {
++		for (Map.Entry<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> entry : FCAddOnHandler.addonWorldDataMap.entrySet()) {
 +			File modSaveFile = null;
 +			
 +			try {
@@ -854,17 +850,6 @@
 +				}
 +			}
 +		}
-+	}
-+
-+	public FCAddOnUtilsWorldData getWorldDataForMod(Class<? extends FCAddOn> mod) {
-+		if (addonWorldDataMap.containsKey(mod))
-+			return addonWorldDataMap.get(mod);
-+		else
-+			return null;
-+	}
-+
-+	public void setWorldDataForMod(Class<? extends FCAddOn> mod, FCAddOnUtilsWorldData data) {
-+		addonWorldDataMap.put(mod, data);
 +	}
 +    // END FCMOD
 +}

@@ -18,7 +18,7 @@
 +     */
 +    protected IProjectile getProjectileEntity( World world, IPosition position)
 +    {
-+    	FCEntityBroadheadArrow arrow = new FCEntityBroadheadArrow( world, position.getX(), position.getY(), position.getZ() );
++    	FCEntityBroadheadArrow arrow = (FCEntityBroadheadArrow) EntityList.createEntityOfType(FCEntityBroadheadArrow.class, world, position.getX(), position.getY(), position.getZ() );
 +        
 +        arrow.canBePickedUp = 1;
 +        

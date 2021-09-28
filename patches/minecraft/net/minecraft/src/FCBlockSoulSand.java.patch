@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockSoulSand.java
-@@ -0,0 +1,82 @@
+@@ -0,0 +1,74 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -29,14 +29,6 @@
 +    	return filteredItem.itemID == FCBetterThanWolves.fcItemGroundNetherrack.itemID || 
 +	    	filteredItem.itemID == FCBetterThanWolves.fcItemSoulDust.itemID ||
 +	    	filteredItem.itemID == Item.lightStoneDust.itemID;
-+    }
-+    
-+    @Override
-+    public boolean CanTransformItemIfFilter( ItemStack filteredItem )
-+    {
-+    	// anything that passes through soul sand is transformed
-+    	
-+    	return true;
 +    }
 +    
 +    @Override

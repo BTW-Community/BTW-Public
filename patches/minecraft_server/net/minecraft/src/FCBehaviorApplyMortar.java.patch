@@ -1,0 +1,27 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCBehaviorApplyMortar.java
+@@ -0,0 +1,23 @@
++package net.minecraft.src;
++
++public class FCBehaviorApplyMortar extends BehaviorDefaultDispenseItem {
++	@Override
++	public ItemStack dispenseStack(IBlockSource blockSource, ItemStack stack) {
++		EnumFacing facing = BlockDispenser.getFacing(blockSource.getBlockMetadata());
++        int x = blockSource.getXInt() + facing.getFrontOffsetX();
++        int y = blockSource.getYInt();
++        int z = blockSource.getZInt() + facing.getFrontOffsetZ();
++
++        Block blockToFront = Block.blocksList[blockSource.getWorld().getBlockId(x, y, z)];
++
++        if (blockToFront != null && blockToFront.OnMortarApplied(blockSource.getWorld(), x, y, z)) {
++        	blockSource.getWorld().playAuxSFX(FCBetterThanWolves.m_iMortarAppliedAuxFXID, x, y, z, 0 );
++
++        	stack.stackSize--;
++    		return stack;
++        }
++        else {
++        	return super.dispenseStack(blockSource, stack);
++        }
++    }
++}
+\ No newline at end of file

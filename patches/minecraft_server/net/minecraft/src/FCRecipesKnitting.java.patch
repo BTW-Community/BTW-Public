@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCRecipesKnitting.java
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,113 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -59,6 +59,11 @@
 +    	return false;
 +    }
 +    
++    @Override
++    public ItemStack[] getSecondaryOutput(IInventory inventory) {
++    	return null;
++    }
++    
 +	//------------- Class Specific Methods ------------//
 +    
 +    private boolean CheckForIngredients( InventoryCrafting inventory )
@@ -109,3 +114,4 @@
 +        return m_tempStackNeedles != null && m_tempStackWool != null && m_tempStackWool2 != null;
 +    }    
 +}
+\ No newline at end of file

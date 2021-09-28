@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemStone.java
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,22 @@
 +//FCMOD
 +
 +package net.minecraft.src;
@@ -16,24 +16,6 @@
 +    	SetFilterableProperties( Item.m_iFilterable_Small );
 +    	
 +    	setCreativeTab( CreativeTabs.tabMaterials );	    
-+    }
-+    
-+    @Override
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return true;
-+    }
-+    
-+    @Override
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 8;
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return FCBetterThanWolves.fcBlockCobblestoneLoose.blockID;
 +    }
 +    
 +    //------------- Class Specific Methods ------------//

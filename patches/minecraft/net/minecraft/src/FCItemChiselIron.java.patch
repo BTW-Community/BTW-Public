@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemChiselIron.java
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,98 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -55,16 +55,6 @@
 +    public void OnUsedInCrafting( EntityPlayer player, ItemStack outputStack )
 +    {
 +    	PlayStoneSplitSoundOnPlayer( player );
-+    	
-+		if ( !player.worldObj.isRemote && outputStack.itemID == 
-+			FCBetterThanWolves.fcItemStoneBrick.itemID )
-+		{
-+			// splitting full stone blocks into stone bricks
-+			
-+			FCUtilsItem.EjectStackWithRandomVelocity( player.worldObj, 
-+				player.posX, player.posY, player.posZ, 
-+				new ItemStack( FCBetterThanWolves.fcItemPileGravel, 2 ) );
-+		}
 +    }
 +    
 +    @Override

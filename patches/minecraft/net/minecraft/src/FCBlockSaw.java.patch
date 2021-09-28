@@ -424,11 +424,11 @@
 +    		
 +			Block targetBlock = Block.blocksList[world.getBlockId( targetPos.i, targetPos.j, 
 +				targetPos.k )];
++			int targetMetadata = world.getBlockMetadata(targetPos.i, targetPos.j, targetPos.k);
 +    		
 +    		if ( targetBlock != null && ( targetBlock.blockMaterial.isSolid() || 
-+    			targetBlock.GetItemIDDroppedOnSaw( world, targetPos.i, targetPos.j, 
-+				targetPos.k ) > 0 || targetBlock.DoesBlockDropAsItemOnSaw( world, targetPos.i, 
-+				targetPos.j, targetPos.k ) ) )
++    			FCCraftingManagerSaw.instance.getRecipe(targetBlock, targetMetadata) != null || 
++    			targetBlock.DoesBlockDropAsItemOnSaw( world, targetPos.i, targetPos.j, targetPos.k ) ) )
 +    		{
 +		        world.playSoundEffect( i + 0.5D, j + 0.5D, k + 0.5D, "minecart.base", 
 +		    		1.5F + ( world.rand.nextFloat() * 0.1F ),		// volume 

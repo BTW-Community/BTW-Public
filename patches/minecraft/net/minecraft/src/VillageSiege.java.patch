@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/VillageSiege.java
++++ b/minecraft/net/minecraft/src/VillageSiege.java
+@@ -180,7 +180,7 @@
+ 
+             try
+             {
+-                var2 = new EntityZombie(this.worldObj);
++                var2 = (EntityZombie) EntityList.createEntityOfType(EntityZombie.class, this.worldObj);
+                 var2.initCreature();
+                 var2.setVillager(false);
+             }

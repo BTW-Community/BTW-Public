@@ -1,0 +1,11 @@
+--- a/minecraft_server/net/minecraft/src/ItemSnowball.java
++++ b/minecraft_server/net/minecraft/src/ItemSnowball.java
+@@ -23,7 +23,7 @@
+ 
+         if (!par2World.isRemote)
+         {
+-            par2World.spawnEntityInWorld(new EntitySnowball(par2World, par3EntityPlayer));
++        	par2World.spawnEntityInWorld(EntityList.createEntityOfType(EntitySnowball.class, par2World, par3EntityPlayer));
+         }
+ 
+         return par1ItemStack;

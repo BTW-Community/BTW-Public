@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockWickerPane.java
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,73 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -52,12 +52,6 @@
 +    	int iFilterableProperties = filteredItem.getItem().GetFilterableProperties( filteredItem ); 
 +    		
 +    	return ( iFilterableProperties & Item.m_iFilterable_Fine ) != 0;
-+    }
-+
-+    @Override
-+    public boolean CanTransformItemIfFilter( ItemStack filteredItem )
-+    {
-+    	return filteredItem.itemID == Block.gravel.blockID;
 +    }
 +    
 +    //------------- Class Specific Methods ------------//

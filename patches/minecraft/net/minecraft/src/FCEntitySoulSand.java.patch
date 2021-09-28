@@ -260,7 +260,7 @@
 +
 +    	for ( int iTempCount = 0; iTempCount < 10; iTempCount++ )
 +    	{
-+            EntityFX particleEntity = new EntitySmokeFX( worldObj, 
++            EntityFX particleEntity = (EntityFX) EntityList.createEntityOfType(EntitySmokeFX.class, worldObj, 
 +    			posX - motionX * (double)var10 + this.rand.nextDouble() * 0.6D - 0.3D, 
 +    			posY - motionY * (double)var10 + this.rand.nextDouble() * 0.6D - 0.3D - 0.1D, 
 +    			posZ - motionZ * (double)var10 + this.rand.nextDouble() * 0.6D - 0.3D, 
@@ -273,7 +273,7 @@
 +            
 +            Minecraft.getMinecraft().effectRenderer.addEffect( (EntityFX)particleEntity );
 +            
-+            particleEntity = new EntityAuraFX( worldObj, 
++            particleEntity = (EntityFX) EntityList.createEntityOfType(EntityAuraFX.class, worldObj, 
 +    			posX - motionX * (double)var10 + this.rand.nextDouble() * 0.6D - 0.3D, 
 +    			posY - motionY * (double)var10 - 0.5D, 
 +    			posZ - motionZ * (double)var10 + this.rand.nextDouble() * 0.6D - 0.3D, 

@@ -35,7 +35,7 @@
 +    @Override
 +    protected EntitySlime createInstance()
 +    {
-+        return new FCEntityMagmaCube( worldObj );
++        return (EntitySlime) EntityList.createEntityOfType(FCEntityMagmaCube.class, worldObj);
 +    }
 +
 +    //------------- Class Specific Methods ------------//

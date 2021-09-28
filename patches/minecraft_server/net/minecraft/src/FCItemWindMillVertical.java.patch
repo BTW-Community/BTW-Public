@@ -52,7 +52,7 @@
 +        		}
 +        		else
 +        		{
-+        			FCEntityWindMillVertical windMill = new FCEntityWindMillVertical( world, 
++        			FCEntityWindMillVertical windMill = (FCEntityWindMillVertical) EntityList.createEntityOfType(FCEntityWindMillVertical.class, world,
 +                		(float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F );
 +    			
 +	        		if ( windMill.ValidateAreaAroundDevice() )

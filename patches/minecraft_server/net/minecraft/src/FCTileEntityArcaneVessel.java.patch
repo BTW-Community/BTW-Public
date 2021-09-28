@@ -326,7 +326,7 @@
 +			itemPos.zCoord +=  ( worldObj.rand.nextFloat() * 0.5F ) - 0.25F;
 +		}
 +    	
-+        EntityXPOrb xpOrb = new EntityXPOrb( worldObj, 
++		EntityXPOrb xpOrb = (EntityXPOrb) EntityList.createEntityOfType(EntityXPOrb.class, worldObj,
 +			itemPos.xCoord, itemPos.yCoord, itemPos.zCoord, 
 +    		iXPValue, bDragonOrb );
 +
@@ -349,7 +349,7 @@
 +        double yOffset = worldObj.rand.nextDouble() * 0.7D + 0.15D;
 +        double zOffset = worldObj.rand.nextDouble() * 0.7D + 0.15D;
 +    	
-+        EntityXPOrb xpOrb = new EntityXPOrb( worldObj, 
++        EntityXPOrb xpOrb = (EntityXPOrb) EntityList.createEntityOfType(EntityXPOrb.class, worldObj,
 +    			xCoord + xOffset, yCoord + yOffset, zCoord + zOffset, 
 +        		iXPValue, bDragonOrb );
 +

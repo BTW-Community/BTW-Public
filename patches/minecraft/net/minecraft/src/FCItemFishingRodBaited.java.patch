@@ -38,7 +38,7 @@
 +
 +            if ( !world.isRemote )
 +            {
-+                world.spawnEntityInWorld( new EntityFishHook( world, player, true ) );
++                world.spawnEntityInWorld( EntityList.createEntityOfType(EntityFishHook.class, world, player, true ) );
 +            }
 +
 +            player.swingItem();

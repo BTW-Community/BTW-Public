@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockPlanks.java
-@@ -0,0 +1,133 @@
+@@ -0,0 +1,113 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -36,26 +36,6 @@
 +    public int damageDropped( int iMetadata )
 +    {
 +        return iMetadata;
-+    }
-+
-+	@Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	return FCBetterThanWolves.fcBlockWoodSidingItemStubID;
-+    }
-+
-+	@Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	return 2;
-+    }
-+    
-+	@Override
-+    public int GetItemDamageDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		world.getBlockMetadata( i, j, k );
-+		
-+		return world.getBlockMetadata( i, j, k );
 +    }
 +    
 +    @Override

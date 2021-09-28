@@ -139,7 +139,7 @@
 +        
 +        setDead();
 +        
-+        FCEntityPigZombie entityPigman = new FCEntityPigZombie( worldObj );
++        FCEntityPigZombie entityPigman = (FCEntityPigZombie) EntityList.createEntityOfType(FCEntityPigZombie.class, worldObj);
 +        
 +        entityPigman.setLocationAndAngles( posX, posY, posZ, rotationYaw, rotationPitch );
 +        entityPigman.renderYawOffset = renderYawOffset;
@@ -160,7 +160,7 @@
 +    @Override
 +    public FCEntityPig spawnBabyAnimal( EntityAgeable parent )
 +    {
-+        return new FCEntityPig( worldObj );
++        return (FCEntityPig) EntityList.createEntityOfType(FCEntityPig.class, worldObj);
 +    }
 +    
 +    @Override
@@ -168,7 +168,7 @@
 +    {
 +        if ( !worldObj.isRemote )
 +        {
-+            FCEntityPigZombie pigman = new FCEntityPigZombie( worldObj );
++            FCEntityPigZombie pigman = (FCEntityPigZombie) EntityList.createEntityOfType(FCEntityPigZombie.class, worldObj);
 +            
 +            pigman.setLocationAndAngles( posX, posY, posZ, rotationYaw, rotationPitch );
 +            

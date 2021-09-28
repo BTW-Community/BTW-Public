@@ -1,0 +1,48 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCCraftingManagerSawRecipe.java
+@@ -0,0 +1,45 @@
++package net.minecraft.src;
++
++public class FCCraftingManagerSawRecipe {
++	private final ItemStack[] output;
++	private final Block block;
++	private final int metadata;
++	
++	public FCCraftingManagerSawRecipe(ItemStack[] output, Block block, int metadata) {
++		this.output = output;
++		this.block = block;
++		this.metadata = metadata;
++	}
++	
++	public boolean ignoreMetadata() {
++		return metadata == FCUtilsInventory.m_iIgnoreMetadata;
++	}
++	
++	public boolean matchesRecipe(FCCraftingManagerSawRecipe recipe) {
++		if (this.block == recipe.block && 
++			(this.metadata == recipe.metadata || 
++				this.ignoreMetadata() && this.ignoreMetadata())) 
++		{
++			return output.equals(recipe.output);
++		}
++		
++		return false;
++	}
++	
++	public boolean matchesInputs(Block block, int metadata) {
++		return this.block.blockID == block.blockID &&
++				(this.metadata == metadata || this.ignoreMetadata());
++	}
++
++	public Block getInputblock() {
++		return block;
++	}
++
++	public ItemStack[] getOutput() {
++		return output;
++	}
++
++	public int getInputMetadata() {
++		return metadata;
++	}
++}

@@ -75,7 +75,7 @@
  
      /**
       * Writes a tile entity to NBT.
-@@ -187,5 +228,238 @@
+@@ -187,5 +228,205 @@
          par1NBTTagCompound.setInteger("facing", this.storedOrientation);
          par1NBTTagCompound.setFloat("progress", this.lastProgress);
          par1NBTTagCompound.setBoolean("extending", this.extending);
@@ -86,46 +86,27 @@
      }
 +    
 +    // FCMOD: Added
-+    private void AttemptToPackItems()
-+    {
-+    	if ( !worldObj.isRemote && isExtending() && ( storedBlockID == Block.pistonExtension.blockID || Block.isNormalCube( storedBlockID ) || storedBlockID == Block.glass.blockID ) )
-+    	{
-+	    	FCUtilsBlockPos targetPos = new FCUtilsBlockPos( xCoord, yCoord, zCoord, storedOrientation );
-+	    	
-+	    	if ( IsLocationSuitableForPacking( targetPos.i, targetPos.j, targetPos.k, Block.GetOppositeFacing( storedOrientation ) ) )
-+			{
-+	    		AxisAlignedBB targetBox = AxisAlignedBB.getAABBPool().getAABB((double)targetPos.i, (double)targetPos.j, (double)targetPos.k, 
-+	    			(double)targetPos.i + 1D, (double)targetPos.j + 1D, (double)targetPos.k + 1D );
-+	    		
-+	    		List itemsWithinBox = worldObj.getEntitiesWithinAABB( EntityItem.class, targetBox );
-+	    		
-+	    		if ( !itemsWithinBox.isEmpty() )
-+	    		{
-+	                Iterator itemIterator = itemsWithinBox.iterator();
-+	
-+	                while ( itemIterator.hasNext() )
-+	                {
-+	        			EntityItem tempItem = (EntityItem)itemIterator.next();
-+	        			
-+	        			if ( !tempItem.isDead )
-+	        			{
-+		        			ItemStack tempStack = tempItem.getEntityItem();
-+		        			
-+		        			if ( IsPackableItem( tempStack ) )
-+		        			{
-+		        				int iRequiredCount = GetItemCountToPack( tempStack );
-+		        				int iCountOfItems = CountItemsOfTypeInList( tempStack, itemsWithinBox );
-+		        				
-+		        				if ( iCountOfItems >= iRequiredCount )
-+		        				{
-+		        					RemoveItemsOfTypeFromList( tempStack, iRequiredCount, itemsWithinBox );
-+		        					
-+		        					CreatePackedBlockOfTypeAtLocation( tempStack, targetPos.i, targetPos.j, targetPos.k );
-+		        					
-+		        					break;
++    private void AttemptToPackItems() {
++    	if (!worldObj.isRemote && isExtending() && (storedBlockID == Block.pistonExtension.blockID || Block.isNormalCube(storedBlockID) || storedBlockID == Block.glass.blockID)) {
++	    	FCUtilsBlockPos pos = new FCUtilsBlockPos(xCoord, yCoord, zCoord, storedOrientation);
++
++	    	if (IsLocationSuitableForPacking(pos.i, pos.j, pos.k, Block.GetOppositeFacing(storedOrientation))) {
++	    		AxisAlignedBB targetBox = AxisAlignedBB.getAABBPool().getAABB(
++	    				pos.i, pos.j, pos.k, 
++	    				pos.i + 1D, pos.j + 1D, pos.k + 1D
++	    			);
++
++	    		List<EntityItem> itemsWithinBox = worldObj.getEntitiesWithinAABB(EntityItem.class, targetBox);
++
++	    		if (!itemsWithinBox.isEmpty()) {
++	                FCCraftingManagerPistonPackingRecipe recipe = FCCraftingManagerPistonPacking.instance.getValidRecipeFromItemList(itemsWithinBox);
++
++	                if (recipe != null) {
++	                	for (ItemStack stack : recipe.getInput()) {
++	                		RemoveItemsOfTypeFromList(stack, stack.stackSize, itemsWithinBox);
  }
-+		        			}
-+	        			}
++
++	                	createPackedBlockOfTypeAtLocation(recipe.getOutput().blockID, recipe.getOutputMetadata(), pos.i, pos.j, pos.k);
 +	                }
 +	    		}
 +			}
@@ -168,24 +149,10 @@
 +    	return false;    	
 +    }
 +    
-+    private boolean IsPackableItem( ItemStack stack )
-+    {
-+    	return stack.getItem().IsPistonPackable( stack );    	
-+    }
-+    
-+    private int GetItemCountToPack( ItemStack stack )
-+    {
-+    	return stack.getItem().GetRequiredItemCountToPistonPack( stack );
-+    }
-+    
-+    private void CreatePackedBlockOfTypeAtLocation( ItemStack stack, int i, int j, int k )
-+    {
-+    	int iBlockID = stack.getItem().GetResultingBlockIDOnPistonPack( stack );;
-+    	int iBlockMetadata = stack.getItem().GetResultingBlockMetadataOnPistonPack( stack );
-+    	
-+    	worldObj.setBlockAndMetadataWithNotify( i, j, k, iBlockID, iBlockMetadata );
-+    	
-+        worldObj.playAuxSFX( FCBetterThanWolves.m_iBlockPlaceAuxFXID, i, j, k, iBlockID );                            
++    private void createPackedBlockOfTypeAtLocation(int blockID, int metadata, int x, int y, int z) {
++    	worldObj.setBlockAndMetadataWithNotify(x, y, z, blockID, metadata);
++
++        worldObj.playAuxSFX(FCBetterThanWolves.m_iBlockPlaceAuxFXID, x, y, z, blockID);                            
 +    }
 +    
 +    private int CountItemsOfTypeInList( ItemStack stack, List list )

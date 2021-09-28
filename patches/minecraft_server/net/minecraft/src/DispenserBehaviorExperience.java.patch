@@ -1,0 +1,11 @@
+--- a/minecraft_server/net/minecraft/src/DispenserBehaviorExperience.java
++++ b/minecraft_server/net/minecraft/src/DispenserBehaviorExperience.java
+@@ -7,7 +7,7 @@
+      */
+     protected IProjectile getProjectileEntity(World par1World, IPosition par2IPosition)
+     {
+-        return new EntityExpBottle(par1World, par2IPosition.getX(), par2IPosition.getY(), par2IPosition.getZ());
++    	return (IProjectile) EntityList.createEntityOfType(EntityExpBottle.class, par1World, par2IPosition.getX(), par2IPosition.getY(), par2IPosition.getZ());
+     }
+ 
+     protected float func_82498_a()

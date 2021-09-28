@@ -172,7 +172,7 @@
 +	        	double dItemY = posY + 0.5D;
 +	        	double dItemZ = posZ + ( world.rand.nextDouble() - 0.5D ) * 2D;
 +	        	
-+	            EntityItem entityItem = new EntityItem( world, dItemX, dItemY, dItemZ, itemStack );
++	            EntityItem entityItem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, world, dItemX, dItemY, dItemZ, itemStack );
 +	            
 +	            entityItem.motionX = ( world.rand.nextDouble() - 0.5D ) * 0.5D;
 +	            entityItem.motionY = 0.2D + world.rand.nextDouble() * 0.3D;

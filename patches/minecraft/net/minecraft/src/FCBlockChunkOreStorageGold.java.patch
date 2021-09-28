@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockChunkOreStorageGold.java
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,26 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -21,13 +21,7 @@
 +			9, 0, fChanceOfDrop );
 +		
 +		return true;
-+	}	
-+    
-+	@Override
-+    public int GetItemIndexDroppedWhenCookedByKiln( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+		return Item.ingotGold.itemID;
-+    }
++	}
 +    
 +	//------------- Class Specific Methods ------------//
 +	

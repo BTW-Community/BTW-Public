@@ -68,6 +68,15 @@
          this.playerEntityList.remove(par1EntityPlayerMP);
          this.sendPacketToAllPlayers(new Packet201PlayerInfo(par1EntityPlayerMP.username, false, 9999));
      }
+@@ -334,7 +355,7 @@
+             var6 = new ItemInWorldManager(this.mcServer.worldServerForDimension(0));
+         }
+ 
+-        return new EntityPlayerMP(this.mcServer, this.mcServer.worldServerForDimension(0), par1Str, (ItemInWorldManager)var6);
++        return (EntityPlayerMP) EntityList.createEntityOfType(EntityPlayerMP.class, this.mcServer, this.mcServer.worldServerForDimension(0), par1Str, (ItemInWorldManager)var6);
+     }
+ 
+     /**
 @@ -342,6 +363,8 @@
       * respawn, an INT for the dimension to respawn into (usually 0), and a boolean value that is true if the player
       * beat the game rather than dying
@@ -232,7 +241,7 @@
 +            worldManager = new ItemInWorldManager(this.mcServer.worldServerForDimension( iNewDimension ) );
 +        }
 +
-+        EntityPlayerMP newPlayer = new EntityPlayerMP( mcServer, mcServer.worldServerForDimension( iNewDimension ), oldPlayer.username, worldManager );
++        EntityPlayerMP newPlayer = (EntityPlayerMP) EntityList.createEntityOfType(EntityPlayerMP.class, mcServer, mcServer.worldServerForDimension( iNewDimension ), oldPlayer.username, worldManager );
 +        
 +        newPlayer.playerNetServerHandler = oldPlayer.playerNetServerHandler;
 +        

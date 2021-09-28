@@ -6,3 +6,21 @@
  package net.minecraft.src;
  
  public class EntityOcelot extends EntityTameable
+@@ -255,7 +257,7 @@
+      */
+     public EntityOcelot spawnBabyAnimal(EntityAgeable par1EntityAgeable)
+     {
+-        EntityOcelot var2 = new EntityOcelot(this.worldObj);
++        EntityOcelot var2 = (EntityOcelot) EntityList.createEntityOfType(EntityOcelot.class, this.worldObj);
+ 
+         if (this.isTamed())
+         {
+@@ -361,7 +363,7 @@
+         {
+             for (int var1 = 0; var1 < 2; ++var1)
+             {
+-                EntityOcelot var2 = new EntityOcelot(this.worldObj);
++                EntityOcelot var2 = (EntityOcelot) EntityList.createEntityOfType(EntityOcelot.class, this.worldObj);
+                 var2.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
+                 var2.setGrowingAge(-24000);
+                 this.worldObj.spawnEntityInWorld(var2);

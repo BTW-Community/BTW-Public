@@ -1,13 +1,15 @@
 --- a/minecraft/net/minecraft/src/Item.java
 +++ b/minecraft/net/minecraft/src/Item.java
-@@ -1,5 +1,6 @@
+@@ -1,5 +1,8 @@
  package net.minecraft.src;
  
 +import com.prupe.mcpatcher.cit.CITUtils;
++
++import java.lang.reflect.Constructor;
  import java.util.List;
  import java.util.Random;
  
-@@ -12,183 +13,187 @@
+@@ -12,183 +15,187 @@
  
      /** A 32000 elements Item array. */
      public static Item[] itemsList = new Item[32000];
@@ -355,7 +357,7 @@
  
      /** The ID of this item. */
      public final int itemID;
-@@ -215,10 +220,16 @@
+@@ -215,10 +222,16 @@
      /** Icon index in the icons table. */
      protected Icon itemIcon;
  
@@ -372,7 +374,7 @@
          if (itemsList[256 + par1] != null)
          {
              System.out.println("CONFLICT @ " + par1);
-@@ -254,7 +265,7 @@
+@@ -254,7 +267,7 @@
       */
      public final Icon getIconIndex(ItemStack par1ItemStack)
      {
@@ -381,7 +383,7 @@
      }
  
      /**
-@@ -270,10 +281,14 @@
+@@ -270,10 +283,14 @@
       * Returns the strength of the stack against a given block. 1.0F base, (Quality+1)*2 if correct blocktype, 1.5F if
       * sword
       */
@@ -396,7 +398,7 @@
  
      /**
       * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
-@@ -362,10 +377,14 @@
+@@ -362,10 +379,14 @@
      /**
       * Returns if the item (tool) can harvest results from the block type.
       */
@@ -411,7 +413,7 @@
  
      /**
       * Called when a player right clicks an entity with an item.
-@@ -491,7 +510,10 @@
+@@ -491,7 +512,10 @@
       * Called each tick as long the item is on a player inventory. Uses by maps to check if is on a player hand and
       * update it's contents.
       */
@@ -423,7 +425,7 @@
  
      /**
       * Called when item is crafted/smelted. Used only by maps so far.
-@@ -671,4 +693,514 @@
+@@ -671,4 +695,507 @@
      {
          StatList.initStats();
      }
@@ -514,40 +516,60 @@
 +    		for (int i = 0; i < parameters.length; i++) {
 +    			Class<?> type = parameters[i].getClass();
 +    			
-+    			if (type == Integer.class) {
-+    				type = Integer.TYPE;
-+    			}
-+    			else if (type == Boolean.class) {
-+    				type = Boolean.TYPE;
-+    			}
-+    			else if (type == Float.class) {
-+    				type = Float.TYPE;
-+    			}
-+    			else if (type == Double.class) {
-+    				type = Double.TYPE;
-+    			}
-+    			else if (Block.class.isAssignableFrom(type)) {
-+    				type = Block.class;
-+    			}
-+    			else if (Item.class.isAssignableFrom(type)) {
-+    				type = Item.class;
++    			Class<?> primitiveType = FCUtilsReflection.getPrimitiveFromBoxedClass(type);
++    			
++    			if (primitiveType != null) {
++    				type = primitiveType;
 +    			}
 +    			
 +    			parameterTypes[i + 1] = type;
 +    			parameterValues[i + 1] = parameters[i];
 +    		}
 +    		
-+    			try {
-+					newItem = (Item) newClass.getConstructor(parameterTypes).newInstance(parameterValues);
-+				} catch (InstantiationException e) {
-+					throw new RuntimeException("A problem has occured attempting to instantiate replacement for " + itemsList[id]);
-+				} catch (IllegalArgumentException e) {
-+					throw new RuntimeException("Incompatible types passed to specified constructor for " + itemsList[id]);
-+				} catch (NoSuchMethodException e) {
-+					throw new RuntimeException("No appropriate constructor found for " + itemsList[id] + ". Constructors must be public to be used in replacement.");
-+				} catch (Exception e) {
-+					e.printStackTrace();
-+				}
++    		Constructor[] constructors = newClass.getDeclaredConstructors();
++            Constructor constructorToUse = null;
++            
++            for (Constructor c : constructors) {
++                boolean constructorMatches = true;
++                
++                Class[] cParamTypes = c.getParameterTypes();
++                
++                if (cParamTypes.length == parameterTypes.length) {
++                    for (int j = 0; j < cParamTypes.length; j++) {
++                    	if (!(cParamTypes[j].isAssignableFrom(parameterTypes[j]) || 
++                        		parameterTypes[j].isAssignableFrom(cParamTypes[j]))) {
++                            constructorMatches = false;
++                            break;
++                        }
++                    }
++                }
++                else {
++                    constructorMatches = false;
++                    String message = "No appropriate constructor found for " + itemsList[id] + ": ";
++                    
++                    for (Class<?> paramType : parameterTypes) {
++                    	message += paramType.getName() + ", ";
++                    }
++                    
++                    throw new RuntimeException(message);
++                }
++                
++                if (constructorMatches) {
++                    constructorToUse = c;
++                    break;
++                }
++            }
++    		
++    		try {
++    			constructorToUse.setAccessible(true);
++    			newItem = (Item) constructorToUse.newInstance(parameterValues);
++    		} catch (InstantiationException e) {
++    			throw new RuntimeException("A problem has occured attempting to instantiate replacement for " + itemsList[id]);
++    		} catch (IllegalArgumentException e) {
++    			throw new RuntimeException("Incompatible types passed to specified constructor for " + itemsList[id]);
++    		} catch (Exception e) {
++    			e.printStackTrace();
++    		}
 +    		
 +    		itemReplaced[id] = true;
 +    		Item original = itemsList[id];
@@ -830,28 +852,6 @@
 +    	return false;
 +    }
 +    
-+    //------------- Piston Packing related functionality ------------//
-+    
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return false;
-+    }
-+    
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 0;
-+    }
-+    
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return 0;
-+    }
-+    
-+    public int GetResultingBlockMetadataOnPistonPack( ItemStack stack )
-+    {
-+    	return 0;
-+    }
-+    
 +    //------------- Hopper Filtering Functionality -----------//
 +    
 +    protected int m_iFilterablePropertiesBitfield = 0;
@@ -871,11 +871,6 @@
 +    	m_iFilterablePropertiesBitfield = iProperties;
 +    	
 +    	return this;
-+    }
-+    
-+    public boolean CanTransformItemIfFilter( ItemStack filteredItem )
-+    {
-+    	return false;
 +    }
 +    
 +    //------------- Deprecated tool functionality ------------//

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockAestheticOpaque.java
-@@ -0,0 +1,279 @@
+@@ -0,0 +1,245 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -196,40 +196,6 @@
 +		}
 +		
 +		return super.OnBlockSawed( world, i, j, k );
-+    }
-+    
-+	@Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	int iSubtype = world.getBlockMetadata( i, j, k );
-+    	
-+    	if ( iSubtype == m_iSubtypeWicker )
-+    	{
-+    		return FCBetterThanWolves.fcBlockWickerSlab.blockID;
-+    	}
-+    	else if ( iSubtype == m_iSubtypeBone )
-+    	{
-+    		return Item.bone.itemID;
-+    	}
-+
-+    	return super.GetItemIDDroppedOnSaw( world, i, j, k );
-+    }
-+	
-+	@Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	int iSubtype = world.getBlockMetadata( i, j, k );
-+    	
-+    	if ( iSubtype == m_iSubtypeWicker )
-+    	{
-+    		return 2;
-+    	}
-+    	else if ( iSubtype == m_iSubtypeBone )
-+    	{
-+    		return 5; // 9 in full block
-+    	}
-+
-+    	return super.GetItemCountDroppedOnSaw( world, i, j, k );
 +    }
 +    
 +	@Override

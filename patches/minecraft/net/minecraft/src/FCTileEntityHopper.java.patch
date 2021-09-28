@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCTileEntityHopper.java
-@@ -0,0 +1,880 @@
+@@ -0,0 +1,877 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -321,9 +321,6 @@
 +	        }
 +	        
 +	        int iOccupiedStacks = FCUtilsInventory.GetNumOccupiedStacksInRange( this, 0, 17 );
-+	        
-+	        ( (FCBlockHopper)(FCBetterThanWolves.fcHopper) ).SetHopperFull( worldObj, xCoord, yCoord, zCoord,
-+	        		m_sStorageSlotsOccupied == 18 );
 +	        
 +	        ( (FCBlockHopper)(FCBetterThanWolves.fcHopper) ).SetHasFilter( worldObj, 
 +	        	xCoord, yCoord, zCoord, m_iFilterItemID > 0 );
@@ -648,9 +645,9 @@
 +        float zOffset = worldObj.rand.nextFloat() * 0.1F + 0.45F;
 +    	
 +        EntityItem entityitem = 
-+        	new EntityItem( worldObj, 
-+    			(float)xCoord + xOffset, (float)yCoord + yOffset, (float)zCoord + zOffset, 
-+    			stack );
++        	(EntityItem) EntityList.createEntityOfType(EntityItem.class, worldObj, 
++			(float)xCoord + xOffset, (float)yCoord + yOffset, (float)zCoord + zOffset, 
++			stack );
 +
 +        entityitem.motionX = 0.0F;
 +        entityitem.motionY = -0.01F;
@@ -823,7 +820,7 @@
 +        double yOffset = -0.20D;
 +        double zOffset = worldObj.rand.nextDouble() * 0.1D + 0.45D;
 +    	
-+        EntityXPOrb xpOrb = new EntityXPOrb( worldObj, 
++        EntityXPOrb xpOrb = (EntityXPOrb) EntityList.createEntityOfType(EntityXPOrb.class, worldObj, 
 +    			xCoord + xOffset, yCoord + yOffset, zCoord + zOffset, 
 +        		iXPValue );
 +

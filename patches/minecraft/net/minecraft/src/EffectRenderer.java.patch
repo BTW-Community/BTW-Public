@@ -79,3 +79,21 @@
          {
              this.fxLayers[var2].clear();
          }
+@@ -164,7 +169,7 @@
+                         double var13 = (double)par2 + ((double)var9 + 0.5D) / (double)var7;
+                         double var15 = (double)par3 + ((double)var10 + 0.5D) / (double)var7;
+                         int var17 = this.rand.nextInt(6);
+-                        this.addEffect((new EntityDiggingFX(this.worldObj, var11, var13, var15, var11 - (double)par1 - 0.5D, var13 - (double)par2 - 0.5D, var15 - (double)par3 - 0.5D, var6, var17, par5, this.renderer)).func_70596_a(par1, par2, par3));
++                        this.addEffect(((EntityDiggingFX) EntityList.createEntityOfType(EntityDiggingFX.class, this.worldObj, var11, var13, var15, var11 - (double)par1 - 0.5D, var13 - (double)par2 - 0.5D, var15 - (double)par3 - 0.5D, var6, var17, par5, this.renderer)).func_70596_a(par1, par2, par3));
+                     }
+                 }
+             }
+@@ -216,7 +221,7 @@
+                 var8 = (double)par1 + var6.getBlockBoundsMaxX() + (double)var7;
+             }
+ 
+-            this.addEffect((new EntityDiggingFX(this.worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, par4, this.worldObj.getBlockMetadata(par1, par2, par3), this.renderer)).func_70596_a(par1, par2, par3).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
++            this.addEffect(((EntityDiggingFX) EntityList.createEntityOfType(EntityDiggingFX.class, this.worldObj, var8, var10, var12, 0.0D, 0.0D, 0.0D, var6, par4, this.worldObj.getBlockMetadata(par1, par2, par3), this.renderer)).func_70596_a(par1, par2, par3).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));
+         }
+     }
+ 

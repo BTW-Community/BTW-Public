@@ -1,10 +1,11 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCUtilsInventory.java
-@@ -0,0 +1,542 @@
+@@ -0,0 +1,587 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
++import java.util.ArrayList;
 +import java.util.Random;
 +
 +public class FCUtilsInventory
@@ -51,7 +52,7 @@
 +                }
 +                
 +                itemstack.stackSize -= i1;
-+                EntityItem entityitem = new EntityItem(world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getItemDamage()));
++                EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getItemDamage()));
 +                
 +                float f3 = 0.05F;
 +                
@@ -182,7 +183,21 @@
 +        }
 +
 +        return -1;
-+    }    
++    }
++    
++    public static ArrayList<Integer> getAllOccupiedStacksOfItem(IInventory inventory, int itemID) {
++    	ArrayList<Integer> slots = new ArrayList();
++
++    	for (int i = 0; i < inventory.getSizeInventory(); i++) {
++            if (inventory.getStackInSlot(i) != null) {
++            	if (inventory.getStackInSlot(i).getItem().itemID == itemID) {
++            		slots.add(i);
++            	}
++            }
++        }
++
++    	return slots;
++    }
 +    
 +    static public int GetFirstOccupiedStackNotOfItem( IInventory inventory, int iNotItemID )
 +    {
@@ -341,6 +356,36 @@
 +	    
 +        return AttemptToPlaceInEmptySlotInSlotRange( inventory, itemstack, iMinSlotIndex, iMaxSlotIndex );
 +	}
++    
++    public static int getMaxNumberOfItemsForTransferInRange(IInventory inventory, ItemStack itemStack, int countLimit, int minSlotIndex, int maxSlotIndex) {
++    	int totalSlotCount = maxSlotIndex - minSlotIndex + 1;
++    	int maximumEmptySlotCount = totalSlotCount - GetNumOccupiedStacksInRange(inventory, minSlotIndex, maxSlotIndex);
++
++    	int maxItemsForEmptySlots = maximumEmptySlotCount * itemStack.getMaxStackSize();
++
++    	if (maxItemsForEmptySlots >= countLimit) {
++    		return countLimit;
++    	}
++    	else {
++    		int itemCountToMerge = countLimit - maxItemsForEmptySlots;
++
++    		ArrayList<Integer> slotsAvailableToMerge = getAllOccupiedStacksOfItem(inventory, itemStack.itemID);
++
++    		int availableItems = 0;
++
++    		for (int slotIndex : slotsAvailableToMerge) {
++    			ItemStack slotStack = inventory.getStackInSlot(slotIndex);
++    			availableItems += slotStack.getMaxStackSize() - slotStack.stackSize;
++    		}
++
++    		if (availableItems >= itemCountToMerge) {
++    			return countLimit;
++    		}
++    		else {
++    			return countLimit - (itemCountToMerge - availableItems);
++    		}
++    	}
++    }
 +
 +    /*
 +     * This function differs from a normal add in that it checks for double chests and deposits

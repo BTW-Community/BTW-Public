@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemBow.java
-@@ -0,0 +1,211 @@
+@@ -0,0 +1,206 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -47,7 +47,7 @@
 +            }
 +            else
 +            {
-+            	entityArrow = new FCEntityInfiniteArrow( world, player, fPullStrength * GetPullStrengthToArrowVelocityMultiplier() );            	
++            	entityArrow = (EntityArrow) EntityList.createEntityOfType(FCEntityInfiniteArrow.class, world, player, fPullStrength * GetPullStrengthToArrowVelocityMultiplier() );            	
 +            }
 +  
 +            if ( entityArrow != null )
@@ -113,11 +113,6 @@
 +    {
 +		if ( outputStack.itemID == Item.stick.itemID )
 +		{
-+	    	if ( !player.worldObj.isRemote )
-+	    	{
-+    			FCUtilsItem.EjectStackWithRandomVelocity( player.worldObj, player.posX, player.posY, player.posZ, new ItemStack( Item.silk ) ); 
-+	    	}
-+	    	
 +	    	if ( player.m_iTimesCraftedThisTick == 0 )
 +			{
 +				player.playSound( "random.bow", 0.25F, player.worldObj.rand.nextFloat() * 0.25F + 1.5F );
@@ -175,11 +170,11 @@
 +		
 +		if ( iItemID == FCBetterThanWolves.fcItemRottenArrow.itemID )
 +		{
-+			entityArrow = new FCEntityRottenArrow( world, player, fPullStrength * 0.55F * GetPullStrengthToArrowVelocityMultiplier() );
++			entityArrow = (EntityArrow) EntityList.createEntityOfType(FCEntityRottenArrow.class, world, player, fPullStrength * 0.55F * GetPullStrengthToArrowVelocityMultiplier() );
 +		}
 +		else if ( iItemID == Item.arrow.itemID )
 +		{
-+			entityArrow = new EntityArrow( world, player, fPullStrength * GetPullStrengthToArrowVelocityMultiplier() );
++			entityArrow = (EntityArrow) EntityList.createEntityOfType(EntityArrow.class, world, player, fPullStrength * GetPullStrengthToArrowVelocityMultiplier() );
 +		}
 +		
 +		return entityArrow;

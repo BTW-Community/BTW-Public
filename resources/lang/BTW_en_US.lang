@@ -37,6 +37,7 @@ tile.fcBlockAnchor.name=Anchor
 tile.fcBlockRope.name=Rope
 tile.fcBlockOmniSlab.name=Old Siding
 tile.fcBlockAxle.name=Axle
+tile.fcBlockAxlePowerSource.name=Powered Axle
 tile.fcBlockGearBox.name=Gear Box
 tile.fcBlockTurntable.name=Turntable
 tile.fcBlockBellows.name=Bellows
@@ -492,6 +493,9 @@ item.fcItemBreadDough.name=Bread Dough
 item.fcItemStraw.name=Straw
 item.fcItemBrickUnfired.name=Wet Brick
 item.fcItemBrickNetherUnfired.name=Uncooked Nether Brick
+item.fcItemNameTag.name=Name Tag
+item.fcItemChiselDiamond.name=Diamond Chisel
+item.fcItemShearsDiamond.name=Diamond Shears
 
 # BTW Complex Items
 
@@ -528,3 +532,12 @@ potion.hunger=Food Poisoning
 container.fcFurnaceBrick=Brick Oven
 container.fcHamper=Hamper
 container.fcMillStone=Mill Stone
+
+# Entities
+
+entity.fcJungleSpider.name=Jungle Spider
+entity.addonVillagerFarmer.name=Farmer
+entity.addonVillagerBlacksmith.name=Blacksmith
+entity.addonVillagerButcher.name=Butcher
+entity.addonVillagerLibrarian.name=Librarian
+entity.addonVillagerPriest.name=Priest

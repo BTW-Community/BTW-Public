@@ -6,3 +6,12 @@
  package net.minecraft.src;
  
  import java.util.Iterator;
+@@ -241,7 +243,7 @@
+     {
+         if (!this.getAggressive())
+         {
+-            EntityPotion var3 = new EntityPotion(this.worldObj, this, 32732);
++            EntityPotion var3 = (EntityPotion) EntityList.createEntityOfType(EntityPotion.class, this.worldObj, this, 32732);
+             var3.rotationPitch -= -20.0F;
+             double var4 = par1EntityLiving.posX + par1EntityLiving.motionX - this.posX;
+             double var6 = par1EntityLiving.posY + (double)par1EntityLiving.getEyeHeight() - 1.100000023841858D - this.posY;

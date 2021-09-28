@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemDung.java
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,33 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -32,30 +32,6 @@
 +        }
 +        
 +        return false;
-+    }
-+    
-+    @Override
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return true;
-+    }
-+    
-+    @Override
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 9;
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return FCBetterThanWolves.fcBlockAestheticOpaqueEarth.blockID;
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockMetadataOnPistonPack( ItemStack stack )
-+    {
-+    	return FCBlockAestheticOpaqueEarth.m_iSubtypeDung;
 +    }
 +}
 \ No newline at end of file

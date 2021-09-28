@@ -196,7 +196,7 @@
 +	            double d1 = (double)( world.rand.nextFloat() * f) + (double)(1F - f) * 0.5D;
 +	            double d2 = (double)( world.rand.nextFloat() * f) + (double)(1F - f) * 0.5D;
 +	            
-+	            EntityItem entityitem = new FCEntityItemBloodWoodSapling( world, (double)i + d, (double)j + d1, (double)k + d2, itemStack );
++	            EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(FCEntityItemBloodWoodSapling.class, world, (double)i + d, (double)j + d1, (double)k + d2, itemStack );
 +	            
 +	            entityitem.delayBeforeCanPickup = 10;
 +	            world.spawnEntityInWorld(entityitem);
@@ -216,7 +216,7 @@
 +        if ( 
 +    		!world.isRemote && 
 +    		entityPlayer.getCurrentEquippedItem() != null && 
-+    		entityPlayer.getCurrentEquippedItem().itemID == Item.shears.itemID &&
++    		entityPlayer.getCurrentEquippedItem().getItem() instanceof FCItemShears &&
 +    		iMetaData == m_iSubtypeBloodLeaves
 +		)
 +        {

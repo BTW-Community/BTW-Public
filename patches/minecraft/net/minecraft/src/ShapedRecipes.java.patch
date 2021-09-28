@@ -1,6 +1,15 @@
 --- a/minecraft/net/minecraft/src/ShapedRecipes.java
 +++ b/minecraft/net/minecraft/src/ShapedRecipes.java
-@@ -37,10 +37,18 @@
+@@ -11,6 +11,8 @@
+     /** Is a array of ItemStack that composes the recipe. */
+     private ItemStack[] recipeItems;
+ 
++    private ItemStack[] recipeSecondaryOutputs;
++
+     /** Is the ItemStack that you get when craft the recipe. */
+     private ItemStack recipeOutput;
+ 
+@@ -37,10 +39,18 @@
       */
      public boolean matches(InventoryCrafting par1InventoryCrafting, World par2World)
      {
@@ -19,7 +28,7 @@
                  if (this.checkMatch(par1InventoryCrafting, var3, var4, true))
                  {
                      return true;
-@@ -61,10 +69,18 @@
+@@ -61,10 +71,18 @@
       */
      private boolean checkMatch(InventoryCrafting par1InventoryCrafting, int par2, int par3, boolean par4)
      {
@@ -38,7 +47,7 @@
                  int var7 = var5 - par2;
                  int var8 = var6 - par3;
                  ItemStack var9 = null;
-@@ -83,6 +99,13 @@
+@@ -83,6 +101,13 @@
  
                  ItemStack var10 = par1InventoryCrafting.getStackInRowAndColumn(var5, var6);
  
@@ -52,7 +61,7 @@
                  if (var10 != null || var9 != null)
                  {
                      if (var10 == null && var9 != null || var10 != null && var9 == null)
-@@ -142,4 +165,63 @@
+@@ -142,4 +167,67 @@
          this.field_92101_f = true;
          return this;
      }
@@ -107,12 +116,16 @@
 +    @Override
 +    public boolean HasSecondaryOutput()
 +    {
-+    	return m_bHasSecondaryOutput;
++    	return recipeSecondaryOutputs != null;
 +    }
 +    
-+    public void SetHasSecondaryOutput( boolean bHasSecondaryOutput )
++    public void SetSecondaryOutput(ItemStack[] secondaryOutput)
 +    {
-+    	m_bHasSecondaryOutput = bHasSecondaryOutput;
++    	this.recipeSecondaryOutputs = secondaryOutput;
++    }
++    
++    public ItemStack[] getSecondaryOutput(IInventory inventory) {
++    	return this.recipeSecondaryOutputs;
 +    }
 +    // END FCMOD    
 +}

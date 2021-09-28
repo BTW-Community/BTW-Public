@@ -250,6 +250,24 @@
                  {
                      float var22 = this.random.nextFloat();
                      float var23 = this.random.nextFloat();
+@@ -1301,7 +1373,7 @@
+                     {
+                         if (Block.blocksList[var20].blockMaterial == Material.lava)
+                         {
+-                            this.mc.effectRenderer.addEffect(new EntitySmokeFX(var3, (double)((float)var17 + var22), (double)((float)var19 + 0.1F) - Block.blocksList[var20].getBlockBoundsMinY(), (double)((float)var18 + var23), 0.0D, 0.0D, 0.0D));
++                            this.mc.effectRenderer.addEffect((EntityFX) EntityList.createEntityOfType(EntitySmokeFX.class, var3, (double)((float)var17 + var22), (double)((float)var19 + 0.1F) - Block.blocksList[var20].getBlockBoundsMinY(), (double)((float)var18 + var23), 0.0D, 0.0D, 0.0D));
+                         }
+                         else
+                         {
+@@ -1314,7 +1386,7 @@
+                                 var12 = (double)((float)var18 + var23);
+                             }
+ 
+-                            this.mc.effectRenderer.addEffect(new EntityRainFX(var3, (double)((float)var17 + var22), (double)((float)var19 + 0.1F) - Block.blocksList[var20].getBlockBoundsMinY(), (double)((float)var18 + var23)));
++                            this.mc.effectRenderer.addEffect((EntityFX) EntityList.createEntityOfType(EntityRainFX.class, var3, (double)((float)var17 + var22), (double)((float)var19 + 0.1F) - Block.blocksList[var20].getBlockBoundsMinY(), (double)((float)var18 + var23)));
+                         }
+                     }
+                 }
 @@ -1326,11 +1398,21 @@
  
                  if (var10 > var2.posY + 1.0D && var3.getPrecipitationHeight(MathHelper.floor_double(var2.posX), MathHelper.floor_double(var2.posZ)) > MathHelper.floor_double(var2.posY))

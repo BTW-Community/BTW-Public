@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockDirectional.java
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,68 @@
 +package net.minecraft.src;
 +
 +/**
@@ -17,7 +17,7 @@
 +        this.topTextures = topTextures;
 +        this.sideTextures = sideTextures;
 +	}
-+	
++
 +	public boolean CanRotateOnTurntable(IBlockAccess access, int x, int y, int z) {
 +		return (access.getBlockMetadata(x,y,z) & 12) != 0;
 +	}
@@ -38,8 +38,7 @@
 +
 +        return meta;
 +    }
-+	 
-+    
++
 +    public int onBlockPlaced(World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int meta) {
 +        int type = meta & 3;
 +        byte directionMeta = 0;
@@ -61,12 +60,11 @@
 +        return type | directionMeta;
 +    }
 +
-+    
++
 +    public int damageDropped(int meta) {
 +        return meta & 3;
 +    }
 +
-+    
 +    public static int limitToValidMetadata(int meta) {
 +        return meta & 3;
 +    }

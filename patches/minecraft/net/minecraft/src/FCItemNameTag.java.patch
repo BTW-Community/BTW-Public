@@ -1,0 +1,31 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCItemNameTag.java
+@@ -0,0 +1,27 @@
++package net.minecraft.src;
++
++public class FCItemNameTag extends Item {
++	protected FCItemNameTag(int id) {
++		super(id);
++		this.setUnlocalizedName("decoItemNameTag");
++		this.setCreativeTab(CreativeTabs.tabTools);
++		this.setMaxStackSize(1);
++	}
++	
++	@Override
++	public boolean itemInteractionForEntity(ItemStack stack, EntityLiving entity) {
++		String name = stack.getDisplayName();
++		
++		//Does not allow blank names (or unchanged from base name)
++		if (name.equals("") || !stack.hasDisplayName())
++			return false;
++		
++		//Applies the name
++		entity.func_94058_c(name);
++		entity.SetPersistent(true);
++		
++		stack.stackSize--;
++		
++		return true;
++	}
++}
+\ No newline at end of file

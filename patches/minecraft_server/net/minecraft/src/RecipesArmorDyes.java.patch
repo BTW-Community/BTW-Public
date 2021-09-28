@@ -65,7 +65,7 @@
                      var3[2] += var17;
                      ++var5;
                  }
-@@ -144,4 +167,18 @@
+@@ -144,4 +167,23 @@
      {
          return null;
      }
@@ -81,6 +81,11 @@
 +    public boolean HasSecondaryOutput()
 +    {
 +    	return false;
++    }
++    
++    @Override
++    public ItemStack[] getSecondaryOutput(IInventory inventory) {
++    	return null;
 +    }
 +    // END FCMOD
 +}

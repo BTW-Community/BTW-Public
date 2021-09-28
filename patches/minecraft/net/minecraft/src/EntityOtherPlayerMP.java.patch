@@ -7,7 +7,7 @@
 -            this.skinUrl = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par2Str) + ".png";
 +        	// FCMOD: Changed, client only        	
 +            //this.skinUrl = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par2Str) + ".png";
-+            this.skinUrl = FCBetterThanWolves.fcPlayerSkinURL + StringUtils.stripControlCodes(par2Str) + ".png";
++            this.skinUrl = FCBetterThanWolves.fcPlayerSkinURL + fetchUuid(par2Str);
 +            // END FCMOD
          }
  

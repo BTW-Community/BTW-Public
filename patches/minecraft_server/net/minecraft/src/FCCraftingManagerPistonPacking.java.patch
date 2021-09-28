@@ -1,0 +1,91 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCCraftingManagerPistonPacking.java
+@@ -0,0 +1,87 @@
++package net.minecraft.src;
++
++import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++
++public class FCCraftingManagerPistonPacking {
++	public static FCCraftingManagerPistonPacking instance = new FCCraftingManagerPistonPacking();
++
++	private ArrayList<FCCraftingManagerPistonPackingRecipe> recipes = new ArrayList();
++
++	private FCCraftingManagerPistonPacking() {}
++
++	public void addRecipe(Block output, int outputMetadata, ItemStack[] input) {
++		recipes.add(new FCCraftingManagerPistonPackingRecipe(output, outputMetadata, input));
++	}
++
++	public boolean removeRecipe(Block output, int outputMetadata, ItemStack[] input) {
++		FCCraftingManagerPistonPackingRecipe recipeToRemove = new FCCraftingManagerPistonPackingRecipe(output, outputMetadata, input);
++
++		for (FCCraftingManagerPistonPackingRecipe recipe : recipes) {
++			if (recipe.matchesRecipe(recipeToRemove)) {
++				return true;
++			}
++		}
++
++		return false;
++	}
++
++	public FCCraftingManagerPistonPackingRecipe getRecipe(ItemStack[] input) {
++		for (FCCraftingManagerPistonPackingRecipe recipe : recipes) {
++			if (recipe.matchesInputs(input)) {
++				return recipe;
++			}
++		}
++
++		return null;
++	}
++
++	public FCCraftingManagerPistonPackingRecipe getValidRecipeFromItemList(List<EntityItem> itemList) {
++		if (itemList == null || itemList.isEmpty()) {
++			return null;
++		}
++
++		Map<Integer, Integer> itemCountMap = new HashMap();
++
++		//Collects all item entities by type into a single count
++		//Makes multiple stacks of the same item count together
++		for (EntityItem entity : itemList) {
++			if (!entity.isDead) {
++				int itemID = entity.getEntityItem().itemID;
++
++				if (itemCountMap.containsKey(itemID)) {
++					itemCountMap.put(itemID, itemCountMap.get(itemID) + entity.getEntityItem().stackSize); 
++				}
++				else {
++					itemCountMap.put(itemID, entity.getEntityItem().stackSize);
++				}
++			}
++		}
++
++		for (FCCraftingManagerPistonPackingRecipe recipe : recipes) {
++			boolean recipeMatch = true;
++
++			for (ItemStack stack : recipe.getInput()) {
++				//If any item in the recipe is missing, or any item doesn't have enough ingredients, immediately move on to the next recipe
++				if (!itemCountMap.containsKey(stack.itemID)) {
++					recipeMatch = false;
++					break;
++				}
++				else {
++					if (itemCountMap.get(stack.itemID) < stack.stackSize) {
++						recipeMatch = false;
++						break;
++					}
++				}
++			}
++
++			if (recipeMatch) {
++				return recipe;
++			}
++		}
++
++		return null;
++	}
++}
+\ No newline at end of file

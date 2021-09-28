@@ -1,3 +1,67 @@
+## Version 1.1.0: ##
+This release will cause issues with craftguide. It will definitely no longer be able to display kiln and saw recipes, but may cause bigger issues than that. I am unfamiliar with the craftguide codebase but I am definitely willing to work with anyone who is to get it functional again. Once it is fixed though, it should have increased functionality due to how a lot of the BTW-specific recipes are now handled.
+
+Also, apologies to addon authors for breaking things so soon again, this will also break any addons which use custom recipe classes or which add recipes for the saw, kiln, piston packing, or secondary output recipes.
+
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- Zhil
+- Hiracho
+- rockoutwill
+
+/--General--/
+- Refactored the code for the skin fix to be less janky.
+- Removed the config option for skin URLs since it is no longer necessary with the integration of Zhil's skin fix.
+
+/--Gameplay--/
+- Added diamond shears, crafted in the same manner as iron shears. Diamond shears do not take durability damage when used in crafting. This and the chisel below use the same id as deco's item, so they will be counted as the same item for those using deco (once deco is updated for CE).
+- Added diamond chisels, crafted with a single diamond ingot. Diamond chisels do not take durability damage when used in crafting.
+- Added the ability to filter wheat through a wicker filter in a hopper to separate out seeds and straw, allowing for automated farming of wheat once again.
+- Added the ability to create chicken feed in a cauldron.
+- Added the ability to apply mortar using a vanilla dispenser facing a block which can accept mortar.
+- Added a config option to disable nausea from grinding netherrack in the millstone.
+- Added a config option to enable hardcore soulmating after the nether has been accessed. If this is enabled, players will always spawn together after dying, regardless of progression.
+- Added the ability to craft the comparator, using the same recipe as the repeater but with a redstone eye in place of the clock, and a third redstone torch above the middle.
+- Added the ability for the comparator to read the contents of the hopper. This replaces the previous functionality where the hopper would output power when full, which has been removed. This also fixes an issue where a full hopper would permanently lock a dispenser placed below it.
+- Changed the redstone eye to be crafted using only a single row of lapis, and moved it to be craftable on a normal crafting table.
+- Changed regular and detector rails to be crafted with 6 iron nuggets instead of ingots. Regular rails now produce 12 instead of 16, while detector rails still produce 6.
+- Changed powered rails to be crafted with 6 iron nuggets for the rails, a stick in the center, and a redstone latch in the bottom center, still producing 6.
+- Changed wolves to be bred using mystery meat, and removed all restrictions on wolves entering breeding mode, including allowing wild wolves to breed.
+- Changed wolves to get extra excited after killing a player.
+- Changed the player to drop less mystery meat from being fat, but increased the minimum slightly (from 1-11 to 2-4).
+- Changed the player to drop rotten flesh when bound to a soulforged steel beacon. The previous behavior was encouraging the player to construct suicide booths in order to obtain large quantities of mystery meat. Sacrificing villagers (preferably with a looting weapon or beacon) is the intended way to do so.
+- Changed (increased) the amount of mystery meat dropped by villagers from 1-2 to 1-3.
+- Changed (increased) the amount of leather dropped by cows from 0-2 to 1-3 to make investing the effort to kill a cow feel a little more rewarding.
+- Changed (increased) the number of feathers dropped by chickens from 0-2 to 1-3. This, along with the arrow change, should hopefully make feathers feel like less of a restrictive resource.
+- Changed arrows to once again craft 4. Arrows felt far too costly to the point of feeling prohibitive, and it was discouraging players from using bows even into late game.
+- Changed the recipe for steel broadheads to produce 2 arrowheads instead of 6 to maintain a similar steel cost for broadhead arrows.
+- Changed the number of items traded for the priest's skull trade and several raw meat trades for the butcher to make them consistent with other similar trades.
+- Changed (reduced) the price of saddles from the butcher.
+- Changed (rebalanced) a few of the outlier librarian trades to be less obnoxious.
+- Changed (reduced) the spawn rate of ghasts in the nether. It is still considerably higher than vanilla, but the old spawn rate would spam ghasts and make tunneling the only viable strategy, which was not particularly enjoyable. The nether will still continue to be quite dangerous, but surface travel will at least be possible now. A config option has been provided for those who wish to maintain the old spawn rate.
+- Changed blaze powder to be crafted by grinding blaze rods in a millstone. Blaze powder may no longer be crafted by hand.
+- Changed vanilla stair recipes to produce 6 instead of 4 to match the stair recipes in BTW.
+- Changed rough stone which has been chiseled beyond the first stage to explode into items when picked up by a block dispenser to fix a stone duplication exploit.
+- Fixed an issue where burning villagers still dropped cooked meat instead of burned.
+- Fixed an issue where sugar cane could be placed inside water.
+- Fixed an issue where endermen would forget their aggro status on reloading the world.
+
+/--Creative Mode--/
+- Added water and lava source blocks to the creative menu.
+- Added powered axles to the creative menu. This allows testing mechanical devices without having to worry about constructing something to generate mechanical power.
+- Fixed an issue where jungle spiders were missing spawn eggs.
+- Fixed an issue where villager spawn eggs were missing translation entries.
+
+/--Addon API--/
+- Rewrote how entity creation is handled. Entities now must go through EntityList.createEntityOfType() in order to be created, which allows for much smoother entity class replacement for addons.
+- Added hooks to save global data to level.dat.
+- Added the ability to define piston packing recipes which combine multiple items into a single block.
+- Changed recipes for hopper filtering, piston packing, the saw, and the kiln to use crafting managers, allowing recipes to be added or modified without overrides.
+- Changed secondary recipe outputs to store their secondary outputs in the crafting manager when assigned instead of relying on hardcoded info.
+- Changed the kiln cooking overlay to be automatically rendered for blocks which have a kiln recipe so that it no longer needs to be hardcoded in RenderBlockSecondPass()
+- Changed the config file handler to regenerate the config file (with the selected options) every time the game is loaded in order to preserve the options order defined by the addon instead of appending any new options to the end of the file
+- Changed (refactored) block and item replacement to be a bit more robust. There should not be any addon-facing changes, however.
+
 ## Version 1.0.1: ##
 Thanks to the following people who contributed to this release!
 - Dawnraider

@@ -1,0 +1,10 @@
+--- a/minecraft_server/net/minecraft/src/ItemHangingEntity.java
++++ b/minecraft_server/net/minecraft/src/ItemHangingEntity.java
+@@ -56,6 +56,6 @@
+      */
+     private EntityHanging createHangingEntity(World par1World, int par2, int par3, int par4, int par5)
+     {
+-        return (EntityHanging)(this.hangingEntityClass == EntityPainting.class ? new EntityPainting(par1World, par2, par3, par4, par5) : (this.hangingEntityClass == EntityItemFrame.class ? new EntityItemFrame(par1World, par2, par3, par4, par5) : null));
++    	return (EntityHanging)(this.hangingEntityClass == EntityPainting.class ? EntityList.createEntityOfType(EntityPainting.class, par1World, par2, par3, par4, par5) : (this.hangingEntityClass == EntityItemFrame.class ? new EntityItemFrame(par1World, par2, par3, par4, par5) : null));
+     }
+ }

@@ -249,6 +249,15 @@
  
      /**
       * Returns the string that identifies this Entity's class
+@@ -1652,7 +1712,7 @@
+      */
+     public EntityItem entityDropItem(ItemStack par1ItemStack, float par2)
+     {
+-        EntityItem var3 = new EntityItem(this.worldObj, this.posX, this.posY + (double)par2, this.posZ, par1ItemStack);
++        EntityItem var3 = (EntityItem) EntityList.createEntityOfType(EntityItem.class, this.worldObj, this.posX, this.posY + (double)par2, this.posZ, par1ItemStack);
+         var3.delayBeforeCanPickup = 10;
+         this.worldObj.spawnEntityInWorld(var3);
+         return var3;
 @@ -1842,6 +1902,7 @@
  
      /**

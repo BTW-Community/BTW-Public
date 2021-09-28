@@ -1,5 +1,34 @@
 --- a/minecraft_server/net/minecraft/src/EntityMinecart.java
 +++ b/minecraft_server/net/minecraft/src/EntityMinecart.java
+@@ -41,22 +41,22 @@
+         switch (par7)
+         {
+             case 1:
+-                return new EntityMinecartChest(par0World, par1, par3, par5);
++                return (EntityMinecart) EntityList.createEntityOfType(EntityMinecartChest.class, par0World, par1, par3, par5);
+ 
+             case 2:
+-                return new EntityMinecartFurnace(par0World, par1, par3, par5);
++                return (EntityMinecart) EntityList.createEntityOfType(EntityMinecartFurnace.class, par0World, par1, par3, par5);
+ 
+             case 3:
+-                return new EntityMinecartTNT(par0World, par1, par3, par5);
++                return (EntityMinecart) EntityList.createEntityOfType(EntityMinecartTNT.class, par0World, par1, par3, par5);
+ 
+             case 4:
+-                return new EntityMinecartMobSpawner(par0World, par1, par3, par5);
++                return (EntityMinecart) EntityList.createEntityOfType(EntityMinecartMobSpawner.class, par0World, par1, par3, par5);
+ 
+             case 5:
+-                return new EntityMinecartHopper(par0World, par1, par3, par5);
++                return (EntityMinecart) EntityList.createEntityOfType(EntityMinecartHopper.class, par0World, par1, par3, par5);
+ 
+             default:
+-                return new EntityMinecartEmpty(par0World, par1, par3, par5);
++                return (EntityMinecart) EntityList.createEntityOfType(EntityMinecartEmpty.class, par0World, par1, par3, par5);
+         }
+     }
+ 
 @@ -672,11 +672,27 @@
          }
          else

@@ -52,7 +52,7 @@
 +					}
 +				}
 +
-+				FCEntityZombie zombieVillager = new FCEntityZombie( par1World );
++				FCEntityZombie zombieVillager = (FCEntityZombie) EntityList.createEntityOfType(FCEntityZombie.class, par1World);
 +
 +				zombieVillager.m_iVillagerClass = iVillagerType;
 +				zombieVillager.SetPersistent( true );                	

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCTileEntityMillStone.java
-@@ -0,0 +1,517 @@
+@@ -0,0 +1,518 @@
 +//FCMOD
 +
 +package net.minecraft.src;
@@ -274,7 +274,7 @@
 +    	
 +    	ejectPos.RotateAsBlockPosAroundJToFacing( iFacing );
 +    	
-+        EntityItem entity = new EntityItem( worldObj, xCoord + ejectPos.xCoord, 
++    	EntityItem entity = (EntityItem) EntityList.createEntityOfType(EntityItem.class, worldObj, xCoord + ejectPos.xCoord,
 +        		yCoord + ejectPos.yCoord, zCoord + ejectPos.zCoord, stack );
 +
 +    	Vec3 ejectVel = Vec3.createVectorHelper( worldObj.rand.nextGaussian() * 0.025D, 
@@ -399,7 +399,8 @@
 +    	int iGrindType = block.GetCurrentGrindingType( worldObj, xCoord, yCoord, zCoord );
 +		
 +    	if ( iGrindType == FCBlockMillStone.m_iContentsNetherrack &&
-+    		worldObj.getTotalWorldTime() % 40L == 0L )
++    		worldObj.getTotalWorldTime() % 40L == 0L &&
++    		!FCBetterThanWolves.disableMillstoneNausea)
 +    	{
 +    		ApplyPotionEffectToPlayersInRange( Potion.confusion.getId(), 120, 0, 10D );
 +    	}

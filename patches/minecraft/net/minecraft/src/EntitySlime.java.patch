@@ -6,6 +6,15 @@
  package net.minecraft.src;
  
  public class EntitySlime extends EntityLiving implements IMob
+@@ -189,7 +191,7 @@
+ 
+     protected EntitySlime createInstance()
+     {
+-        return new EntitySlime(this.worldObj);
++        return (EntitySlime) EntityList.createEntityOfType(EntitySlime.class, this.worldObj);
+     }
+ 
+     /**
 @@ -205,8 +207,8 @@
  
              for (int var3 = 0; var3 < var2; ++var3)
@@ -17,3 +26,12 @@
                  EntitySlime var6 = this.createInstance();
                  var6.setSlimeSize(var1 / 2);
                  var6.setLocationAndAngles(this.posX + (double)var4, this.posY + 0.5D, this.posZ + (double)var5, this.rand.nextFloat() * 360.0F, 0.0F);
+@@ -290,7 +292,7 @@
+             {
+                 BiomeGenBase var2 = this.worldObj.getBiomeGenForCoords(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posZ));
+ 
+-                if (var2 == BiomeGenBase.swampland && this.posY > 50.0D && this.posY < 70.0D && this.rand.nextFloat() < 0.5F && this.rand.nextFloat() < spawnChances[this.worldObj.getMoonPhase()] && this.worldObj.getBlockLightValue(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)) <= this.rand.nextInt(8))
++                if (var2.canSlimesSpawnOnSurface() && this.posY > 50.0D && this.posY < 70.0D && this.rand.nextFloat() < 0.5F && this.rand.nextFloat() < spawnChances[this.worldObj.getMoonPhase()] && this.worldObj.getBlockLightValue(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)) <= this.rand.nextInt(8))
+                 {
+                     return super.getCanSpawnHere();
+                 }

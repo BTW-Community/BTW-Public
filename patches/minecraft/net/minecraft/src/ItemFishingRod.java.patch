@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/ItemFishingRod.java
++++ b/minecraft/net/minecraft/src/ItemFishingRod.java
+@@ -46,7 +46,7 @@
+ 
+             if (!par2World.isRemote)
+             {
+-                par2World.spawnEntityInWorld(new EntityFishHook(par2World, par3EntityPlayer));
++                par2World.spawnEntityInWorld(EntityList.createEntityOfType(EntityFishHook.class, par2World, par3EntityPlayer));
+             }
+ 
+             par3EntityPlayer.swingItem();

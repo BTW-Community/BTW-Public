@@ -6,3 +6,21 @@
  package net.minecraft.src;
  
  import java.util.Calendar;
+@@ -352,7 +354,7 @@
+                 return;
+             }
+ 
+-            EntityZombie var2 = new EntityZombie(this.worldObj);
++            EntityZombie var2 = (EntityZombie) EntityList.createEntityOfType(EntityZombie.class, this.worldObj);
+             var2.func_82149_j(par1EntityLiving);
+             this.worldObj.removeEntity(par1EntityLiving);
+             var2.initCreature();
+@@ -465,7 +467,7 @@
+      */
+     protected void convertToVillager()
+     {
+-        EntityVillager var1 = new EntityVillager(this.worldObj);
++        EntityVillager var1 = (EntityVillager) EntityList.createEntityOfType(EntityVillager.class, this.worldObj);
+         var1.func_82149_j(this);
+         var1.initCreature();
+         var1.func_82187_q();

@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/BlockSilverfish.java
++++ b/minecraft/net/minecraft/src/BlockSilverfish.java
+@@ -36,7 +36,7 @@
+     {
+         if (!par1World.isRemote)
+         {
+-            EntitySilverfish var6 = new EntitySilverfish(par1World);
++            EntitySilverfish var6 = (EntitySilverfish) EntityList.createEntityOfType(EntitySilverfish.class, par1World);
+             var6.setLocationAndAngles((double)par2 + 0.5D, (double)par3, (double)par4 + 0.5D, 0.0F, 0.0F);
+             par1World.spawnEntityInWorld(var6);
+             var6.spawnExplosionParticle();

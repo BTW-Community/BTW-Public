@@ -110,7 +110,7 @@
 +    {
 +    	if ( !IsStarving() )
 +    	{
-+	        int iNumDrops = rand.nextInt( 3 ) + rand.nextInt( 1 + iLootingModifier );
++	        int iNumDrops = rand.nextInt( 3 ) + rand.nextInt( 1 + iLootingModifier ) + 1;
 +	        
 +	        if ( IsFamished() )
 +	        {
@@ -293,7 +293,7 @@
 +    @Override
 +    public FCEntityCow spawnBabyAnimal( EntityAgeable parent )
 +    {
-+        return new FCEntityCow( worldObj );
++        return (FCEntityCow) EntityList.createEntityOfType(FCEntityCow.class, worldObj );
 +    }
 +
 +    @Override
@@ -371,7 +371,7 @@
 +        
 +        setDead();
 +        
-+        FCEntityCow entityMooshroom = new EntityMooshroom( worldObj );
++        FCEntityCow entityMooshroom = (FCEntityCow) EntityList.createEntityOfType(EntityMooshroom.class, worldObj );
 +        entityMooshroom.setLocationAndAngles( posX, posY, posZ, rotationYaw, rotationPitch );
 +        entityMooshroom.setEntityHealth( getHealth() );
 +        entityMooshroom.renderYawOffset = renderYawOffset;
@@ -547,7 +547,7 @@
 +    	
 +    	if ( iRandomFactor == 0 )
 +    	{
-+            FCEntityCaveSpider childEntity = new FCEntityCaveSpider( worldObj );
++            FCEntityCaveSpider childEntity = (FCEntityCaveSpider) EntityList.createEntityOfType(FCEntityCaveSpider.class, worldObj);
 +    		
 +            if ( childEntity != null )
 +            {
@@ -560,7 +560,7 @@
 +    	{
 +    		for ( int iTempCount = 0; iTempCount < 10; iTempCount++ )
 +    		{
-+	            FCEntityBat childEntity = new FCEntityBat( worldObj );
++	            FCEntityBat childEntity = (FCEntityBat) EntityList.createEntityOfType(FCEntityBat.class, worldObj);
 +	    		
 +	            if ( childEntity != null )
 +	            {
@@ -574,7 +574,7 @@
 +    	{
 +    		for ( int iTempCount = 0; iTempCount < 5; iTempCount++ )
 +    		{
-+	            EntitySilverfish childEntity = new EntitySilverfish( worldObj );
++	            EntitySilverfish childEntity = (EntitySilverfish) EntityList.createEntityOfType(EntitySilverfish.class, worldObj);
 +	    		
 +	            if ( childEntity != null )
 +	            {
@@ -586,7 +586,7 @@
 +    	}
 +    	else
 +    	{
-+            FCEntitySquid childEntity = new FCEntitySquid( worldObj );
++            FCEntitySquid childEntity = (FCEntitySquid) EntityList.createEntityOfType(FCEntitySquid.class, worldObj);
 +    		
 +            if ( childEntity != null )
 +            {

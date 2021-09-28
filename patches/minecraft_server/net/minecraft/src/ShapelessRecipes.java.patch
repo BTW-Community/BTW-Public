@@ -1,6 +1,15 @@
 --- a/minecraft_server/net/minecraft/src/ShapelessRecipes.java
 +++ b/minecraft_server/net/minecraft/src/ShapelessRecipes.java
-@@ -30,14 +30,29 @@
+@@ -9,6 +9,8 @@
+     /** Is the ItemStack that you get when craft the recipe. */
+     private final ItemStack recipeOutput;
+ 
++    private ItemStack[] recipeSecondaryOutputs;
++    
+     /** Is a List of ItemStack that composes the recipe. */
+     private final List recipeItems;
+ 
+@@ -30,14 +32,29 @@
      {
          ArrayList var3 = new ArrayList(this.recipeItems);
  
@@ -30,14 +39,12 @@
                      boolean var7 = false;
                      Iterator var8 = var3.iterator();
  
-@@ -79,4 +94,60 @@
+@@ -79,4 +96,63 @@
      {
          return this.recipeItems.size();
      }
 +    
 +    // FCMOD: Added
-+    private boolean m_bHasSecondaryOutput = false;
-+    
 +    @Override
 +    public boolean matches( IRecipe recipe )
 +    {
@@ -82,12 +89,17 @@
 +    @Override
 +    public boolean HasSecondaryOutput()
 +    {
-+    	return m_bHasSecondaryOutput;
++    	return recipeSecondaryOutputs != null;
 +    }
-+    
-+    public void SetHasSecondaryOutput( boolean bHasSecondaryOutput )
++
++    public void SetSecondaryOutput(ItemStack[] secondaryOutput)
 +    {
-+    	m_bHasSecondaryOutput = bHasSecondaryOutput;
++    	this.recipeSecondaryOutputs = secondaryOutput;
++    }
++
++    @Override
++    public ItemStack[] getSecondaryOutput(IInventory inventory) {
++    	return this.recipeSecondaryOutputs;
 +    }
 +    // END FCMOD    
 +}

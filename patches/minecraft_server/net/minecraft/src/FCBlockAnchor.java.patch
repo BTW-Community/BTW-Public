@@ -240,7 +240,7 @@
 +		FCUtilsBlockPos pulleyPos = new FCUtilsBlockPos( attachedTileEntityPulley.xCoord, 
 +				attachedTileEntityPulley.yCoord, attachedTileEntityPulley.zCoord );
 +		
-+		FCEntityMovingAnchor entityAnchor = new FCEntityMovingAnchor( world, 
++		FCEntityMovingAnchor entityAnchor = (FCEntityMovingAnchor) EntityList.createEntityOfType(FCEntityMovingAnchor.class, world,
 +	    		(float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, 
 +	    		pulleyPos, iMovementDirection ); 
 +				

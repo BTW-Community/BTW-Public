@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockWoodMouldingAndDecorative.java
-@@ -0,0 +1,186 @@
+@@ -0,0 +1,151 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -41,41 +41,6 @@
 +	@Override
 +    public int damageDropped(int metadata) {
 +		return this.damageDropped(this.blockID, metadata);
-+    }
-+	
-+	@Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	if ( IsDecorative( world, i, j, k ) )
-+    	{
-+    		return super.GetItemIDDroppedOnSaw( world, i, j, k );
-+    	}
-+    	
-+    	return FCBetterThanWolves.fcBlockWoodCornerItemStubID;
-+	}
-+    
-+	@Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	if ( IsDecorative( world, i, j, k ) )
-+    	{
-+    		return super.GetItemCountDroppedOnSaw( world, i, j, k );
-+    	}
-+    	
-+    	return 2;
-+    }
-+    
-+	@Override
-+    public int GetItemDamageDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		int iMetadata = world.getBlockMetadata( i, j, k );
-+		
-+    	if ( IsDecorative( iMetadata ) )
-+    	{
-+    		return super.GetItemDamageDroppedOnSaw( world, i, j, k );
-+    	}
-+    	
-+		return damageDropped( iMetadata );
 +    }
 +	
 +	@Override

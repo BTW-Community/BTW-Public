@@ -251,7 +251,7 @@
 +	@Override
 +    protected EntitySlime createInstance()
 +    {
-+        return new FCEntitySlime( worldObj );
++        return (EntitySlime) EntityList.createEntityOfType(FCEntitySlime.class, worldObj);
 +    }
 +    
 +    //------------- Class Specific Methods ------------//

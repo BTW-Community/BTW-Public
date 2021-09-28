@@ -1,0 +1,65 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCCraftingManagerHopperFilter.java
+@@ -0,0 +1,62 @@
++package net.minecraft.src;
++
++import java.util.ArrayList;
++
++public class FCCraftingManagerHopperFilter {
++	public static FCCraftingManagerHopperFilter instance = new FCCraftingManagerHopperFilter();
++	
++	private ArrayList<FCCraftingManagerHopperFilterRecipe> recipes = new ArrayList();
++	
++	private FCCraftingManagerHopperFilter() {}
++	
++	public void addRecipe(ItemStack hopperOutput, ItemStack filteredOutput, ItemStack input, ItemStack filterUsed) {
++		input.stackSize = 1;
++		filterUsed.stackSize = 1;
++		
++		recipes.add(new FCCraftingManagerHopperFilterRecipe(hopperOutput, filteredOutput, input, filterUsed, false));
++	}
++	
++	public void addSoulRecipe(ItemStack filteredOutput, ItemStack input) {
++		input.stackSize = 1;
++		
++		recipes.add(new FCCraftingManagerHopperFilterRecipe(null, filteredOutput, input, new ItemStack(Block.slowSand), true));
++	}
++	
++	public boolean removeRecipe(ItemStack hopperOutput, ItemStack filteredOutput, ItemStack input, ItemStack filterUsed) {
++		FCCraftingManagerHopperFilterRecipe recipeToRemove = 
++				new FCCraftingManagerHopperFilterRecipe(hopperOutput, filteredOutput, input, filterUsed, false);
++		
++		for (FCCraftingManagerHopperFilterRecipe recipe : recipes) {
++			if (recipe.matchesRecipe(recipeToRemove)) {
++				recipes.remove(recipe);
++				return true;
++			}
++		}
++		
++		return false;
++	}
++	
++	public boolean removeSoulRecipe(ItemStack filteredOutput, ItemStack input) {
++		FCCraftingManagerHopperFilterRecipe recipeToRemove = 
++				new FCCraftingManagerHopperFilterRecipe(null, filteredOutput, input, new ItemStack(Block.slowSand), true);
++		
++		for (FCCraftingManagerHopperFilterRecipe recipe : recipes) {
++			if (recipe.matchesRecipe(recipeToRemove)) {
++				recipes.remove(recipe);
++				return true;
++			}
++		}
++		
++		return false;
++	}
++	
++	public FCCraftingManagerHopperFilterRecipe getRecipe(ItemStack input, ItemStack filterUsed) {
++		for (FCCraftingManagerHopperFilterRecipe recipe : recipes) {
++			if (recipe.matchesInputs(input, filterUsed)) {
++				return recipe;
++			}
++		}
++		
++		return null;
++	}
++}

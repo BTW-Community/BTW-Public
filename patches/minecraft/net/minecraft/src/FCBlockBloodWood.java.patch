@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockBloodWood.java
-@@ -0,0 +1,565 @@
+@@ -0,0 +1,520 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -21,10 +21,6 @@
 +        SetBuoyancy( 1F );
 +    	SetFurnaceBurnTime( 4 * FCEnumFurnaceBurnTime.PLANKS_BLOOD.m_iBurnTime );
 +		SetFireProperties( FCEnumFlammability.EXTREME );
-+        
-+		SetCanBeCookedByKiln( true );
-+		SetItemIndexDroppedWhenCookedByKiln( Item.coal.itemID );
-+		SetItemDamageDroppedWhenCookedByKiln( 1 ); // charcoal
 +		
 +        setTickRandomly( true );
 +		
@@ -82,41 +78,6 @@
 +			SetCanGrow( world, i, j, k, false );
 +		}
 +    }
-+
-+	@Override
-+    public boolean OnBlockSawed( World world, int i, int j, int k )
-+    {
-+		super.OnBlockSawed( world, i, j, k );
-+		
-+		for ( int iTempCount = 0; iTempCount < 2; iTempCount++ )
-+		{
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+				FCBetterThanWolves.fcItemSoulDust.itemID, 0 );
-+		}
-+		
-+		FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+			FCBetterThanWolves.fcItemBark.itemID, 4 );
-+		
-+		return true;
-+    }
-+    
-+	@Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	return Block.planks.blockID;
-+    }
-+
-+	@Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	return 4;
-+    }
-+    
-+	@Override
-+    public int GetItemDamageDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	return 4;
-+    }
 +    
 +	@Override
 +	public boolean DropComponentItemsOnBadBreak( World world, int i, int j, int k, int iMetadata, float fChanceOfDrop )
@@ -157,12 +118,6 @@
 +        
 +		return true;
 +	}
-+	
-+    @Override
-+    public int GetCookTimeMultiplierInKiln( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+    	return 8;
-+    }
 +    
 +    //------------- Class Specific Methods ------------//
 +	
