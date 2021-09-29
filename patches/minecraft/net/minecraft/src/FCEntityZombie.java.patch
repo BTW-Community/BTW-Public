@@ -144,7 +144,7 @@
 +    	
 +        if ( rand.nextInt( 4 ) != 0 && entityKilled instanceof FCEntityVillager )
 +        {
-+            FCEntityZombie newZombie = new FCEntityZombie( this.worldObj );
++            FCEntityZombie newZombie = (FCEntityZombie) EntityList.createEntityOfType(FCEntityZombie.class, this.worldObj);
 +            
 +            newZombie.func_82149_j( entityKilled ); // set same position and ables as killed entity
 +            

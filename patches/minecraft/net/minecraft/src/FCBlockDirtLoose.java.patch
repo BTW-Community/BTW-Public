@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockDirtLoose.java
-@@ -0,0 +1,152 @@
+@@ -0,0 +1,128 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -65,30 +65,6 @@
 +        world.setBlockWithNotify( i, j, k, Block.mycelium.blockID );
 +        
 +    	return true;
-+    }
-+    
-+	@Override
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return true;
-+    }
-+    
-+	@Override
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 2;
-+    }
-+    
-+	@Override
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return FCBetterThanWolves.fcBlockAestheticOpaqueEarth.blockID;
-+    }
-+    
-+	@Override
-+    public int GetResultingBlockMetadataOnPistonPack( ItemStack stack )
-+    {
-+    	return FCBlockAestheticOpaqueEarth.m_iSubtypePackedEarth;
 +    }
 +    
 +	@Override

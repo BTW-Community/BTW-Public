@@ -35,7 +35,7 @@
 +	{
 +		if ( iItemID == FCBetterThanWolves.fcItemBroadheadArrow.itemID )
 +		{
-+			return new FCEntityBroadheadArrow( world, player, fPullStrength * GetPullStrengthToArrowVelocityMultiplier() );
++			return (EntityArrow) EntityList.createEntityOfType(FCEntityBroadheadArrow.class, world, player, fPullStrength * GetPullStrengthToArrowVelocityMultiplier() );
 +		}
 +		else if ( iItemID == FCBetterThanWolves.fcItemRottenArrow.itemID )
 +		{

@@ -9,7 +9,7 @@
 +            	// FCMOD: Changed
 +                //EntityChicken var4 = new EntityChicken(this.worldObj);
 +                //var4.setGrowingAge(-24000);
-+                FCEntityChicken var4 = new FCEntityChicken( worldObj );
++                FCEntityChicken var4 = (FCEntityChicken) EntityList.createEntityOfType(FCEntityChicken.class, worldObj);
 +                var4.setGrowingAge( -var4.GetTicksForChildToGrow() );
 +                // END FCMOD
                  var4.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);

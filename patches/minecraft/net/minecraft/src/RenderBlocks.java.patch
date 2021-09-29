@@ -2419,7 +2419,7 @@
      }
  
      public Icon getBlockIcon(Block par1Block)
-@@ -8088,4 +8510,2423 @@
+@@ -8088,4 +8510,2425 @@
      {
          return par1Icon == null ? this.minecraftRB.renderEngine.getMissingIcon(0) : par1Icon;
      }
@@ -3617,6 +3617,8 @@
 +    	block.m_currentBlockRenderer = this;
 +    	
 +    	boolean bReturnValue = block.RenderBlock( this, i, j, k );
++    	
++    	block.RenderCookingByKilnOverlay(this, i, j, k, bReturnValue);
 +    	
 +    	block.RenderBlockSecondPass( this, i, j, k, bReturnValue );
 +    	

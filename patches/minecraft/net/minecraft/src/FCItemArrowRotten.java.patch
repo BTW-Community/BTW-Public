@@ -17,7 +17,7 @@
 +    @Override
 +    EntityArrow GetFiredArrowEntity( World world, double dXPos, double dYPos, double dZPos )
 +    {
-+        EntityArrow entity = new FCEntityRottenArrow( world, dXPos, dYPos, dZPos );
++        EntityArrow entity = (EntityArrow) EntityList.createEntityOfType(FCEntityRottenArrow.class, world, dXPos, dYPos, dZPos );
 +        
 +        entity.canBePickedUp = 2;
 +        

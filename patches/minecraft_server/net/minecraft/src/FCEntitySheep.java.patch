@@ -57,7 +57,7 @@
 +    {
 +        ItemStack stack = player.inventory.getCurrentItem();
 +
-+        if ( stack != null && stack.itemID == Item.shears.itemID && !getSheared() && !isChild() )
++        if ( stack != null && stack.getItem() instanceof FCItemShears && !getSheared() && !isChild() )
 +        {
 +            if ( !worldObj.isRemote )
 +            {
@@ -298,7 +298,7 @@
 +    public FCEntitySheep SpawnHardcoreBaby( EntityAgeable parentAnimal )
 +    {
 +        FCEntitySheep parentSheep = (FCEntitySheep)parentAnimal;
-+        FCEntitySheep babySheep = new FCEntitySheep(this.worldObj);
++        FCEntitySheep babySheep = (FCEntitySheep) EntityList.createEntityOfType(FCEntitySheep.class, this.worldObj);
 +
 +		int iMutationChance = rand.nextInt( 100 );
 +		

@@ -1,8 +1,9 @@
 --- a/minecraft/net/minecraft/src/EntityList.java
 +++ b/minecraft/net/minecraft/src/EntityList.java
-@@ -1,9 +1,14 @@
+@@ -1,9 +1,15 @@
  package net.minecraft.src;
  
++import java.lang.reflect.Constructor;
 +import java.lang.reflect.Field;
 +import java.util.ArrayList;
  import java.util.HashMap;
@@ -15,7 +16,7 @@
  public class EntityList
  {
      /** Provides a mapping between entity classes and a string */
-@@ -27,7 +32,12 @@
+@@ -27,7 +33,12 @@
      /**
       * adds a mapping between Entity classes and both a string representation and an ID
       */
@@ -28,7 +29,7 @@
      {
          stringToClassMapping.put(par1Str, par0Class);
          classToStringMapping.put(par0Class, par1Str);
-@@ -39,8 +49,12 @@
+@@ -39,8 +50,12 @@
      /**
       * Adds a entity mapping with egg info.
       */
@@ -42,7 +43,7 @@
          addMapping(par0Class, par1Str, par2);
          entityEggs.put(Integer.valueOf(par2), new EntityEggInfo(par2, par3, par4));
      }
-@@ -58,9 +72,14 @@
+@@ -58,9 +73,14 @@
  
              if (var3 != null)
              {
@@ -57,7 +58,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -101,9 +120,16 @@
+@@ -101,9 +121,16 @@
  
              if (var3 != null)
              {
@@ -74,7 +75,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -115,7 +141,10 @@
+@@ -115,7 +142,10 @@
          }
          else
          {
@@ -85,7 +86,7 @@
          }
  
          return var2;
-@@ -134,9 +163,14 @@
+@@ -134,9 +164,14 @@
  
              if (var3 != null)
              {
@@ -100,7 +101,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -144,7 +178,10 @@
+@@ -144,7 +179,10 @@
  
          if (var2 == null)
          {
@@ -111,9 +112,51 @@
          }
  
          return var2;
-@@ -241,4 +278,205 @@
+@@ -240,5 +278,231 @@
+         addMapping(EntityIronGolem.class, "VillagerGolem", 99);
          addMapping(EntityVillager.class, "Villager", 120, 5651507, 12422002);
          addMapping(EntityEnderCrystal.class, "EnderCrystal", 200);
++        
++        //Only used for entity factory
++        //Dummy ids only for entity replacing
++        int id = -1;
++        
++        addMapping(EntityPlayerMP.class, "PlayerMP", id--);
++        addMapping(EntityClientPlayerMP.class, "ClientPlayerMP", id--);
++
++        addMapping(EntityAuraFX.class, "AuraFX", id--);
++        addMapping(EntityBreakingFX.class, "BreakingFX", id--);
++        addMapping(EntityBubbleFX.class, "BubbleFX", id--);
++        addMapping(FCClientEntityCindersFX.class, "CindersFX", id--);
++        addMapping(EntityCloudFX.class, "CloudFX", id--);
++        addMapping(EntityCritFX.class, "CritFX", -id--);
++        addMapping(EntityCrit2FX.class, "Crit2FX", -id--);
++        addMapping(EntityDiggingFX.class, "DiggingFX", id--);
++        addMapping(EntityDropParticleFX.class, "DropFX", id--);
++        addMapping(EntityEnchantmentTableParticleFX.class, "EnchantmentTableFX", id--);
++        addMapping(EntityExplodeFX.class, "ExplodeFX", id--);
++        addMapping(EntityFlameFX.class, "FlameFX", id--);
++        addMapping(EntityFireworkOverlayFX.class, "FireworkOverlayFX", id--);
++        addMapping(EntityFireworkSparkFX.class, "FireworkSparkFX", id--);
++        addMapping(EntityFireworkStarterFX.class, "FireworkStarterFX", id--);
++        addMapping(EntityFootStepFX.class, "FootStepFX", id--);
++        addMapping(EntityHeartFX.class, "HeartFX", id--);
++        addMapping(EntityHugeExplodeFX.class, "HugeExplodeFX", id--);
++        addMapping(EntityLargeExplodeFX.class, "LargeExplodeFX", id--);
++        addMapping(EntityLavaFX.class, "LavaFX", id--);
++        addMapping(EntityNoteFX.class, "NoteFX", id--);
++        addMapping(EntityPickupFX.class, "PickupFX", id--);
++        addMapping(EntityPortalFX.class, "PortalFX", id--);
++        addMapping(EntityRainFX.class, "RainFX", id--);
++        addMapping(EntityReddustFX.class, "RedDustFX", id--);
++        addMapping(FCClientEntitySmallFlameFX.class, "SmallFlameFX", id--);
++        addMapping(EntitySmokeFX.class, "SmokeFX", id--);
++        addMapping(EntitySnowShovelFX.class, "SnowShovelFX", id--);
++        addMapping(EntitySpellParticleFX.class, "SpellFX", id--);
++        addMapping(EntitySplashFX.class, "SplashFX", id--);
++        addMapping(EntitySuspendFX.class, "SuspendFX", id--);
++        addMapping(FCClientEntityWhiteSmokeFX.class, "WhiteSmokeFX", id--);
++        addMapping(FCClientEntityWhiteCloudFX.class, "WhiteCloudFX", id--);
      }
 +
 +    public static void AddMapping( Class entityClass, String sName, int iID )
@@ -182,115 +225,6 @@
 +
 +        return false;
 +    }
-+    
-+    /**
-+     * Same behavior as replaceExistingMappingSafe except with a wrapper to handle replacing mob spawn lists
-+     * @param newEntity
-+     * @param entityName
-+     * @return
-+     */
-+    public static boolean replaceSpawnableMappingSafe(Class newEntity, String entityName) {
-+    	Class oldEntity = (Class) stringToClassMapping.get(entityName);
-+    	
-+    	//Super janky implementation
-+    	//Code ripped from old version of deco
-+    	//Reflection should not be necessary here, but for now I am using code that works, it can be cleaned up later
-+    	
-+    	//TODO: Clean up
-+    	try {
-+			for (BiomeGenBase b : BiomeGenBase.biomeList) {
-+				if (b == null)
-+					continue;
-+
-+				Field creatureList;
-+				Field monsterList;
-+				Field waterCreatureList;
-+				Field caveCreatureList;
-+
-+				if (FCUtilsReflection.isObfuscated()) {
-+					if (b.getClass().getSuperclass().equals(BiomeGenBase.class)) {
-+						creatureList = b.getClass().getSuperclass().getDeclaredField("K");
-+						monsterList = b.getClass().getSuperclass().getDeclaredField("J");
-+						waterCreatureList = b.getClass().getSuperclass().getDeclaredField("L");
-+						caveCreatureList = b.getClass().getSuperclass().getDeclaredField("M");
-+					}
-+					else {
-+						creatureList = b.getClass().getSuperclass().getSuperclass().getDeclaredField("K");
-+						monsterList = b.getClass().getSuperclass().getSuperclass().getDeclaredField("J");
-+						waterCreatureList = b.getClass().getSuperclass().getSuperclass().getDeclaredField("L");
-+						caveCreatureList = b.getClass().getSuperclass().getSuperclass().getDeclaredField("M");
-+					}
-+				}
-+				else {
-+					if (b.getClass().getSuperclass().equals(BiomeGenBase.class)) {
-+						creatureList = b.getClass().getSuperclass().getDeclaredField("spawnableCreatureList");
-+						monsterList = b.getClass().getSuperclass().getDeclaredField("spawnableMonsterList");
-+						waterCreatureList = b.getClass().getSuperclass().getDeclaredField("spawnableWaterCreatureList");
-+						caveCreatureList = b.getClass().getSuperclass().getDeclaredField("spawnableCaveCreatureList");
-+					}
-+					else {
-+						creatureList = b.getClass().getSuperclass().getSuperclass().getDeclaredField("spawnableCreatureList");
-+						monsterList = b.getClass().getSuperclass().getSuperclass().getDeclaredField("spawnableMonsterList");
-+						waterCreatureList = b.getClass().getSuperclass().getSuperclass().getDeclaredField("spawnableWaterCreatureList");
-+						caveCreatureList = b.getClass().getSuperclass().getSuperclass().getDeclaredField("spawnableCaveCreatureList");
-+					}
-+				}
-+
-+				creatureList.setAccessible(true);
-+				monsterList.setAccessible(true);
-+				waterCreatureList.setAccessible(true);
-+				caveCreatureList.setAccessible(true);
-+
-+				ArrayList<SpawnListEntry> creature = (ArrayList<SpawnListEntry>)creatureList.get(b);
-+				ArrayList<SpawnListEntry> monster = (ArrayList<SpawnListEntry>)monsterList.get(b);
-+				ArrayList<SpawnListEntry> water = (ArrayList<SpawnListEntry>)waterCreatureList.get(b);
-+				ArrayList<SpawnListEntry> cave = (ArrayList<SpawnListEntry>)caveCreatureList.get(b);
-+
-+				for (SpawnListEntry s : creature) {
-+					if (s.entityClass == oldEntity) {
-+						s.entityClass = newEntity;
-+					}
-+				}
-+
-+				for (SpawnListEntry s : monster) {
-+					if (s.entityClass == oldEntity) {
-+						s.entityClass = newEntity;
-+					}
-+				}
-+
-+				for (SpawnListEntry s : water) {
-+					if (s.entityClass == oldEntity) {
-+						s.entityClass = newEntity;
-+					}
-+				}
-+
-+				for (SpawnListEntry s : cave) {
-+					if (s.entityClass == oldEntity) {
-+						s.entityClass = newEntity;
-+					}
-+				}
-+
-+				return replaceExistingMappingSafe(newEntity, entityName);
-+			}
-+		} catch (NoSuchFieldException e) {
-+			if (FCUtilsReflection.isObfuscated()) {
-+				e.printStackTrace();
-+			}
-+			else {
-+				FCUtilsReflection.setObfuscated(true);
-+				replaceSpawnableMappingSafe(newEntity, entityName);
-+			}
-+			e.printStackTrace();
-+		} catch (SecurityException e) {
-+			e.printStackTrace();
-+		} catch (IllegalArgumentException e) {
-+			e.printStackTrace();
-+		} catch (IllegalAccessException e) {
-+			e.printStackTrace();
-+		}
-+    	
-+    	return false;
-+    }
 +
 +    public static boolean removeMappingSafe(String var0, boolean var1)
 +    {
@@ -315,6 +249,99 @@
 +        }
 +
 +        return false;
++    }
++    
++    public static Entity createEntityOfType(Class<? extends Entity> entityClass, Object ... parameters) {
++    	Entity entity = null; 
++    	
++    	Class[] parameterTypes = new Class[parameters.length];
++		Object[] parameterValues = new Object[parameters.length];
++		
++		for (int i = 0; i < parameters.length; i++) {
++			Class<?> type = parameters[i].getClass();
++			
++			Class<?> primitiveType = FCUtilsReflection.getPrimitiveFromBoxedClass(type);
++			
++			if (primitiveType != null) {
++				type = primitiveType;
++			}
++			
++			parameterTypes[i] = type;
++			parameterValues[i] = parameters[i];
++		}
++		
++		entityClass = getRegisteredReplacement(entityClass);
++		
++		if (EntityItem.class.isAssignableFrom(entityClass)) {
++			for (Object o : parameters) {
++				if (o instanceof ItemStack) {
++					Item item = ((ItemStack) o).getItem();
++					
++					if (item.hasCustomItemEntity()) {
++						entityClass = item.getCustomItemEntity(); 
++					}
++					
++					break;
++				}
++			}
++		}
++		
++		Constructor[] constructors = entityClass.getDeclaredConstructors();
++        Constructor constructorToUse = null;
++        
++        for (Constructor c : constructors) {
++            boolean constructorMatches = true;
++            
++            Class[] cParamTypes = c.getParameterTypes();
++            
++            if (cParamTypes.length == parameterTypes.length) {
++                for (int j = 0; j < cParamTypes.length; j++) {
++                    if (!cParamTypes[j].isAssignableFrom(parameterTypes[j])) {
++                        constructorMatches = false;
++                        break;
++                    }
++                }
++            }
++            else {
++                constructorMatches = false;
++            }
++            
++            if (constructorMatches) {
++                constructorToUse = c;
++                break;
++            }
++        }
++        
++        if (constructorToUse == null) {
++        	String message = "No appropriate constructor found for " + classToStringMapping.get(entityClass) + ": ";
++            
++            for (Class<?> paramType : parameterTypes) {
++            	message += paramType.getSimpleName() + ", ";
++            }
++            
++            throw new RuntimeException(message);
++        }
++		
++		try {
++			constructorToUse.setAccessible(true);
++			entity = (Entity) constructorToUse.newInstance(parameterValues);
++		} catch (InstantiationException e) {
++			throw new RuntimeException("A problem has occured attempting to instantiate replacement for " + classToStringMapping.get(entityClass));
++		} catch (IllegalArgumentException e) {
++			e.printStackTrace();
++			
++			throw new RuntimeException("Incompatible types passed to specified constructor for " + classToStringMapping.get(entityClass));
++		} catch (Exception e) {
++			e.printStackTrace();
++		}
++    	
++    	return entity;
++    }
++    
++    private static Class<? extends Entity> getRegisteredReplacement(Class<? extends Entity> entityClass) {
++    	int id = (Integer) classToIDMapping.get(entityClass);
++    	
++    	return (Class<? extends Entity>) IDtoClassMapping.get(id);
 +    }
 +}
 \ No newline at end of file

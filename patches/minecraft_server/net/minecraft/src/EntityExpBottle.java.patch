@@ -1,0 +1,11 @@
+--- a/minecraft_server/net/minecraft/src/EntityExpBottle.java
++++ b/minecraft_server/net/minecraft/src/EntityExpBottle.java
+@@ -49,7 +49,7 @@
+             {
+                 int var3 = EntityXPOrb.getXPSplit(var2);
+                 var2 -= var3;
+-                this.worldObj.spawnEntityInWorld(new EntityXPOrb(this.worldObj, this.posX, this.posY, this.posZ, var3));
++                this.worldObj.spawnEntityInWorld(EntityList.createEntityOfType(EntityXPOrb.class, this.worldObj, this.posX, this.posY, this.posZ, var3));
+             }
+ 
+             this.setDead();

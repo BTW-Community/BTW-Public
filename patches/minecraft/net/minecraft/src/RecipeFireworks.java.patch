@@ -149,7 +149,7 @@
                          return true;
                      }
                  }
-@@ -245,4 +245,18 @@
+@@ -245,4 +245,22 @@
      {
          return this.field_92102_a;
      }
@@ -165,6 +165,10 @@
 +    public boolean HasSecondaryOutput()
 +    {
 +    	return false;
++    }
++    
++    public ItemStack[] getSecondaryOutput(IInventory inventory) {
++    	return null;
 +    }
 +    // END FCMOD
 +}

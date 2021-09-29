@@ -1,6 +1,6 @@
 --- a/minecraft/net/minecraft/src/RecipesMapCloning.java
 +++ b/minecraft/net/minecraft/src/RecipesMapCloning.java
-@@ -104,4 +104,18 @@
+@@ -104,4 +104,22 @@
      {
          return null;
      }
@@ -16,6 +16,10 @@
 +    public boolean HasSecondaryOutput()
 +    {
 +    	return false;
++    }
++    
++    public ItemStack[] getSecondaryOutput(IInventory inventory) {
++    	return null;
 +    }
 +    // END FCMOD
 +}

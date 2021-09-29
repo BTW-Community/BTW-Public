@@ -719,7 +719,7 @@
 +    
 +    private void SpawnTrueSightParticle( World world, double dXPos, double dYPos, double dZPos )
 +    {
-+        EntityFX particleEntity = new EntitySpellParticleFX( world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
++        EntityFX particleEntity = (EntityFX) EntityList.createEntityOfType(EntitySpellParticleFX.class, world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
 +        
 +        particleEntity.setRBGColorF( 0F, 0F, 0F );
 +        
@@ -799,7 +799,7 @@
 +    
 +    private void SpawnSpawnChunkOuterParticle( World world, double dXPos, double dYPos, double dZPos )
 +    {
-+        EntityFX particleEntity = new EntityPortalFX( world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
++        EntityFX particleEntity = (EntityFX) EntityList.createEntityOfType(EntityPortalFX.class, world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
 +        
 +        particleEntity.setRBGColorF( 0F, 0F, 0.5F );
 +        particleEntity.setAlphaF(0.5F);
@@ -809,7 +809,7 @@
 +    
 +    private void SpawnSpawnChunkInnerParticle( World world, double dXPos, double dYPos, double dZPos )
 +    {
-+        EntityFX particleEntity = new EntityCritFX( world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
++        EntityFX particleEntity = (EntityFX) EntityList.createEntityOfType(EntityCritFX.class, world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
 +        
 +        particleEntity.setRBGColorF( 0.5F, 0F, 0.5F );
 +        particleEntity.setAlphaF(0.25F);
@@ -822,7 +822,7 @@
 +        //EntityFX particleEntity = new EntityAuraFX( world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
 +        //EntityFX particleEntity = new EntityCritFX( world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
 +        //EntityFX particleEntity = new EntityPortalFX( world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
-+        EntityFX particleEntity = new EntityEnchantmentTableParticleFX( world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
++        EntityFX particleEntity = (EntityFX) EntityList.createEntityOfType(EntityEnchantmentTableParticleFX.class, world, dXPos, dYPos, dZPos, 0.0D, 0.0D, 0.0D);
 +        
 +        particleEntity.setRBGColorF( 0.75F, 0F, 0F );
 +        particleEntity.setAlphaF(0.5F);

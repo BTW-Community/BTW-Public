@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/BlockBrewingStand.java
++++ b/minecraft/net/minecraft/src/BlockBrewingStand.java
+@@ -141,7 +141,7 @@
+                         }
+ 
+                         var10.stackSize -= var14;
+-                        EntityItem var15 = new EntityItem(par1World, (double)((float)par2 + var11), (double)((float)par3 + var12), (double)((float)par4 + var13), new ItemStack(var10.itemID, var14, var10.getItemDamage()));
++                        EntityItem var15 = (EntityItem) EntityList.createEntityOfType(EntityItem.class, par1World, (double)((float)par2 + var11), (double)((float)par3 + var12), (double)((float)par4 + var13), new ItemStack(var10.itemID, var14, var10.getItemDamage()));
+                         float var16 = 0.05F;
+                         var15.motionX = (double)((float)this.rand.nextGaussian() * var16);
+                         var15.motionY = (double)((float)this.rand.nextGaussian() * var16 + 0.2F);

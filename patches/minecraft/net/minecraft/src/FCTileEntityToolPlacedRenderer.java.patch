@@ -28,7 +28,7 @@
 +    	int iFacing = FCBetterThanWolves.fcBlockToolPlaced.GetFacing( iMetadata );
 +    	int iFacingLevel = FCBetterThanWolves.fcBlockToolPlaced.GetVerticalOrientation( iMetadata );
 +    	
-+        EntityItem entityTool = new EntityItem( tileEntityTool.worldObj, 0.0D, 0.0D, 0.0D, toolStack );
++        EntityItem entityTool = (EntityItem) EntityList.createEntityOfType(EntityItem.class, tileEntityTool.worldObj, 0.0D, 0.0D, 0.0D, toolStack );
 +        FCItemTool toolItem = (FCItemTool)toolStack.getItem();
 +        
 +        entityTool.getEntityItem().stackSize = 1;

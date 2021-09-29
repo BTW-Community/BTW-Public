@@ -1,0 +1,14 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCItemNameTag.java
+@@ -0,0 +1,10 @@
++package net.minecraft.src;
++
++public class FCItemNameTag extends Item {
++	protected FCItemNameTag(int id) {
++		super(id);
++		this.setUnlocalizedName("decoItemNameTag");
++		this.setCreativeTab(CreativeTabs.tabTools);
++		this.setMaxStackSize(1);
++	}
++}
+\ No newline at end of file

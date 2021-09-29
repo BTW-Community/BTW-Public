@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCItemCreeperOysters.java
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,35 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -31,24 +31,6 @@
 +			player.playSound( "mob.slime.attack", 0.5F, ( player.worldObj.rand.nextFloat() - player.worldObj.rand.nextFloat()) * 0.1F + 0.7F );
 +		}
 +    }
-+    
-+    @Override
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return true;
-+    }
-+    
-+    @Override
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 16;
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return FCBetterThanWolves.fcBlockCreeperOysters.blockID;
-+    }    
 +    
 +    //------------- Class Specific Methods ------------//
 +    

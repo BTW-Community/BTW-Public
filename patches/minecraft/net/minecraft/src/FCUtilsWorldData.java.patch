@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCUtilsWorldData.java
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,129 @@
 +package net.minecraft.src;
 +
 +public class FCUtilsWorldData implements FCAddOnUtilsWorldData {
@@ -68,6 +68,61 @@
 +	        
 +	    	world.GetSpawnLocationList().loadFromNBT( nbttaglist1 );
 +	    }
++	}
++
++	@Override
++	public void saveGlobalDataToNBT(WorldInfo info, NBTTagCompound tag) {
++		if (info.GetGlobalEnderChestInventory() != null)
++	    {
++			tag.setTag( "FCEnderItems", info.GetGlobalEnderChestInventory().saveInventoryToNBT() );
++	    }
++	    
++		tag.setBoolean("FCNetherAccessed", info.HasNetherBeenAccessed());	    
++		tag.setBoolean("FCWitherSummoned", info.HasWitherBeenSummoned() );	    
++		tag.setBoolean("FCEndAccessed", info.HasEndDimensionBeenAccessed() );
++	}
++
++	@Override
++	public void loadGlobalDataFromNBT(WorldInfo info, NBTTagCompound tag) {
++		if ( tag.hasKey( "FCEnderItems" ) )
++	    {
++	        NBTTagList nbttaglist1 = tag.getTagList( "FCEnderItems" );
++	        
++	    	info.GetGlobalEnderChestInventory().loadInventoryFromNBT( nbttaglist1 );
++	    }
++	    
++	    if ( tag.hasKey( "FCNetherAccessed" ) )
++	    {
++	    	info.SetNetherBeenAccessed(tag.getBoolean( "FCNetherAccessed" )); 
++	    }
++	    	
++	    if ( tag.hasKey( "FCWitherSummoned" ) )
++	    {
++	    	info.SetWitherHasBeenSummoned(tag.getBoolean( "FCWitherSummoned" )); 
++	    }
++	    	
++	    if ( tag.hasKey( "FCEndAccessed" ) )
++	    {
++	    	info.SetEndDimensionHasBeenAccessed(tag.getBoolean( "FCEndAccessed" )); 
++	    }
++	    	
++	    info.m_bPreviouslyRaining = info.isRaining();
++	    info.m_bPreviouslyThundering = info.isThundering();
++	}
++
++	@Override
++	public void copyGlobalData(WorldInfo newInfo, WorldInfo oldInfo) {
++		if ( oldInfo.GetGlobalEnderChestInventory() != null )
++	    {
++	        newInfo.SetGlobalEnderChestInventory(oldInfo.GetGlobalEnderChestInventory());
++	    }
++	    
++		newInfo.SetNetherBeenAccessed(oldInfo.HasNetherBeenAccessed());
++		newInfo.SetWitherHasBeenSummoned(oldInfo.HasWitherBeenSummoned());
++		newInfo.SetEndDimensionHasBeenAccessed(oldInfo.HasEndDimensionBeenAccessed());
++	    
++	    newInfo.m_bPreviouslyRaining = oldInfo.isRaining();
++	    newInfo.m_bPreviouslyThundering = oldInfo.isThundering();
 +	}
 +
 +	@Override

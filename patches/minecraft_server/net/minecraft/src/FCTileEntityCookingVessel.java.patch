@@ -675,7 +675,7 @@
 +		itemPos.yCoord += ((float)yCoord ) + 0.25F;
 +		itemPos.zCoord += ((float)zCoord ) + 0.5F;		
 +    	
-+        EntityItem entityItem = new EntityItem( worldObj, itemPos.xCoord, itemPos.yCoord, itemPos.zCoord, stack );
++		EntityItem entityItem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, worldObj, itemPos.xCoord, itemPos.yCoord, itemPos.zCoord, stack );
 +
 +		Vec3 itemVel = FCUtilsMisc.ConvertBlockFacingToVector( iFacing );
 +		

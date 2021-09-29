@@ -37,7 +37,7 @@
 +        		explosionOwner = par5Explosion.func_94613_c();
 +        	}
 +        	
-+            EntityTNTPrimed var6 = new EntityTNTPrimed(par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F), explosionOwner );
++            EntityTNTPrimed var6 = (EntityTNTPrimed) EntityList.createEntityOfType(EntityTNTPrimed.class, par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F), explosionOwner );
 +            var6.fuse = par1World.rand.nextInt(var6.fuse / 4) + var6.fuse / 8;
 +            par1World.spawnEntityInWorld(var6);
 +        }

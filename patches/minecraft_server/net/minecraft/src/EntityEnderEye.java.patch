@@ -1,0 +1,11 @@
+--- a/minecraft_server/net/minecraft/src/EntityEnderEye.java
++++ b/minecraft_server/net/minecraft/src/EntityEnderEye.java
+@@ -149,7 +149,7 @@
+ 
+                 if (this.shatterOrDrop)
+                 {
+-                    this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.eyeOfEnder)));
++                	this.worldObj.spawnEntityInWorld(EntityList.createEntityOfType(EntityItem.class, this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.eyeOfEnder)));
+                 }
+                 else
+                 {

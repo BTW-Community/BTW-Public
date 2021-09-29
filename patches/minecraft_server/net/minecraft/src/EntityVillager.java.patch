@@ -46,6 +46,15 @@
          return var2 == null ? 1 : (((Integer)var2.getFirst()).intValue() >= ((Integer)var2.getSecond()).intValue() ? ((Integer)var2.getFirst()).intValue() : ((Integer)var2.getFirst()).intValue() + par1Random.nextInt(((Integer)var2.getSecond()).intValue() - ((Integer)var2.getFirst()).intValue()));
      }
  
+@@ -610,7 +615,7 @@
+ 
+     public EntityVillager func_90012_b(EntityAgeable par1EntityAgeable)
+     {
+-        EntityVillager var2 = new EntityVillager(this.worldObj);
++    	EntityVillager var2 = (EntityVillager) EntityList.createEntityOfType(EntityVillager.class, this.worldObj);
+         var2.initCreature();
+         return var2;
+     }
 @@ -622,25 +627,25 @@
  
      static

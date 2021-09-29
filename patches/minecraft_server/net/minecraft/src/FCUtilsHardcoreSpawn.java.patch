@@ -130,7 +130,7 @@
 +        	newPlayer.foodStats.setFoodLevel( iFoodLevel );            
 +		}
 +			
-+    	if ( !FCUtilsWorld.GameProgressHasNetherBeenAccessedServerOnly() )
++		if ( !FCUtilsWorld.GameProgressHasNetherBeenAccessedServerOnly() || FCBetterThanWolves.alwaysSpawnTogether )
 +    	{
 +    		// early game, players are tied to respawning together
 +    		

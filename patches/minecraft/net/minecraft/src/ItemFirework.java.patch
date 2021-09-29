@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/ItemFirework.java
++++ b/minecraft/net/minecraft/src/ItemFirework.java
+@@ -18,7 +18,7 @@
+     {
+         if (!par3World.isRemote)
+         {
+-            EntityFireworkRocket var11 = new EntityFireworkRocket(par3World, (double)((float)par4 + par8), (double)((float)par5 + par9), (double)((float)par6 + par10), par1ItemStack);
++            EntityFireworkRocket var11 = (EntityFireworkRocket) EntityList.createEntityOfType(EntityFireworkRocket.class, par3World, (double)((float)par4 + par8), (double)((float)par5 + par9), (double)((float)par6 + par10), par1ItemStack);
+             par3World.spawnEntityInWorld(var11);
+ 
+             if (!par2EntityPlayer.capabilities.isCreativeMode)

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockLegacyCorner.java
-@@ -0,0 +1,459 @@
+@@ -0,0 +1,437 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -173,28 +173,6 @@
 +    public boolean DoesBlockBreakSaw( World world, int i, int j, int k )
 +    {
 +		return GetIsStone( world, i, j, k );
-+    }
-+	
-+	@Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		if ( !GetIsStone( world, i, j, k ) )
-+		{
-+			return FCBetterThanWolves.fcItemGear.itemID;
-+		}
-+		
-+		return super.GetItemIDDroppedOnSaw( world, i, j, k );
-+    }
-+
-+	@Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		if ( !GetIsStone( world, i, j, k ) )
-+		{
-+			return 2;
-+		}
-+		
-+		return super.GetItemIDDroppedOnSaw( world, i, j, k );
 +    }
 +	
 +	@Override

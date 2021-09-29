@@ -14,3 +14,12 @@
  public class EntityCow extends EntityAnimal
  {
      public EntityCow(World par1World)
+@@ -139,7 +147,7 @@
+      */
+     public EntityCow spawnBabyAnimal(EntityAgeable par1EntityAgeable)
+     {
+-        return new EntityCow(this.worldObj);
++        return (EntityCow) EntityList.createEntityOfType(EntityCow.class, this.worldObj);
+     }
+ 
+     public EntityAgeable createChild(EntityAgeable par1EntityAgeable)

@@ -168,7 +168,7 @@
 +	        double zPos = (float)k + zOffset;
 +	        
 +            EntityItem entityitem = 
-+            	new EntityItem( world, xPos, yPos, zPos, storageStack );
++            		(EntityItem) EntityList.createEntityOfType(EntityItem.class, world, xPos, yPos, zPos, storageStack );
 +
 +            entityitem.motionY = 0.2D;
 +            

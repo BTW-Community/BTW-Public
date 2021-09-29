@@ -6,6 +6,15 @@
  package net.minecraft.src;
  
  public class EntitySlime extends EntityLiving implements IMob
+@@ -189,7 +191,7 @@
+ 
+     protected EntitySlime createInstance()
+     {
+-        return new EntitySlime(this.worldObj);
++    	return (EntitySlime) EntityList.createEntityOfType(EntitySlime.class, this.worldObj);
+     }
+ 
+     /**
 @@ -205,8 +207,8 @@
  
              for (int var3 = 0; var3 < var2; ++var3)

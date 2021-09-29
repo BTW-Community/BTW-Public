@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityEnderman.java
-@@ -0,0 +1,604 @@
+@@ -0,0 +1,630 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -66,6 +66,32 @@
 +        dataWatcher.addObject( 16, new Integer( 0 ) );
 +        dataWatcher.addObject( 17, new Byte( (byte)0 ) );
 +        dataWatcher.addObject( 18, new Byte( (byte)0 ) );
++    }
++
++    @Override
++    public void writeEntityToNBT(NBTTagCompound tag)
++    {
++        super.writeEntityToNBT(tag);
++        
++        if (this.entityToAttack != null && this.entityToAttack instanceof EntityPlayer) {
++        	tag.setString("playerToAttack", ((EntityPlayer) this.entityToAttack).username);
++        }
++    }
++
++    @Override
++    public void readEntityFromNBT(NBTTagCompound tag)
++    {
++        super.readEntityFromNBT(tag);
++        
++        if (tag.hasKey("playerToAttack")) {
++        	String playerName = tag.getString("playerToAttack");
++        	
++        	EntityPlayer player = this.worldObj.getPlayerEntityByName(playerName);
++        	
++        	if (player != null && this.getDistanceToEntity(player) <= 64) {
++        		this.entityToAttack = player;
++        	}
++        }
 +    }
 +    
 +    @Override

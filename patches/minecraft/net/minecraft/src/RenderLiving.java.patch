@@ -81,6 +81,15 @@
      }
  
      /**
+@@ -322,7 +339,7 @@
+ 
+         if (var3 > 0)
+         {
+-            EntityArrow var4 = new EntityArrow(par1EntityLiving.worldObj, par1EntityLiving.posX, par1EntityLiving.posY, par1EntityLiving.posZ);
++            EntityArrow var4 = (EntityArrow) EntityList.createEntityOfType(EntityArrow.class, par1EntityLiving.worldObj, par1EntityLiving.posX, par1EntityLiving.posY, par1EntityLiving.posZ);
+             Random var5 = new Random((long)par1EntityLiving.entityId);
+             RenderHelper.disableStandardItemLighting();
+ 
 @@ -412,6 +429,12 @@
  
                  if (par1EntityLiving.isSneaking())

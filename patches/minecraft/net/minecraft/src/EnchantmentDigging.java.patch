@@ -1,0 +1,10 @@
+--- a/minecraft/net/minecraft/src/EnchantmentDigging.java
++++ b/minecraft/net/minecraft/src/EnchantmentDigging.java
+@@ -34,6 +34,6 @@
+ 
+     public boolean canApply(ItemStack par1ItemStack)
+     {
+-        return par1ItemStack.getItem().itemID == Item.shears.itemID ? true : super.canApply(par1ItemStack);
++        return par1ItemStack.getItem() instanceof FCItemShears ? true : super.canApply(par1ItemStack);
+     }
+ }

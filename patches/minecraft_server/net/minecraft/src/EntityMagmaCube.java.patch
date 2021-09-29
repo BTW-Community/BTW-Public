@@ -11,3 +11,12 @@
  {
      public EntityMagmaCube(World par1World)
      {
+@@ -44,7 +47,7 @@
+ 
+     protected EntitySlime createInstance()
+     {
+-        return new EntityMagmaCube(this.worldObj);
++    	return (EntitySlime) EntityList.createEntityOfType(EntityMagmaCube.class, this.worldObj);
+     }
+ 
+     /**

@@ -6,3 +6,12 @@
  package net.minecraft.src;
  
  public class EntityChicken extends EntityAnimal
+@@ -157,7 +159,7 @@
+      */
+     public EntityChicken spawnBabyAnimal(EntityAgeable par1EntityAgeable)
+     {
+-        return new EntityChicken(this.worldObj);
++    	return (EntityChicken) EntityList.createEntityOfType(EntityChicken.class, this.worldObj);
+     }
+ 
+     /**

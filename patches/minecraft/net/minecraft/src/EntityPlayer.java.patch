@@ -1,6 +1,25 @@
 --- a/minecraft/net/minecraft/src/EntityPlayer.java
 +++ b/minecraft/net/minecraft/src/EntityPlayer.java
-@@ -105,7 +105,10 @@
+@@ -1,9 +1,18 @@
+ package net.minecraft.src;
+ 
++import java.io.InputStreamReader;
++import java.net.HttpURLConnection;
++import java.net.URL;
+ import java.util.Collection;
++import java.util.HashMap;
+ import java.util.Iterator;
+ import java.util.List;
++import java.util.Map;
+ 
++import argo.jdom.JdomParser;
++import argo.jdom.JsonRootNode;
++import net.minecraft.src.EntityPlayer.BeaconRespawnValidationResult.BeaconStatus;
++
+ public abstract class EntityPlayer extends EntityLiving implements ICommandSender
+ {
+     /** Inventory of the player */
+@@ -105,7 +114,10 @@
      public EntityPlayer(World par1World)
      {
          super(par1World);
@@ -12,7 +31,7 @@
          this.openContainer = this.inventoryContainer;
          this.yOffset = 1.62F;
          ChunkCoordinates var2 = par1World.getSpawnPoint();
-@@ -127,6 +130,20 @@
+@@ -127,6 +139,20 @@
          this.dataWatcher.addObject(16, Byte.valueOf((byte)0));
          this.dataWatcher.addObject(17, Byte.valueOf((byte)0));
          this.dataWatcher.addObject(18, Integer.valueOf(0));
@@ -33,7 +52,7 @@
      }
  
      /**
-@@ -192,17 +209,35 @@
+@@ -192,17 +218,35 @@
       */
      public void onUpdate()
      {
@@ -70,7 +89,7 @@
                  if (--this.itemInUseCount == 0 && !this.worldObj.isRemote)
                  {
                      this.onItemUseFinish();
-@@ -315,6 +350,10 @@
+@@ -315,6 +359,10 @@
          {
              this.foodStats.onUpdate(this);
          }
@@ -81,7 +100,7 @@
      }
  
      /**
-@@ -333,6 +372,10 @@
+@@ -333,6 +381,10 @@
          return 10;
      }
  
@@ -92,7 +111,7 @@
      public void playSound(String par1Str, float par2, float par3)
      {
          this.worldObj.playSoundToNearExcept(this, par1Str, par2, par3);
-@@ -503,6 +546,9 @@
+@@ -503,6 +555,9 @@
          super.onLivingUpdate();
          this.landMovementFactor = this.capabilities.getWalkSpeed();
          this.jumpMovementFactor = this.speedInAir;
@@ -102,7 +121,16 @@
  
          if (this.isSprinting())
          {
-@@ -680,6 +726,9 @@
+@@ -668,7 +723,7 @@
+         }
+         else
+         {
+-            EntityItem var3 = new EntityItem(this.worldObj, this.posX, this.posY - 0.30000001192092896D + (double)this.getEyeHeight(), this.posZ, par1ItemStack);
++            EntityItem var3 = (EntityItem) EntityList.createEntityOfType(EntityItem.class, this.worldObj, this.posX, this.posY - 0.30000001192092896D + (double)this.getEyeHeight(), this.posZ, par1ItemStack);
+             var3.delayBeforeCanPickup = 40;
+             float var4 = 0.1F;
+             float var5;
+@@ -680,6 +735,9 @@
                  var3.motionX = (double)(-MathHelper.sin(var6) * var5);
                  var3.motionZ = (double)(MathHelper.cos(var6) * var5);
                  var3.motionY = 0.20000000298023224D;
@@ -112,7 +140,7 @@
              }
              else
              {
-@@ -712,9 +761,19 @@
+@@ -712,9 +770,19 @@
      /**
       * Returns how strong the player is against the specified block at this moment
       */
@@ -132,7 +160,7 @@
  
          if (var3 > 1.0F)
          {
-@@ -725,7 +784,12 @@
+@@ -725,7 +793,12 @@
              {
                  float var6 = (float)(var4 * var4 + 1);
  
@@ -145,7 +173,7 @@
                  {
                      var3 += var6 * 0.08F;
                  }
-@@ -756,16 +820,24 @@
+@@ -756,16 +829,24 @@
              var3 /= 5.0F;
          }
  
@@ -170,7 +198,7 @@
  
      /**
       * (abstract) Protected helper method to read subclass entity data from NBT.
-@@ -803,6 +875,9 @@
+@@ -803,6 +884,9 @@
              NBTTagList var3 = par1NBTTagCompound.getTagList("EnderItems");
              this.theInventoryEnderChest.loadInventoryFromNBT(var3);
          }
@@ -180,7 +208,7 @@
      }
  
      /**
-@@ -831,6 +906,9 @@
+@@ -831,6 +915,9 @@
          this.foodStats.writeNBT(par1NBTTagCompound);
          this.capabilities.writeCapabilitiesToNBT(par1NBTTagCompound);
          par1NBTTagCompound.setTag("EnderItems", this.theInventoryEnderChest.saveInventoryToNBT());
@@ -190,7 +218,7 @@
      }
  
      /**
-@@ -932,6 +1010,14 @@
+@@ -932,6 +1019,14 @@
                      }
  
                      this.addStat(StatList.damageTakenStat, par2);
@@ -205,7 +233,7 @@
                      return super.attackEntityFrom(par1DamageSource, par2);
                  }
              }
-@@ -951,7 +1037,13 @@
+@@ -951,7 +1046,13 @@
       */
      protected void alertWolves(EntityLiving par1EntityLiving, boolean par2)
      {
@@ -220,7 +248,7 @@
          {
              if (par1EntityLiving instanceof EntityWolf)
              {
-@@ -1024,7 +1116,12 @@
+@@ -1024,7 +1125,12 @@
          {
              if (!par1DamageSource.isUnblockable() && this.isBlocking())
              {
@@ -233,7 +261,7 @@
              }
  
              par2 = this.applyArmorCalculations(par1DamageSource, par2);
-@@ -1160,6 +1257,15 @@
+@@ -1160,6 +1266,15 @@
                      ++var3;
                  }
  
@@ -249,7 +277,7 @@
                  if (var2 > 0 || var4 > 0)
                  {
                      boolean var5 = this.fallDistance > 0.0F && !this.onGround && !this.isOnLadder() && !this.isInWater() && !this.isPotionActive(Potion.blindness) && this.ridingEntity == null && par1Entity instanceof EntityLiving;
-@@ -1258,9 +1364,15 @@
+@@ -1258,9 +1373,15 @@
  
                      this.addExhaustion(0.3F);
                  }
@@ -265,7 +293,7 @@
  
      /**
       * Called when the player performs a critical hit on the Entity. Args: entity that was hit critically
-@@ -1303,6 +1415,11 @@
+@@ -1303,6 +1424,11 @@
       */
      public EnumStatus sleepInBedAt(int par1, int par2, int par3)
      {
@@ -277,7 +305,7 @@
          if (!this.worldObj.isRemote)
          {
              if (this.isPlayerSleeping() || !this.isEntityAlive())
-@@ -1382,6 +1499,8 @@
+@@ -1382,6 +1508,8 @@
          }
  
          return EnumStatus.OK;
@@ -286,7 +314,7 @@
      }
  
      private void func_71013_b(int par1)
-@@ -1590,6 +1709,10 @@
+@@ -1590,6 +1718,10 @@
              this.spawnChunk = null;
              this.spawnForced = false;
          }
@@ -297,7 +325,7 @@
      }
  
      /**
-@@ -1613,6 +1736,8 @@
+@@ -1613,6 +1745,8 @@
          super.jump();
          this.addStat(StatList.jumpStat, 1);
  
@@ -306,7 +334,7 @@
          if (this.isSprinting())
          {
              this.addExhaustion(0.8F);
-@@ -1621,6 +1746,9 @@
+@@ -1621,6 +1755,9 @@
          {
              this.addExhaustion(0.2F);
          }
@@ -316,7 +344,7 @@
      }
  
      /**
-@@ -1658,6 +1786,13 @@
+@@ -1658,6 +1795,13 @@
          {
              int var7;
  
@@ -330,7 +358,7 @@
              if (this.isInsideOfMaterial(Material.water))
              {
                  var7 = Math.round(MathHelper.sqrt_double(par1 * par1 + par3 * par3 + par5 * par5) * 100.0F);
-@@ -1665,7 +1800,12 @@
+@@ -1665,7 +1809,12 @@
                  if (var7 > 0)
                  {
                      this.addStat(StatList.distanceDoveStat, var7);
@@ -343,7 +371,7 @@
                  }
              }
              else if (this.isInWater())
-@@ -1675,7 +1815,12 @@
+@@ -1675,7 +1824,12 @@
                  if (var7 > 0)
                  {
                      this.addStat(StatList.distanceSwumStat, var7);
@@ -356,7 +384,7 @@
                  }
              }
              else if (this.isOnLadder())
-@@ -1699,7 +1844,12 @@
+@@ -1699,7 +1853,12 @@
                      }
                      else
                      {
@@ -369,7 +397,7 @@
                      }
                  }
              }
-@@ -1828,6 +1978,17 @@
+@@ -1828,6 +1987,17 @@
              }
          }
  
@@ -387,7 +415,7 @@
          return var3;
      }
  
-@@ -1905,6 +2066,9 @@
+@@ -1905,6 +2075,9 @@
          {
              if (!this.worldObj.isRemote)
              {
@@ -397,7 +425,7 @@
                  this.foodStats.addExhaustion(par1);
              }
          }
-@@ -1920,6 +2084,12 @@
+@@ -1920,6 +2093,12 @@
  
      public boolean canEat(boolean par1)
      {
@@ -410,7 +438,7 @@
          return (par1 || this.foodStats.needFood()) && !this.capabilities.disableDamage;
      }
  
-@@ -1974,7 +2144,12 @@
+@@ -1974,7 +2153,12 @@
                  {
                      ItemStack var6 = this.getCurrentEquippedItem();
  
@@ -423,7 +451,7 @@
                      {
                          return true;
                      }
-@@ -1987,6 +2162,13 @@
+@@ -1987,6 +2171,13 @@
  
      public boolean canPlayerEdit(int par1, int par2, int par3, int par4, ItemStack par5ItemStack)
      {
@@ -437,7 +465,7 @@
          return this.capabilities.allowEdit ? true : (par5ItemStack != null ? par5ItemStack.func_82835_x() : false);
      }
  
-@@ -2183,4 +2365,1072 @@
+@@ -2183,4 +2374,1139 @@
      {
          return ScorePlayerTeam.func_96667_a(this.getTeam(), this.username);
      }
@@ -1030,10 +1058,10 @@
 +     */
 +    public int GetValidatedRespawnCoordinates( World newWorld, ChunkCoordinates respawnLocation )
 +    {
-+    	int iReturnValue = 0;
++    	int returnValue = 0;
 +    	
-+    	int iOldDimension = dimension;
-+    	int iNewDimension = m_iSpawnDimension;
++    	int oldDimension = dimension;
++    	int newDimension = m_iSpawnDimension;
 +    	
 +        IChunkProvider chunkProvider = newWorld.getChunkProvider();
 +        
@@ -1058,88 +1086,90 @@
 +            }
 +            else
 +            {
-+            	iReturnValue = 1;
++            	returnValue = 1;
 +            }
 +        }
 +        else
-+        {        
-+    		iReturnValue = 2;
-+    		
-+	        if ( newWorld.getBlockId( spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ ) == Block.beacon.blockID )
-+	        {
-+	        	FCTileEntityBeacon beaconEnt = (FCTileEntityBeacon)newWorld.getBlockTileEntity( spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ );
-+	        	
-+	        	if ( beaconEnt != null )
-+	        	{
-+	        		int iBeaconEffect = beaconEnt.getPrimaryEffect();
-+	        		
-+	        		if ( iBeaconEffect == FCTileEntityBeacon.m_iEffectIDSpawnPoint )
-+	        		{
-+	        			int iBeaconPowerLevel = beaconEnt.getLevels();
-+	        		
-+	        			if ( iBeaconPowerLevel > 0 )
-+	        			{
-+	        				iReturnValue = 3;
-+	        				
-+		        			if ( iBeaconPowerLevel >= 4 || iOldDimension == iNewDimension )
-+		        			{
-+		        				boolean bInRange = true;
-+		        				
-+		        				if ( iBeaconPowerLevel < 3 )
-+		        				{
-+		        					int iMaxRange = 160;
-+		        					
-+		        					if ( iBeaconPowerLevel == 2 )
-+		        					{
-+		        						iMaxRange = 2000;
-+		        					}
-+		        					
-+		        					int iDeltaX = Math.abs( (int)posX - spawnChunk.posX );
-+		        					
-+		        					if ( iDeltaX > iMaxRange )
-+		        					{
-+		        						bInRange = false;
-+		        					}
-+		        					else
-+		        					{
-+			        					int iDeltaZ = Math.abs( (int)posZ - spawnChunk.posZ );
-+			        					
-+			        					if ( iDeltaZ > iMaxRange )
-+			        					{
-+			        						bInRange = false;
-+			        					}
-+		        					}
-+		        				}
-+		        				
-+		        				if ( bInRange )
-+		        				{	        				
-+		        					validatedCoords = GetRandomValidSpawnAroundBeaconLocation( newWorld, spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ, iBeaconPowerLevel );
-+		        					
-+		        					if ( validatedCoords != null )
-+		        					{
-+		        						iReturnValue = 0;
-+		        						beaconEnt.m_bPlayerRespawnedAtBeacon = true;
-+		        					}
-+		        					else
-+		        					{
-+		        						iReturnValue = 4;
-+		        					}
-+		        				}
-+		        			}
-+	        			}
-+	        		}
-+	        	}
-+	        }
-+	        
-+	        if ( validatedCoords != null )
-+	        {
-+	        	respawnLocation.posX = validatedCoords.posX;
-+	        	respawnLocation.posY = validatedCoords.posY;
-+	        	respawnLocation.posZ = validatedCoords.posZ;
-+	        }
++        {
++        	BeaconRespawnValidationResult validatedResult = validateBoundRespawnBeacon(newWorld, oldDimension, newDimension);
++        	returnValue = validatedResult.beaconStatus.id;
++        	
++            if( returnValue == 0)
++            {
++            	respawnLocation.posX = validatedResult.coords.posX;
++            	respawnLocation.posY = validatedResult.coords.posY;
++            	respawnLocation.posZ = validatedResult.coords.posZ;
++            }
 +        }
 +        
-+        return iReturnValue;
++        return returnValue;
++    }
++    
++    // TODO: lots of hardcoded stuff in here
++    public BeaconRespawnValidationResult validateBoundRespawnBeacon(World world, int oldDimension, int newDimension) {
++    	BeaconRespawnValidationResult result = new BeaconRespawnValidationResult();
++    	result.beaconStatus = BeaconStatus.MISSING;
++		
++    	// Does the beacon exist
++        if ( spawnChunk != null && world.getBlockId(spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ ) == Block.beacon.blockID) {
++        	FCTileEntityBeacon beaconEnt = (FCTileEntityBeacon) world.getBlockTileEntity(spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ);
++        	
++        	if (beaconEnt != null) {
++        		int beaconEffect = beaconEnt.getPrimaryEffect();
++        		
++        		// Is the beacon a steel beacon
++        		if (beaconEffect == FCTileEntityBeacon.m_iEffectIDSpawnPoint) {
++        			int beaconPowerLevel = beaconEnt.getLevels();
++        			
++        			// Validate that the beacon is in fact powered
++        			if (beaconPowerLevel > 0) {
++        				result.beaconStatus = BeaconStatus.OUT_OF_RANGE;
++        				
++        				// Level 4 is across dimensions, otherwise must be the same dimension
++	        			if (beaconPowerLevel >= 4 || oldDimension == newDimension) {
++	        				boolean inRange = true;
++	        				
++	        				// Check range for level 1 and 2
++	        				// Level 3 and 4 have no range limit
++	        				if (beaconPowerLevel < 3) {
++	        					int maxRange = 160;
++	        					
++	        					if (beaconPowerLevel == 2) {
++	        						maxRange = 2000;
++	        					}
++	        					
++	        					int deltaX = Math.abs( (int)posX - spawnChunk.posX );
++	        					
++	        					if (deltaX > maxRange) {
++	        						inRange = false;
++	        					}
++	        					else {
++		        					int deltaZ = Math.abs( (int)posZ - spawnChunk.posZ );
++		        					
++		        					if (deltaZ > maxRange) {
++		        						inRange = false;
++		        					}
++	        					}
++	        				}
++	        				
++	        				if (inRange) {
++	        					result.coords = GetRandomValidSpawnAroundBeaconLocation( world, spawnChunk.posX, spawnChunk.posY, spawnChunk.posZ, beaconPowerLevel );
++	        					
++	        					if (result.coords != null) {
++	        						result.beaconStatus = BeaconStatus.VALID;
++	        						beaconEnt.m_bPlayerRespawnedAtBeacon = true;
++	        					}
++	        					else {
++	        						result.beaconStatus = BeaconStatus.OBSTRUCTED;
++	        					}
++	        				}
++	        			}
++        			}
++        		}
++        	}
++        }
++        
++        return result;
 +    }
 +    
 +    private boolean IsValidRespawnLocation( World world, int i, int j, int k )
@@ -1507,6 +1537,71 @@
 +    static public boolean InstallationIntegrityTestPlayer()
 +    {
 +    	return true;
-+    }    
++    }
++    
++    private static final Map<String, String> uuids = new HashMap<String, String>();
++    
++    public static String fetchUuid(String userName) {
++        if (uuids.containsKey(userName))
++            return uuids.get(userName);
++
++        HttpURLConnection profileConn = null;
++        String id = null;
++
++        try {
++            URL profileUrl = new URL("https://api.mojang.com/users/profiles/minecraft/" + userName);
++            profileConn = (HttpURLConnection) profileUrl.openConnection();
++            profileConn.setDoInput(true);
++            profileConn.setDoOutput(false);
++            profileConn.connect();
++
++            if (profileConn.getResponseCode() / 100 == 4) {
++                return null;
++            }
++
++            JsonRootNode json = (new JdomParser())
++                    .parse(new InputStreamReader(profileConn.getInputStream()));
++
++            String name = json.getStringValue("name");
++            id = json.getStringValue("id");
++
++            if (userName.equals(name)) {
++                uuids.put(userName, id);
++            } else {
++                id = null;
++            }
++        }
++        catch(Exception e) {
++            e.printStackTrace();
++        }
++        finally {
++            if (profileConn != null)
++                profileConn.disconnect();
++        }
++        return id;
++    }
++    
++    public static class BeaconRespawnValidationResult {
++    	public BeaconStatus beaconStatus;
++    	
++    	public ChunkCoordinates coords;
++    	
++    	public void setCoords(ChunkCoordinates coords) {
++    		this.coords = coords;
++    	}
++    	
++    	public enum BeaconStatus {
++    		VALID(0),
++    		MISSING(2),
++    		OUT_OF_RANGE(3),
++    		OBSTRUCTED(4);
++    		
++    		public final int id;
++    		
++    		private BeaconStatus(int id) {
++    			this.id = id;
++    		}
++    	}
++    }
 +    // END FCMOD
 +}

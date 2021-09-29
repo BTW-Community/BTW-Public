@@ -38,7 +38,7 @@
 -                    EntityWitch var11 = new EntityWitch(par1World);
 +                    // FCMOD: Changed
 +                    //EntityWitch var11 = new EntityWitch(par1World);
-+                    FCEntityWitch var11 = new FCEntityWitch(par1World);
++                    FCEntityWitch var11 = (FCEntityWitch) EntityList.createEntityOfType(FCEntityWitch.class, par1World);
 +                    var11.PreInitCreature();
 +                    // END FCMOD
                      var11.setLocationAndAngles((double)var8 + 0.5D, (double)var9, (double)var10 + 0.5D, 0.0F, 0.0F);
@@ -102,7 +102,7 @@
 +				{
 +                    hasWitch = true;
 +                    
-+                    FCEntityWitch witch = new FCEntityWitch( world );
++                    FCEntityWitch witch = (FCEntityWitch) EntityList.createEntityOfType(FCEntityWitch.class, world);
 +                    
 +                    // FCMOD: Added
 +                    witch.PreInitCreature();

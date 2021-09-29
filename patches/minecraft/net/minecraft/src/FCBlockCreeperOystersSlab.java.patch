@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockCreeperOystersSlab.java
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,44 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -27,18 +27,6 @@
 +    public boolean DoesBlockBreakSaw( World world, int i, int j, int k )
 +    {
 +		return false;
-+    }
-+
-+	@Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		return FCBetterThanWolves.fcItemCreeperOysters.itemID;
-+    }
-+	
-+	@Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		return 4; // 8 in slab
 +    }
 +	
 +	@Override

@@ -126,6 +126,15 @@
      public void removeAllEntities()
      {
          this.loadedEntityList.removeAll(this.unloadedEntityList);
+@@ -438,7 +493,7 @@
+ 
+     public void func_92088_a(double par1, double par3, double par5, double par7, double par9, double par11, NBTTagCompound par13NBTTagCompound)
+     {
+-        this.mc.effectRenderer.addEffect(new EntityFireworkStarterFX(this, par1, par3, par5, par7, par9, par11, this.mc.effectRenderer, par13NBTTagCompound));
++        this.mc.effectRenderer.addEffect((EntityFX) EntityList.createEntityOfType(EntityFireworkStarterFX.class, this, par1, par3, par5, par7, par9, par11, this.mc.effectRenderer, par13NBTTagCompound));
+     }
+ 
+     public void func_96443_a(Scoreboard par1Scoreboard)
 @@ -455,4 +510,62 @@
      {
          return par0WorldClient.entitySpawnQueue;

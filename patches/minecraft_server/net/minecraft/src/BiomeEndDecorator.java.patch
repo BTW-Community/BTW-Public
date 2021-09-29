@@ -1,0 +1,11 @@
+--- a/minecraft_server/net/minecraft/src/BiomeEndDecorator.java
++++ b/minecraft_server/net/minecraft/src/BiomeEndDecorator.java
+@@ -33,7 +33,7 @@
+ 
+         if (this.chunk_X == 0 && this.chunk_Z == 0)
+         {
+-            EntityDragon var4 = new EntityDragon(this.currentWorld);
++        	EntityDragon var4 = (EntityDragon) EntityList.createEntityOfType(EntityDragon.class, this.currentWorld);
+             var4.setLocationAndAngles(0.0D, 128.0D, 0.0D, this.randomGenerator.nextFloat() * 360.0F, 0.0F);
+             this.currentWorld.spawnEntityInWorld(var4);
+         }

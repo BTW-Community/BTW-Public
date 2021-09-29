@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemBlockLog.java
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,23 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -10,30 +10,6 @@
 +    public FCItemBlockLog( int iBlockID, Block block, String[] sTypeNames )
 +    {
 +        super( iBlockID, block, sTypeNames );
-+    }
-+    
-+    @Override
-+    public void OnUsedInCrafting( int iItemDamage, EntityPlayer player, ItemStack outputStack )
-+    {
-+    	if ( !player.worldObj.isRemote )
-+    	{
-+    		if ( outputStack.itemID == Block.planks.blockID )
-+    		{
-+    			FCUtilsItem.EjectStackWithRandomVelocity( player.worldObj, player.posX, player.posY, player.posZ, 
-+    				new ItemStack( FCBetterThanWolves.fcItemSawDust, 2, 0 ) );
-+    			
-+    			FCUtilsItem.EjectStackWithRandomVelocity( player.worldObj, player.posX, player.posY, player.posZ, 
-+    				new ItemStack( FCBetterThanWolves.fcItemBark, 1, outputStack.getItemDamage() ) );
-+    		}
-+    		else if ( outputStack.itemID == Item.stick.itemID )
-+    		{
-+    			FCUtilsItem.EjectStackWithRandomVelocity( player.worldObj, player.posX, player.posY, player.posZ, 
-+    				new ItemStack( FCBetterThanWolves.fcItemSawDust, 4, 0 ) );
-+    			
-+    			FCUtilsItem.EjectStackWithRandomVelocity( player.worldObj, player.posX, player.posY, player.posZ, 
-+    				new ItemStack( FCBetterThanWolves.fcItemBark, 1, iItemDamage ) );
-+    		}
-+    	}
 +    }
 +    
 +    @Override

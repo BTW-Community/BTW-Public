@@ -31,7 +31,7 @@
 +    	{
 +	    	int iMetadata = basket.worldObj.getBlockMetadata( basket.xCoord, basket.yCoord, basket.zCoord );
 +	    	
-+	        EntityItem entity = new EntityItem( basket.worldObj, 0.0D, 0.0D, 0.0D, stack );
++	        EntityItem entity = (EntityItem) EntityList.createEntityOfType(EntityItem.class, basket.worldObj, 0.0D, 0.0D, 0.0D, stack );
 +	        
 +	        entity.hoverStart = 0.0F;
 +	    	

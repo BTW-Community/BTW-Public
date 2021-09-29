@@ -6,3 +6,12 @@
  package net.minecraft.src;
  
  public class EntitySpider extends EntityMob
+@@ -217,7 +219,7 @@
+     {
+         if (this.worldObj.rand.nextInt(100) == 0)
+         {
+-            EntitySkeleton var1 = new EntitySkeleton(this.worldObj);
++            EntitySkeleton var1 = (EntitySkeleton) EntityList.createEntityOfType(EntitySkeleton.class, this.worldObj);
+             var1.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
+             var1.initCreature();
+             this.worldObj.spawnEntityInWorld(var1);

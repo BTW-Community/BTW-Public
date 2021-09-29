@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCRecipesFishingRodBaiting.java
-@@ -0,0 +1,150 @@
+@@ -0,0 +1,155 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -131,6 +131,11 @@
 +    public boolean HasSecondaryOutput()
 +    {
 +    	return false;
++    }
++    
++    @Override
++    public ItemStack[] getSecondaryOutput(IInventory inventory) {
++    	return null;
 +    }
 +    
 +	//------------- Class Specific Methods ------------//

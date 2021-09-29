@@ -76,7 +76,7 @@
 +    {
 +    	if ( !IsStarving() )
 +    	{
-+	        int iNumDrops = rand.nextInt( 3 ) + rand.nextInt( 1 + iLootingModifier );
++	        int iNumDrops = rand.nextInt( 3 ) + rand.nextInt( 1 + iLootingModifier ) + 1;
 +	
 +	        if ( IsFamished() )
 +	        {
@@ -105,7 +105,7 @@
 +    @Override
 +    public FCEntityChicken spawnBabyAnimal( EntityAgeable parent )
 +    {
-+        return new FCEntityChicken( worldObj );
++    	return (FCEntityChicken) EntityList.createEntityOfType(FCEntityChicken.class, worldObj);
 +    }
 +    
 +    @Override
@@ -163,7 +163,7 @@
 +        	double dFeatherY = posY + 0.5D;
 +        	double dFeatherZ = posZ + ( worldObj.rand.nextDouble() - 0.5D ) * 2D;
 +        	
-+            EntityItem entityitem = new EntityItem( worldObj, dFeatherX, dFeatherY, dFeatherZ, itemStack );
++        	EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, worldObj, dFeatherX, dFeatherY, dFeatherZ, itemStack );
 +            
 +            entityitem.motionX = ( worldObj.rand.nextDouble() - 0.5D ) * 0.5D;
 +            entityitem.motionY = 0.2D + worldObj.rand.nextDouble() * 0.3D;

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCItemPileDirt.java
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,22 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -17,24 +17,6 @@
 +        setUnlocalizedName( "fcItemPileDirt" );
 +        
 +        setCreativeTab( CreativeTabs.tabMaterials );
-+    }
-+    
-+    @Override
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return true;
-+    }
-+    
-+    @Override
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 8;
-+    }
-+    
-+    @Override
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return Block.dirt.blockID;
 +    }
 +    
 +    //------------- Class Specific Methods ------------//

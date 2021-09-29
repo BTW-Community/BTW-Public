@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCRecipesLogChopping.java
-@@ -0,0 +1,174 @@
+@@ -0,0 +1,220 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -9,169 +9,216 @@
 +
 +public class FCRecipesLogChopping implements IRecipe
 +{
-+    public boolean matches( InventoryCrafting craftingInventory, World world )
-+    {
-+        ItemStack axeStack = null;
-+        ItemStack logStack = null;
++	public boolean matches( InventoryCrafting craftingInventory, World world )
++	{
++		ItemStack axeStack = null;
++		ItemStack logStack = null;
 +
-+        for ( int iTempSlot = 0; iTempSlot < craftingInventory.getSizeInventory(); ++iTempSlot )
-+        {
-+            ItemStack tempStack = craftingInventory.getStackInSlot( iTempSlot );
++		for ( int iTempSlot = 0; iTempSlot < craftingInventory.getSizeInventory(); ++iTempSlot )
++		{
++			ItemStack tempStack = craftingInventory.getStackInSlot( iTempSlot );
 +
-+            if ( tempStack != null )
-+            {
-+                if ( IsAxe( tempStack ) )
-+                {
-+                	if ( axeStack == null )
-+                	{
-+                		axeStack = tempStack;
-+                	}
-+                	else
-+                	{
-+                		return false;
-+                	}
-+                }
-+                else if ( IsLog( tempStack ) )
-+                {
-+                    if ( logStack == null )
-+                    {
-+                        logStack = tempStack;
-+                    }
-+                    else
-+                    {
-+                    	return false;
-+                    }
-+                }
-+                else
-+                {
-+                	return false;
-+                }
-+            }
-+        }
++			if ( tempStack != null )
++			{
++				if ( IsAxe( tempStack ) )
++				{
++					if ( axeStack == null )
++					{
++						axeStack = tempStack;
++					}
++					else
++					{
++						return false;
++					}
++				}
++				else if ( IsLog( tempStack ) )
++				{
++					if ( logStack == null )
++					{
++						logStack = tempStack;
++					}
++					else
++					{
++						return false;
++					}
++				}
++				else
++				{
++					return false;
++				}
++			}
++		}
 +
-+        return axeStack != null && logStack != null;
-+    }
++		return axeStack != null && logStack != null;
++	}
 +
-+    /**
-+     * Returns an Item that is the result of this recipe
-+     */
-+    public ItemStack getCraftingResult( InventoryCrafting craftingInventory )
-+    {
-+        ItemStack axeStack = null;
-+        ItemStack logStack = null;
-+        
-+        for ( int iTempSlot = 0; iTempSlot < craftingInventory.getSizeInventory(); ++iTempSlot )
-+        {
-+            ItemStack tempStack = craftingInventory.getStackInSlot( iTempSlot );
++	/**
++	 * Returns an Item that is the result of this recipe
++	 */
++	public ItemStack getCraftingResult( InventoryCrafting craftingInventory )
++	{
++		ItemStack axeStack = null;
++		ItemStack logStack = null;
 +
-+            if ( tempStack != null )
-+            {
-+                if ( IsAxe( tempStack ) )
-+                {
-+                	if ( axeStack == null )
-+                	{
-+                		axeStack = tempStack;
-+                	}
-+                	else
-+                	{
-+                		return null;
-+                	}
-+                }
-+                else if ( IsLog( tempStack ) )
-+                {
-+                    if ( logStack == null )
-+                    {
-+                        logStack = tempStack;                        
-+                    }
-+                    else
-+                    {
-+                    	return null;
-+                    }
-+                }
-+                else
-+                {
-+                	return null;
-+                }
-+            }
-+        }
++		for ( int iTempSlot = 0; iTempSlot < craftingInventory.getSizeInventory(); ++iTempSlot )
++		{
++			ItemStack tempStack = craftingInventory.getStackInSlot( iTempSlot );
 +
-+        if ( logStack != null && axeStack != null )
-+        {
-+            ItemStack resultStack = null;
-+            FCItemAxe axeItem = (FCItemAxe)axeStack.getItem();
++			if ( tempStack != null )
++			{
++				if ( IsAxe( tempStack ) )
++				{
++					if ( axeStack == null )
++					{
++						axeStack = tempStack;
++					}
++					else
++					{
++						return null;
++					}
++				}
++				else if ( IsLog( tempStack ) )
++				{
++					if ( logStack == null )
++					{
++						logStack = tempStack;                        
++					}
++					else
++					{
++						return null;
++					}
++				}
++				else
++				{
++					return null;
++				}
++			}
++		}
 +
-+            if ( axeItem.toolMaterial.getHarvestLevel() <= 1 ) // wood, stone & gold
-+            {
-+            	resultStack = new ItemStack( Item.stick, 2 );
-+            }
-+            else
-+            {
-+	            int iLogID = logStack.itemID;
-+	            
-+	            if ( iLogID == FCBetterThanWolves.fcBloodWood.blockID )
-+	            {
-+	            	resultStack = new ItemStack( Block.planks.blockID, 2, 4 );
-+	            }
-+	            else
-+	            {
-+	            	resultStack = new ItemStack( Block.planks.blockID, 2, logStack.getItemDamage() );
-+	            }
-+            }
-+            
-+        	return resultStack;
-+        }
-+        
-+    	return null;
-+    }
++		if ( logStack != null && axeStack != null )
++		{
++			ItemStack resultStack = null;
++			FCItemAxe axeItem = (FCItemAxe)axeStack.getItem();
 +
-+    @Override
-+    public int getRecipeSize()
-+    {
-+        return 2;
-+    }
++			if ( axeItem.toolMaterial.getHarvestLevel() <= 1 ) // wood, stone & gold
++			{
++				resultStack = new ItemStack( Item.stick, 2 );
++			}
++			else
++			{
++				int iLogID = logStack.itemID;
 +
-+    @Override
-+    public ItemStack getRecipeOutput()
-+    {
-+        return null;
-+    }
++				if ( iLogID == FCBetterThanWolves.fcBloodWood.blockID )
++				{
++					resultStack = new ItemStack( Block.planks.blockID, 2, 4 );
++				}
++				else
++				{
++					resultStack = new ItemStack( Block.planks.blockID, 2, logStack.getItemDamage() );
++				}
++			}
 +
-+    @Override
-+    public boolean matches( IRecipe recipe )
-+    {
-+    	return false;
-+    }
-+    
-+    @Override
-+    public boolean HasSecondaryOutput()
-+    {
-+    	return true;
-+    }
-+    
++			return resultStack;
++		}
++
++		return null;
++	}
++
++	@Override
++	public int getRecipeSize()
++	{
++		return 2;
++	}
++
++	@Override
++	public ItemStack getRecipeOutput()
++	{
++		return null;
++	}
++
++	@Override
++	public boolean matches( IRecipe recipe )
++	{
++		return false;
++	}
++
++	@Override
++	public boolean HasSecondaryOutput()
++	{
++		return true;
++	}
++
++	@Override
++	public ItemStack[] getSecondaryOutput(IInventory inventory) {
++		ItemStack result = this.getCraftingResult((InventoryCrafting) inventory);
++		ItemStack[] outputs;
++		
++		boolean isBlood = false;
++		
++		for (int i = 0; i < inventory.getSizeInventory(); i++) {
++			ItemStack craftingStack = inventory.getStackInSlot(i);
++			
++			if (craftingStack != null && craftingStack.itemID == FCBetterThanWolves.fcBloodWood.blockID) {
++				isBlood = true;
++				break;
++			}
++		}
++		
++		if (isBlood) { //Blood wood
++			outputs = new ItemStack[3];
++
++			if (result.itemID == Block.planks.blockID) {
++				outputs[0] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 1);
++				outputs[1] = new ItemStack(FCBetterThanWolves.fcItemSoulDust, 1);
++				outputs[2] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, result.getItemDamage());
++			}
++			else {
++				outputs[0] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 3);
++				outputs[1] = new ItemStack(FCBetterThanWolves.fcItemSoulDust, 1);
++				outputs[2] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, result.getItemDamage());
++			}
++		}
++		else {
++			outputs = new ItemStack[2];
++
++			if (result.itemID == Block.planks.blockID) {
++				outputs[0] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 2);
++				outputs[1] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, result.getItemDamage());
++			}
++			else {
++				outputs[0] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 4);
++				outputs[1] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, result.getItemDamage());
++			}
++		}
++
++		return outputs;
++	}
++
 +	//------------- Class Specific Methods ------------//
-+    
-+    private boolean IsAxe( ItemStack stack )
-+    {
-+    	int iItemID = stack.itemID;
-+    		
-+    	if ( stack.getItem() instanceof FCItemAxe )
-+    	{
-+    		return true;
-+    	}
-+    	
-+    	return false;
-+    }
-+    
-+    private boolean IsLog( ItemStack stack )
-+    {
-+    	int iItemID = stack.itemID;
-+    		
-+    	if ( iItemID == FCBetterThanWolves.fcBloodWood.blockID ||
-+    		iItemID == Block.wood.blockID )
-+    	{
-+    		return true;
-+    	}
-+    	
-+    	return false;
-+    }    
++
++	private boolean IsAxe( ItemStack stack )
++	{
++		int iItemID = stack.itemID;
++
++		if ( stack.getItem() instanceof FCItemAxe )
++		{
++			return true;
++		}
++
++		return false;
++	}
++
++	private boolean IsLog( ItemStack stack )
++	{
++		int iItemID = stack.itemID;
++
++		if ( iItemID == FCBetterThanWolves.fcBloodWood.blockID ||
++				iItemID == Block.wood.blockID )
++		{
++			return true;
++		}
++
++		return false;
++	}
 +}
+\ No newline at end of file

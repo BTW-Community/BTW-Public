@@ -92,7 +92,7 @@
 +	    		dYHeading = offsetPos.j;
 +	    	}
 +	    	
-+	    	EntityThrowable entity = new EntityPotion( world, dXPos, dYPos, dZPos, 
++	    	EntityThrowable entity = (EntityThrowable) EntityList.createEntityOfType(EntityPotion.class, world, dXPos, dYPos, dZPos, 
 +	    		new ItemStack( Item.potion, 1, stack.getItemDamage() ) );
 +	    	
 +	        entity.setThrowableHeading( offsetPos.i, dYHeading, offsetPos.k, 1.375F, 3F );

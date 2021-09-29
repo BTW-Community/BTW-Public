@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockRottenFlesh.java
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,46 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -29,18 +29,6 @@
 +    public boolean DoesBlockBreakSaw( World world, int i, int j, int k )
 +    {
 +		return false;
-+    }
-+    
-+	@Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		return Item.rottenFlesh.itemID;
-+    }
-+	
-+	@Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		return 5; // 9 in full block
 +    }
 +	
 +	@Override

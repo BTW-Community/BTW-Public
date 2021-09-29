@@ -27,7 +27,7 @@
 +    {
 +    	int iMetadata = furnace.worldObj.getBlockMetadata( furnace.xCoord, furnace.yCoord, furnace.zCoord );
 +    	
-+        EntityItem entityItem = new EntityItem( furnace.worldObj, 0.0D, 0.0D, 0.0D, stack );
++        EntityItem entityItem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, furnace.worldObj, 0.0D, 0.0D, 0.0D, stack );
 +        entityItem.getEntityItem().stackSize = 1;
 +        entityItem.hoverStart = 0.0F;
 +    	

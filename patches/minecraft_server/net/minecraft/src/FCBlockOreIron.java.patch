@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockOreIron.java
-@@ -0,0 +1,52 @@
+@@ -0,0 +1,35 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -12,8 +12,6 @@
 +    public FCBlockOreIron( int iBlockID )
 +    {
 +        super( iBlockID );
-+        
-+		SetCanBeCookedByKiln( true );
 +    }
 +    
 +    @Override
@@ -32,21 +30,6 @@
 +    public int GetRequiredToolLevelForOre( IBlockAccess blockAccess, int i, int j, int k )
 +    {
 +    	return 1;
-+    }
-+    
-+    @Override
-+    public int GetItemIndexDroppedWhenCookedByKiln( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+    	// have to do this here instead of through SetItemIndexDroppedWhenCookedByKiln() 
-+    	// because of vanilla instatiating this block before the corresponding item
-+    	
-+    	return FCBetterThanWolves.fcItemNuggetIron.itemID;
-+    }
-+    
-+    @Override
-+    public int GetCookTimeMultiplierInKiln( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+    	return 8;
 +    }
 +    
 +    //------------- Class Specific Methods ------------//

@@ -1,0 +1,10 @@
+--- a/minecraft_server/net/minecraft/src/EnchantmentUntouching.java
++++ b/minecraft_server/net/minecraft/src/EnchantmentUntouching.java
+@@ -42,6 +42,6 @@
+ 
+     public boolean func_92089_a(ItemStack par1ItemStack)
+     {
+-        return par1ItemStack.getItem().itemID == Item.shears.itemID ? true : super.func_92089_a(par1ItemStack);
++        return par1ItemStack.getItem()instanceof FCItemShears ? true : super.func_92089_a(par1ItemStack);
+     }
+ }

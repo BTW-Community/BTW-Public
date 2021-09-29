@@ -11,3 +11,21 @@
  public class EntityPig extends EntityAnimal
  {
      /** AI task for player control. */
+@@ -192,7 +197,7 @@
+     {
+         if (!this.worldObj.isRemote)
+         {
+-            EntityPigZombie var2 = new EntityPigZombie(this.worldObj);
++            EntityPigZombie var2 = (EntityPigZombie) EntityList.createEntityOfType(EntityPigZombie.class, this.worldObj);
+             var2.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
+             this.worldObj.spawnEntityInWorld(var2);
+             this.setDead();
+@@ -217,7 +222,7 @@
+      */
+     public EntityPig spawnBabyAnimal(EntityAgeable par1EntityAgeable)
+     {
+-        return new EntityPig(this.worldObj);
++        return (EntityPig) EntityList.createEntityOfType(EntityPig.class, this.worldObj);
+     }
+ 
+     /**

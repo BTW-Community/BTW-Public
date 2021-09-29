@@ -34,7 +34,7 @@
 +	            	
 +		            if ( !animal.worldObj.isRemote )
 +		            {
-+		                FCEntityCow cow = new FCEntityCow(animal.worldObj);
++		            	FCEntityCow cow = (FCEntityCow) EntityList.createEntityOfType(FCEntityCow.class, animal.worldObj);
 +		                cow.setLocationAndAngles(animal.posX, animal.posY, animal.posZ, animal.rotationYaw, animal.rotationPitch);
 +		                cow.setEntityHealth(animal.getHealth());
 +		                cow.renderYawOffset = animal.renderYawOffset;

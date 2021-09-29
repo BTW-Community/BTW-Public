@@ -1,12 +1,47 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCAddOnUtilsWorldData.java
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,43 @@
 +package net.minecraft.src;
 +
 +public interface FCAddOnUtilsWorldData {
++	/**
++	 * Saves local (per-dimension) world data to the given NBT tag
++	 * @param world
++	 * @param tag
++	 */
 +	public void saveWorldDataToNBT(WorldServer world, NBTTagCompound tag);
-+	
++
++	/**
++	 * Loads local (per-dimension) world data from the given NBT tag
++	 * @param world
++	 * @param tag
++	 */
 +	public void loadWorldDataFromNBT(WorldServer world, NBTTagCompound tag);
-+	
++
++	/**
++	 * Loads global world data from the given NBT tag
++	 * @param info
++	 * @param tag
++	 */
++	public void saveGlobalDataToNBT(WorldInfo info, NBTTagCompound tag);
++
++	/**
++	 * Loads global world data from the given NBT tag
++	 * @param tag
++	 */
++	public void loadGlobalDataFromNBT(WorldInfo info, NBTTagCompound tag);
++
++	/**
++	 * Copies data from one WorldInfo object to another
++	 * @param oldInfo
++	 * @param newInfo
++	 */
++	public void copyGlobalData(WorldInfo oldInfo, WorldInfo newInfo);
++
++	/**
++	 * Only used for local data. Global data is stored in level.dat
++	 * @return The name of the file to be stored for each dimension containing the local world data
++	 */
 +	public String getFilename();
 +}
+\ No newline at end of file

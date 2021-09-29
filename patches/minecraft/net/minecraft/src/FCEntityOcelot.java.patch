@@ -112,7 +112,7 @@
 +        	
 +            for ( int iTempCount = 0; iTempCount < 2; ++iTempCount )
 +            {
-+                FCEntityOcelot kitten = new FCEntityOcelot( worldObj );
++                FCEntityOcelot kitten = (FCEntityOcelot) EntityList.createEntityOfType(FCEntityOcelot.class, worldObj);
 +                
 +                kitten.setLocationAndAngles( posX, posY, posZ, rotationYaw, 0F );
 +                kitten.setGrowingAge( -kitten.GetTicksForChildToGrow() );
@@ -125,7 +125,7 @@
 +	@Override
 +    public FCEntityOcelot spawnBabyAnimal( EntityAgeable otherParent )
 +    {
-+        FCEntityOcelot kitten = new FCEntityOcelot( worldObj );
++        FCEntityOcelot kitten = (FCEntityOcelot) EntityList.createEntityOfType(FCEntityOcelot.class, worldObj);
 +
 +        if ( isTamed() )
 +        {

@@ -310,7 +310,7 @@
 +    
 +    static public FCEntityMiningCharge CreatePrimedEntity( World world, int i, int j, int k, int iMetaData )
 +    {
-+        FCEntityMiningCharge entityMiningCharge = new FCEntityMiningCharge( 
++    	FCEntityMiningCharge entityMiningCharge = (FCEntityMiningCharge) EntityList.createEntityOfType(FCEntityMiningCharge.class,
 +    		world, i, j, k, FCBetterThanWolves.fcBlockMiningCharge.GetFacing( iMetaData ) );
 +            
 +        world.spawnEntityInWorld( entityMiningCharge );

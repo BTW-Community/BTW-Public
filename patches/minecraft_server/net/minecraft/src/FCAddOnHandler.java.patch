@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCAddOnHandler.java
-@@ -0,0 +1,255 @@
+@@ -0,0 +1,273 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -33,6 +33,8 @@
 +
 +	private static NetServerHandler netServerHandler;
 +	private static ArrayList<String> ackCheckFails = new ArrayList<String>();
++	
++	public static Map<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> addonWorldDataMap;
 +
 +	public static void AddMod(FCAddOn mod)
 +	{
@@ -46,6 +48,8 @@
 +			InitializeLogger();
 +
 +			LogMessage("...Add-On Handler Initializing...");
++			
++			addonWorldDataMap = FCAddOnHandler.initWorldDataForAddon();
 +
 +			PreInitializeMods();
 +			
@@ -252,7 +256,22 @@
 +			FCAddOn addon = (FCAddOn) mod;
 +			
 +			Map<String, String> addonConfigProperties = addon.loadConfigProperties();
++			addon.repopulateConfigFile();
 +			addon.handleConfigProperties(addonConfigProperties);
 +		}
 +	}
++	
++	public FCAddOnUtilsWorldData getWorldDataForMod(Class<? extends FCAddOn> mod) {
++		if (FCAddOnHandler.addonWorldDataMap.containsKey(mod))
++			return FCAddOnHandler.addonWorldDataMap.get(mod);
++		else
++			return null;
++	}
++
++	public void setWorldDataForMod(Class<? extends FCAddOn> mod, FCAddOnUtilsWorldData data) {
++		FCAddOnHandler.addonWorldDataMap.put(mod, data);
++	}
++
++	//----------- Client Side Functionality -----------//
 +}
+\ No newline at end of file

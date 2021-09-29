@@ -1,9 +1,11 @@
 --- a/minecraft/net/minecraft/src/Block.java
 +++ b/minecraft/net/minecraft/src/Block.java
-@@ -1,8 +1,15 @@
+@@ -1,8 +1,17 @@
  package net.minecraft.src;
  
 +import com.prupe.mcpatcher.cc.ColorizeBlock;
++
++import java.lang.reflect.Constructor;
  import java.util.List;
  import java.util.Random;
  
@@ -16,18 +18,20 @@
  public class Block
  {
      /**
-@@ -33,7 +40,9 @@
+@@ -33,7 +42,11 @@
      /** How much light is subtracted for going through this block */
      public static final int[] lightOpacity = new int[4096];
  
 -    /** Array of booleans that tells if a block can grass */
++    public static final boolean[] hasKilnRecipe = new boolean[4096];
++
 +    /** Array of booleans that tells if a block can grass
 +     * FCNOTE: Misleading name.  This is actually wether grass can grow under the block
 +     */
      public static final boolean[] canBlockGrass = new boolean[4096];
  
      /** Amount of light emitted */
-@@ -41,181 +50,174 @@
+@@ -41,181 +54,174 @@
  
      /**
       * Flag if block ID should use the brightest neighbor light value as its own
@@ -86,9 +90,9 @@
 +    public static Block planks = new FCBlockPlanks( 5 );
 +    public static Block sapling = (new FCBlockSapling(6)).setHardness(0.0F).SetBuoyant().setStepSound(soundGrassFootstep).setUnlocalizedName("sapling");
 +    public static Block bedrock = new FCBlockBedrock( 7 );
-+    public static BlockFluid waterMoving = (BlockFluid)(new FCBlockWaterFlowing(8, Material.water)).setHardness(100.0F).setLightOpacity(3).setUnlocalizedName("water").disableStats();
++    public static BlockFluid waterMoving = (BlockFluid)(new FCBlockWaterFlowing(8, Material.water)).setHardness(100.0F).setLightOpacity(3).setUnlocalizedName("water").setCreativeTab(CreativeTabs.tabBlock).disableStats();
 +    public static Block waterStill = (new FCBlockWaterStationary(9, Material.water)).setHardness(100.0F).setLightOpacity(3).setUnlocalizedName("water").disableStats();
-+    public static BlockFluid lavaMoving = (BlockFluid)(new FCBlockLavaFlowing(10, Material.lava)).setHardness(0.0F).setLightValue(1.0F).setUnlocalizedName("lava").disableStats();
++    public static BlockFluid lavaMoving = (BlockFluid)(new FCBlockLavaFlowing(10, Material.lava)).setHardness(0.0F).setLightValue(1.0F).setUnlocalizedName("lava").setCreativeTab(CreativeTabs.tabBlock).disableStats();
 +    public static Block lavaStill = (new FCBlockLavaStationary(11, Material.lava)).setHardness(100.0F).setLightValue(1.0F).setUnlocalizedName("lava").disableStats();
 +    public static Block sand = new FCBlockSand( 12 );
 +    public static Block gravel = new FCBlockGravel( 13 );
@@ -369,7 +373,7 @@
      /** ID of the block. */
      public final int blockID;
  
-@@ -244,30 +246,25 @@
+@@ -244,30 +250,25 @@
      /** true if the Block contains a Tile Entity */
      protected boolean isBlockContainer;
  
@@ -413,7 +417,7 @@
  
      /**
       * Determines how much velocity is maintained while moving on top of this block
-@@ -278,6 +275,13 @@
+@@ -278,6 +279,13 @@
      private String unlocalizedName;
      protected Icon blockIcon;
  
@@ -427,7 +431,7 @@
      protected Block(int par1, Material par2Material)
      {
          this.stepSound = soundPowderFootstep;
-@@ -297,6 +301,10 @@
+@@ -297,6 +305,10 @@
              opaqueCubeLookup[par1] = this.isOpaqueCube();
              lightOpacity[par1] = this.isOpaqueCube() ? 255 : 0;
              canBlockGrass[par1] = !par2Material.getCanBlockGrass();
@@ -438,7 +442,7 @@
          }
      }
  
-@@ -346,7 +354,12 @@
+@@ -346,7 +358,12 @@
      public static boolean isNormalCube(int par0)
      {
          Block var1 = blocksList[par0];
@@ -451,7 +455,7 @@
      }
  
      /**
-@@ -357,6 +370,9 @@
+@@ -357,6 +374,9 @@
          return true;
      }
  
@@ -461,7 +465,7 @@
      public boolean getBlocksMovement(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
      {
          return !this.blockMaterial.blocksMovement();
-@@ -426,16 +442,20 @@
+@@ -426,16 +446,20 @@
      }
  
      /**
@@ -483,7 +487,7 @@
      }
  
      /**
-@@ -458,10 +478,14 @@
+@@ -458,10 +482,14 @@
       * Returns true if the given side of this block type should be rendered, if the adjacent block is at the given
       * coordinates.  Args: blockAccess, x, y, z, side
       */
@@ -498,7 +502,7 @@
  
      /**
       * Returns Returns true if the given side of this block type should be rendered (if it's solid or not), if the
-@@ -499,14 +523,19 @@
+@@ -499,14 +527,19 @@
      /**
       * Returns the bounding box of the wired rectangular prism to render.
       */
@@ -518,7 +522,7 @@
       */
      public void addCollisionBoxesToList(World par1World, int par2, int par3, int par4, AxisAlignedBB par5AxisAlignedBB, List par6List, Entity par7Entity)
      {
-@@ -522,10 +551,14 @@
+@@ -522,10 +555,14 @@
       * Returns a bounding box from the pool of bounding boxes (this means this box can change after the pool has been
       * cleared to be reused)
       */
@@ -533,7 +537,7 @@
  
      /**
       * Is this block (a) opaque and (b) a full 1m cube?  This determines whether or not to render the shared face of two
-@@ -554,6 +587,7 @@
+@@ -554,6 +591,7 @@
  
      /**
       * Ticks the block if it's been scheduled
@@ -541,7 +545,7 @@
       */
      public void updateTick(World par1World, int par2, int par3, int par4, Random par5Random) {}
  
-@@ -564,12 +598,14 @@
+@@ -564,12 +602,14 @@
  
      /**
       * Called right before the block is destroyed by a player.  Args: world, x, y, z, metaData
@@ -556,7 +560,7 @@
       */
      public void onNeighborBlockChange(World par1World, int par2, int par3, int par4, int par5) {}
  
-@@ -583,11 +619,13 @@
+@@ -583,11 +623,13 @@
  
      /**
       * Called whenever the block is added into the world. Args: world, x, y, z
@@ -570,7 +574,7 @@
       */
      public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {}
  
-@@ -611,11 +649,15 @@
+@@ -611,11 +653,15 @@
       * Gets the hardness of block at the given coordinates in the given world, relative to the ability of the given
       * EntityPlayer.
       */
@@ -586,7 +590,16 @@
  
      /**
       * Drops the specified block items
-@@ -671,6 +713,8 @@
+@@ -660,7 +706,7 @@
+             double var7 = (double)(par1World.rand.nextFloat() * var6) + (double)(1.0F - var6) * 0.5D;
+             double var9 = (double)(par1World.rand.nextFloat() * var6) + (double)(1.0F - var6) * 0.5D;
+             double var11 = (double)(par1World.rand.nextFloat() * var6) + (double)(1.0F - var6) * 0.5D;
+-            EntityItem var13 = new EntityItem(par1World, (double)par2 + var7, (double)par3 + var9, (double)par4 + var11, par5ItemStack);
++            EntityItem var13 = (EntityItem) EntityList.createEntityOfType(EntityItem.class, par1World, (double)par2 + var7, (double)par3 + var9, (double)par4 + var11, par5ItemStack);
+             var13.delayBeforeCanPickup = 10;
+             par1World.spawnEntityInWorld(var13);
+         }
+@@ -671,6 +717,8 @@
       */
      protected void dropXpOnBlockBreak(World par1World, int par2, int par3, int par4, int par5)
      {
@@ -595,7 +608,7 @@
          if (!par1World.isRemote)
          {
              while (par5 > 0)
-@@ -680,6 +724,8 @@
+@@ -680,6 +728,8 @@
                  par1World.spawnEntityInWorld(new EntityXPOrb(par1World, (double)par2 + 0.5D, (double)par3 + 0.5D, (double)par4 + 0.5D, var6));
              }
          }
@@ -604,7 +617,7 @@
      }
  
      /**
-@@ -702,6 +748,8 @@
+@@ -702,6 +752,8 @@
       * Ray traces through the blocks collision from start vector to end vector returning a ray trace hit. Args: world,
       * x, y, z, startVec, endVec
       */
@@ -613,7 +626,7 @@
      public MovingObjectPosition collisionRayTrace(World par1World, int par2, int par3, int par4, Vec3 par5Vec3, Vec3 par6Vec3)
      {
          this.setBlockBoundsBasedOnState(par1World, par2, par3, par4);
-@@ -818,29 +866,22 @@
+@@ -818,29 +870,22 @@
          }
      }
  
@@ -645,7 +658,7 @@
  
      /**
       * Called upon the block being destroyed by an explosion
-@@ -908,9 +949,7 @@
+@@ -908,9 +953,7 @@
       */
      public void velocityToAddToEntity(World par1World, int par2, int par3, int par4, Entity par5Entity, Vec3 par6Vec3) {}
  
@@ -656,7 +669,7 @@
      public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, int par2, int par3, int par4) {}
  
      /**
-@@ -963,7 +1002,7 @@
+@@ -963,7 +1006,7 @@
  
      public int getBlockColor()
      {
@@ -665,7 +678,7 @@
      }
  
      /**
-@@ -971,7 +1010,7 @@
+@@ -971,7 +1014,7 @@
       */
      public int getRenderColor(int par1)
      {
@@ -674,7 +687,7 @@
      }
  
      /**
-@@ -980,7 +1019,7 @@
+@@ -980,7 +1023,7 @@
       */
      public int colorMultiplier(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
      {
@@ -683,7 +696,7 @@
      }
  
      /**
-@@ -1023,13 +1062,22 @@
+@@ -1023,13 +1066,22 @@
      /**
       * Called when the player destroys a block with an item that can harvest it. (i, j, k) are the coordinates of the
       * block and l is the block's subtype/damage.
@@ -706,7 +719,7 @@
          {
              ItemStack var8 = this.createStackedBlock(par6);
  
-@@ -1056,6 +1104,7 @@
+@@ -1056,6 +1108,7 @@
      /**
       * Returns an item stack containing a single instance of the current block type. 'i' is the block's subtype/damage
       * and is ignored for blocks which do not support subtypes. Blocks which cannot be harvested should return null.
@@ -714,7 +727,7 @@
       */
      protected ItemStack createStackedBlock(int par1)
      {
-@@ -1087,6 +1136,7 @@
+@@ -1087,6 +1140,7 @@
  
      /**
       * Called when the block is placed in the world.
@@ -722,7 +735,7 @@
       */
      public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving, ItemStack par6ItemStack) {}
  
-@@ -1154,6 +1204,7 @@
+@@ -1154,6 +1208,7 @@
      /**
       * Returns the mobility information of the block, 0 = free, 1 = can't push but can move over, 2 = total immobility
       * and stop pistons
@@ -730,7 +743,7 @@
       */
      public int getMobilityFlag()
      {
-@@ -1175,6 +1226,7 @@
+@@ -1175,6 +1230,7 @@
  
      /**
       * only called by clickMiddleMouseButton , and passed to inventory.setCurrentItem (along with isCreative)
@@ -738,7 +751,7 @@
       */
      public int idPicked(World par1World, int par2, int par3, int par4)
      {
-@@ -1336,8 +1388,12 @@
+@@ -1336,8 +1392,12 @@
                      blocksList[var0].initializeBlock();
                  }
  
@@ -751,7 +764,7 @@
                  if (var0 > 0 && blocksList[var0].getRenderType() == 10)
                  {
                      var1 = true;
-@@ -1364,10 +1420,2431 @@
+@@ -1364,10 +1424,2379 @@
                  }
  
                  useNeighborBrightness[var0] = var1;
@@ -1022,40 +1035,57 @@
 +    		for (int i = 0; i < parameters.length; i++) {
 +    			Class<?> type = parameters[i].getClass();
 +    			
-+    			if (type == Integer.class) {
-+    				type = Integer.TYPE;
-+    			}
-+    			else if (type == Boolean.class) {
-+    				type = Boolean.TYPE;
-+    			}
-+    			else if (type == Float.class) {
-+    				type = Float.TYPE;
-+    			}
-+    			else if (type == Double.class) {
-+    				type = Double.TYPE;
-+    			}
-+    			else if (Block.class.isAssignableFrom(type)) {
-+    				type = Block.class;
-+    			}
-+    			else if (Item.class.isAssignableFrom(type)) {
-+    				type = Item.class;
-+    			}
-+    			else if (Material.class.isAssignableFrom(type)) {
-+    				type = Material.class;
++    			Class<?> primitiveType = FCUtilsReflection.getPrimitiveFromBoxedClass(type);
++    			
++    			if (primitiveType != null) {
++    				type = primitiveType;
 +    			}
 +    			
 +    			parameterTypes[i + 1] = type;
 +    			parameterValues[i + 1] = parameters[i];
 +    		}
 +    		
++    		Constructor[] constructors = newClass.getDeclaredConstructors();
++            Constructor constructorToUse = null;
++            
++            for (Constructor c : constructors) {
++                boolean constructorMatches = true;
++                
++                Class[] cParamTypes = c.getParameterTypes();
++                
++                if (cParamTypes.length == parameterTypes.length) {
++                    for (int j = 0; j < cParamTypes.length; j++) {
++                    	if (!(cParamTypes[j].isAssignableFrom(parameterTypes[j]) || 
++                        		parameterTypes[j].isAssignableFrom(cParamTypes[j]))) {
++                            constructorMatches = false;
++                            break;
++                        }
++                    }
++                }
++                else {
++                    constructorMatches = false;
++                    String message = "No appropriate constructor found for " + blocksList[id] + ": ";
++                    
++                    for (Class<?> paramType : parameterTypes) {
++                    	message += paramType.getName() + ", ";
++                    }
++                    
++                    throw new RuntimeException(message);
++                }
++                
++                if (constructorMatches) {
++                    constructorToUse = c;
++                    break;
++                }
++            }
++    		
 +    		try {
-+    			newBlock = (Block) newClass.getConstructor(parameterTypes).newInstance(parameterValues);
++    			constructorToUse.setAccessible(true);
++    			newBlock = (Block) constructorToUse.newInstance(parameterValues);
 +    		} catch (InstantiationException e) {
 +    			throw new RuntimeException("A problem has occured attempting to instantiate replacement for " + blocksList[id]);
 +    		} catch (IllegalArgumentException e) {
 +    			throw new RuntimeException("Incompatible types passed to specified constructor for " + blocksList[id]);
-+    		} catch (NoSuchMethodException e) {
-+    			throw new RuntimeException("No appropriate constructor found for " + blocksList[id] + ". Constructors must be public to be used in replacement.");
 +    		} catch (Exception e) {
 +    			e.printStackTrace();
 +    		}
@@ -1476,64 +1506,39 @@
 +    
 +    //------------- Kiln related functionality ------------//
 +    
-+    private boolean m_bCanBeCookedByKiln = false;
-+    private int m_iItemIndexDroppedWhenCookedByKiln = -1;
-+    private int m_iItemDamageDroppedWhenCookedByKiln = 0;
-+    
-+    public Block SetCanBeCookedByKiln( boolean bCanBeCooked )
++    public final boolean GetCanBeCookedByKiln(IBlockAccess blockAccess, int i, int j, int k)
 +    {
-+    	m_bCanBeCookedByKiln = bCanBeCooked;
++    	int metadata = blockAccess.getBlockMetadata(i, j, k);
 +    	
-+    	return this;
-+    }
-+    
-+    public boolean GetCanBeCookedByKiln( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+    	return m_bCanBeCookedByKiln;
++    	return FCCraftingManagerKiln.instance.getRecipeResult(this, metadata) != null;
 +    }    
 +    
-+    public int GetCookTimeMultiplierInKiln( IBlockAccess blockAccess, int i, int j, int k )
++    public final int GetCookTimeMultiplierInKiln(IBlockAccess blockAccess, int i, int j, int k)
 +    {
-+    	return 1;
-+    }    
-+    
-+    public Block SetItemIndexDroppedWhenCookedByKiln( int iItemIndex )
-+    {
-+    	m_iItemIndexDroppedWhenCookedByKiln = iItemIndex;
++    	int metadata = blockAccess.getBlockMetadata(i, j, k);
 +    	
-+    	return this;
-+    }
-+    
-+    public int GetItemIndexDroppedWhenCookedByKiln( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+    	return m_iItemIndexDroppedWhenCookedByKiln;
-+    }
-+    
-+    public Block SetItemDamageDroppedWhenCookedByKiln( int iItemDamage )
-+    {
-+    	m_iItemDamageDroppedWhenCookedByKiln = iItemDamage;
++    	FCCraftingManagerKilnRecipe recipe = FCCraftingManagerKiln.instance.getRecipe(this, metadata);
 +    	
-+    	return this;
++    	return recipe != null ? recipe.getCookTimeMultiplier() : 1;
 +    }
 +    
-+    public int GetItemDamageDroppedWhenCookedByKiln( IBlockAccess blockAccess, int i, int j, int k )
++    public final ItemStack[] getOutputsWhenCookedByKiln(IBlockAccess blockAccess, int i, int j, int k)
 +    {
-+    	return m_iItemDamageDroppedWhenCookedByKiln;
++    	int metadata = blockAccess.getBlockMetadata(i, j, k);
++    	
++    	return FCCraftingManagerKiln.instance.getRecipeResult(this, metadata);
 +    }
 +    
 +    public void OnCookedByKiln( World world, int i, int j, int k )
 +    {
-+    	int iItemDropped = GetItemIndexDroppedWhenCookedByKiln( world, i, j, k );
++    	ItemStack[] outputs = getOutputsWhenCookedByKiln(world, i, j, k);
 +    	
-+    	if ( iItemDropped >= 0 )
++    	if ( outputs != null )
 +    	{
-+    		int iDamageDropped = GetItemDamageDroppedWhenCookedByKiln( world, i, j, k );
-+    		
 +        	world.setBlockToAir( i, j, k );
 +
-+        	if ( iItemDropped > 0 )
-+        	{
-+        		FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, iItemDropped, iDamageDropped );
++        	for (ItemStack stack : outputs) {
++        		FCUtilsItem.EjectStackWithRandomOffset(world, i, j, k, stack);
 +        	}
 +    	}
 +    }
@@ -1576,18 +1581,14 @@
 +     * returns true if the block has been sawed, false otherwise
 +     */
 +    public boolean OnBlockSawed( World world, int i, int j, int k )
-+    {		
-+    	int iItemIDDropped = GetItemIDDroppedOnSaw( world, i, j, k ); 
++    {
++    	int metadata = world.getBlockMetadata(i, j, k);
++    	FCCraftingManagerSawRecipe recipe = FCCraftingManagerSaw.instance.getRecipe(this, metadata);
 +    	
-+    	if (  iItemIDDropped >= 0 )
++    	if (recipe != null)
 +    	{
-+    		int iItemCountDropped = GetItemCountDroppedOnSaw( world, i, j, k );
-+    		int iItemDamageDropped = GetItemDamageDroppedOnSaw( world, i, j, k );
-+    		
-+    		for ( int iTempCount = 0; iTempCount < iItemCountDropped; iTempCount++ )
-+    		{
-+				FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+					iItemIDDropped, iItemDamageDropped );
++    		for (ItemStack stack : recipe.getOutput()) {
++    			FCUtilsItem.EjectStackWithRandomOffset(world, i, j, k, stack);
 +    		}
 +    	}
 +    	else
@@ -1605,28 +1606,13 @@
 +    	return true;
 +    }
 +    
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	return -1;
-+    }
-+    
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	return 0;
-+    }
-+    
-+    public int GetItemDamageDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+    	return 0;
-+    }
-+    
 +    public boolean DoesBlockDropAsItemOnSaw( World world, int i, int j, int k )
 +    {
 +    	return blockMaterial.isSolid();
 +    }
 +    
 +    //------------- Stonecutter related functionality ------------//
-+    // Only called by Automation+ addon
++    // Only called by New Age Automation addon
 +    // Can be used by other addons to interface
 +    
 +    public void setItemIDDroppedOnStonecutter(int id) {
@@ -2054,26 +2040,6 @@
 +    public boolean CanContainPistonPackingToFacing( World world, int i, int j, int k, int iFacing )
 +    {
 +    	return HasLargeCenterHardPointToFacing( world, i, j, k, iFacing, true );
-+    }    
-+    
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return false;
-+    }
-+    
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 0;
-+    }
-+    
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return 0;
-+    }
-+    
-+    public int GetResultingBlockMetadataOnPistonPack( ItemStack stack )
-+    {
-+    	return 0;
 +    }
 +    
 +    public void OnBrokenByPistonPush( World world, int i, int j, int k, int iMetadata )
@@ -2100,11 +2066,6 @@
 +    	m_iFilterablePropertiesBitfield = iProperties;
 +    }
 +    
-+    public boolean CanTransformItemIfFilter( ItemStack filteredItem )
-+    {
-+    	return false;
-+    }
-+    
 +    //---------- Falling Block Functionality ----------//
 +    
 +    private static final int m_iLoadedRangeToCheckFalling = 32;
@@ -2124,7 +2085,7 @@
 +            {
 +                if ( !world.isRemote )
 +                {
-+                	FCEntityFallingBlock fallingEntity = new FCEntityFallingBlock( world, (double)i + 0.5D, (double)j + 0.5D, (double)k + 0.5D, 
++                	FCEntityFallingBlock fallingEntity = (FCEntityFallingBlock) EntityList.createEntityOfType(FCEntityFallingBlock.class, world, (double)i + 0.5D, (double)j + 0.5D, (double)k + 0.5D, 
 +                    	blockID, world.getBlockMetadata( i, j, k ) );
 +                    
 +                    onStartFalling( fallingEntity );
@@ -3038,7 +2999,7 @@
 +    
 +    public void RenderCookingByKilnOverlay( RenderBlocks renderBlocks, int i, int j, int k, boolean bFirstPassResult )
 +    {
-+    	if ( bFirstPassResult )
++    	if ( bFirstPassResult && hasKilnRecipe[this.blockID])
 +    	{
 +	    	IBlockAccess blockAccess = renderBlocks.blockAccess;
 +	    	

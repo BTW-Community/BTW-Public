@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockSand.java
-@@ -0,0 +1,77 @@
+@@ -0,0 +1,59 @@
 +// FCMOD 
 +// Note that this file only applies to the sand blocks themselves, 
 +// not blocks that inherit from BlockSand
@@ -37,24 +37,6 @@
 +		
 +		return true;
 +	}
-+	
-+	@Override
-+    public boolean IsPistonPackable( ItemStack stack )
-+    {
-+    	return true;
-+    }
-+    
-+	@Override
-+    public int GetRequiredItemCountToPistonPack( ItemStack stack )
-+    {
-+    	return 2;
-+    }
-+    
-+	@Override
-+    public int GetResultingBlockIDOnPistonPack( ItemStack stack )
-+    {
-+    	return Block.sandStone.blockID;
-+    }
 +    
 +	@Override
 +    public boolean CanBePistonShoveled( World world, int i, int j, int k )

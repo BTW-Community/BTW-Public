@@ -14,7 +14,7 @@
 +    	SetBuoyant();
 +        SetIncineratedInCrucible();
 +		SetBellowsBlowDistance( 1 );
-+    	SetFilterableProperties( m_iFilterable_Narrow );
++    	SetFilterableProperties( m_iFilterable_Fine );
 +        
 +    	SetAsBasicHerbivoreFood();
 +    	SetAsBasicPigFood();

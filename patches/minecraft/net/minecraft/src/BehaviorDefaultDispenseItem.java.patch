@@ -1,0 +1,12 @@
+--- a/minecraft/net/minecraft/src/BehaviorDefaultDispenseItem.java
++++ b/minecraft/net/minecraft/src/BehaviorDefaultDispenseItem.java
+@@ -30,7 +30,8 @@
+         double var5 = par4IPosition.getX();
+         double var7 = par4IPosition.getY();
+         double var9 = par4IPosition.getZ();
+-        EntityItem var11 = new EntityItem(par0World, var5, var7 - 0.3D, var9, par1ItemStack);
++        //EntityItem var11 = new EntityItem(par0World, var5, var7 - 0.3D, var9, par1ItemStack);
++        EntityItem var11 = (EntityItem) EntityList.createEntityOfType(EntityItem.class, par0World, var5, var7 - 0.3D, var9, par1ItemStack);
+         double var12 = par0World.rand.nextDouble() * 0.1D + 0.2D;
+         var11.motionX = (double)par3EnumFacing.getFrontOffsetX() * var12;
+         var11.motionY = 0.20000000298023224D;

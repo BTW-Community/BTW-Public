@@ -6,3 +6,12 @@
  package net.minecraft.src;
  
  public class EntityBlaze extends EntityMob
+@@ -148,7 +150,7 @@
+ 
+                     for (int var10 = 0; var10 < 1; ++var10)
+                     {
+-                        EntitySmallFireball var11 = new EntitySmallFireball(this.worldObj, this, var3 + this.rand.nextGaussian() * (double)var9, var5, var7 + this.rand.nextGaussian() * (double)var9);
++                    	EntitySmallFireball var11 = (EntitySmallFireball) EntityList.createEntityOfType(EntitySmallFireball.class, this.worldObj, this, var3 + this.rand.nextGaussian() * (double)var9, var5, var7 + this.rand.nextGaussian() * (double)var9);
+                         var11.posY = this.posY + (double)(this.height / 2.0F) + 0.5D;
+                         this.worldObj.spawnEntityInWorld(var11);
+                     }

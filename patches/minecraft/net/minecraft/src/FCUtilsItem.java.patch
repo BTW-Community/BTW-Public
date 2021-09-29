@@ -28,8 +28,8 @@
 +    static public void EjectStackWithRandomVelocity( World world, double xPos, double yPos, double zPos, ItemStack stack )
 +    {
 +        EntityItem entityitem = 
-+        	new EntityItem( world, xPos, yPos, zPos, 
-+    			stack );
++        		(EntityItem) EntityList.createEntityOfType(EntityItem.class, world, xPos, yPos, zPos, 
++		stack );
 +
 +        float velocityFactor = 0.05F;
 +
@@ -59,7 +59,7 @@
 +        double d1 = (double)(world.rand.nextFloat() * f1) + (double)(1.0F - f1) * 0.5D;
 +        double d2 = (double)(world.rand.nextFloat() * f1) + (double)(1.0F - f1) * 0.5D;
 +        
-+        EntityItem entityitem = new EntityItem( world, (double)i + d, (double)j + d1, (double)k + d2, stack );
++        EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, world, (double)i + d, (double)j + d1, (double)k + d2, stack );
 +        
 +        entityitem.delayBeforeCanPickup = 10;
 +        
@@ -111,7 +111,7 @@
 +    	
 +    	ejectPos.TiltAsBlockPosToFacingAlongJ( iFacing );
 +    	
-+        EntityItem entity = new EntityItem( world, i + ejectPos.xCoord, j + ejectPos.yCoord, k + ejectPos.zCoord, stack );
++        EntityItem entity = (EntityItem) EntityList.createEntityOfType(EntityItem.class, world, i + ejectPos.xCoord, j + ejectPos.yCoord, k + ejectPos.zCoord, stack );
 +
 +        if ( iFacing < 2 )
 +        {

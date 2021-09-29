@@ -44,7 +44,7 @@
 +    {
 +        if ( worldObj.rand.nextInt( 100 ) == 0 )
 +        {
-+            FCEntitySkeleton jockey = new FCEntitySkeleton( worldObj );            
++        	FCEntitySkeleton jockey = (FCEntitySkeleton) EntityList.createEntityOfType(FCEntitySkeleton.class, worldObj);
 +            jockey.setLocationAndAngles( posX, posY, posZ, rotationYaw, 0F );
 +            jockey.initCreature();
 +            
@@ -249,7 +249,7 @@
 +    {
 +    	if ( !worldObj.isRemote )
 +    	{
-+            worldObj.spawnEntityInWorld( new FCEntitySpiderWeb( worldObj, this, targetEntity ) );
++    		worldObj.spawnEntityInWorld( EntityList.createEntityOfType(FCEntitySpiderWeb.class, worldObj, this, targetEntity ) );
 +            
 +            m_iTimeToNextWeb = m_iTimeBetweenWebs;
 +    	}

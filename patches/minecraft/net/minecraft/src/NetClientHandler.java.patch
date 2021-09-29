@@ -11,63 +11,149 @@
      }
  
      public void handleServerAuthData(Packet253ServerAuthData par1Packet253ServerAuthData)
-@@ -174,6 +178,7 @@
+@@ -174,6 +178,8 @@
          this.mc.gameSettings.sendSettingsToServer();
      }
  
 +    // Misnamed - actually handles all entities
++    // TODO: Clean up this clusterfuck
      public void handleVehicleSpawn(Packet23VehicleSpawn par1Packet23VehicleSpawn)
      {
          double var2 = (double)par1Packet23VehicleSpawn.xPosition / 32.0D;
-@@ -233,7 +238,10 @@
+@@ -191,86 +197,114 @@
+ 
+             if (var9 instanceof EntityPlayer)
+             {
+-                var8 = new EntityFishHook(this.worldClient, var2, var4, var6, (EntityPlayer)var9);
++                var8 = EntityList.createEntityOfType(EntityFishHook.class, this.worldClient, var2, var4, var6, (EntityPlayer)var9);
+             }
+ 
+             par1Packet23VehicleSpawn.throwerEntityId = 0;
+         }
+         else if (par1Packet23VehicleSpawn.type == 60)
+         {
+-            var8 = new EntityArrow(this.worldClient, var2, var4, var6);
++            var8 = EntityList.createEntityOfType(EntityArrow.class, this.worldClient, var2, var4, var6);
+         }
+         else if (par1Packet23VehicleSpawn.type == 61)
+         {
+-            var8 = new EntitySnowball(this.worldClient, var2, var4, var6);
++            var8 = EntityList.createEntityOfType(EntitySnowball.class, this.worldClient, var2, var4, var6);
+         }
+         else if (par1Packet23VehicleSpawn.type == 71)
+         {
+-            var8 = new EntityItemFrame(this.worldClient, (int)var2, (int)var4, (int)var6, par1Packet23VehicleSpawn.throwerEntityId);
++            var8 = EntityList.createEntityOfType(EntityItemFrame.class, this.worldClient, (int)var2, (int)var4, (int)var6, par1Packet23VehicleSpawn.throwerEntityId);
+             par1Packet23VehicleSpawn.throwerEntityId = 0;
+         }
+         else if (par1Packet23VehicleSpawn.type == 65)
+         {
+-            var8 = new EntityEnderPearl(this.worldClient, var2, var4, var6);
++            var8 = EntityList.createEntityOfType(EntityEnderPearl.class, this.worldClient, var2, var4, var6);
+         }
+         else if (par1Packet23VehicleSpawn.type == 72)
+         {
+-            var8 = new EntityEnderEye(this.worldClient, var2, var4, var6);
++            var8 = EntityList.createEntityOfType(EntityEnderEye.class, this.worldClient, var2, var4, var6);
+         }
+         else if (par1Packet23VehicleSpawn.type == 76)
+         {
+-            var8 = new EntityFireworkRocket(this.worldClient, var2, var4, var6, (ItemStack)null);
++            var8 = EntityList.createEntityOfType(EntityFireworkRocket.class, this.worldClient, var2, var4, var6, (ItemStack)null);
+         }
+         else if (par1Packet23VehicleSpawn.type == 63)
+         {
+-            var8 = new EntityLargeFireball(this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
++            var8 = EntityList.createEntityOfType(EntityLargeFireball.class, this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
+             par1Packet23VehicleSpawn.throwerEntityId = 0;
+         }
+         else if (par1Packet23VehicleSpawn.type == 64)
+         {
+-            var8 = new EntitySmallFireball(this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
++            var8 = EntityList.createEntityOfType(EntitySmallFireball.class, this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
+             par1Packet23VehicleSpawn.throwerEntityId = 0;
          }
          else if (par1Packet23VehicleSpawn.type == 66)
          {
 -            var8 = new EntityWitherSkull(this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
 +        	// FCMOD: Changed (client only)
 +            //var8 = new EntityWitherSkull(this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
-+            var8 = new FCEntityWitherSkull(this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
++            var8 = EntityList.createEntityOfType(FCEntityWitherSkull.class, this.worldClient, var2, var4, var6, (double)par1Packet23VehicleSpawn.speedX / 8000.0D, (double)par1Packet23VehicleSpawn.speedY / 8000.0D, (double)par1Packet23VehicleSpawn.speedZ / 8000.0D);
 +            // END FCMOD
              par1Packet23VehicleSpawn.throwerEntityId = 0;
          }
          else if (par1Packet23VehicleSpawn.type == 62)
-@@ -268,9 +276,34 @@
+         {
+-            var8 = new EntityEgg(this.worldClient, var2, var4, var6);
++            var8 = EntityList.createEntityOfType(EntityEgg.class, this.worldClient, var2, var4, var6);
+         }
+         else if (par1Packet23VehicleSpawn.type == 73)
+         {
+-            var8 = new EntityPotion(this.worldClient, var2, var4, var6, par1Packet23VehicleSpawn.throwerEntityId);
++            var8 = EntityList.createEntityOfType(EntityPotion.class, this.worldClient, var2, var4, var6, par1Packet23VehicleSpawn.throwerEntityId);
+             par1Packet23VehicleSpawn.throwerEntityId = 0;
+         }
+         else if (par1Packet23VehicleSpawn.type == 75)
+         {
+-            var8 = new EntityExpBottle(this.worldClient, var2, var4, var6);
++            var8 = EntityList.createEntityOfType(EntityExpBottle.class, this.worldClient, var2, var4, var6);
+             par1Packet23VehicleSpawn.throwerEntityId = 0;
+         }
+         else if (par1Packet23VehicleSpawn.type == 1)
+         {
+-            var8 = new EntityBoat(this.worldClient, var2, var4, var6);
++            var8 = EntityList.createEntityOfType(EntityBoat.class, this.worldClient, var2, var4, var6);
+         }
+         else if (par1Packet23VehicleSpawn.type == 50)
+         {
+-            var8 = new EntityTNTPrimed(this.worldClient, var2, var4, var6, (EntityLiving)null);
++            var8 = EntityList.createEntityOfType(EntityTNTPrimed.class, this.worldClient, var2, var4, var6, (EntityLiving)null);
+         }
+         else if (par1Packet23VehicleSpawn.type == 51)
+         {
+-            var8 = new EntityEnderCrystal(this.worldClient, var2, var4, var6);
++            var8 = EntityList.createEntityOfType(EntityEnderCrystal.class, this.worldClient, var2, var4, var6);
+         }
+         else if (par1Packet23VehicleSpawn.type == 2)
+         {
+-            var8 = new EntityItem(this.worldClient, var2, var4, var6);
++            var8 = EntityList.createEntityOfType(EntityItem.class, this.worldClient, var2, var4, var6);
          }
          else if (par1Packet23VehicleSpawn.type == 70)
          {
 -            var8 = new EntityFallingSand(this.worldClient, var2, var4, var6, par1Packet23VehicleSpawn.throwerEntityId & 65535, par1Packet23VehicleSpawn.throwerEntityId >> 16);
 +        	// FCMOD: Changed (client only)
 +            //var8 = new EntityFallingSand(this.worldClient, var2, var4, var6, par1Packet23VehicleSpawn.throwerEntityId & 65535, par1Packet23VehicleSpawn.throwerEntityId >> 16);
-+            var8 = new FCEntityFallingBlock(this.worldClient, var2, var4, var6, par1Packet23VehicleSpawn.throwerEntityId & 65535, par1Packet23VehicleSpawn.throwerEntityId >> 16);
++            var8 = EntityList.createEntityOfType(FCEntityFallingBlock.class, this.worldClient, var2, var4, var6, par1Packet23VehicleSpawn.throwerEntityId & 65535, par1Packet23VehicleSpawn.throwerEntityId >> 16);
 +            // END FCMOD
              par1Packet23VehicleSpawn.throwerEntityId = 0;
          }
 +        // FCMOD: Added (client only)
 +        else if ( par1Packet23VehicleSpawn.type == FCEntityInfiniteArrow.GetVehicleSpawnPacketType() )
 +        {
-+        	var8 = new FCEntityInfiniteArrow( worldClient, var2, var4, var6 );
++        	var8 = EntityList.createEntityOfType(FCEntityInfiniteArrow.class, worldClient, var2, var4, var6 );
 +        }
 +        else if ( par1Packet23VehicleSpawn.type == FCEntityBroadheadArrow.GetVehicleSpawnPacketType() )
 +        {
-+        	var8 = new FCEntityBroadheadArrow( worldClient, var2, var4, var6 );
++        	var8 = EntityList.createEntityOfType(FCEntityBroadheadArrow.class, worldClient, var2, var4, var6 );
 +        }
 +        else if ( par1Packet23VehicleSpawn.type == FCEntityMovingPlatform.GetVehicleSpawnPacketType() )
 +        {
-+        	var8 = new FCEntityMovingPlatform( worldClient, var2, var4, var6, null );
++        	var8 = EntityList.createEntityOfType(FCEntityMovingPlatform.class, worldClient, var2, var4, var6, null );
 +        }
 +        else if ( par1Packet23VehicleSpawn.type == FCEntityMovingAnchor.GetVehicleSpawnPacketType() )
 +        {
-+        	var8 = new FCEntityMovingAnchor( worldClient, var2, var4, var6 );
++        	var8 = EntityList.createEntityOfType(FCEntityMovingAnchor.class, worldClient, var2, var4, var6 );
 +        }
 +        else if ( par1Packet23VehicleSpawn.type == FCEntityRottenArrow.GetVehicleSpawnPacketType() )
 +        {
-+        	var8 = new FCEntityRottenArrow( worldClient, var2, var4, var6 );
++        	var8 = EntityList.createEntityOfType(FCEntityRottenArrow.class, worldClient, var2, var4, var6 );
 +        }
 +        // END FCMOD
  
          if (var8 != null)
          {
-@@ -296,7 +329,12 @@
+@@ -296,7 +330,12 @@
  
              if (par1Packet23VehicleSpawn.throwerEntityId > 0)
              {
@@ -80,7 +166,7 @@
                  {
                      Entity var13 = this.getEntityByID(par1Packet23VehicleSpawn.throwerEntityId);
  
-@@ -317,7 +355,16 @@
+@@ -317,7 +356,16 @@
       */
      public void handleEntityExpOrb(Packet26EntityExpOrb par1Packet26EntityExpOrb)
      {
@@ -91,13 +177,13 @@
 +    	double posX = par1Packet26EntityExpOrb.posX / 32D;
 +    	double posY = par1Packet26EntityExpOrb.posY / 32D;
 +    	double posZ = par1Packet26EntityExpOrb.posZ / 32D;
-+        EntityXPOrb var2 = new EntityXPOrb(worldClient, posX, posY, posZ, 
++        EntityXPOrb var2 = (EntityXPOrb) EntityList.createEntityOfType(EntityXPOrb.class, worldClient, posX, posY, posZ, 
 +    		par1Packet26EntityExpOrb.xpValue, par1Packet26EntityExpOrb.m_bNotPlayerOwned );
 +        // END FCMOD
          var2.serverPosX = par1Packet26EntityExpOrb.posX;
          var2.serverPosY = par1Packet26EntityExpOrb.posY;
          var2.serverPosZ = par1Packet26EntityExpOrb.posZ;
-@@ -335,13 +382,23 @@
+@@ -335,13 +383,23 @@
          double var2 = (double)par1Packet71Weather.posX / 32.0D;
          double var4 = (double)par1Packet71Weather.posY / 32.0D;
          double var6 = (double)par1Packet71Weather.posZ / 32.0D;
@@ -114,14 +200,32 @@
  
 +        if ( par1Packet71Weather.isLightningBolt == 1 )
 +        {
-+            var8 = new FCEntityLightningBolt( worldClient, var2, var4, var6 );
++            var8 = (FCEntityLightningBolt) EntityList.createEntityOfType(FCEntityLightningBolt.class, worldClient, var2, var4, var6 );
 +        }
 +        // END FCMOD
 +
          if (var8 != null)
          {
              var8.serverPosX = par1Packet71Weather.posX;
-@@ -520,8 +577,14 @@
+@@ -359,7 +417,7 @@
+      */
+     public void handleEntityPainting(Packet25EntityPainting par1Packet25EntityPainting)
+     {
+-        EntityPainting var2 = new EntityPainting(this.worldClient, par1Packet25EntityPainting.xPosition, par1Packet25EntityPainting.yPosition, par1Packet25EntityPainting.zPosition, par1Packet25EntityPainting.direction, par1Packet25EntityPainting.title);
++        EntityPainting var2 = (EntityPainting) EntityList.createEntityOfType(EntityPainting.class, this.worldClient, par1Packet25EntityPainting.xPosition, par1Packet25EntityPainting.yPosition, par1Packet25EntityPainting.zPosition, par1Packet25EntityPainting.direction, par1Packet25EntityPainting.title);
+         this.worldClient.addEntityToWorld(par1Packet25EntityPainting.entityId, var2);
+     }
+ 
+@@ -396,7 +454,7 @@
+         double var6 = (double)par1Packet20NamedEntitySpawn.zPosition / 32.0D;
+         float var8 = (float)(par1Packet20NamedEntitySpawn.rotation * 360) / 256.0F;
+         float var9 = (float)(par1Packet20NamedEntitySpawn.pitch * 360) / 256.0F;
+-        EntityOtherPlayerMP var10 = new EntityOtherPlayerMP(this.mc.theWorld, par1Packet20NamedEntitySpawn.name);
++        EntityOtherPlayerMP var10 = (EntityOtherPlayerMP) EntityList.createEntityOfType(EntityOtherPlayerMP.class, this.mc.theWorld, par1Packet20NamedEntitySpawn.name);
+         var10.prevPosX = var10.lastTickPosX = (double)(var10.serverPosX = par1Packet20NamedEntitySpawn.xPosition);
+         var10.prevPosY = var10.lastTickPosY = (double)(var10.serverPosY = par1Packet20NamedEntitySpawn.yPosition);
+         var10.prevPosZ = var10.lastTickPosZ = (double)(var10.serverPosZ = par1Packet20NamedEntitySpawn.zPosition);
+@@ -520,8 +578,14 @@
              this.mc.thePlayer.prevPosX = this.mc.thePlayer.posX;
              this.mc.thePlayer.prevPosY = this.mc.thePlayer.posY;
              this.mc.thePlayer.prevPosZ = this.mc.thePlayer.posZ;
@@ -136,7 +240,30 @@
          }
      }
  
-@@ -819,7 +882,11 @@
+@@ -672,7 +736,7 @@
+                 this.worldClient.playSoundAtEntity(var2, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+             }
+ 
+-            this.mc.effectRenderer.addEffect(new EntityPickupFX(this.mc.theWorld, var2, (Entity)var3, -0.5F));
++            this.mc.effectRenderer.addEffect((EntityFX) EntityList.createEntityOfType(EntityPickupFX.class, this.mc.theWorld, var2, (Entity)var3, -0.5F));
+             this.worldClient.removeEntityFromWorld(par1Packet22Collect.collectedEntityId);
+         }
+     }
+@@ -706,11 +770,11 @@
+             {
+                 if (par1Packet18Animation.animate == 6)
+                 {
+-                    this.mc.effectRenderer.addEffect(new EntityCrit2FX(this.mc.theWorld, var2));
++                    this.mc.effectRenderer.addEffect((EntityFX) EntityList.createEntityOfType(EntityCrit2FX.class, this.mc.theWorld, var2));
+                 }
+                 else if (par1Packet18Animation.animate == 7)
+                 {
+-                    EntityCrit2FX var5 = new EntityCrit2FX(this.mc.theWorld, var2, "magicCrit");
++                    EntityCrit2FX var5 = (EntityCrit2FX) EntityList.createEntityOfType(EntityCrit2FX.class, this.mc.theWorld, var2, "magicCrit");
+                     this.mc.effectRenderer.addEffect(var5);
+                 }
+                 else if (par1Packet18Animation.animate == 5 && var2 instanceof EntityOtherPlayerMP)
+@@ -819,7 +883,11 @@
  
          if (var2 != null)
          {
@@ -149,7 +276,7 @@
          }
      }
  
-@@ -875,6 +942,14 @@
+@@ -875,6 +943,14 @@
              this.mc.thePlayer.dimension = par1Packet9Respawn.respawnDimension;
              this.mc.displayGuiScreen(new GuiDownloadTerrain(this));
          }
@@ -164,7 +291,7 @@
  
          this.mc.setDimensionAndSpawnPlayer(par1Packet9Respawn.respawnDimension);
          this.mc.playerController.setGameType(par1Packet9Respawn.gameType);
-@@ -907,6 +982,7 @@
+@@ -907,6 +983,7 @@
                  break;
  
              case 2:
@@ -172,7 +299,7 @@
                  TileEntityFurnace var4 = new TileEntityFurnace();
  
                  if (par1Packet100OpenWindow.useProvidedWindowTitle)
-@@ -1123,9 +1199,15 @@
+@@ -1123,9 +1200,15 @@
                  {
                      var2.readFromNBT(par1Packet132TileEntityData.customParam1);
                  }
@@ -188,7 +315,7 @@
  
      public void handleUpdateProgressbar(Packet105UpdateProgressbar par1Packet105UpdateProgressbar)
      {
-@@ -1217,7 +1299,13 @@
+@@ -1217,7 +1300,13 @@
          {
              this.worldClient.getWorldInfo().setRaining(true);
              this.worldClient.setRainStrength(0.0F);
@@ -202,7 +329,7 @@
          else if (var3 == 2)
          {
              this.worldClient.getWorldInfo().setRaining(false);
-@@ -1229,6 +1317,14 @@
+@@ -1229,6 +1318,14 @@
          }
          else if (var3 == 4)
          {
@@ -217,7 +344,7 @@
              this.mc.displayGuiScreen(new GuiWinGame());
          }
          else if (var3 == 5)
-@@ -1256,7 +1352,27 @@
+@@ -1256,7 +1353,27 @@
          {
              this.worldClient.playSound(var2.posX, var2.posY + (double)var2.getEyeHeight(), var2.posZ, "random.successful_hit", 0.18F, 0.45F, false);
          }
@@ -245,7 +372,7 @@
  
      /**
       * Contains logic for handling packets containing arbitrary unique item data. Currently this is only for maps.
-@@ -1302,7 +1418,20 @@
+@@ -1302,7 +1419,20 @@
  
          if (var2 instanceof EntityLiving)
          {
@@ -266,7 +393,7 @@
              var3.setPotionDurationMax(par1Packet41EntityEffect.isDurationMax());
              ((EntityLiving)var2).addPotionEffect(var3);
          }
-@@ -1433,7 +1562,13 @@
+@@ -1433,7 +1563,13 @@
                  var7.printStackTrace();
              }
          }
@@ -280,7 +407,7 @@
  
      /**
       * Handle a set objective packet.
-@@ -1580,4 +1715,56 @@
+@@ -1580,4 +1716,56 @@
      {
          return this.netManager;
      }

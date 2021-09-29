@@ -121,7 +121,7 @@
  
      /**
       * Plays a sound at the entity's position. Args: entity, sound, volume (relative to 1.0), and frequency (or pitch,
-@@ -1279,15 +1325,53 @@
+@@ -1279,15 +1325,14 @@
      }
  
      /**
@@ -134,55 +134,16 @@
 -        int var3 = MathHelper.floor_double(par1Entity.posZ / 16.0D);
 -        boolean var4 = par1Entity.field_98038_p;
 +    public boolean spawnEntityInWorld(Entity entity) {
-+    	return this.spawnEntityInWorld(entity, false);
-+    }
- 
--        if (par1Entity instanceof EntityPlayer)
-+    private boolean spawnEntityInWorld(Entity entity, boolean hasItemBeenReplaced) {
-+    	if (entity instanceof EntityItem && !hasItemBeenReplaced && !this.isRemote) {
-+    		EntityItem oldEntity = (EntityItem) entity;
-+    		Item item = oldEntity.getEntityItem().getItem();
-+    		
-+    		if (item.hasCustomItemEntity()) {
-+				EntityItem newEntity = item.createItemAsEntityInWorld(this, entity.posX, entity.posY, entity.posZ, oldEntity.getEntityItem());
-+				
-+    			if (newEntity == null) {
-+    				Class entityItem = item.getCustomItemEntity();
-+    				
-+    				try {
-+						newEntity = (EntityItem) entityItem.getConstructor(World.class, double.class, double.class, double.class, ItemStack.class).newInstance(this, entity.posX, entity.posY, entity.posZ, item);
-+					} catch (InstantiationException e) {
-+						e.printStackTrace();
-+					} catch (IllegalAccessException e) {
-+						e.printStackTrace();
-+					} catch (IllegalArgumentException e) {
-+						e.printStackTrace();
-+					} catch (InvocationTargetException e) {
-+						e.printStackTrace();
-+					} catch (NoSuchMethodException e) {
-+						e.printStackTrace();
-+					} catch (SecurityException e) {
-+						e.printStackTrace();
-+					}
-+    			}
-+    			
-+    			newEntity.motionX = oldEntity.motionX;
-+    			newEntity.motionY = oldEntity.motionY;
-+    			newEntity.motionZ = oldEntity.motionZ;
-+    			
-+    			this.spawnEntityInWorld(newEntity, true);
-+    		}
-+    	}
-+    	
 +        int var2 = MathHelper.floor_double(entity.posX / 16.0D);
 +        int var3 = MathHelper.floor_double(entity.posZ / 16.0D);
 +        boolean var4 = entity.field_98038_p;
-+
+ 
+-        if (par1Entity instanceof EntityPlayer)
 +        if (entity instanceof EntityPlayer)
          {
              var4 = true;
          }
-@@ -1298,16 +1382,16 @@
+@@ -1298,16 +1343,16 @@
          }
          else
          {
@@ -204,7 +165,7 @@
              return true;
          }
      }
-@@ -1425,18 +1509,29 @@
+@@ -1425,18 +1470,29 @@
          }
  
          double var14 = 0.25D;
@@ -238,7 +199,7 @@
  
              if (var13 != null && var13.intersectsWith(par2AxisAlignedBB))
              {
-@@ -1539,6 +1634,7 @@
+@@ -1539,6 +1595,7 @@
  
      /**
       * Finds the highest block on the x, z coordinate that is solid and returns its y coord. Args x, z
@@ -246,7 +207,7 @@
       */
      public int getTopSolidOrLiquidBlock(int par1, int par2)
      {
-@@ -1638,6 +1734,21 @@
+@@ -1638,6 +1695,21 @@
          }
  
          this.unloadedEntityList.clear();
@@ -268,7 +229,7 @@
          this.theProfiler.endStartSection("regular");
  
          for (var1 = 0; var1 < this.loadedEntityList.size(); ++var1)
-@@ -1700,7 +1811,12 @@
+@@ -1700,7 +1772,12 @@
          {
              TileEntity var9 = (TileEntity)var14.next();
  
@@ -282,7 +243,7 @@
              {
                  try
                  {
-@@ -1798,20 +1914,33 @@
+@@ -1798,20 +1875,33 @@
      /**
       * Will update the entity in the world if the chunk the entity is in is currently loaded or its forced to update.
       * Args: entity, forceUpdate
@@ -318,7 +279,7 @@
  
              if (par2 && par1Entity.addedToChunk)
              {
-@@ -2015,8 +2144,15 @@
+@@ -2015,8 +2105,15 @@
      /**
       * Returns whether or not the given bounding box is on fire or not
       */
@@ -335,7 +296,7 @@
          int var2 = MathHelper.floor_double(par1AxisAlignedBB.minX);
          int var3 = MathHelper.floor_double(par1AxisAlignedBB.maxX + 1.0D);
          int var4 = MathHelper.floor_double(par1AxisAlignedBB.minY);
-@@ -2032,9 +2168,16 @@
+@@ -2032,9 +2129,16 @@
                  {
                      for (int var10 = var6; var10 < var7; ++var10)
                      {
@@ -352,7 +313,7 @@
                          {
                              return true;
                          }
-@@ -2268,7 +2411,12 @@
+@@ -2268,7 +2372,12 @@
  
          if (this.getBlockId(par2, par3, par4) == Block.fire.blockID)
          {
@@ -365,7 +326,7 @@
              this.setBlockToAir(par2, par3, par4);
              return true;
          }
-@@ -2426,9 +2574,21 @@
+@@ -2426,9 +2535,21 @@
       */
      public boolean isBlockNormalCube(int par1, int par2, int par3)
      {
@@ -388,7 +349,7 @@
      public boolean func_85174_u(int par1, int par2, int par3)
      {
          int var4 = this.getBlockId(par1, par2, par3);
-@@ -2447,20 +2607,28 @@
+@@ -2447,20 +2568,28 @@
      /**
       * Returns true if the block at the given coordinate has a solid (buildable) top surface.
       */
@@ -417,7 +378,7 @@
  
      /**
       * Checks if the block is a solid, normal cube. If the chunk does not exist, or is not loaded, it returns the
-@@ -2475,7 +2643,12 @@
+@@ -2475,7 +2604,12 @@
              if (var5 != null && !var5.isEmpty())
              {
                  Block var6 = Block.blocksList[this.getBlockId(par1, par2, par3)];
@@ -430,7 +391,7 @@
              }
              else
              {
-@@ -2506,7 +2679,12 @@
+@@ -2506,7 +2640,12 @@
       */
      public void setAllowedSpawnTypes(boolean par1, boolean par2)
      {
@@ -443,7 +404,7 @@
          this.spawnPeacefulMobs = par2;
      }
  
-@@ -2515,7 +2693,15 @@
+@@ -2515,7 +2654,15 @@
       */
      public void tick()
      {
@@ -459,7 +420,7 @@
      }
  
      /**
-@@ -2537,6 +2723,8 @@
+@@ -2537,6 +2684,8 @@
      /**
       * Updates all weather states.
       */
@@ -468,7 +429,7 @@
      protected void updateWeather()
      {
          if (!this.provider.hasNoSky)
-@@ -2632,6 +2820,8 @@
+@@ -2632,6 +2781,8 @@
              }
          }
      }
@@ -477,7 +438,7 @@
  
      /**
       * start precipitation in this world (2 ticks after command posted)
-@@ -2643,6 +2833,8 @@
+@@ -2643,6 +2794,8 @@
  
      protected void setActivePlayerChunksAndCheckLight()
      {
@@ -486,7 +447,7 @@
          this.activeChunkSet.clear();
          this.theProfiler.startSection("buildList");
          int var1;
-@@ -2667,6 +2859,12 @@
+@@ -2667,6 +2820,12 @@
          }
  
          this.theProfiler.endSection();
@@ -499,7 +460,7 @@
  
          if (this.ambientTickCountdown > 0)
          {
-@@ -2819,10 +3017,16 @@
+@@ -2819,10 +2978,16 @@
          {
              if (par2 >= 0 && par2 < 256 && this.getSavedLightValue(EnumSkyBlock.Block, par1, par2, par3) < 10)
              {
@@ -516,7 +477,7 @@
                  {
                      return true;
                  }
-@@ -2913,8 +3117,8 @@
+@@ -2913,8 +3078,8 @@
              int var13;
              int var14;
              int var15;
@@ -526,7 +487,7 @@
  
              if (var8 > var7)
              {
-@@ -3053,10 +3257,18 @@
+@@ -3053,10 +3218,18 @@
      public List getEntitiesWithinAABBExcludingEntity(Entity par1Entity, AxisAlignedBB par2AxisAlignedBB, IEntitySelector par3IEntitySelector)
      {
          ArrayList var4 = new ArrayList();
@@ -545,7 +506,7 @@
  
          for (int var9 = var5; var9 <= var6; ++var9)
          {
-@@ -3082,10 +3294,18 @@
+@@ -3082,10 +3255,18 @@
  
      public List selectEntitiesWithinAABB(Class par1Class, AxisAlignedBB par2AxisAlignedBB, IEntitySelector par3IEntitySelector)
      {
@@ -564,7 +525,7 @@
          ArrayList var8 = new ArrayList();
  
          for (int var9 = var4; var9 <= var5; ++var9)
-@@ -3146,6 +3366,8 @@
+@@ -3146,6 +3327,8 @@
      /**
       * Counts how many entities of an entity class exist in the world. Args: entityClass
       */
@@ -573,7 +534,7 @@
      public int countEntities(Class par1Class)
      {
          int var2 = 0;
-@@ -3162,6 +3384,8 @@
+@@ -3162,6 +3345,8 @@
  
          return var2;
      }
@@ -582,7 +543,7 @@
  
      /**
       * adds entities to the loaded entities list, and loads thier skins.
-@@ -3205,7 +3429,14 @@
+@@ -3205,7 +3390,14 @@
          }
          else
          {
@@ -597,7 +558,7 @@
              {
                  var10 = null;
              }
-@@ -3332,6 +3563,22 @@
+@@ -3332,6 +3524,22 @@
      {
          if (this.isBlockNormalCube(par1, par2, par3))
          {
@@ -620,7 +581,7 @@
              return this.getBlockPowerInput(par1, par2, par3);
          }
          else
-@@ -3607,8 +3854,15 @@
+@@ -3607,8 +3815,15 @@
          return (double)this.getRainStrength(1.0F) > 0.2D;
      }
  
@@ -636,7 +597,7 @@
          if (!this.isRaining())
          {
              return false;
-@@ -3626,8 +3880,20 @@
+@@ -3626,8 +3841,20 @@
              BiomeGenBase var4 = this.getBiomeGenForCoords(par1, par3);
              return var4.getEnableSnow() ? false : var4.canSpawnLightningBolt();
          }
@@ -657,7 +618,7 @@
      /**
       * Checks to see if the biome rainfall values for a given x,y,z coordinate set are extremely high
       */
-@@ -3664,6 +3930,10 @@
+@@ -3664,6 +3891,10 @@
          return this.mapStorage.getUniqueDataId(par1Str);
      }
  
@@ -668,7 +629,7 @@
      public void func_82739_e(int par1, int par2, int par3, int par4, int par5)
      {
          for (int var6 = 0; var6 < this.worldAccesses.size(); ++var6)
-@@ -3841,4 +4111,1143 @@
+@@ -3841,4 +4072,1143 @@
      {
          return this.worldLogAgent;
      }

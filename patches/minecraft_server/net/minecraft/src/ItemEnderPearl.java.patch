@@ -16,28 +16,12 @@
          else
          {
              --par1ItemStack.stackSize;
-@@ -35,4 +31,24 @@
+@@ -29,7 +25,7 @@
+ 
+             if (!par2World.isRemote)
+             {
+-                par2World.spawnEntityInWorld(new EntityEnderPearl(par2World, par3EntityPlayer));
++            	par2World.spawnEntityInWorld(EntityList.createEntityOfType(EntityEnderPearl.class, par2World, par3EntityPlayer));
+             }
+ 
              return par1ItemStack;
-         }
-     }
-+    
-+    @Override
-+    public boolean IsPistonPackable(ItemStack stack) {
-+    	return true;
- }
-+    
-+	@Override
-+    public int GetRequiredItemCountToPistonPack(ItemStack stack) {
-+    	return 9;
-+    }
-+    
-+	@Override
-+    public int GetResultingBlockIDOnPistonPack(ItemStack stack) {
-+    	return FCBetterThanWolves.fcAestheticOpaque.blockID;
-+    }
-+    
-+	@Override
-+    public int GetResultingBlockMetadataOnPistonPack(ItemStack stack) {
-+    	return ((FCBlockAestheticOpaque) FCBetterThanWolves.fcAestheticOpaque).m_iSubtypeEnderBlock;
-+    }
-+}

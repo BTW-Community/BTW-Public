@@ -48,7 +48,7 @@
 +        	entityFacing = 3;
 +        }
 +
-+        FCEntityCanvas canvas = new FCEntityCanvas( world, i, j, k, entityFacing );
++        FCEntityCanvas canvas = (FCEntityCanvas) EntityList.createEntityOfType(FCEntityCanvas.class, world, i, j, k, entityFacing );
 +
 +        if ( canvas.onValidSurface() )
 +        {

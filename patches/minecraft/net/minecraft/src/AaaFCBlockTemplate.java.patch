@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/AaaFCBlockTemplate.java
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,36 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -24,7 +24,6 @@
 +		SetFireProperties( FCEnumFlammability.NONE );
 +    	SetFurnaceBurnTime( FCEnumFurnaceBurnTime.NONE );
 +    	SetFilterableProperties( Item.m_iFilterable_SolidBlock );
-+		SetCanBeCookedByKiln( false );
 +        
 +        setLightOpacity( 255 ); // most don't need. 255 is fully opaque
 +        Block.useNeighborBrightness[iBlockID] = false; // used by slabs and such

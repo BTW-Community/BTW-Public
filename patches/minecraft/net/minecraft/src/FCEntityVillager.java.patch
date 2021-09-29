@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityVillager.java
-@@ -0,0 +1,1349 @@
+@@ -0,0 +1,1352 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -325,10 +325,10 @@
 +
 +			if (isBurning())
 +			{
-+				iDropItemID = FCBetterThanWolves.fcItemCookedMysteryMeat.itemID;
++				iDropItemID = FCBetterThanWolves.fcItemMeatBurned.itemID;
 +			}
 +
-+			int iNumDropped = rand.nextInt(2) + 1 + rand.nextInt(1 + iLootingModifier);
++			int iNumDropped = rand.nextInt(3) + 1 + rand.nextInt(1 + iLootingModifier);
 +
 +			for (int iTempCount = 0; iTempCount < iNumDropped; ++iTempCount)
 +			{    	
@@ -365,7 +365,7 @@
 +
 +		setDead();
 +
-+		FCEntityWitch entityWitch = new FCEntityWitch(worldObj);
++		FCEntityWitch entityWitch = (FCEntityWitch) EntityList.createEntityOfType(FCEntityWitch.class, worldObj);
 +
 +		entityWitch.setLocationAndAngles(posX, posY, posZ, rotationYaw, rotationPitch);
 +		entityWitch.renderYawOffset = renderYawOffset;
@@ -961,6 +961,9 @@
 +
 +			return true;
 +		}
++		else if (heldStack != null && heldStack.itemID == FCBetterThanWolves.fcItemNameTag.itemID) {
++			FCBetterThanWolves.fcItemNameTag.itemInteractionForEntity(heldStack, this);
++		}
 +
 +		return false;
 +	}
@@ -1009,7 +1012,7 @@
 +
 +						entityItem.setDead();
 +
-+						entityItem = new EntityItem(worldObj, posX, posY - 0.30000001192092896D + (double)getEyeHeight(), posZ, 
++						entityItem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, worldObj, posX, posY - 0.30000001192092896D + (double)getEyeHeight(), posZ, 
 +								new ItemStack(Item.bucketMilk, 1, 0));
 +
 +						float f1 = 0.2F;

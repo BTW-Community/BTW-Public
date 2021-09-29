@@ -303,7 +303,7 @@
 +            world.notifyBlockChange( i, j - 1, k, 0 );
 +            world.notifyBlockChange( i, j - 2, k, 0 );
 +            
-+            FCEntitySnowman snowGolem = new FCEntitySnowman( world );
++            FCEntitySnowman snowGolem = (FCEntitySnowman) EntityList.createEntityOfType(FCEntitySnowman.class, world);
 +            
 +            snowGolem.setLocationAndAngles( (double)i + 0.5D, (double)j - 1.95D, (double)k + 0.5D, 0F, 0F);
 +            
@@ -354,7 +354,7 @@
 +                    world.notifyBlockChange( i, j - 1, k + 1, 0 );
 +                }
 +
-+                EntityIronGolem ironGolem = new EntityIronGolem( world );
++                EntityIronGolem ironGolem = (EntityIronGolem) EntityList.createEntityOfType(EntityIronGolem.class, world);
 +                
 +                ironGolem.setPlayerCreated( true );
 +                ironGolem.setLocationAndAngles( (double)i + 0.5D, (double)j - 1.95D, (double)k + 0.5D, 0F, 0F);

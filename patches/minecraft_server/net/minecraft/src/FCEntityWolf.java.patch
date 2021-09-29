@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCEntityWolf.java
-@@ -0,0 +1,1009 @@
+@@ -0,0 +1,1064 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -50,9 +50,12 @@
 +		tasks.addTask( 5, new EntityAIAttackOnCollide( this, m_fMoveSpeedPassive, true ) );
 +		tasks.addTask( 6, new EntityAIFollowOwner( this, m_fMoveSpeedPassive, 10F, 2F ) );
 +		tasks.addTask( 7, new EntityAIMate( this, m_fMoveSpeedPassive ) );
++		//		Hiracho: added multitempt
++		tasks.addTask( 7, new FCEntityAIMultiTempt( this, m_fMoveSpeedPassive ) );
 +		tasks.addTask( 8, new FCEntityAIWolfHowl( this ) );
 +		tasks.addTask( 8, new FCEntityAIWolfHowlSitting( this ) );
-+		tasks.addTask( 9, new FCEntityAIMoveToLooseFood( this, 0.23F ) );
++		//		Hiracho: wolves dont slow down when walking to loose food
++		tasks.addTask( 9, new FCEntityAIMoveToLooseFood( this, m_fMoveSpeedPassive ) );
 +		tasks.addTask( 10, new FCEntityAIWanderSimple( this, m_fMoveSpeedPassive ) );
 +		tasks.addTask( 11, new EntityAIBeg( this, 8F ) );
 +		tasks.addTask( 12, new EntityAIWatchClosest( this, EntityPlayer.class, 8F ) );
@@ -87,6 +90,49 @@
 +	public void setAttackTarget( EntityLiving target )
 +	{
 +		EntityLivingSetAttackTarget( target ); // bypass parent
++	}
++
++	@Override
++	public void onKillEntity( EntityLiving entityKilled )
++	{
++		//    	On kill player
++		if (entityKilled instanceof EntityPlayer)
++		{
++
++			int breedableWolf = 0;
++			int maxWolvesFed = 4;
++			//    		set breeding self
++			if (this.IsReadyToEatBreedingItem())
++			{
++				this.OnEatBreedingItem();
++				breedableWolf++;
++			}
++			//        	Get entities in certain range
++			List nearbyEntityList = worldObj.getEntitiesWithinAABBExcludingEntity( this, 
++					boundingBox.expand( 16D, 8D, 16D ) );
++
++			Iterator nearbyEntityIterator = nearbyEntityList.iterator();
++
++			//              set a max to number of wolves being fed breedingitem
++			while ( nearbyEntityIterator.hasNext() && breedableWolf <=maxWolvesFed)
++			{
++				Entity nearbyEntity = (Entity)nearbyEntityIterator.next();
++
++				//                	check entities for being wolf
++				if ( nearbyEntity instanceof FCEntityWolf )
++				{
++
++					FCEntityWolf nearbyWolf = (FCEntityWolf)nearbyEntity;
++					//                        only go into breeding mode when able to
++					if (nearbyWolf.IsReadyToEatBreedingItem())
++					{
++						nearbyWolf.OnEatBreedingItem();
++						breedableWolf++;
++					}
++				}
++			}
++		}
++
 +	}
 +
 +	@Override
@@ -289,20 +335,17 @@
 +				return true;
 +			}
 +		}
++		if ( EntityAnimalInteract( player ) ) 
++			return true;
 +
-+		if ( !EntityAnimalInteract( player ) ) // intentionally bypass parent
++		if (!worldObj.isRemote && isTamed() && player.username.equalsIgnoreCase(getOwnerName()) && (playerStack == null || !IsEdibleItem(playerStack)  || !isBreedingItem(playerStack) ))
 +		{
-+			if (!worldObj.isRemote && isTamed() && player.username.equalsIgnoreCase(getOwnerName()) && (playerStack == null || !IsEdibleItem(playerStack) || !isBreedingItem(playerStack)))
-+			{
-+				aiSit.setSitting( !isSitting() );
-+				isJumping = false;
-+				setPathToEntity( null );
-+			}
-+
-+			return false;
++			aiSit.setSitting( !isSitting() );
++			isJumping = false;
++			setPathToEntity( null );
 +		}
 +
-+		return true;
++		return false;
 +	}
 +
 +	@Override
@@ -319,16 +362,10 @@
 +	{
 +		return (double)height * 1.2D;
 +	}
-+
++	//	Hiracho: changed to use mysterymeat
 +	@Override
 +	public boolean isBreedingItem(ItemStack stack) {
-+		if (stack != null && isTamed()) {
-+			Item item = stack.getItem();
-+
-+			return stack.itemID == FCBetterThanWolves.fcItemDogFood.itemID;
-+		}
-+
-+		return false;
++		return (stack !=null && (stack.itemID == FCBetterThanWolves.fcItemRawMysteryMeat.itemID || stack.itemID == FCBetterThanWolves.fcItemCookedMysteryMeat.itemID));
 +	}
 +
 +	@Override
@@ -347,8 +384,9 @@
 +	{
 +		// only eat loose food if the wolf is not fed.  Don't do it if they are just 
 +		// wounded like by hand, nor do it for breeding like with other animals.
++		// Hiracho: changed, do check breeding items on ground
 +
-+		return !IsFullyFed();
++		return (!IsFullyFed() || IsReadyToEatBreedingItem());
 +	}
 +
 +	@Override
@@ -356,14 +394,9 @@
 +	{
 +		Item tempItem = stack.getItem();
 +
-+		if ( IsReadyToEatLooseFood() && tempItem.IsWolfFood() )
++		if ( IsReadyToEatLooseFood() && tempItem.IsWolfFood() && ( tempItem.itemID != Item.rottenFlesh.itemID || IsStarving() ) )
 +		{
-+			// only eat rotten flesh off the ground when starving
-+
-+			if ( tempItem.itemID != Item.rottenFlesh.itemID || IsStarving() )
-+			{
-+				return true;
-+			}
++			return true;
 +		}
 +
 +		return false;
@@ -387,17 +420,11 @@
 +	{
 +		return stack.getItem().IsWolfFood();
 +	}
-+
++	//	Hiracho removed wolves needing ownder, added breedingreadiness check, always use oneat
 +	public boolean AttemptToBeHandFedItem(ItemStack stack) {
-+		if (isTamed()) {
-+			if (dataWatcher.getWatchableObjectInt(18) < 20 || !IsFullyFed()) {
-+				this.OnEat(stack.getItem());
-+				return true;
-+			}
-+			else if (isBreedingItem(stack)) {
-+				this.OnEatBreedingItem();
-+				return true;
-+			}
++		if (dataWatcher.getWatchableObjectInt(18) < 20 || !IsFullyFed() || (isBreedingItem(stack) &&IsReadyToEatBreedingItem())) {
++			this.OnEat(stack.getItem());
++			return true;
 +		}
 +
 +		return false;
@@ -504,22 +531,25 @@
 +			}
 +		}
 +	}    
-+
++	//	Hiracho: changed so pups are always wild, so wild wolves can breed too.
++	//	TODO think about adding check for owner, wild babies from tamed wolves has its uses/kinda fun(puppytraining before it listens), maybe annoying?
 +	@Override
 +	public FCEntityWolf spawnBabyAnimal( EntityAgeable parent )
 +	{
-+		FCEntityWolf baby = new FCEntityWolf( worldObj );
-+
-+		String sOwner = getOwnerName();
-+
-+		if ( sOwner != null && sOwner.trim().length() > 0 )
-+		{
-+			baby.setOwner( sOwner );
-+			baby.setTamed( true );
-+		}
-+
-+		return baby;
++		return (FCEntityWolf) EntityList.createEntityOfType(FCEntityWolf.class, worldObj);
++//		FCEntityWolf baby = new FCEntityWolf( worldObj );
++//
++//		String sOwner = getOwnerName();
++//
++//		if ( sOwner != null && sOwner.trim().length() > 0 )
++//		{
++//			baby.setOwner( sOwner );
++//			baby.setTamed( true );
++//		}
++//
++//		return baby;
 +	}
++
 +
 +	@Override
 +	public boolean IsSubjectToHunger()
@@ -590,7 +620,26 @@
 +
 +		return 0;
 +	}
++	//	Hiracho TODO decide if to remove this entirely(including the EntityWolf override )
++	@Override
++	public boolean canMateWith(EntityAnimal par1EntityAnimal)
++	{
++		if (par1EntityAnimal == this)
++		{
++			return false;
++		}
 +
++		else if (!(par1EntityAnimal instanceof EntityWolf))
++		{
++			return false;
++		}
++
++		else
++		{
++			EntityWolf var2 = (EntityWolf)par1EntityAnimal;
++			return  var2.isSitting() ? false : this.isInLove() && par1EntityAnimal.isInLove();
++		}
++	}
 +	//------------- Class Specific Methods ------------//
 +
 +	public boolean IsEngangedInPossessionAttempt()    
@@ -716,7 +765,11 @@
 +					MathHelper.floor_double( posX ), (int)( posY + height ),
 +					MathHelper.floor_double( posZ ), 0 );        	
 +		}
-+
++		//		Hiracho: Added
++		if ( food.itemID == FCBetterThanWolves.fcItemRawMysteryMeat.itemID ||food.itemID == FCBetterThanWolves.fcItemCookedMysteryMeat.itemID )
++		{
++			OnEatBreedingItem();
++		}
 +		if ( food.itemID == Item.rottenFlesh.itemID )
 +		{
 +			OnRottenFleshEaten();
@@ -780,7 +833,7 @@
 +			return false;
 +		}
 +
-+		EntityItem entityitem = new EntityItem( worldObj, 
++		EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, worldObj, 
 +				shitPosX, shitPosY, shitPosZ, 
 +				new ItemStack( FCBetterThanWolves.fcItemDung ) );
 +
@@ -1009,5 +1062,7 @@
 +			}
 +		}
 +	}
++
++	//----------- Client Side Functionality -----------//
 +}
 \ No newline at end of file

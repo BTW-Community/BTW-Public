@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,4256 @@
+@@ -0,0 +1,4280 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -25,7 +25,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.0.1";
++	public static final String fcVersionString = "1.1.0";
 +	
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +	
@@ -574,6 +574,7 @@
 +    public static Item fcItemPileIronOre;
 +    
 +    public static Item fcItemChiselIron;
++    public static Item fcItemChiselDiamond;
 +    
 +    public static Item fcItemChunkGoldOre;
 +    public static Item fcItemPileGoldOre;
@@ -608,6 +609,10 @@
 +    public static Item fcItemBrickUnfired;
 +    public static Item fcItemNetherBrickUnfired;
 +    
++    public static Item fcItemNameTag;
++    
++    public static Item fcItemShearsDiamond;
++    
 +    // legacy ID for MCPatcher grass slab support
 +    
 +    private static int fcBlockDirtSlabID = 206;
@@ -632,19 +637,18 @@
 +    private static final Map m_configurationMap = new HashMap();
 +    
 +    public static boolean fcDisableMinecartChanges = false;
-+
 +    private static boolean fcLocalEnableHardcoreBuoy = true;
 +    private static boolean fcServerEnableHardcoreBuoy = true;
-+    
 +    private static int fcLocalHardcorePlayerNamesLevel = 1;
 +    private static int fcServerHardcorePlayerNamesLevel = 1;
-+    
 +    public static boolean fcDisableEndText = true;
-+    
 +    public static boolean fcDisableGearBoxPowerDrain = false;
++    public static boolean disableMillstoneNausea = false;
++    public static boolean increaseGhastSpawns = false;
++    public static boolean alwaysSpawnTogether = false;
 +    
-+    public static String fcPlayerSkinURL = "http://skins.minecraft.net/MinecraftSkins/";
-+    public static String fcPlayerCloakURL = "http://skins.minecraft.net/MinecraftCloaks/";
++    public static String fcPlayerSkinURL = "http://crafatar.com/skins/";
++    public static String fcPlayerCloakURL = "http://crafatar.com/capes/";
 +    
 +    // temporary state variables
 +    
@@ -1684,6 +1688,8 @@
 +	    
 +	    fcItemChiselIron = new FCItemChiselIron(parseID("fcItemChiselIronID"));
 +	    
++	    fcItemChiselDiamond = new FCItemChiselDiamond(parseID("fcItemChiselDiamondID"));
++	    
 +	    fcItemChunkGoldOre = new FCItemChunkOreGold(parseID("fcItemChunkGoldOreID")); 
 +	    
 +	    fcItemPileGoldOre = (new Item(parseID("fcItemPileGoldOreID"))).
@@ -1741,6 +1747,10 @@
 +        
 +        fcItemBrickUnfired = new FCItemBrickUnfired(parseID("fcItemBrickUnfiredID"));
 +        fcItemNetherBrickUnfired = new FCItemNetherBrickUnfired(parseID("fcItemNetherBrickUnfiredID"));
++        
++        fcItemNameTag = new FCItemNameTag(parseID("fcItemNameTagID"));
++        
++        fcItemShearsDiamond = new FCItemShearsDiamond(parseID("fcItemShearsDiamondID"));
 +        
 +	    // ***REMINDER***: Use IDs over 20K here
 +		
@@ -1951,7 +1961,7 @@
 +		EntityList.AddMapping(FCEntitySpiderWeb.class, "fcSpiderWeb", parseID("fcEntitySpiderWebID"));
 +		EntityList.AddMapping(FCEntityWolfDire.class, "fcDireWolf", parseID("fcEntityDireWolfID"));
 +		EntityList.AddMapping(FCEntitySoulSand.class, "fcEntitySoulSand", parseID("fcEntitySoulSandID"));
-+		EntityList.AddMapping(FCEntityJungleSpider.class, "fcJungleSpider", parseID("fcEntityJungleSpiderID"));
++		EntityList.addMapping(FCEntityJungleSpider.class, "fcJungleSpider", parseID("fcEntityJungleSpiderID"), 0x1C311D, 0x1B1911);
 +		EntityList.AddMapping(FCEntityWitherPersistent.class, "fcWitherPersistent", parseID("fcWitherPersistentID"));
 +		
 +		//Uses legacy names from old API for compatibility
@@ -2013,6 +2023,10 @@
 +        BlockDispenser.dispenseBehaviorRegistry.putObject(fcItemRottenArrow, new FCBehaviorRottedArrowDispense());
 +        BlockDispenser.dispenseBehaviorRegistry.putObject(fcItemSoulUrn, new FCBehaviorSoulUrnDispense());
 +        BlockDispenser.dispenseBehaviorRegistry.putObject(fcItemDynamite, new FCBehaviorDispenseDynamite());
++
++        BlockDispenser.dispenseBehaviorRegistry.putObject(fcItemNetherSludge, new FCBehaviorApplyMortar());
++        BlockDispenser.dispenseBehaviorRegistry.putObject(Item.clay, new FCBehaviorApplyMortar());
++        BlockDispenser.dispenseBehaviorRegistry.putObject(Item.slimeBall, new FCBehaviorApplyMortar());
 +        
 +        // need this on the standalone server due to init order problems
 +        
@@ -2026,449 +2040,459 @@
 +            BlockDispenser.dispenseBehaviorRegistry.putObject(Item.bucketWater, filledBucketBehavior);
 +            
 +            BlockDispenser.dispenseBehaviorRegistry.putObject(Item.bucketEmpty, new DispenserBehaviorEmptyBucket());
++
 +        }
 +	}
 +	
 +	private void registerConfigProperties() {
 +		//Gameplay config
-+		this.registerProperty("PlayerSkinURL", fcPlayerSkinURL, "Set the following to the addresses of the player skin servers you wish to use (the defaults are now defunct)");
-+		this.registerProperty("PlayerCloakURL", fcPlayerCloakURL);
-+		
 +		this.registerProperty("EnableHardcoreBuoy", "True", "Set the following to false to disable hardcore buoy, which causes some items to float in water");
 +		this.registerProperty("DisableEndText", "True", "Set the following to false to re-enable the end game text when leaving the end dimension. You'll regret it though.");
 +		this.registerProperty("DisableGearBoxPowerDrain", "False", "Set the following to true to stop gearboxes from shortening the length of mechanical power pulses through time.");
++		this.registerProperty("DisableMillstoneNausea", "False", "Set the following to true to disable the nausea effect from the millstone");
++		this.registerProperty("IncreaseGhastSpawns", "False", "Restores the increased ghast spawn rates from before v1.1.0.");
 +		
 +		//Client only config
 +		this.registerProperty("UseBetterGrass", "False", "Set to true to enable MCPatcher's Better Grass, which renders the grass top texture on the sides of grass blocks on 1 block tall slopes");
 +		
 +		//Server only config
-+		this.registerProperty("EnableHardcorePlayerNames", "2", "***Standalone Server Settings (do not apply to singleplayer or LAN***\n\n"
++		this.registerProperty("EnableHardcorePlayerNames", "2", "***Server and LAN Settings (do not apply to singleplayer)***\n\n"
 +																+ "# Set to 0 to allow players to always see the names of other players\n"
 +																+ "# Set to 1 for hardcore, which displays no player names at all\n"
 +																+ "# Set to 2 for obstructed, which displays names, but not if they are behind other objects like blocks.");
++		this.registerProperty("AlwaysSpawnTogether", "False", "Set the following to true to make players always spawn together regardless of progression (default behavior stops spawning together after the nether)");
 +		
++		//ID config
++		registerConfigIDs();
++	}
++	
++	private void registerConfigIDs() {
 +		//Block ids
-+		this.registerProperty("fcBlockSlabFallingID", "175", "***Block IDs***\n\n");
-+		this.registerProperty("fcBlockArcaneVesselID", "176");
-+		this.registerProperty("fcBlockAxlePowerSourceID", "177");
-+		this.registerProperty("fcBlockSidingAndCornerBlackStoneID", "178");
-+		this.registerProperty("fcBlockMouldingAndDecorativeBlackStoneID", "179");
-+		this.registerProperty("fcBlockAestheticOpaqueEarthID", "180");
-+		this.registerProperty("fcBlockCandleID", "181");
-+		this.registerProperty("fcBlockSandstoneSidingAndCornerID", "182");
-+		this.registerProperty("fcBlockSandstoneMouldingAndDecorativeID", "183");
-+		this.registerProperty("fcBlockWoodOakSidingAndCornerID", "184");
-+		this.registerProperty("fcBlockSmoothStoneSidingAndCornerID", "185");
-+		this.registerProperty("fcBlockBrickSidingAndCornerID", "186");
-+		this.registerProperty("fcBlockBrickMouldingAndDecorativeID", "187");
-+		this.registerProperty("fcBlockNetherBrickSidingAndCornerID", "188");
-+		this.registerProperty("fcBlockNetherBrickMouldingAndDecorativeID", "189");
-+		this.registerProperty("fcBlockWhiteStoneStairsID", "190");
-+		this.registerProperty("fcBlockWhiteStoneSidingAndCornerID", "191");
-+		this.registerProperty("fcBlockWhiteStoneMouldingAndDecorativeID", "192");
-+		this.registerProperty("fcBlockStakeStringID", "193");
-+		this.registerProperty("fcBlockStakeID", "194");
-+		this.registerProperty("fcBlockScrewPumpID", "195");
-+		this.registerProperty("fcBlockWoodSpruceSidingAndCornerID", "196");
-+		this.registerProperty("fcBlockWoodSpruceMouldingID", "197");
-+		this.registerProperty("fcBlockWoodBirchSidingAndCornerID", "198");
-+		this.registerProperty("fcBlockWoodBirchMouldingID", "199");
-+		this.registerProperty("fcBlockWoodJungleSidingAndCornerID", "200");
-+		this.registerProperty("fcBlockWoodJungleMouldingID", "201");
-+		this.registerProperty("fcBlockStoneBrickSidingAndCornerID", "202");
-+		this.registerProperty("fcBlockStoneBrickMouldingID", "203");
-+		this.registerProperty("fcBlockFarmlandFertilizedID", "204");
-+		this.registerProperty("fcBlockWoolSlabTopID", "205");
-+		this.registerProperty("fcBlockDirtSlabID", "206");
-+		this.registerProperty("fcBlockNetherGrowthID", "207");
-+		this.registerProperty("fcInfernalEnchanterID", "208");
-+		this.registerProperty("fcSoulforgedSteelBlockID", "209");
-+		this.registerProperty("fcBlockDetectorGlowingLogicID", "210");
-+		this.registerProperty("fcLeavesID", "211");
-+		this.registerProperty("fcBloodWoodID", "212");
-+		this.registerProperty("fcAestheticVegetationID", "213");
-+		this.registerProperty("fcStoneMouldingID", "214");
-+		this.registerProperty("fcAestheticOpaqueID", "215");
-+		this.registerProperty("fcAestheticNonOpaqueID", "216");
-+		this.registerProperty("fcMiningChargeID", "217");
-+		this.registerProperty("fcBuddyBlockID", "218");
-+		this.registerProperty("fcKilnID", "219");
-+		this.registerProperty("fcWoolSlabID", "220");
-+		this.registerProperty("fcAnvilID", "221");
-+		this.registerProperty("fcLightBulbOffID", "222");
-+		this.registerProperty("fcLightBulbOnID", "223");
-+		this.registerProperty("fcBBQID", "224");
-+		this.registerProperty("fcHopperID", "225");
-+		this.registerProperty("fcSawID", "226");
-+		this.registerProperty("fcPlatformID", "227");
-+		this.registerProperty("fcCementID", "228");
-+		this.registerProperty("fcPulleyID", "229");
-+		this.registerProperty("fcPressurePlateObsidianID", "230");
-+		this.registerProperty("fcMouldingID", "231");
-+		this.registerProperty("fcCornerID", "232");
-+		this.registerProperty("fcBlockDispenserID", "233");
-+		this.registerProperty("fcCauldronID", "234");
-+		this.registerProperty("fcDetectorRailWoodID", "235");
-+		this.registerProperty("fcDetectorRailObsidianID", "236");
-+		this.registerProperty("fcCompanionCubeID", "237");
-+		this.registerProperty("fcBlockDetectorID", "238");
-+		this.registerProperty("fcBlockDetectorLogicID", "239");
-+		this.registerProperty("fcBlockLensID", "240");
-+		this.registerProperty("fcHempCropID", "241");
-+		this.registerProperty("fcHandCrankID", "242");
-+		this.registerProperty("fcMillStoneID", "243");
-+		this.registerProperty("fcAnchorID", "244");
-+		this.registerProperty("fcRopeBlockID", "245");
-+		this.registerProperty("fcOmniSlabID", "246");
-+		this.registerProperty("fcAxleBlockID", "247");
-+		this.registerProperty("fcGearBoxID", "248");
-+		this.registerProperty("fcTurntableID", "249");
-+		this.registerProperty("fcBellowsID", "250");
-+		this.registerProperty("fcStokedFireID", "251");
-+		this.registerProperty("fcUnfiredPotteryID", "252");
-+		this.registerProperty("fcCrucibleID", "253");
-+		this.registerProperty("fcPlanterID", "254");
-+		this.registerProperty("fcVaseID", "255");
-+		
-+		this.registerProperty("fcBlockRottenFleshID", "1000");
-+		this.registerProperty("fcBlockShaftID", "1001");
-+		this.registerProperty("fcBlockSoulforgeDormantID", "1002");
-+		this.registerProperty("fcBlockSmoothstoneStairsID", "1003");
-+		this.registerProperty("fcBlockRottenFleshSlabID", "1004");
-+		this.registerProperty("fcBlockBoneSlabID", "1005");
-+		this.registerProperty("fcBlockPumpkinFreshID", "1006");
-+		this.registerProperty("fcBlockWoodBloodSidingAndCornerID", "1007");
-+		this.registerProperty("fcBlockWoodBloodMouldingAndDecorativeID", "1008");
-+		this.registerProperty("fcBlockWoodBloodStairsID", "1009");
-+		this.registerProperty("fcBlockLogDamagedID", "1010");
-+		this.registerProperty("fcBlockDirtLooseID", "1011");
-+		this.registerProperty("fcBlockDirtLooseSlabID", "1012");
-+		this.registerProperty("fcBlockCampfireUnlitID", "1013");
-+		this.registerProperty("fcBlockCampfireSmallID", "1014");
-+		this.registerProperty("fcBlockCampfireMediumID", "1015");
-+		this.registerProperty("fcBlockCampfireLargeID", "1016");
-+		this.registerProperty("fcBlockUnfiredBrickID", "1017");
-+		this.registerProperty("fcBlockCookedBrickID", "1018");
-+		this.registerProperty("fcBlockBrickLooseID", "1019");
-+		this.registerProperty("fcBlockBrickLooseSlabID", "1020");
-+		this.registerProperty("fcBlockCobblestoneLooseID", "1021");
-+		this.registerProperty("fcBlockCobblestoneLooseSlabID", "1022");
-+		this.registerProperty("fcBlockFurnaceBrickIdleID", "1023");
-+		this.registerProperty("fcBlockFurnaceBrickBurningID", "1024");
-+		this.registerProperty("fcBlockTorchFiniteIdleID", "1025");
-+		this.registerProperty("fcBlockTorchFiniteBurningID", "1026");
-+		this.registerProperty("fcBlockStoneRoughID", "1027");
-+		this.registerProperty("fcBlockStoneRoughMidStrataID", "1028");
-+		this.registerProperty("fcBlockStoneRoughDeepStrataID", "1029");
-+		this.registerProperty("fcBlockWorkStumpID", "1030");
-+		this.registerProperty("fcBlockBasketWickerID", "1031");
-+		this.registerProperty("fcBlockLogSpikeID", "1032");
-+		this.registerProperty("fcBlockTorchIdleID", "1033");
-+		this.registerProperty("fcBlockWorkbenchID", "1034");
-+		this.registerProperty("fcBlockChestID", "1035");
-+		this.registerProperty("fcBlockDoorWoodID", "1036");
-+		this.registerProperty("fcBlockWebID", "1037");
-+		this.registerProperty("fcBlockUnfiredClayID", "1038");
-+		this.registerProperty("fcBlockMyceliumSlabID", "1039");
-+		this.registerProperty("fcBlockToolPlacedID", "1040");
-+		this.registerProperty("fcBlockBrickLooseStairsID", "1041");
-+		this.registerProperty("fcBlockCobblestoneLooseStairsID", "1042");
-+		this.registerProperty("fcBlockLogSmoulderingID", "1043");
-+		this.registerProperty("fcBlockWoodCindersID", "1044");
-+		this.registerProperty("fcBlockStumpCharredID", "1045");
-+		this.registerProperty("fcBlockAshGroundCoverID", "1046");
-+		this.registerProperty("fcBlockSnowLooseID", "1047");
-+		this.registerProperty("fcBlockSnowLooseSlabID", "1048");
-+		this.registerProperty("fcBlockSnowSolidID", "1049");
-+		this.registerProperty("fcBlockSnowSolidSlabID", "1050");
-+		this.registerProperty("fcBlockLadderID", "1051");
-+		this.registerProperty("fcBlockLadderOnFireID", "1052");
-+		this.registerProperty("fcBlockShovelID", "1053");
-+		this.registerProperty("fcBlockHamperID", "1054");
-+		this.registerProperty("fcBlockCreeperOystersID", "1055");
-+		this.registerProperty("fcBlockCreeperOystersSlabID", "1056");
-+		this.registerProperty("fcBlockTorchNetherBurningID", "1057");
-+		this.registerProperty("fcBlockBucketEmptyID", "1058");
-+		this.registerProperty("fcBlockBucketWaterID", "1059");
-+		this.registerProperty("fcBlockBucketCementID", "1060");
-+		this.registerProperty("fcBlockBucketMilkID", "1061");
-+		this.registerProperty("fcBlockBucketMilkChocolateID", "1062");
-+		this.registerProperty("fcBlockMilkID", "1063");
-+		this.registerProperty("fcBlockMilkChocolateID", "1064");
-+		this.registerProperty("fcBlockGearBoxID", "1065");
-+		this.registerProperty("fcBlockSpikeIronID", "1066");
-+		this.registerProperty("fcBlockLightningRodID", "1067");
-+		this.registerProperty("fcBlockChunkOreIronID", "1068");
-+		this.registerProperty("fcBlockChunkOreGoldID", "1069");
-+		this.registerProperty("fcBlockStoneBrickLooseID", "1070");
-+		this.registerProperty("fcBlockStoneBrickLooseSlabID", "1071");
-+		this.registerProperty("fcBlockStoneBrickLooseStairsID", "1072");
-+		this.registerProperty("fcBlockNetherBrickLooseID", "1073");
-+		this.registerProperty("fcBlockNetherBrickLooseSlabID", "1074");
-+		this.registerProperty("fcBlockNetherBrickLooseStairsID", "1075");
-+		this.registerProperty("fcBlockNetherrackFallingID", "1076");
-+		this.registerProperty("fcBlockLavaPillowID", "1077");
-+		this.registerProperty("fcBlockMushroomCapBrownID", "1078");
-+		this.registerProperty("fcBlockMushroomCapRedID", "1079");
-+		this.registerProperty("fcBlockChunkOreStorageIronID", "1080");
-+		this.registerProperty("fcBlockChunkOreStorageGoldID", "1081");
-+		this.registerProperty("fcBlockWickerID", "1082");
-+		this.registerProperty("fcBlockWickerSlabID", "1083");
-+		this.registerProperty("fcBlockWickerPaneID", "1084");
-+		this.registerProperty("fcBlockGrateID", "1085");
-+		this.registerProperty("fcBlockSlatsID", "1086");
-+		this.registerProperty("fcBlockFarmlandNewID", "1087");
-+		this.registerProperty("fcBlockFarmlandFertilizedNewID", "1088");
-+		this.registerProperty("fcBlockWheatCropID", "1089");
-+		this.registerProperty("fcBlockWheatCropTopID", "1090");
-+		this.registerProperty("fcBlockWeedsID", "1091");
-+		this.registerProperty("fcBlockPlanterSoilID", "1092");
-+		
-+		//Item ids
-+		this.registerProperty("fcBucketCementID", "222", "***Item IDs***\n\n");
-+		this.registerProperty("fcWolfRawID", "223");
-+		this.registerProperty("fcWolfCookedID", "224");
-+		this.registerProperty("fcNethercoalID", "225");
-+		this.registerProperty("fcHempSeedsID", "226");
-+		this.registerProperty("fcHempID", "227");
-+		this.registerProperty("fcGearID", "228");
-+		this.registerProperty("fcFlourID", "229");
-+		this.registerProperty("fcHempFibersID", "230");
-+		this.registerProperty("fcScouredLeatherID", "231");
-+		this.registerProperty("fcDonutID", "232");
-+		this.registerProperty("fcRopeItemID", "233");
-+		this.registerProperty("fcRollersItemID", "234");
-+		this.registerProperty("fcDungID", "235");
-+		this.registerProperty("fcWaterWheelItemID", "236");
-+		this.registerProperty("fcWindMillBladeItemID", "237");
-+		this.registerProperty("fcWindMillItemID", "238");
-+		this.registerProperty("fcHempClothID", "239");
-+		this.registerProperty("fcGrateID", "240");
-+		this.registerProperty("fcWickerID", "241");
-+		this.registerProperty("fcTannedLeatherID", "242");
-+		this.registerProperty("fcStrapID", "243");
-+		this.registerProperty("fcBeltID", "244");
-+		this.registerProperty("fcFoulFoodID", "245");
-+		this.registerProperty("fcWoodBladeID", "246");
-+		this.registerProperty("fcGlueID", "247");
-+		this.registerProperty("fcTallowID", "248");
-+		this.registerProperty("fcHaftID", "249");
-+		this.registerProperty("fcSteelID", "250");
-+		this.registerProperty("fcRefinedPickAxeID", "251");
-+		this.registerProperty("fcRefinedShovelID", "252");
-+		this.registerProperty("fcRefinedHoeID", "253");
-+		this.registerProperty("fcBattleAxeID", "254");
-+		this.registerProperty("fcRefinedSwordID", "255");
-+		this.registerProperty("fcGroundNetherrackID", "256");
-+		this.registerProperty("fcHellfireDustID", "257");
-+		this.registerProperty("fcConcentratedHellfireID", "258");
-+		this.registerProperty("fcArmorPlateID", "259");
-+		this.registerProperty("fcPlateHelmID", "260");
-+		this.registerProperty("fcPlateBreastPlateID", "261");
-+		this.registerProperty("fcPlateLeggingsID", "262");
-+		this.registerProperty("fcPlateBootsID", "263");
-+		this.registerProperty("fcCompositeBowID", "264");
-+		this.registerProperty("fcBroadheadArrowheadID", "265");
-+		this.registerProperty("fcBroadheadArrowID", "266");
-+		this.registerProperty("fcCoalDustID", "267");
-+		this.registerProperty("fcPaddingID", "268");
-+		this.registerProperty("fcFilamentID", "269");
-+		this.registerProperty("fcPolishedLapisID", "270");
-+		this.registerProperty("fcUrnID", "271");
-+		this.registerProperty("fcSoulUrnID", "272");
-+		this.registerProperty("fcHardBoiledEggID", "273");
-+		this.registerProperty("fcPotashID", "274");
-+		this.registerProperty("fcSoapID", "275");
-+		this.registerProperty("fcSawDustID", "276");
-+		this.registerProperty("fcTannedLeatherHelmID", "277");
-+		this.registerProperty("fcTannedLeatherChestID", "278");
-+		this.registerProperty("fcTannedLeatherLeggingsID", "279");
-+		this.registerProperty("fcTannedLeatherBootsID", "280");
-+		this.registerProperty("fcDynamiteID", "281");
-+		this.registerProperty("fcBreedingHarnessID", "282");
-+		this.registerProperty("fcSoulDustID", "283");
-+		this.registerProperty("fcMattockID", "284");
-+		this.registerProperty("fcRefinedAxeID", "285");
-+		this.registerProperty("fcNetherSludgeID", "286");
-+		this.registerProperty("fcNetherBrickID", "287");
-+		
-+		this.registerProperty("fcItemTuningForkID", "22222");
-+		this.registerProperty("fcItemArcaneScrollID", "22223");
-+		this.registerProperty("fcItemCandleID", "22224");
-+		this.registerProperty("fcItemNetherGrowthSporesID", "22225");
-+		this.registerProperty("fcItemMouldID", "22226");
-+		this.registerProperty("fcItemCanvasID", "22227");
-+		this.registerProperty("fcItemDogFoodID", "22228");
-+		this.registerProperty("fcItemRawEggID", "22229");
-+		this.registerProperty("fcItemFriedEggID", "22230");
-+		this.registerProperty("fcItemScrewID", "22231");
-+		this.registerProperty("fcItemRottenArrowID", "22232");
-+		this.registerProperty("fcItemOcularOfEnderID", "22233");
-+		this.registerProperty("fcItemEnderSpectaclesID", "22234");
-+		this.registerProperty("fcItemStakeID", "22235");
-+		this.registerProperty("fcItemBrimstoneID", "22236");
-+		this.registerProperty("fcItemNitreID", "22237");
-+		this.registerProperty("fcItemElementID", "22238");
-+		this.registerProperty("fcItemFuseID", "22239");
-+		this.registerProperty("fcItemBlastingOilID", "22240");
-+		this.registerProperty("fcItemWindMillVerticalID", "22241");
-+		this.registerProperty("fcItemBoiledPotatoID", "22242");
-+		this.registerProperty("fcItemMuttonRawID", "22243");
-+		this.registerProperty("fcItemMuttonCookedID", "22244");
-+		this.registerProperty("fcItemWitchWartID", "22245");
-+		this.registerProperty("fcItemCookedCarrotID", "22246");
-+		this.registerProperty("fcItemTastySandwichID", "22247");
-+		this.registerProperty("fcItemSteakAndPotatoesID", "22248");
-+		this.registerProperty("fcItemHamAndEggsID", "22249");
-+		this.registerProperty("fcItemSteakDinnerID", "22250");
-+		this.registerProperty("fcItemPorkDinnerID", "22251");
-+		this.registerProperty("fcItemWolfDinnerID", "22252");
-+		this.registerProperty("fcItemRawKebabID", "22253");
-+		this.registerProperty("fcItemCookedKebabID", "22254");
-+		this.registerProperty("fcItemChickenSoupID", "22255");
-+		this.registerProperty("fcItemFishSoupID", "22256");
-+		this.registerProperty("fcItemHeartyStewID", "22257");
-+		this.registerProperty("fcItemMushroomRedID", "22258");
-+		this.registerProperty("fcItemMushroomBrownID", "22259");
-+		this.registerProperty("fcItemNuggetIronID", "22260");
-+		this.registerProperty("fcItemMailID", "22261");
-+		this.registerProperty("fcItemRawMysteryMeatID", "22262");
-+		this.registerProperty("fcItemCookedMysteryMeatID", "22263");
-+		this.registerProperty("fcItemRawMushroomOmeletID", "22264");
-+		this.registerProperty("fcItemCookedMushroomOmeletID", "22265");
-+		this.registerProperty("fcItemRawScrambledEggsID", "22266");
-+		this.registerProperty("fcItemCookedScrambledEggsID", "22267");
-+		this.registerProperty("fcItemCreeperOystersID", "22268");
-+		this.registerProperty("fcItemArmorWoolHelmID", "22269");
-+		this.registerProperty("fcItemArmorWoolChestID", "22270");
-+		this.registerProperty("fcItemArmorWoolLeggingsID", "22271");
-+		this.registerProperty("fcItemArmorWoolBootsID", "22272");
-+		this.registerProperty("fcItemArmorPaddedHelmID", "22273");
-+		this.registerProperty("fcItemArmorPaddedChestID", "22274");
-+		this.registerProperty("fcItemArmorPaddedLeggingsID", "22275");
-+		this.registerProperty("fcItemArmorPaddedBootsID", "22276");
-+		this.registerProperty("fcItemArmorTannedHelmID", "22277");
-+		this.registerProperty("fcItemArmorTannedChestID", "22278");
-+		this.registerProperty("fcItemArmorTannedLeggingsID", "22279");
-+		this.registerProperty("fcItemArmorTannedBootsID", "22280");
-+		this.registerProperty("fcItemIngotDiamondID", "22281");
-+		this.registerProperty("fcItemLeatherCutID", "22282");
-+		this.registerProperty("fcItemTannedLeatherCutID", "22283");
-+		this.registerProperty("fcItemScouredLeatherCutID", "22284");
-+		this.registerProperty("fcItemFishingRodBaitedID", "22285");
-+		this.registerProperty("fcItemPileDirtID", "22286");
-+		this.registerProperty("fcItemPileSandID", "22287");
-+		this.registerProperty("fcItemPileGravelID", "22288");
-+		this.registerProperty("fcItemBatWingID", "22289");
-+		this.registerProperty("fcItemGoldenDungID", "22290");
-+		this.registerProperty("fcItemBarkID", "22291");
-+		this.registerProperty("fcItemPileSoulSandID", "22292");
-+		this.registerProperty("fcItemRedstoneLatchID", "22293");
-+		this.registerProperty("fcItemNuggetSteelID", "22294");
-+		
-+		this.registerProperty("fcItemWoolID", "2295");
-+		this.registerProperty("fcItemCocoaBeansID", "2296");
-+		this.registerProperty("fcItemChocolateID", "2297");
-+		this.registerProperty("fcItemBucketChocolateMilkID", "2298");
-+		this.registerProperty("fcItemSoulFluxID", "2299");
-+		this.registerProperty("fcItemEnderSlagID", "2300");
-+		this.registerProperty("fcItemPastryUncookedCakeID", "2301");
-+		this.registerProperty("fcItemPastryUncookedCookiesID", "2302");
-+		this.registerProperty("fcItemPastryUncookedPumpkinPieID", "2303");
-+		this.registerProperty("fcItemMysteriousGlandID", "2304");
-+		this.registerProperty("fcItemBeastLiverRawID", "2305");
-+		this.registerProperty("fcItemBeastLiverCookedID", "2306");
-+		this.registerProperty("fcItemAncientProphecyID", "2307");
-+		this.registerProperty("fcItemStumpRemoverID", "2308");
-+		
-+		this.registerProperty("fcItemChiselWoodID", "22309");
-+		this.registerProperty("fcItemStoneID", "22310");
-+		this.registerProperty("fcItemChiselStoneID", "22311");
-+		this.registerProperty("fcItemClubID", "22312");
-+		this.registerProperty("fcItemFireStarterSticksID", "22313");
-+		this.registerProperty("fcItemFireStarterBowID", "22314");
-+		this.registerProperty("fcItemChunkIronOreID", "22315");
-+		this.registerProperty("fcItemPileIronOreID", "22316");
-+		this.registerProperty("fcItemChiselIronID", "22317");
-+		this.registerProperty("fcItemChunkGoldOreID", "22318");
-+		this.registerProperty("fcItemPileGoldOreID", "22319");
-+		this.registerProperty("fcItemWickerPieceID", "22320");
-+		this.registerProperty("fcItemKnittingNeedlesID", "22321");
-+		this.registerProperty("fcItemKnittingID", "22322");
-+		this.registerProperty("fcItemWoolKnitID", "22323");
-+		this.registerProperty("fcItemClubBoneID", "22324");
-+		this.registerProperty("fcItemMeatCuredID", "22325");
-+		this.registerProperty("fcItemMetalFragmentID", "22326");
-+		this.registerProperty("fcItemPileClayID", "22327");
-+		this.registerProperty("fcItemMeatBurnedID", "22328");
-+		this.registerProperty("fcItemChickenFeedID", "22329");
-+		this.registerProperty("fcItemFishHookBoneID", "22330");
-+		this.registerProperty("fcItemCarvingBoneID", "22331");
-+		this.registerProperty("fcItemBrickStoneID", "22332");
-+		this.registerProperty("fcItemWickerWeavingID", "22333");
-+		this.registerProperty("fcItemWheatID", "22334");
-+		this.registerProperty("fcItemWheatSeedsID", "22335");
-+		this.registerProperty("fcItemBreadDoughID", "22336");
-+		this.registerProperty("fcItemStrawID", "22337");
-+		this.registerProperty("fcItemBrickUnfiredID", "22338");
-+		this.registerProperty("fcItemNetherBrickUnfiredID", "22339");
-+		
-+		//Entity ids
-+		this.registerProperty("fcWaterWheelEntityID", "222", "***Entity IDs***\n\n");
-+		this.registerProperty("fcWindMillEntityID", "223");
-+		this.registerProperty("fcMovingAnchorEntityID", "224");
-+		this.registerProperty("fcMovingPlatformEntityID", "225");
-+		this.registerProperty("fcBlockLiftedByPlatformEntityID", "226");
-+		this.registerProperty("fcBroadheadArrowEntityID", "227");
-+		this.registerProperty("fcUrnEntityID", "228");
-+		this.registerProperty("fcDynamiteEntityID", "229");
-+		this.registerProperty("fcMiningChargeEntityID", "230");
-+		this.registerProperty("fcInfiniteArrowEntityID", "231");
-+		this.registerProperty("fcItemFloatingEntityID", "232");
-+		this.registerProperty("fcItemBloodWoodSaplingEntityID", "233");
-+		this.registerProperty("fcCanvasEntityID", "234");
-+		this.registerProperty("fcRottenArrowEntityID", "235");
-+		this.registerProperty("fcEntityWindMillVerticalID", "236");
-+		this.registerProperty("fcEntitySpiderWebID", "237");
-+		this.registerProperty("fcEntityDireWolfID", "238");
-+		this.registerProperty("fcEntitySoulSandID", "239");
-+		this.registerProperty("fcEntityJungleSpiderID", "240");
-+		this.registerProperty("fcWitherPersistentID", "241");
-+		
-+		//Container ids
-+		this.registerProperty("fcMillStoneContainerID", "222", "***Container IDs***\n\n");
-+		this.registerProperty("fcCauldronContainerID", "223");
-+		this.registerProperty("fcHopperContainerID", "224");
-+		this.registerProperty("fcCrucibleContainerID", "225");
-+		this.registerProperty("fcAnvilContainerID", "226");
-+		this.registerProperty("fcBlockDispenserContainerID", "227");
-+		this.registerProperty("fcPulleyContainerID", "228");
-+		this.registerProperty("fcInfernalEnchanterContainerID", "229");
-+		this.registerProperty("fcFurnaceBrickContainerID", "230");
-+		this.registerProperty("fcHamperContainerID", "231");
-+		this.registerProperty("fcVanillaAnvilContainerID", "232");
-+		
-+		//Villager ids ported from extended addon API
-+		this.registerProperty("addonVillagerFarmer", "600");
-+		this.registerProperty("addonVillagerLibrarian", "601");
-+		this.registerProperty("addonVillagerPriest", "602");
-+		this.registerProperty("addonVillagerBlacksmith", "603");
-+		this.registerProperty("addonVillagerButcher", "604");
++				this.registerProperty("fcBlockSlabFallingID", "175", "***Block IDs***\n\n");
++				this.registerProperty("fcBlockArcaneVesselID", "176");
++				this.registerProperty("fcBlockAxlePowerSourceID", "177");
++				this.registerProperty("fcBlockSidingAndCornerBlackStoneID", "178");
++				this.registerProperty("fcBlockMouldingAndDecorativeBlackStoneID", "179");
++				this.registerProperty("fcBlockAestheticOpaqueEarthID", "180");
++				this.registerProperty("fcBlockCandleID", "181");
++				this.registerProperty("fcBlockSandstoneSidingAndCornerID", "182");
++				this.registerProperty("fcBlockSandstoneMouldingAndDecorativeID", "183");
++				this.registerProperty("fcBlockWoodOakSidingAndCornerID", "184");
++				this.registerProperty("fcBlockSmoothStoneSidingAndCornerID", "185");
++				this.registerProperty("fcBlockBrickSidingAndCornerID", "186");
++				this.registerProperty("fcBlockBrickMouldingAndDecorativeID", "187");
++				this.registerProperty("fcBlockNetherBrickSidingAndCornerID", "188");
++				this.registerProperty("fcBlockNetherBrickMouldingAndDecorativeID", "189");
++				this.registerProperty("fcBlockWhiteStoneStairsID", "190");
++				this.registerProperty("fcBlockWhiteStoneSidingAndCornerID", "191");
++				this.registerProperty("fcBlockWhiteStoneMouldingAndDecorativeID", "192");
++				this.registerProperty("fcBlockStakeStringID", "193");
++				this.registerProperty("fcBlockStakeID", "194");
++				this.registerProperty("fcBlockScrewPumpID", "195");
++				this.registerProperty("fcBlockWoodSpruceSidingAndCornerID", "196");
++				this.registerProperty("fcBlockWoodSpruceMouldingID", "197");
++				this.registerProperty("fcBlockWoodBirchSidingAndCornerID", "198");
++				this.registerProperty("fcBlockWoodBirchMouldingID", "199");
++				this.registerProperty("fcBlockWoodJungleSidingAndCornerID", "200");
++				this.registerProperty("fcBlockWoodJungleMouldingID", "201");
++				this.registerProperty("fcBlockStoneBrickSidingAndCornerID", "202");
++				this.registerProperty("fcBlockStoneBrickMouldingID", "203");
++				this.registerProperty("fcBlockFarmlandFertilizedID", "204");
++				this.registerProperty("fcBlockWoolSlabTopID", "205");
++				this.registerProperty("fcBlockDirtSlabID", "206");
++				this.registerProperty("fcBlockNetherGrowthID", "207");
++				this.registerProperty("fcInfernalEnchanterID", "208");
++				this.registerProperty("fcSoulforgedSteelBlockID", "209");
++				this.registerProperty("fcBlockDetectorGlowingLogicID", "210");
++				this.registerProperty("fcLeavesID", "211");
++				this.registerProperty("fcBloodWoodID", "212");
++				this.registerProperty("fcAestheticVegetationID", "213");
++				this.registerProperty("fcStoneMouldingID", "214");
++				this.registerProperty("fcAestheticOpaqueID", "215");
++				this.registerProperty("fcAestheticNonOpaqueID", "216");
++				this.registerProperty("fcMiningChargeID", "217");
++				this.registerProperty("fcBuddyBlockID", "218");
++				this.registerProperty("fcKilnID", "219");
++				this.registerProperty("fcWoolSlabID", "220");
++				this.registerProperty("fcAnvilID", "221");
++				this.registerProperty("fcLightBulbOffID", "222");
++				this.registerProperty("fcLightBulbOnID", "223");
++				this.registerProperty("fcBBQID", "224");
++				this.registerProperty("fcHopperID", "225");
++				this.registerProperty("fcSawID", "226");
++				this.registerProperty("fcPlatformID", "227");
++				this.registerProperty("fcCementID", "228");
++				this.registerProperty("fcPulleyID", "229");
++				this.registerProperty("fcPressurePlateObsidianID", "230");
++				this.registerProperty("fcMouldingID", "231");
++				this.registerProperty("fcCornerID", "232");
++				this.registerProperty("fcBlockDispenserID", "233");
++				this.registerProperty("fcCauldronID", "234");
++				this.registerProperty("fcDetectorRailWoodID", "235");
++				this.registerProperty("fcDetectorRailObsidianID", "236");
++				this.registerProperty("fcCompanionCubeID", "237");
++				this.registerProperty("fcBlockDetectorID", "238");
++				this.registerProperty("fcBlockDetectorLogicID", "239");
++				this.registerProperty("fcBlockLensID", "240");
++				this.registerProperty("fcHempCropID", "241");
++				this.registerProperty("fcHandCrankID", "242");
++				this.registerProperty("fcMillStoneID", "243");
++				this.registerProperty("fcAnchorID", "244");
++				this.registerProperty("fcRopeBlockID", "245");
++				this.registerProperty("fcOmniSlabID", "246");
++				this.registerProperty("fcAxleBlockID", "247");
++				this.registerProperty("fcGearBoxID", "248");
++				this.registerProperty("fcTurntableID", "249");
++				this.registerProperty("fcBellowsID", "250");
++				this.registerProperty("fcStokedFireID", "251");
++				this.registerProperty("fcUnfiredPotteryID", "252");
++				this.registerProperty("fcCrucibleID", "253");
++				this.registerProperty("fcPlanterID", "254");
++				this.registerProperty("fcVaseID", "255");
++				
++				this.registerProperty("fcBlockRottenFleshID", "1000");
++				this.registerProperty("fcBlockShaftID", "1001");
++				this.registerProperty("fcBlockSoulforgeDormantID", "1002");
++				this.registerProperty("fcBlockSmoothstoneStairsID", "1003");
++				this.registerProperty("fcBlockRottenFleshSlabID", "1004");
++				this.registerProperty("fcBlockBoneSlabID", "1005");
++				this.registerProperty("fcBlockPumpkinFreshID", "1006");
++				this.registerProperty("fcBlockWoodBloodSidingAndCornerID", "1007");
++				this.registerProperty("fcBlockWoodBloodMouldingAndDecorativeID", "1008");
++				this.registerProperty("fcBlockWoodBloodStairsID", "1009");
++				this.registerProperty("fcBlockLogDamagedID", "1010");
++				this.registerProperty("fcBlockDirtLooseID", "1011");
++				this.registerProperty("fcBlockDirtLooseSlabID", "1012");
++				this.registerProperty("fcBlockCampfireUnlitID", "1013");
++				this.registerProperty("fcBlockCampfireSmallID", "1014");
++				this.registerProperty("fcBlockCampfireMediumID", "1015");
++				this.registerProperty("fcBlockCampfireLargeID", "1016");
++				this.registerProperty("fcBlockUnfiredBrickID", "1017");
++				this.registerProperty("fcBlockCookedBrickID", "1018");
++				this.registerProperty("fcBlockBrickLooseID", "1019");
++				this.registerProperty("fcBlockBrickLooseSlabID", "1020");
++				this.registerProperty("fcBlockCobblestoneLooseID", "1021");
++				this.registerProperty("fcBlockCobblestoneLooseSlabID", "1022");
++				this.registerProperty("fcBlockFurnaceBrickIdleID", "1023");
++				this.registerProperty("fcBlockFurnaceBrickBurningID", "1024");
++				this.registerProperty("fcBlockTorchFiniteIdleID", "1025");
++				this.registerProperty("fcBlockTorchFiniteBurningID", "1026");
++				this.registerProperty("fcBlockStoneRoughID", "1027");
++				this.registerProperty("fcBlockStoneRoughMidStrataID", "1028");
++				this.registerProperty("fcBlockStoneRoughDeepStrataID", "1029");
++				this.registerProperty("fcBlockWorkStumpID", "1030");
++				this.registerProperty("fcBlockBasketWickerID", "1031");
++				this.registerProperty("fcBlockLogSpikeID", "1032");
++				this.registerProperty("fcBlockTorchIdleID", "1033");
++				this.registerProperty("fcBlockWorkbenchID", "1034");
++				this.registerProperty("fcBlockChestID", "1035");
++				this.registerProperty("fcBlockDoorWoodID", "1036");
++				this.registerProperty("fcBlockWebID", "1037");
++				this.registerProperty("fcBlockUnfiredClayID", "1038");
++				this.registerProperty("fcBlockMyceliumSlabID", "1039");
++				this.registerProperty("fcBlockToolPlacedID", "1040");
++				this.registerProperty("fcBlockBrickLooseStairsID", "1041");
++				this.registerProperty("fcBlockCobblestoneLooseStairsID", "1042");
++				this.registerProperty("fcBlockLogSmoulderingID", "1043");
++				this.registerProperty("fcBlockWoodCindersID", "1044");
++				this.registerProperty("fcBlockStumpCharredID", "1045");
++				this.registerProperty("fcBlockAshGroundCoverID", "1046");
++				this.registerProperty("fcBlockSnowLooseID", "1047");
++				this.registerProperty("fcBlockSnowLooseSlabID", "1048");
++				this.registerProperty("fcBlockSnowSolidID", "1049");
++				this.registerProperty("fcBlockSnowSolidSlabID", "1050");
++				this.registerProperty("fcBlockLadderID", "1051");
++				this.registerProperty("fcBlockLadderOnFireID", "1052");
++				this.registerProperty("fcBlockShovelID", "1053");
++				this.registerProperty("fcBlockHamperID", "1054");
++				this.registerProperty("fcBlockCreeperOystersID", "1055");
++				this.registerProperty("fcBlockCreeperOystersSlabID", "1056");
++				this.registerProperty("fcBlockTorchNetherBurningID", "1057");
++				this.registerProperty("fcBlockBucketEmptyID", "1058");
++				this.registerProperty("fcBlockBucketWaterID", "1059");
++				this.registerProperty("fcBlockBucketCementID", "1060");
++				this.registerProperty("fcBlockBucketMilkID", "1061");
++				this.registerProperty("fcBlockBucketMilkChocolateID", "1062");
++				this.registerProperty("fcBlockMilkID", "1063");
++				this.registerProperty("fcBlockMilkChocolateID", "1064");
++				this.registerProperty("fcBlockGearBoxID", "1065");
++				this.registerProperty("fcBlockSpikeIronID", "1066");
++				this.registerProperty("fcBlockLightningRodID", "1067");
++				this.registerProperty("fcBlockChunkOreIronID", "1068");
++				this.registerProperty("fcBlockChunkOreGoldID", "1069");
++				this.registerProperty("fcBlockStoneBrickLooseID", "1070");
++				this.registerProperty("fcBlockStoneBrickLooseSlabID", "1071");
++				this.registerProperty("fcBlockStoneBrickLooseStairsID", "1072");
++				this.registerProperty("fcBlockNetherBrickLooseID", "1073");
++				this.registerProperty("fcBlockNetherBrickLooseSlabID", "1074");
++				this.registerProperty("fcBlockNetherBrickLooseStairsID", "1075");
++				this.registerProperty("fcBlockNetherrackFallingID", "1076");
++				this.registerProperty("fcBlockLavaPillowID", "1077");
++				this.registerProperty("fcBlockMushroomCapBrownID", "1078");
++				this.registerProperty("fcBlockMushroomCapRedID", "1079");
++				this.registerProperty("fcBlockChunkOreStorageIronID", "1080");
++				this.registerProperty("fcBlockChunkOreStorageGoldID", "1081");
++				this.registerProperty("fcBlockWickerID", "1082");
++				this.registerProperty("fcBlockWickerSlabID", "1083");
++				this.registerProperty("fcBlockWickerPaneID", "1084");
++				this.registerProperty("fcBlockGrateID", "1085");
++				this.registerProperty("fcBlockSlatsID", "1086");
++				this.registerProperty("fcBlockFarmlandNewID", "1087");
++				this.registerProperty("fcBlockFarmlandFertilizedNewID", "1088");
++				this.registerProperty("fcBlockWheatCropID", "1089");
++				this.registerProperty("fcBlockWheatCropTopID", "1090");
++				this.registerProperty("fcBlockWeedsID", "1091");
++				this.registerProperty("fcBlockPlanterSoilID", "1092");
++				
++				//Item ids
++				this.registerProperty("fcBucketCementID", "222", "***Item IDs***\n\n");
++				this.registerProperty("fcWolfRawID", "223");
++				this.registerProperty("fcWolfCookedID", "224");
++				this.registerProperty("fcNethercoalID", "225");
++				this.registerProperty("fcHempSeedsID", "226");
++				this.registerProperty("fcHempID", "227");
++				this.registerProperty("fcGearID", "228");
++				this.registerProperty("fcFlourID", "229");
++				this.registerProperty("fcHempFibersID", "230");
++				this.registerProperty("fcScouredLeatherID", "231");
++				this.registerProperty("fcDonutID", "232");
++				this.registerProperty("fcRopeItemID", "233");
++				this.registerProperty("fcRollersItemID", "234");
++				this.registerProperty("fcDungID", "235");
++				this.registerProperty("fcWaterWheelItemID", "236");
++				this.registerProperty("fcWindMillBladeItemID", "237");
++				this.registerProperty("fcWindMillItemID", "238");
++				this.registerProperty("fcHempClothID", "239");
++				this.registerProperty("fcGrateID", "240");
++				this.registerProperty("fcWickerID", "241");
++				this.registerProperty("fcTannedLeatherID", "242");
++				this.registerProperty("fcStrapID", "243");
++				this.registerProperty("fcBeltID", "244");
++				this.registerProperty("fcFoulFoodID", "245");
++				this.registerProperty("fcWoodBladeID", "246");
++				this.registerProperty("fcGlueID", "247");
++				this.registerProperty("fcTallowID", "248");
++				this.registerProperty("fcHaftID", "249");
++				this.registerProperty("fcSteelID", "250");
++				this.registerProperty("fcRefinedPickAxeID", "251");
++				this.registerProperty("fcRefinedShovelID", "252");
++				this.registerProperty("fcRefinedHoeID", "253");
++				this.registerProperty("fcBattleAxeID", "254");
++				this.registerProperty("fcRefinedSwordID", "255");
++				this.registerProperty("fcGroundNetherrackID", "256");
++				this.registerProperty("fcHellfireDustID", "257");
++				this.registerProperty("fcConcentratedHellfireID", "258");
++				this.registerProperty("fcArmorPlateID", "259");
++				this.registerProperty("fcPlateHelmID", "260");
++				this.registerProperty("fcPlateBreastPlateID", "261");
++				this.registerProperty("fcPlateLeggingsID", "262");
++				this.registerProperty("fcPlateBootsID", "263");
++				this.registerProperty("fcCompositeBowID", "264");
++				this.registerProperty("fcBroadheadArrowheadID", "265");
++				this.registerProperty("fcBroadheadArrowID", "266");
++				this.registerProperty("fcCoalDustID", "267");
++				this.registerProperty("fcPaddingID", "268");
++				this.registerProperty("fcFilamentID", "269");
++				this.registerProperty("fcPolishedLapisID", "270");
++				this.registerProperty("fcUrnID", "271");
++				this.registerProperty("fcSoulUrnID", "272");
++				this.registerProperty("fcHardBoiledEggID", "273");
++				this.registerProperty("fcPotashID", "274");
++				this.registerProperty("fcSoapID", "275");
++				this.registerProperty("fcSawDustID", "276");
++				this.registerProperty("fcTannedLeatherHelmID", "277");
++				this.registerProperty("fcTannedLeatherChestID", "278");
++				this.registerProperty("fcTannedLeatherLeggingsID", "279");
++				this.registerProperty("fcTannedLeatherBootsID", "280");
++				this.registerProperty("fcDynamiteID", "281");
++				this.registerProperty("fcBreedingHarnessID", "282");
++				this.registerProperty("fcSoulDustID", "283");
++				this.registerProperty("fcMattockID", "284");
++				this.registerProperty("fcRefinedAxeID", "285");
++				this.registerProperty("fcNetherSludgeID", "286");
++				this.registerProperty("fcNetherBrickID", "287");
++				
++				this.registerProperty("fcItemTuningForkID", "22222");
++				this.registerProperty("fcItemArcaneScrollID", "22223");
++				this.registerProperty("fcItemCandleID", "22224");
++				this.registerProperty("fcItemNetherGrowthSporesID", "22225");
++				this.registerProperty("fcItemMouldID", "22226");
++				this.registerProperty("fcItemCanvasID", "22227");
++				this.registerProperty("fcItemDogFoodID", "22228");
++				this.registerProperty("fcItemRawEggID", "22229");
++				this.registerProperty("fcItemFriedEggID", "22230");
++				this.registerProperty("fcItemScrewID", "22231");
++				this.registerProperty("fcItemRottenArrowID", "22232");
++				this.registerProperty("fcItemOcularOfEnderID", "22233");
++				this.registerProperty("fcItemEnderSpectaclesID", "22234");
++				this.registerProperty("fcItemStakeID", "22235");
++				this.registerProperty("fcItemBrimstoneID", "22236");
++				this.registerProperty("fcItemNitreID", "22237");
++				this.registerProperty("fcItemElementID", "22238");
++				this.registerProperty("fcItemFuseID", "22239");
++				this.registerProperty("fcItemBlastingOilID", "22240");
++				this.registerProperty("fcItemWindMillVerticalID", "22241");
++				this.registerProperty("fcItemBoiledPotatoID", "22242");
++				this.registerProperty("fcItemMuttonRawID", "22243");
++				this.registerProperty("fcItemMuttonCookedID", "22244");
++				this.registerProperty("fcItemWitchWartID", "22245");
++				this.registerProperty("fcItemCookedCarrotID", "22246");
++				this.registerProperty("fcItemTastySandwichID", "22247");
++				this.registerProperty("fcItemSteakAndPotatoesID", "22248");
++				this.registerProperty("fcItemHamAndEggsID", "22249");
++				this.registerProperty("fcItemSteakDinnerID", "22250");
++				this.registerProperty("fcItemPorkDinnerID", "22251");
++				this.registerProperty("fcItemWolfDinnerID", "22252");
++				this.registerProperty("fcItemRawKebabID", "22253");
++				this.registerProperty("fcItemCookedKebabID", "22254");
++				this.registerProperty("fcItemChickenSoupID", "22255");
++				this.registerProperty("fcItemFishSoupID", "22256");
++				this.registerProperty("fcItemHeartyStewID", "22257");
++				this.registerProperty("fcItemMushroomRedID", "22258");
++				this.registerProperty("fcItemMushroomBrownID", "22259");
++				this.registerProperty("fcItemNuggetIronID", "22260");
++				this.registerProperty("fcItemMailID", "22261");
++				this.registerProperty("fcItemRawMysteryMeatID", "22262");
++				this.registerProperty("fcItemCookedMysteryMeatID", "22263");
++				this.registerProperty("fcItemRawMushroomOmeletID", "22264");
++				this.registerProperty("fcItemCookedMushroomOmeletID", "22265");
++				this.registerProperty("fcItemRawScrambledEggsID", "22266");
++				this.registerProperty("fcItemCookedScrambledEggsID", "22267");
++				this.registerProperty("fcItemCreeperOystersID", "22268");
++				this.registerProperty("fcItemArmorWoolHelmID", "22269");
++				this.registerProperty("fcItemArmorWoolChestID", "22270");
++				this.registerProperty("fcItemArmorWoolLeggingsID", "22271");
++				this.registerProperty("fcItemArmorWoolBootsID", "22272");
++				this.registerProperty("fcItemArmorPaddedHelmID", "22273");
++				this.registerProperty("fcItemArmorPaddedChestID", "22274");
++				this.registerProperty("fcItemArmorPaddedLeggingsID", "22275");
++				this.registerProperty("fcItemArmorPaddedBootsID", "22276");
++				this.registerProperty("fcItemArmorTannedHelmID", "22277");
++				this.registerProperty("fcItemArmorTannedChestID", "22278");
++				this.registerProperty("fcItemArmorTannedLeggingsID", "22279");
++				this.registerProperty("fcItemArmorTannedBootsID", "22280");
++				this.registerProperty("fcItemIngotDiamondID", "22281");
++				this.registerProperty("fcItemLeatherCutID", "22282");
++				this.registerProperty("fcItemTannedLeatherCutID", "22283");
++				this.registerProperty("fcItemScouredLeatherCutID", "22284");
++				this.registerProperty("fcItemFishingRodBaitedID", "22285");
++				this.registerProperty("fcItemPileDirtID", "22286");
++				this.registerProperty("fcItemPileSandID", "22287");
++				this.registerProperty("fcItemPileGravelID", "22288");
++				this.registerProperty("fcItemBatWingID", "22289");
++				this.registerProperty("fcItemGoldenDungID", "22290");
++				this.registerProperty("fcItemBarkID", "22291");
++				this.registerProperty("fcItemPileSoulSandID", "22292");
++				this.registerProperty("fcItemRedstoneLatchID", "22293");
++				this.registerProperty("fcItemNuggetSteelID", "22294");
++				
++				this.registerProperty("fcItemWoolID", "2295");
++				this.registerProperty("fcItemCocoaBeansID", "2296");
++				this.registerProperty("fcItemChocolateID", "2297");
++				this.registerProperty("fcItemBucketChocolateMilkID", "2298");
++				this.registerProperty("fcItemSoulFluxID", "2299");
++				this.registerProperty("fcItemEnderSlagID", "2300");
++				this.registerProperty("fcItemPastryUncookedCakeID", "2301");
++				this.registerProperty("fcItemPastryUncookedCookiesID", "2302");
++				this.registerProperty("fcItemPastryUncookedPumpkinPieID", "2303");
++				this.registerProperty("fcItemMysteriousGlandID", "2304");
++				this.registerProperty("fcItemBeastLiverRawID", "2305");
++				this.registerProperty("fcItemBeastLiverCookedID", "2306");
++				this.registerProperty("fcItemAncientProphecyID", "2307");
++				this.registerProperty("fcItemStumpRemoverID", "2308");
++				
++				this.registerProperty("fcItemChiselWoodID", "22309");
++				this.registerProperty("fcItemStoneID", "22310");
++				this.registerProperty("fcItemChiselStoneID", "22311");
++				this.registerProperty("fcItemClubID", "22312");
++				this.registerProperty("fcItemFireStarterSticksID", "22313");
++				this.registerProperty("fcItemFireStarterBowID", "22314");
++				this.registerProperty("fcItemChunkIronOreID", "22315");
++				this.registerProperty("fcItemPileIronOreID", "22316");
++				this.registerProperty("fcItemChiselIronID", "22317");
++				this.registerProperty("fcItemChunkGoldOreID", "22318");
++				this.registerProperty("fcItemPileGoldOreID", "22319");
++				this.registerProperty("fcItemWickerPieceID", "22320");
++				this.registerProperty("fcItemKnittingNeedlesID", "22321");
++				this.registerProperty("fcItemKnittingID", "22322");
++				this.registerProperty("fcItemWoolKnitID", "22323");
++				this.registerProperty("fcItemClubBoneID", "22324");
++				this.registerProperty("fcItemMeatCuredID", "22325");
++				this.registerProperty("fcItemMetalFragmentID", "22326");
++				this.registerProperty("fcItemPileClayID", "22327");
++				this.registerProperty("fcItemMeatBurnedID", "22328");
++				this.registerProperty("fcItemChickenFeedID", "22329");
++				this.registerProperty("fcItemFishHookBoneID", "22330");
++				this.registerProperty("fcItemCarvingBoneID", "22331");
++				this.registerProperty("fcItemBrickStoneID", "22332");
++				this.registerProperty("fcItemWickerWeavingID", "22333");
++				this.registerProperty("fcItemWheatID", "22334");
++				this.registerProperty("fcItemWheatSeedsID", "22335");
++				this.registerProperty("fcItemBreadDoughID", "22336");
++				this.registerProperty("fcItemStrawID", "22337");
++				this.registerProperty("fcItemBrickUnfiredID", "22338");
++				this.registerProperty("fcItemNetherBrickUnfiredID", "22339");
++				//Item IDs reused from deco
++				this.registerProperty("fcItemNameTagID", "30005");
++				this.registerProperty("fcItemShearsDiamondID", "30006");
++				this.registerProperty("fcItemChiselDiamondID", "30050");
++				
++				//Entity ids
++				this.registerProperty("fcWaterWheelEntityID", "222", "***Entity IDs***\n\n");
++				this.registerProperty("fcWindMillEntityID", "223");
++				this.registerProperty("fcMovingAnchorEntityID", "224");
++				this.registerProperty("fcMovingPlatformEntityID", "225");
++				this.registerProperty("fcBlockLiftedByPlatformEntityID", "226");
++				this.registerProperty("fcBroadheadArrowEntityID", "227");
++				this.registerProperty("fcUrnEntityID", "228");
++				this.registerProperty("fcDynamiteEntityID", "229");
++				this.registerProperty("fcMiningChargeEntityID", "230");
++				this.registerProperty("fcInfiniteArrowEntityID", "231");
++				this.registerProperty("fcItemFloatingEntityID", "232");
++				this.registerProperty("fcItemBloodWoodSaplingEntityID", "233");
++				this.registerProperty("fcCanvasEntityID", "234");
++				this.registerProperty("fcRottenArrowEntityID", "235");
++				this.registerProperty("fcEntityWindMillVerticalID", "236");
++				this.registerProperty("fcEntitySpiderWebID", "237");
++				this.registerProperty("fcEntityDireWolfID", "238");
++				this.registerProperty("fcEntitySoulSandID", "239");
++				this.registerProperty("fcEntityJungleSpiderID", "240");
++				this.registerProperty("fcWitherPersistentID", "241");
++				
++				//Container ids
++				this.registerProperty("fcMillStoneContainerID", "222", "***Container IDs***\n\n");
++				this.registerProperty("fcCauldronContainerID", "223");
++				this.registerProperty("fcHopperContainerID", "224");
++				this.registerProperty("fcCrucibleContainerID", "225");
++				this.registerProperty("fcAnvilContainerID", "226");
++				this.registerProperty("fcBlockDispenserContainerID", "227");
++				this.registerProperty("fcPulleyContainerID", "228");
++				this.registerProperty("fcInfernalEnchanterContainerID", "229");
++				this.registerProperty("fcFurnaceBrickContainerID", "230");
++				this.registerProperty("fcHamperContainerID", "231");
++				this.registerProperty("fcVanillaAnvilContainerID", "232");
++				
++				//Villager ids ported from extended addon API
++				this.registerProperty("addonVillagerFarmer", "600");
++				this.registerProperty("addonVillagerLibrarian", "601");
++				this.registerProperty("addonVillagerPriest", "602");
++				this.registerProperty("addonVillagerBlacksmith", "603");
++				this.registerProperty("addonVillagerButcher", "604");
 +	}
 +	
 +	@Override
 +	public void handleConfigProperties(Map<String, String> propertyValues) {
 +		this.propertyValues = propertyValues;
 +		
-+		fcPlayerSkinURL = this.propertyValues.get("PlayerSkinURL");
-+		fcPlayerCloakURL = this.propertyValues.get("PlayerCloakURL");
-+		
 +		fcLocalEnableHardcoreBuoy = Boolean.parseBoolean(this.propertyValues.get("EnableHardcoreBuoy"));
 +		fcDisableEndText = Boolean.parseBoolean(this.propertyValues.get("DisableEndText"));
 +		fcDisableGearBoxPowerDrain = Boolean.parseBoolean(this.propertyValues.get("DisableGearBoxPowerDrain"));
++		disableMillstoneNausea = Boolean.parseBoolean(this.propertyValues.get("DisableMillstoneNausea"));
++		increaseGhastSpawns = Boolean.parseBoolean(this.propertyValues.get("IncreaseGhastSpawns"));
 +		
 +		fcLocalHardcorePlayerNamesLevel = Integer.parseInt(this.propertyValues.get("EnableHardcorePlayerNames"));
-+		
++		alwaysSpawnTogether = Boolean.parseBoolean(this.propertyValues.get("AlwaysSpawnTogether"));
++    
 +		com.prupe.mcpatcher.mal.block.RenderBlocksUtils.enableBetterGrass = Boolean.parseBoolean(this.propertyValues.get("UseBetterGrass"));
 +	}
 +    
@@ -2734,7 +2758,7 @@
 +		            int iDirection = dataStream.readInt();
 +		            int iArtOrdinal = dataStream.readInt();
 +			        
-+		            entityToSpawn = new FCEntityCanvas(world, iXPos, iYPos, iZPos, iDirection, iArtOrdinal);
++		            entityToSpawn = EntityList.createEntityOfType(FCEntityCanvas.class, world, iXPos, iYPos, iZPos, iDirection, iArtOrdinal);
 +	            }
 +	            else if (iEntityType == fcCustomSpawnEntityPacketTypeWindMill)
 +	            {
@@ -2744,7 +2768,7 @@
 +	    	        
 +	    	        boolean bIAligned =  (dataStream.readByte()) > 0;
 +	    	        
-+	    	        FCEntityWindMill entityWindMill = new FCEntityWindMill(world, dXPos, dYPos, dZPos, bIAligned);
++	    	        FCEntityWindMill entityWindMill = (FCEntityWindMill) EntityList.createEntityOfType(FCEntityWindMill.class, world, dXPos, dYPos, dZPos, bIAligned);
 +	    	        
 +	    	        entityToSpawn = entityWindMill;
 +	    	        
@@ -2763,7 +2787,7 @@
 +	    	        
 +	    	        boolean bIAligned =  (dataStream.readByte()) > 0;
 +	    	        
-+	    	        FCEntityWaterWheel entityWaterWheel = new FCEntityWaterWheel(world, dXPos, dYPos, dZPos, bIAligned);
++	    	        FCEntityWaterWheel entityWaterWheel = (FCEntityWaterWheel) EntityList.createEntityOfType(FCEntityWaterWheel.class, world, dXPos, dYPos, dZPos, bIAligned);
 +	    	        
 +	    	        entityToSpawn = entityWaterWheel;
 +	    	        
@@ -2780,7 +2804,7 @@
 +	    	        
 +	    	        boolean bAttachedToBlock = (dataStream.readByte()) > 0;
 +	    	        
-+		            entityToSpawn = new FCEntityMiningCharge(world, dXPos, dYPos, dZPos, iFacing, iFuse, bAttachedToBlock);
++		            entityToSpawn = EntityList.createEntityOfType(FCEntityMiningCharge.class, world, dXPos, dYPos, dZPos, iFacing, iFuse, bAttachedToBlock);
 +	            }
 +	            else if (iEntityType == fcCustomSpawnEntityPacketTypeItemBloodWoodSapling ||
 +            		iEntityType == fcCustomSpawnEntityPacketTypeItemFloating)
@@ -2799,11 +2823,11 @@
 +
 +	    	        if (iEntityType == fcCustomSpawnEntityPacketTypeItemBloodWoodSapling)
 +	    	        {
-+	    	        	entityToSpawn = new FCEntityItemBloodWoodSapling(world, dXPos, dYPos, dZPos, new ItemStack(iItemID, iStackSize, iItemDamage));
++	    	        	entityToSpawn = EntityList.createEntityOfType(FCEntityItemBloodWoodSapling.class, world, dXPos, dYPos, dZPos, new ItemStack(iItemID, iStackSize, iItemDamage));
 +	    	        }
 +	    	        else
 +	    	        {
-+	    	        	entityToSpawn = new FCEntityItemFloating(world, dXPos, dYPos, dZPos, new ItemStack(iItemID, iStackSize, iItemDamage));
++	    	        	entityToSpawn = EntityList.createEntityOfType(FCEntityItemFloating.class, world, dXPos, dYPos, dZPos, new ItemStack(iItemID, iStackSize, iItemDamage));
 +	    	        }
 +		            
 +		            entityToSpawn.motionX = dMotionX;
@@ -2828,7 +2852,7 @@
 +	    	        double dMotionY = ((double)(dataStream.readByte())) * 128D;
 +	    	        double dMotionZ = ((double)(dataStream.readByte())) * 128D;
 +
-+	    	        FCEntityDynamite dynamite = new FCEntityDynamite(world, dXPos, dYPos, dZPos, iItemID);
++	    	        FCEntityDynamite dynamite = (FCEntityDynamite) EntityList.createEntityOfType(FCEntityDynamite.class, world, dXPos, dYPos, dZPos, iItemID);
 +	    	        
 +    	        	entityToSpawn = dynamite;
 +
@@ -2854,7 +2878,7 @@
 +	    	        double dMotionY = ((double)(dataStream.readByte())) * 128D;
 +	    	        double dMotionZ = ((double)(dataStream.readByte())) * 128D;
 +
-+    	        	entityToSpawn = new FCEntityUrn(world, dXPos, dYPos, dZPos, iItemID);
++    	        	entityToSpawn = EntityList.createEntityOfType(FCEntityUrn.class, world, dXPos, dYPos, dZPos, iItemID);
 +
 +		            entityToSpawn.motionX = dMotionX;
 +		            entityToSpawn.motionY = dMotionX;
@@ -2873,7 +2897,7 @@
 +	    	        int iBlockID = dataStream.readInt();
 +	    	        int iMetadata = dataStream.readInt();
 +	    	        
-+    	        	entityToSpawn = new FCEntityBlockLiftedByPlatform(world, dXPos, dYPos, dZPos, iBlockID, iMetadata);
++    	        	entityToSpawn = EntityList.createEntityOfType(FCEntityBlockLiftedByPlatform.class, world, dXPos, dYPos, dZPos, iBlockID, iMetadata);
 +	            }
 +	            else if (iEntityType == fcCustomSpawnEntityPacketTypeWindMillVertical)
 +	            {
@@ -2881,7 +2905,7 @@
 +	    	        double dYPos = ((double)(dataStream.readInt())) / 32D;
 +	    	        double dZPos = ((double)(dataStream.readInt())) / 32D;
 +	    	        
-+	    	        FCEntityWindMillVertical entityWindMill = new FCEntityWindMillVertical(world, dXPos, dYPos, dZPos);
++	    	        FCEntityWindMillVertical entityWindMill = (FCEntityWindMillVertical) EntityList.createEntityOfType(FCEntityWindMillVertical.class, world, dXPos, dYPos, dZPos);
 +	    	        
 +	    	        entityToSpawn = entityWindMill;
 +	    	        
@@ -2906,7 +2930,7 @@
 +	    	        double dMotionY = ((double)(dataStream.readByte())) * 128D;
 +	    	        double dMotionZ = ((double)(dataStream.readByte())) * 128D;
 +
-+    	        	entityToSpawn = new FCEntitySpiderWeb(world, dXPos, dYPos, dZPos);
++    	        	entityToSpawn = EntityList.createEntityOfType(FCEntitySpiderWeb.class, world, dXPos, dYPos, dZPos);
 +
 +		            entityToSpawn.motionX = dMotionX;
 +		            entityToSpawn.motionY = dMotionX;
@@ -2928,7 +2952,7 @@
 +	    	        double dMotionY = ((double)(dataStream.readByte())) * 128D;
 +	    	        double dMotionZ = ((double)(dataStream.readByte())) * 128D;
 +
-+    	        	entityToSpawn = new FCEntitySoulSand(world, dXPos, dYPos, dZPos);
++    	        	entityToSpawn = EntityList.createEntityOfType(FCEntitySoulSand.class, world, dXPos, dYPos, dZPos);
 +
 +		            entityToSpawn.motionX = dMotionX;
 +		            entityToSpawn.motionY = dMotionX;
@@ -3646,7 +3670,7 @@
 +		                                double var13 = (double)j + ((double)iJOffset + 0.5D) / 4D;
 +		                                double var15 = (double)k + ((double)iKOffset + 0.5D) / 4D;
 +		                                
-+		                                EntityDiggingFX digEffect = new EntityDiggingFX(world, var11, var13, var15, 
++		                                EntityDiggingFX digEffect = (EntityDiggingFX) EntityList.createEntityOfType(EntityDiggingFX.class, world, var11, var13, var15, 
 +		                                	var11 - (double)i - 0.5D, var13 - (double)j - 0.5D, var15 - (double)k - 0.5D, 
 +		                                	block, 0, iMetadata, mcInstance.renderEngine);
 +		                                
@@ -3865,7 +3889,7 @@
 +	                                double var13 = (double)j + ((double)iJOffset + 0.5D) / 2D;
 +	                                double var15 = (double)k + ((double)iKOffset + 0.5D) / 2D;
 +	                                
-+	                                EntityDiggingFX digEffect = new EntityDiggingFX(world, var11, var13, var15, 
++	                                EntityDiggingFX digEffect = (EntityDiggingFX) EntityList.createEntityOfType(EntityDiggingFX.class, world, var11, var13, var15, 
 +	                                	var11 - (double)i - 0.5D, var13 - (double)j - 0.5D, var15 - (double)k - 0.5D, 
 +	                                	block, 0, iMetadata, mcInstance.renderEngine);
 +	                                

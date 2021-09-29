@@ -1,0 +1,20 @@
+--- a/minecraft/net/minecraft/src/BlockPumpkin.java
++++ b/minecraft/net/minecraft/src/BlockPumpkin.java
+@@ -37,7 +37,7 @@
+                 par1World.setBlock(par2, par3, par4, 0, 0, 2);
+                 par1World.setBlock(par2, par3 - 1, par4, 0, 0, 2);
+                 par1World.setBlock(par2, par3 - 2, par4, 0, 0, 2);
+-                EntitySnowman var9 = new EntitySnowman(par1World);
++                EntitySnowman var9 = (EntitySnowman) EntityList.createEntityOfType(EntitySnowman.class, par1World);
+                 var9.setLocationAndAngles((double)par2 + 0.5D, (double)par3 - 1.95D, (double)par4 + 0.5D, 0.0F, 0.0F);
+                 par1World.spawnEntityInWorld(var9);
+                 par1World.notifyBlockChange(par2, par3, par4, 0);
+@@ -72,7 +72,7 @@
+                     par1World.setBlock(par2, par3 - 1, par4 + 1, 0, 0, 2);
+                 }
+ 
+-                EntityIronGolem var7 = new EntityIronGolem(par1World);
++                EntityIronGolem var7 = (EntityIronGolem) EntityList.createEntityOfType(EntityIronGolem.class, par1World);
+                 var7.setPlayerCreated(true);
+                 var7.setLocationAndAngles((double)par2 + 0.5D, (double)par3 - 1.95D, (double)par4 + 0.5D, 0.0F, 0.0F);
+                 par1World.spawnEntityInWorld(var7);

@@ -188,7 +188,7 @@
 +            if (!isDead && !onValidSurface())
 +            {
 +                setDead();
-+                worldObj.spawnEntityInWorld(new EntityItem(worldObj, posX, posY, posZ, new ItemStack(FCBetterThanWolves.fcItemCanvas)));
++                worldObj.spawnEntityInWorld(EntityList.createEntityOfType(EntityItem.class, worldObj, posX, posY, posZ, new ItemStack(FCBetterThanWolves.fcItemCanvas)));
 +            }
 +        }
 +    }
@@ -283,7 +283,7 @@
 +        {
 +            setDead();
 +            setBeenAttacked();
-+            worldObj.spawnEntityInWorld(new EntityItem(worldObj, posX, posY, posZ, new ItemStack(FCBetterThanWolves.fcItemCanvas)));
++            worldObj.spawnEntityInWorld(EntityList.createEntityOfType(EntityItem.class, worldObj, posX, posY, posZ, new ItemStack(FCBetterThanWolves.fcItemCanvas)));
 +        }
 +
 +        return true;
@@ -340,7 +340,7 @@
 +        if (!worldObj.isRemote && !isDead && par1 * par1 + par3 * par3 + par5 * par5 > 0.0D)
 +        {
 +            setDead();
-+            worldObj.spawnEntityInWorld(new EntityItem(worldObj, posX, posY, posZ, new ItemStack(FCBetterThanWolves.fcItemCanvas)));
++            worldObj.spawnEntityInWorld(EntityList.createEntityOfType(EntityItem.class, worldObj, posX, posY, posZ, new ItemStack(FCBetterThanWolves.fcItemCanvas)));
 +        }
 +    }
 +
@@ -352,7 +352,7 @@
 +        if (!worldObj.isRemote && !isDead && par1 * par1 + par3 * par3 + par5 * par5 > 0.0D)
 +        {
 +            setDead();
-+            worldObj.spawnEntityInWorld(new EntityItem(worldObj, posX, posY, posZ, new ItemStack(FCBetterThanWolves.fcItemCanvas)));
++            worldObj.spawnEntityInWorld(EntityList.createEntityOfType(EntityItem.class, worldObj, posX, posY, posZ, new ItemStack(FCBetterThanWolves.fcItemCanvas)));
 +        }
 +    }
 +    

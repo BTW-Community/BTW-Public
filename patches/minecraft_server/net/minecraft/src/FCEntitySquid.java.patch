@@ -673,7 +673,7 @@
 +				if ( m_fPossessedLeapGhastConversionDiceRoll <= m_fPossessedLeapGhastConversionChance && 
 +					motionY <= 0F ) // negative motion to wait for apex of leap
 +				{					
-+			        FCEntityGhast ghast = new FCEntityGhast( worldObj );
++					FCEntityGhast ghast = (FCEntityGhast) EntityList.createEntityOfType(FCEntityGhast.class, worldObj);
 +			        ghast.setLocationAndAngles( posX, posY, posZ, rotationYaw, 0F );
 +			        
 +					if ( worldObj.checkNoEntityCollision( ghast.boundingBox, this ) && 
@@ -1229,7 +1229,7 @@
 +		        double dItemYPos = targetEntity.posY + 1D;
 +		        double dItemZPos = targetEntity.posZ;
 +		    	
-+		        EntityItem entityitem = new EntityItem( worldObj, dItemXPos, dItemYPos, dItemZPos, flingStack );
++		        EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, worldObj, dItemXPos, dItemYPos, dItemZPos, flingStack );
 +
 +		        double dVelocityY = targetEntity.motionY + 0.5D;
 +		        

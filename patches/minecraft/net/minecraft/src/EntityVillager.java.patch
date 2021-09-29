@@ -50,6 +50,15 @@
                  int[] var3 = new int[] {Item.swordIron.itemID, Item.swordDiamond.itemID, Item.plateIron.itemID, Item.plateDiamond.itemID, Item.axeIron.itemID, Item.axeDiamond.itemID, Item.pickaxeIron.itemID, Item.pickaxeDiamond.itemID};
                  int[] var4 = var3;
                  int var5 = var3.length;
+@@ -679,7 +679,7 @@
+ 
+     public EntityVillager func_90012_b(EntityAgeable par1EntityAgeable)
+     {
+-        EntityVillager var2 = new EntityVillager(this.worldObj);
++        EntityVillager var2 = (EntityVillager) EntityList.createEntityOfType(EntityVillager.class, this.worldObj);
+         var2.initCreature();
+         return var2;
+     }
 @@ -756,4 +756,21 @@
          blacksmithSellingList.put(Integer.valueOf(Item.eyeOfEnder.itemID), new Tuple(Integer.valueOf(7), Integer.valueOf(11)));
          blacksmithSellingList.put(Integer.valueOf(Item.arrow.itemID), new Tuple(Integer.valueOf(-12), Integer.valueOf(-8)));

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockLegacyOmniSlab.java
-@@ -0,0 +1,223 @@
+@@ -0,0 +1,201 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -180,28 +180,6 @@
 +    public boolean DoesBlockBreakSaw( World world, int i, int j, int k )
 +    {
 +		return !IsSlabWood( world, i, j, k );
-+    }
-+	
-+	@Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		if ( IsSlabWood( world, i, j, k ) )
-+		{
-+			return FCBetterThanWolves.fcBlockWoodMouldingItemStubID;
-+		}
-+		
-+		return super.GetItemIDDroppedOnSaw( world, i, j, k );
-+    }
-+
-+	@Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		if ( IsSlabWood( world, i, j, k ) )
-+		{
-+			return 2;
-+		}
-+		
-+		return super.GetItemIDDroppedOnSaw( world, i, j, k );
 +    }
 +    
 +    @Override

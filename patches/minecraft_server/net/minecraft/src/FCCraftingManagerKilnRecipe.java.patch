@@ -1,0 +1,55 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCCraftingManagerKilnRecipe.java
+@@ -0,0 +1,51 @@
++package net.minecraft.src;
++
++public class FCCraftingManagerKilnRecipe {
++	private final ItemStack[] output;
++	private final Block block;
++	private final int metadata;
++	private final byte cookTimeMultiplier;
++	
++	public FCCraftingManagerKilnRecipe(ItemStack[] output, Block block, int metadata, byte cookTimeMultiplier) {
++		this.output = output;
++		this.block = block;
++		this.metadata = metadata;
++		this.cookTimeMultiplier = cookTimeMultiplier;
++	}
++	
++	public boolean ignoreMetadata() {
++		return metadata == FCUtilsInventory.m_iIgnoreMetadata;
++	}
++	
++	public boolean matchesRecipe(FCCraftingManagerKilnRecipe recipe) {
++		if (this.block == recipe.block && 
++			(this.metadata == recipe.metadata || 
++				this.ignoreMetadata() && this.ignoreMetadata())) 
++		{
++			return output.equals(recipe.output);
++		}
++		
++		return false;
++	}
++	
++	public boolean matchesInputs(Block block, int metadata) {
++		return this.block.blockID == block.blockID &&
++				(this.metadata == metadata || this.ignoreMetadata());
++	}
++
++	public Block getInputblock() {
++		return block;
++	}
++
++	public ItemStack[] getOutput() {
++		return output;
++	}
++
++	public int getInputMetadata() {
++		return metadata;
++	}
++
++	public byte getCookTimeMultiplier() {
++		return cookTimeMultiplier;
++	}
++}
+\ No newline at end of file

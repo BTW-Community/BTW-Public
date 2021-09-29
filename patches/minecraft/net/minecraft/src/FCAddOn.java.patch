@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCAddOn.java
-@@ -0,0 +1,369 @@
+@@ -0,0 +1,374 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -143,7 +143,6 @@
 +		}
 +		
 +		if (fileIn != null) {
-+			ArrayList<String> unpopulatedProperties = new ArrayList();
 +			Map<String, String> propertyValues = new HashMap();
 +
 +			String line;
@@ -166,28 +165,7 @@
 +			
 +			for (String propertyName : configProperties) {
 +				if (!propertyValues.containsKey(propertyName)) {
-+					unpopulatedProperties.add(propertyName);
-+				}
-+			}
-+			
-+			//Populates the default values into the config file for any properties not found, then loads those defaults
-+			if (unpopulatedProperties.size() > 0) {
-+				File config = new File("config/" + filename);
-+				
-+				for (String propertyName : unpopulatedProperties) {
 +					propertyValues.put(propertyName, configPropertyDefaults.get(propertyName));
-+					
-+					try {
-+						String comment = configPropertyComments.get(propertyName);
-+						
-+						if (!comment.equals("")) {
-+							Files.write(config.toPath(), ("\n# " + comment + "\n").getBytes(), StandardOpenOption.APPEND);
-+						}
-+						
-+						Files.write(config.toPath(), (propertyName + "=" + configPropertyDefaults.get(propertyName) + "\n").getBytes(), StandardOpenOption.APPEND);
-+					} catch (IOException e1) {
-+						e1.printStackTrace();
-+					}
 +				}
 +			}
 +
@@ -204,7 +182,34 @@
 +			return null;
 +		}
 +	}
-+
++	
++	/**
++	 * Rewrites the existing config file to account for missing options
++	 * Does a complete rewrite instead of appending in order to maintain option order
++	 */
++	public void repopulateConfigFile() {
++		String filename = this.prefix + ".properties";
++		File config = new File("config/" + filename);
++		
++		try {
++			BufferedWriter writer = Files.newBufferedWriter(config.toPath(), StandardOpenOption.TRUNCATE_EXISTING);
++			
++			for (String propertyName : this.configProperties) {
++				String comment = configPropertyComments.get(propertyName);
++				
++				if (comment != null) {
++					writer.write("\n# " + comment + "\n");
++				}
++				
++				writer.write(propertyName + "=" + configPropertyDefaults.get(propertyName) + "\n");
++			}
++			
++			writer.close();
++		} catch (IOException e) {
++			e.printStackTrace();
++		}
++	}
++	
 +	/**
 +	 * Called when a player joins the world
 +	 */
@@ -291,7 +296,7 @@
 +
 +	/**
 +	 * Used for storing custom information in the save file
-+	 * Information is saved per dimension
++	 * Has hooks to save information per dimension or globally
 +	 * @return
 +	 */
 +	public FCAddOnUtilsWorldData createWorldData() {

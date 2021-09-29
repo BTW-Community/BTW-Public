@@ -199,9 +199,27 @@
              }
  
              GL11.glDepthMask(true);
-@@ -1835,7 +1868,18 @@
+@@ -1821,21 +1854,32 @@
+             double var15 = this.mc.renderViewEntity.posX - par2;
+             double var17 = this.mc.renderViewEntity.posY - par4;
+             double var19 = this.mc.renderViewEntity.posZ - par6;
+-            EntityFX var21 = null;
++            Entity var21 = null;
+ 
+             if (par1Str.equals("hugeexplosion"))
              {
-                 this.mc.effectRenderer.addEffect(var21 = new EntityFireworkSparkFX(this.theWorld, par2, par4, par6, par8, par10, par12, this.mc.effectRenderer));
+-                this.mc.effectRenderer.addEffect(var21 = new EntityHugeExplodeFX(this.theWorld, par2, par4, par6, par8, par10, par12));
++                this.mc.effectRenderer.addEffect((EntityFX) (var21 = (EntityFX) EntityList.createEntityOfType(EntityHugeExplodeFX.class, this.theWorld, par2, par4, par6, par8, par10, par12)));
+             }
+             else if (par1Str.equals("largeexplode"))
+             {
+-                this.mc.effectRenderer.addEffect(var21 = new EntityLargeExplodeFX(this.renderEngine, this.theWorld, par2, par4, par6, par8, par10, par12));
++                this.mc.effectRenderer.addEffect((EntityFX) (var21 = (EntityFX) EntityList.createEntityOfType(EntityLargeExplodeFX.class, this.renderEngine, this.theWorld, par2, par4, par6, par8, par10, par12)));
+             }
+             else if (par1Str.equals("fireworksSpark"))
+             {
+-                this.mc.effectRenderer.addEffect(var21 = new EntityFireworkSparkFX(this.theWorld, par2, par4, par6, par8, par10, par12, this.mc.effectRenderer));
++                this.mc.effectRenderer.addEffect((EntityFX) (var21 = (EntityFX) EntityList.createEntityOfType(EntityFireworkSparkFX.class, this.theWorld, par2, par4, par6, par8, par10, par12, this.mc.effectRenderer)));
              }
 +            // FCMOD: Added (client only)
 +            else if ( par1Str.equals( "fccinders" ) )
@@ -210,7 +228,7 @@
  
 +            	if ( dDistSqToPlayer < 32D * 32D )
 +            	{
-+            		this.mc.effectRenderer.addEffect( var21 = new FCClientEntityCindersFX(this.theWorld, par2, par4, par6) );
++            		this.mc.effectRenderer.addEffect( (EntityFX) (var21 = (EntityFX) EntityList.createEntityOfType(FCClientEntityCindersFX.class, this.theWorld, par2, par4, par6)) );
 +            	}
 +            }
 +            // END FCMOD
@@ -218,22 +236,202 @@
              if (var21 != null)
              {
                  return (EntityFX)var21;
-@@ -2003,6 +2047,23 @@
+@@ -1856,153 +1900,170 @@
+                 {
+                     if (par1Str.equals("bubble"))
+                     {
+-                        var21 = new EntityBubbleFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityBubbleFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("suspended"))
+                     {
+-                        var21 = new EntitySuspendFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntitySuspendFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("depthsuspend"))
+                     {
+-                        var21 = new EntityAuraFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityAuraFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("townaura"))
+                     {
+-                        var21 = new EntityAuraFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityAuraFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("crit"))
+                     {
+-                        var21 = new EntityCritFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityCritFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("magicCrit"))
+                     {
+-                        var21 = new EntityCritFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityCritFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                         ((EntityFX)var21).setRBGColorF(((EntityFX)var21).getRedColorF() * 0.3F, ((EntityFX)var21).getGreenColorF() * 0.8F, ((EntityFX)var21).getBlueColorF());
+                         ((EntityFX)var21).nextTextureIndexX();
+                     }
+                     else if (par1Str.equals("smoke"))
+                     {
+-                        var21 = new EntitySmokeFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntitySmokeFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("mobSpell"))
+                     {
+-                        var21 = new EntitySpellParticleFX(this.theWorld, par2, par4, par6, 0.0D, 0.0D, 0.0D);
++                        var21 = EntityList.createEntityOfType(EntitySpellParticleFX.class, this.theWorld, par2, par4, par6, 0.0D, 0.0D, 0.0D);
+                         ((EntityFX)var21).setRBGColorF((float)par8, (float)par10, (float)par12);
+                     }
+                     else if (par1Str.equals("mobSpellAmbient"))
+                     {
+-                        var21 = new EntitySpellParticleFX(this.theWorld, par2, par4, par6, 0.0D, 0.0D, 0.0D);
++                        var21 = EntityList.createEntityOfType(EntitySpellParticleFX.class, this.theWorld, par2, par4, par6, 0.0D, 0.0D, 0.0D);
+                         ((EntityFX)var21).setAlphaF(0.15F);
+                         ((EntityFX)var21).setRBGColorF((float)par8, (float)par10, (float)par12);
+                     }
+                     else if (par1Str.equals("spell"))
+                     {
+-                        var21 = new EntitySpellParticleFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntitySpellParticleFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("instantSpell"))
+                     {
+-                        var21 = new EntitySpellParticleFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntitySpellParticleFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                         ((EntitySpellParticleFX)var21).setBaseSpellTextureIndex(144);
+                     }
+                     else if (par1Str.equals("witchMagic"))
+                     {
+-                        var21 = new EntitySpellParticleFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntitySpellParticleFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                         ((EntitySpellParticleFX)var21).setBaseSpellTextureIndex(144);
+                         float var24 = this.theWorld.rand.nextFloat() * 0.5F + 0.35F;
+                         ((EntityFX)var21).setRBGColorF(1.0F * var24, 0.0F * var24, 1.0F * var24);
+                     }
+                     else if (par1Str.equals("note"))
+                     {
+-                        var21 = new EntityNoteFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityNoteFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("portal"))
+                     {
+-                        var21 = new EntityPortalFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityPortalFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("enchantmenttable"))
+                     {
+-                        var21 = new EntityEnchantmentTableParticleFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityEnchantmentTableParticleFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("explode"))
+                     {
+-                        var21 = new EntityExplodeFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityExplodeFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("flame"))
+                     {
+-                        var21 = new EntityFlameFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityFlameFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("lava"))
+                     {
+-                        var21 = new EntityLavaFX(this.theWorld, par2, par4, par6);
++                        var21 = EntityList.createEntityOfType(EntityLavaFX.class, this.theWorld, par2, par4, par6);
+                     }
+                     else if (par1Str.equals("footstep"))
+                     {
+-                        var21 = new EntityFootStepFX(this.renderEngine, this.theWorld, par2, par4, par6);
++                        var21 = EntityList.createEntityOfType(EntityFootStepFX.class, this.renderEngine, this.theWorld, par2, par4, par6);
+                     }
+                     else if (par1Str.equals("splash"))
+                     {
+-                        var21 = new EntitySplashFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntitySplashFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("largesmoke"))
+                     {
+-                        var21 = new EntitySmokeFX(this.theWorld, par2, par4, par6, par8, par10, par12, 2.5F);
++                        var21 = EntityList.createEntityOfType(EntitySmokeFX.class, this.theWorld, par2, par4, par6, par8, par10, par12, 2.5F);
+                     }
+                     else if (par1Str.equals("cloud"))
+                     {
+-                        var21 = new EntityCloudFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityCloudFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("reddust"))
+                     {
+-                        var21 = new EntityReddustFX(this.theWorld, par2, par4, par6, (float)par8, (float)par10, (float)par12);
++                        var21 = EntityList.createEntityOfType(EntityReddustFX.class, this.theWorld, par2, par4, par6, (float)par8, (float)par10, (float)par12);
+                     }
+                     else if (par1Str.equals("snowballpoof"))
+                     {
+-                        var21 = new EntityBreakingFX(this.theWorld, par2, par4, par6, Item.snowball, this.renderEngine);
++                        var21 = EntityList.createEntityOfType(EntityBreakingFX.class, this.theWorld, par2, par4, par6, Item.snowball, this.renderEngine);
+                     }
+                     else if (par1Str.equals("dripWater"))
+                     {
+-                        var21 = new EntityDropParticleFX(this.theWorld, par2, par4, par6, Material.water);
++                        var21 = EntityList.createEntityOfType(EntityDropParticleFX.class, this.theWorld, par2, par4, par6, Material.water);
+                     }
+                     else if (par1Str.equals("dripLava"))
+                     {
+-                        var21 = new EntityDropParticleFX(this.theWorld, par2, par4, par6, Material.lava);
++                        var21 = EntityList.createEntityOfType(EntityDropParticleFX.class, this.theWorld, par2, par4, par6, Material.lava);
+                     }
+                     else if (par1Str.equals("snowshovel"))
+                     {
+-                        var21 = new EntitySnowShovelFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntitySnowShovelFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("slime"))
+                     {
+-                        var21 = new EntityBreakingFX(this.theWorld, par2, par4, par6, Item.slimeBall, this.renderEngine);
++                        var21 = EntityList.createEntityOfType(EntityBreakingFX.class, this.theWorld, par2, par4, par6, Item.slimeBall, this.renderEngine);
+                     }
+                     else if (par1Str.equals("heart"))
+                     {
+-                        var21 = new EntityHeartFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityHeartFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                     }
+                     else if (par1Str.equals("angryVillager"))
+                     {
+-                        var21 = new EntityHeartFX(this.theWorld, par2, par4 + 0.5D, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityHeartFX.class, this.theWorld, par2, par4 + 0.5D, par6, par8, par10, par12);
+                         ((EntityFX)var21).setParticleTextureIndex(81);
+                         ((EntityFX)var21).setRBGColorF(1.0F, 1.0F, 1.0F);
+                     }
+                     else if (par1Str.equals("happyVillager"))
+                     {
+-                        var21 = new EntityAuraFX(this.theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(EntityAuraFX.class, this.theWorld, par2, par4, par6, par8, par10, par12);
+                         ((EntityFX)var21).setParticleTextureIndex(82);
+                         ((EntityFX)var21).setRBGColorF(1.0F, 1.0F, 1.0F);
+                     }
+                     else if (par1Str.startsWith("iconcrack_"))
+                     {
+                         int var27 = Integer.parseInt(par1Str.substring(par1Str.indexOf("_") + 1));
+-                        var21 = new EntityBreakingFX(this.theWorld, par2, par4, par6, par8, par10, par12, Item.itemsList[var27], this.renderEngine);
++                        var21 = EntityList.createEntityOfType(EntityBreakingFX.class, this.theWorld, par2, par4, par6, par8, par10, par12, Item.itemsList[var27], this.renderEngine);
+                     }
+                     else if (par1Str.startsWith("tilecrack_"))
+                     {
+                         String[] var28 = par1Str.split("_", 3);
+                         int var25 = Integer.parseInt(var28[1]);
                          int var26 = Integer.parseInt(var28[2]);
-                         var21 = (new EntityDiggingFX(this.theWorld, par2, par4, par6, par8, par10, par12, Block.blocksList[var25], 0, var26, this.renderEngine)).applyRenderColor(var26);
+-                        var21 = (new EntityDiggingFX(this.theWorld, par2, par4, par6, par8, par10, par12, Block.blocksList[var25], 0, var26, this.renderEngine)).applyRenderColor(var26);
++                        var21 = ((EntityDiggingFX) EntityList.createEntityOfType(EntityDiggingFX.class, this.theWorld, par2, par4, par6, par8, par10, par12, Block.blocksList[var25], 0, var26, this.renderEngine)).applyRenderColor(var26);
                      }
 +                    // FCMOD: Added (client only)
 +                    else if ( par1Str.equals( "fcwhitesmoke" ) )
 +                    {
-+                        var21 = new FCClientEntityWhiteSmokeFX(theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(FCClientEntityWhiteSmokeFX.class, theWorld, par2, par4, par6, par8, par10, par12);
 +                    }
 +                    else if ( par1Str.equals( "fcwhitecloud" ) )
 +                    {
-+                        var21 = new FCClientEntityWhiteCloudFX(theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(FCClientEntityWhiteCloudFX.class, theWorld, par2, par4, par6, par8, par10, par12);
 +                    }
 +                    else if ( par1Str.equals( "fcsmallflame" ) )
 +                    {
-+                        var21 = new FCClientEntitySmallFlameFX(theWorld, par2, par4, par6, par8, par10, par12);
++                        var21 = EntityList.createEntityOfType(FCClientEntitySmallFlameFX.class, theWorld, par2, par4, par6, par8, par10, par12);
 +                    }
 +                    else {
 +                    	var21 = FCAddOnHandler.spawnCustomParticle(this.theWorld, par1Str, par2, par4, par6, par8, par10, par12);

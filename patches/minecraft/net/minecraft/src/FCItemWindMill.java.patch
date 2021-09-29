@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemWindMill.java
-@@ -0,0 +1,92 @@
+@@ -0,0 +1,77 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -39,7 +39,7 @@
 +	            	bIAligned = true;
 +        		}
 +
-+    			FCEntityWindMill windMill = new FCEntityWindMill( world, 
++    			FCEntityWindMill windMill = (FCEntityWindMill) EntityList.createEntityOfType(FCEntityWindMill.class, world, 
 +            		(float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, bIAligned );
 +			
 +        		if ( windMill.ValidateAreaAroundDevice() )
@@ -76,20 +76,5 @@
 +        }        
 +        
 +        return false;
-+    }
-+    
-+    @Override
-+    public void OnUsedInCrafting( int iItemDamage, EntityPlayer player, ItemStack outputStack )
-+    {
-+    	if ( !player.worldObj.isRemote )
-+    	{
-+    		if ( outputStack.itemID == FCBetterThanWolves.fcItemWindMillBlade.itemID )
-+    		{
-+    			for (int i = 0; i < 3; i++) {
-+	    			FCUtilsItem.EjectStackWithRandomVelocity( player.worldObj, player.posX, player.posY, player.posZ, 
-+	    				new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ) );
-+    			}
-+    		}
-+    	}
 +    }
 +} 

@@ -1,10 +1,26 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCUtilsReflection.java
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,42 @@
 +package net.minecraft.src;
++
++import java.util.HashMap;
++import java.util.Map;
 +
 +public class FCUtilsReflection {
 +	private static boolean isObfuscated = false;
++	
++	public static Map<Class, Class> boxedToPrimitiveTypeMap = new HashMap();
++	
++	static {
++		boxedToPrimitiveTypeMap.put(Byte.class, Byte.TYPE);
++		boxedToPrimitiveTypeMap.put(Short.class, Short.TYPE);
++		boxedToPrimitiveTypeMap.put(Integer.class, Integer.TYPE);
++		boxedToPrimitiveTypeMap.put(Long.class, Long.TYPE);
++		boxedToPrimitiveTypeMap.put(Float.class, Float.TYPE);
++		boxedToPrimitiveTypeMap.put(Double.class, Double.TYPE);
++		boxedToPrimitiveTypeMap.put(Character.class, Character.TYPE);
++		boxedToPrimitiveTypeMap.put(Boolean.class, Boolean.TYPE);
++	}
 +
 +	public static boolean isObfuscated() {
 +		return isObfuscated;
@@ -12,5 +28,18 @@
 +
 +	public static void setObfuscated(boolean isObfuscated) {
 +		FCUtilsReflection.isObfuscated = isObfuscated;
++	}
++
++	/**
++	 * Convert boxed primitive type into the primitive type it represents
++	 * @param type
++	 * @return Primitive type if the type passed was a boxed primitive, null otherwise
++	 */
++	public static Class<?> getPrimitiveFromBoxedClass(Class<?> type) {
++		if (boxedToPrimitiveTypeMap.containsKey(type)) {
++			return boxedToPrimitiveTypeMap.get(type);
++		}
++
++		return null;
 +	}
 +}

@@ -1,6 +1,23 @@
 --- a/minecraft_server/net/minecraft/src/EntityDragon.java
 +++ b/minecraft_server/net/minecraft/src/EntityDragon.java
-@@ -174,7 +174,7 @@
+@@ -57,7 +57,15 @@
+     public EntityDragon(World par1World)
+     {
+         super(par1World);
+-        this.dragonPartArray = new EntityDragonPart[] {this.dragonPartHead = new EntityDragonPart(this, "head", 6.0F, 6.0F), this.dragonPartBody = new EntityDragonPart(this, "body", 8.0F, 8.0F), this.dragonPartTail1 = new EntityDragonPart(this, "tail", 4.0F, 4.0F), this.dragonPartTail2 = new EntityDragonPart(this, "tail", 4.0F, 4.0F), this.dragonPartTail3 = new EntityDragonPart(this, "tail", 4.0F, 4.0F), this.dragonPartWing1 = new EntityDragonPart(this, "wing", 4.0F, 4.0F), this.dragonPartWing2 = new EntityDragonPart(this, "wing", 4.0F, 4.0F)};
++        this.dragonPartArray = new EntityDragonPart[] {
++        		this.dragonPartHead = (EntityDragonPart) EntityList.createEntityOfType(EntityDragonPart.class, this, "head", 6.0F, 6.0F), 
++        		this.dragonPartBody = (EntityDragonPart) EntityList.createEntityOfType(EntityDragonPart.class, this, "body", 8.0F, 8.0F), 
++        		this.dragonPartTail1 = (EntityDragonPart) EntityList.createEntityOfType(EntityDragonPart.class, this, "tail", 4.0F, 4.0F), 
++        		this.dragonPartTail2 = (EntityDragonPart) EntityList.createEntityOfType(EntityDragonPart.class, this, "tail", 4.0F, 4.0F), 
++        		this.dragonPartTail3 = (EntityDragonPart) EntityList.createEntityOfType(EntityDragonPart.class, this, "tail", 4.0F, 4.0F), 
++        		this.dragonPartWing1 = (EntityDragonPart) EntityList.createEntityOfType(EntityDragonPart.class, this, "wing", 4.0F, 4.0F), 
++        		this.dragonPartWing2 = (EntityDragonPart) EntityList.createEntityOfType(EntityDragonPart.class, this, "wing", 4.0F, 4.0F)
++        	};
+         this.setEntityHealth(this.getMaxHealth());
+         this.texture = "/mob/enderdragon/ender.png";
+         this.setSize(16.0F, 8.0F);
+@@ -174,7 +182,7 @@
              double var6;
              double var8;
              double var26;
@@ -9,7 +26,7 @@
  
              if (this.worldObj.isRemote)
              {
-@@ -226,16 +226,16 @@
+@@ -226,16 +234,16 @@
                  }
  
                  var4 /= (double)MathHelper.sqrt_double(var26 * var26 + var6 * var6);
@@ -31,7 +48,7 @@
                  }
  
                  this.motionY += var4 * 0.10000000149011612D;
-@@ -254,8 +254,8 @@
+@@ -254,8 +262,8 @@
                  }
  
                  Vec3 var15 = this.worldObj.getWorldVec3Pool().getVecFromPool(this.targetX - this.posX, this.targetY - this.posY, this.targetZ - this.posZ).normalize();
@@ -42,7 +59,7 @@
  
                  if (var17 < 0.0F)
                  {
-@@ -287,7 +287,7 @@
+@@ -287,7 +295,7 @@
                  }
  
                  Vec3 var23 = this.worldObj.getWorldVec3Pool().getVecFromPool(this.motionX, this.motionY, this.motionZ).normalize();
@@ -51,7 +68,7 @@
                  var24 = 0.8F + 0.15F * var24;
                  this.motionX *= (double)var24;
                  this.motionZ *= (double)var24;
-@@ -307,16 +307,16 @@
+@@ -307,16 +315,16 @@
              this.dragonPartWing2.width = 4.0F;
              var2 = (float)(this.getMovementOffsets(5, 1.0F)[1] - this.getMovementOffsets(10, 1.0F)[1]) * 10.0F / 180.0F * (float)Math.PI;
              var3 = MathHelper.cos(var2);
@@ -73,7 +90,7 @@
  
              if (!this.worldObj.isRemote && this.hurtTime == 0)
              {
-@@ -327,38 +327,38 @@
+@@ -327,38 +335,38 @@
  
              double[] var29 = this.getMovementOffsets(5, 1.0F);
              double[] var9 = this.getMovementOffsets(0, 1.0F);
@@ -127,7 +144,7 @@
              }
  
              if (!this.worldObj.isRemote)
-@@ -460,11 +460,31 @@
+@@ -460,11 +468,31 @@
      {
          this.forceNewTarget = false;
  
@@ -159,7 +176,7 @@
          {
              boolean var1 = false;
  
-@@ -741,4 +761,8 @@
+@@ -741,4 +769,8 @@
      {
          return 5.0F;
      }

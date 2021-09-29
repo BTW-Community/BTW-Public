@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCCraftingManagerAnvil.java
-@@ -0,0 +1,306 @@
+@@ -0,0 +1,321 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -137,6 +137,21 @@
 +        return null;
 +    }
 +
++    public IRecipe FindMatchingRecipe( InventoryCrafting inventory, World world )
++    {
++        for ( int iTempIndex = 0; iTempIndex < this.recipes.size(); ++iTempIndex)
++        {
++            IRecipe tempRecipe = (IRecipe)this.recipes.get(iTempIndex);
++
++            if ( tempRecipe.matches( inventory, world ) )
++            {
++                return tempRecipe;
++            }
++        }
++
++        return null;
++    }
++    
 +    public List getRecipeList()
 +    {
 +        return recipes;

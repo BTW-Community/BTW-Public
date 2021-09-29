@@ -1,6 +1,6 @@
 --- a/minecraft/net/minecraft/src/IRecipe.java
 +++ b/minecraft/net/minecraft/src/IRecipe.java
-@@ -18,4 +18,14 @@
+@@ -18,4 +18,16 @@
      int getRecipeSize();
  
      ItemStack getRecipeOutput();
@@ -13,5 +13,7 @@
 +    // the output is collected.  It would be a mess of base class edits to change this.
 +    
 +    public abstract boolean HasSecondaryOutput();
++    
++    public abstract ItemStack[] getSecondaryOutput(IInventory inventory);
 +    // END FCMOD
  }

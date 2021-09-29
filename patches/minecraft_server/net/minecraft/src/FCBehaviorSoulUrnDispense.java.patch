@@ -15,6 +15,6 @@
 +
 +    protected IProjectile getProjectileEntity( World world, IPosition pos )
 +    {
-+        return new FCEntityUrn( world, pos.getX(), pos.getY(), pos.getZ(), FCBetterThanWolves.fcItemSoulUrn.itemID );
++    	return (IProjectile) EntityList.createEntityOfType(FCEntityUrn.class, world, pos.getX(), pos.getY(), pos.getZ(), FCBetterThanWolves.fcItemSoulUrn.itemID );
 +    }
 +}

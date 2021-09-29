@@ -1,0 +1,11 @@
+--- a/minecraft_server/net/minecraft/src/DispenserBehaviorPotionProjectile.java
++++ b/minecraft_server/net/minecraft/src/DispenserBehaviorPotionProjectile.java
+@@ -17,7 +17,7 @@
+      */
+     protected IProjectile getProjectileEntity(World par1World, IPosition par2IPosition)
+     {
+-        return new EntityPotion(par1World, par2IPosition.getX(), par2IPosition.getY(), par2IPosition.getZ(), this.potionItemStack.copy());
++    	return (IProjectile) EntityList.createEntityOfType(EntityPotion.class, par1World, par2IPosition.getX(), par2IPosition.getY(), par2IPosition.getZ(), this.potionItemStack.copy());
+     }
+ 
+     protected float func_82498_a()

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockWickerSlab.java
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,59 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -29,18 +29,6 @@
 +    public boolean DoesBlockBreakSaw( World world, int i, int j, int k )
 +    {
 +		return false;
-+    }
-+    
-+	@Override
-+    public int GetItemIDDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		return FCBetterThanWolves.fcBlockWickerPane.blockID;
-+    }
-+	
-+	@Override
-+    public int GetItemCountDroppedOnSaw( World world, int i, int j, int k )
-+    {
-+		return 2;
 +    }
 +	
 +	@Override

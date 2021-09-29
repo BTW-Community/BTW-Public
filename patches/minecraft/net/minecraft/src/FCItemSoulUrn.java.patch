@@ -110,14 +110,14 @@
 +    protected void SpawnThrownEntity( ItemStack stack, World world, 
 +    	EntityPlayer player )
 +    {
-+        world.spawnEntityInWorld( new FCEntityUrn( world, player, itemID ) );
++        world.spawnEntityInWorld( EntityList.createEntityOfType(FCEntityUrn.class, world, player, itemID ) );
 +    }
 +    
 +    @Override
 +    protected EntityThrowable GetEntityFiredByByBlockDispenser( World world, 
 +    	double dXPos, double dYPos, double dZPos )
 +    {
-+    	return new FCEntityUrn( world, dXPos, dYPos, dZPos, itemID );
++    	return (EntityThrowable) EntityList.createEntityOfType(FCEntityUrn.class, world, dXPos, dYPos, dZPos, itemID );
 +    }
 +    
 +    //------------- Class Specific Methods ------------//

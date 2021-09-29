@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCItemBlockPumpkinFresh.java
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,27 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -19,12 +19,6 @@
 +    {
 +		if ( outputStack.itemID == Block.pumpkin.blockID )
 +		{
-+	    	if ( !player.worldObj.isRemote )
-+	    	{
-+    			FCUtilsItem.EjectStackWithRandomVelocity( player.worldObj, player.posX, player.posY, player.posZ, 
-+    				new ItemStack( Item.pumpkinSeeds, 4, 0 ) );
-+	    	}
-+	    	
 +	    	if ( player.m_iTimesCraftedThisTick == 0 )
 +			{
 +				// note: the playSound function for player both plays the sound locally on the client, and plays it remotely on the server without it being sent again to the same player

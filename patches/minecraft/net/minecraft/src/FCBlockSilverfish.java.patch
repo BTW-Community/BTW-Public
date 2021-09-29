@@ -49,7 +49,7 @@
 +				
 +				for ( int iTempCount = 0; iTempCount < iNumSilverfish; iTempCount++ )
 +				{
-+		            EntitySilverfish silverfish = new EntitySilverfish( world );
++		            EntitySilverfish silverfish = (EntitySilverfish) EntityList.createEntityOfType(EntitySilverfish.class, world);
 +		            
 +		            silverfish.setLocationAndAngles( (double)i + 0.5D, (double)j, (double)k + 0.5D, 0.0F, 0.0F);
 +		            

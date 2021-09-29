@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockStoneRough.java
-@@ -0,0 +1,351 @@
+@@ -0,0 +1,372 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -231,6 +231,27 @@
 +    public boolean IsNaturalStone( IBlockAccess blockAccess, int i, int j, int k )
 +    {
 +    	return true;
++    }
++    
++    @Override
++    public ItemStack GetStackRetrievedByBlockDispenser( World world, int i, int j, int k ) {
++    	if (world.getBlockMetadata(i, j, k) != 0) {
++    		return null;
++    	}
++    	else {
++    		return super.GetStackRetrievedByBlockDispenser(world, i, j, k);
++    	}
++    }
++    
++    @Override
++    public void OnRemovedByBlockDispenser( World world, int i, int j, int k ) {
++    	int metadata = world.getBlockMetadata(i, j, k);
++    	
++    	if (metadata != 0) {
++    		this.dropBlockAsItem(world, i, j, k, metadata, 0);
++    	}
++    	
++    	super.OnRemovedByBlockDispenser(world, i, j, k);
 +    }
 +    
 +    //------------- Class Specific Methods ------------//
