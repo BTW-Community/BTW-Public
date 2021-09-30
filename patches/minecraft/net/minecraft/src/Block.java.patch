@@ -764,7 +764,7 @@
                  if (var0 > 0 && blocksList[var0].getRenderType() == 10)
                  {
                      var1 = true;
-@@ -1364,10 +1424,2379 @@
+@@ -1364,10 +1424,2357 @@
                  }
  
                  useNeighborBrightness[var0] = var1;
@@ -1045,38 +1045,16 @@
 +    			parameterValues[i + 1] = parameters[i];
 +    		}
 +    		
-+    		Constructor[] constructors = newClass.getDeclaredConstructors();
-+            Constructor constructorToUse = null;
++    		Constructor constructorToUse = FCUtilsReflection.findMatchingConstructor(newClass, parameterTypes);
 +            
-+            for (Constructor c : constructors) {
-+                boolean constructorMatches = true;
++            if (constructorToUse == null) {
++            	String message = "No appropriate constructor found for " + blocksList[id] + ": ";
 +                
-+                Class[] cParamTypes = c.getParameterTypes();
-+                
-+                if (cParamTypes.length == parameterTypes.length) {
-+                    for (int j = 0; j < cParamTypes.length; j++) {
-+                    	if (!(cParamTypes[j].isAssignableFrom(parameterTypes[j]) || 
-+                        		parameterTypes[j].isAssignableFrom(cParamTypes[j]))) {
-+                            constructorMatches = false;
-+                            break;
-+                        }
-+                    }
-+                }
-+                else {
-+                    constructorMatches = false;
-+                    String message = "No appropriate constructor found for " + blocksList[id] + ": ";
-+                    
-+                    for (Class<?> paramType : parameterTypes) {
-+                    	message += paramType.getName() + ", ";
-+                    }
-+                    
-+                    throw new RuntimeException(message);
++                for (Class<?> paramType : parameterTypes) {
++                	message += paramType.getSimpleName() + ", ";
 +                }
 +                
-+                if (constructorMatches) {
-+                    constructorToUse = c;
-+                    break;
-+                }
++                throw new RuntimeException(message);
 +            }
 +    		
 +    		try {

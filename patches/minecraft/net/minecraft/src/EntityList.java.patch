@@ -58,7 +58,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -101,9 +121,16 @@
+@@ -101,9 +121,19 @@
  
              if (var3 != null)
              {
@@ -66,6 +66,9 @@
 +            		int profession = par0NBTTagCompound.getInteger("Profession");
 +
 +            		var2 = FCEntityVillager.createVillagerFromProfession(par1World, profession);
++            	}
++            	else if (EntityPlayerMP.class.equals(var3)) {
++            		return null;
 +            	}
 +            	else {
                  var2 = (Entity)var3.getConstructor(new Class[] {World.class}).newInstance(new Object[] {par1World});
@@ -75,7 +78,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -115,7 +142,10 @@
+@@ -115,7 +145,10 @@
          }
          else
          {
@@ -86,7 +89,7 @@
          }
  
          return var2;
-@@ -134,9 +164,14 @@
+@@ -134,9 +167,14 @@
  
              if (var3 != null)
              {
@@ -101,7 +104,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -144,7 +179,10 @@
+@@ -144,7 +182,10 @@
  
          if (var2 == null)
          {
@@ -112,7 +115,7 @@
          }
  
          return var2;
-@@ -240,5 +278,231 @@
+@@ -240,5 +281,207 @@
          addMapping(EntityIronGolem.class, "VillagerGolem", 99);
          addMapping(EntityVillager.class, "Villager", 120, 5651507, 12422002);
          addMapping(EntityEnderCrystal.class, "EnderCrystal", 200);
@@ -286,31 +289,7 @@
 +			}
 +		}
 +		
-+		Constructor[] constructors = entityClass.getDeclaredConstructors();
-+        Constructor constructorToUse = null;
-+        
-+        for (Constructor c : constructors) {
-+            boolean constructorMatches = true;
-+            
-+            Class[] cParamTypes = c.getParameterTypes();
-+            
-+            if (cParamTypes.length == parameterTypes.length) {
-+                for (int j = 0; j < cParamTypes.length; j++) {
-+                    if (!cParamTypes[j].isAssignableFrom(parameterTypes[j])) {
-+                        constructorMatches = false;
-+                        break;
-+                    }
-+                }
-+            }
-+            else {
-+                constructorMatches = false;
-+            }
-+            
-+            if (constructorMatches) {
-+                constructorToUse = c;
-+                break;
-+            }
-+        }
++		Constructor constructorToUse = FCUtilsReflection.findMatchingConstructor(entityClass, parameterTypes);
 +        
 +        if (constructorToUse == null) {
 +        	String message = "No appropriate constructor found for " + classToStringMapping.get(entityClass) + ": ";

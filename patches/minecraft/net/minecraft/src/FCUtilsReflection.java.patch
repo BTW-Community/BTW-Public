@@ -1,8 +1,9 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCUtilsReflection.java
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,111 @@
 +package net.minecraft.src;
 +
++import java.lang.reflect.Constructor;
 +import java.util.HashMap;
 +import java.util.Map;
 +
@@ -41,5 +42,73 @@
 +		}
 +
 +		return null;
++	}
++	
++	public static Constructor findMatchingConstructor(Class<?> classForSearch, Class[] parameterTypes) {
++		Constructor[] constructors = classForSearch.getDeclaredConstructors();
++        Constructor constructorToUse = null;
++        
++        for (Constructor c : constructors) {
++            boolean constructorMatches = true;
++            
++            Class[] cParamTypes = c.getParameterTypes();
++            
++            if (cParamTypes.length == parameterTypes.length) {
++                for (int j = 0; j < cParamTypes.length; j++) {
++                	if (!doesParameterTypeSatisfyConstructorType(parameterTypes[j], cParamTypes[j])) {
++                        constructorMatches = false;
++                        break;
++                    }
++                }
++            }
++            else {
++                constructorMatches = false;
++            }
++            
++            if (constructorMatches) {
++                constructorToUse = c;
++                break;
++            }
++        }
++        
++        return constructorToUse;
++	}
++	
++	private static boolean doesParameterTypeSatisfyConstructorType(Class<?> parameterType, Class<?> constructorType) {
++		if (parameterType.isPrimitive()) {
++			int pSize = getPrimitiveSize(parameterType);
++			int cSize = getPrimitiveSize(constructorType);
++			
++			if (constructorType == boolean.class) {
++				return parameterType.equals(boolean.class);
++			}
++			
++			if (!isFloatingPoint(constructorType) && isFloatingPoint(parameterType)) {
++				return false;
++			}
++			
++			return pSize <= cSize;
++		}
++		else {
++			return constructorType.isAssignableFrom(parameterType);
++		}
++	}
++	
++	private static int getPrimitiveSize(Class<?> primitive) {
++		if (!primitive.isPrimitive()) {
++			throw new IllegalArgumentException("Class must be a primitive");
++		}
++		
++		if (primitive == byte.class || primitive == char.class)
++			return 8;
++		if (primitive == short.class)
++			return 16;
++		if (primitive == int.class || primitive == float.class)
++			return 32;
++		return 64;
++	}
++	
++	private static boolean isFloatingPoint(Class<?> primitive) {
++		return primitive == float.class || primitive == double.class;
 +	}
 +}
