@@ -423,7 +423,7 @@
  
      /**
       * Called when item is crafted/smelted. Used only by maps so far.
-@@ -573,4 +591,502 @@
+@@ -573,4 +591,480 @@
      {
          StatList.initStats();
      }
@@ -524,38 +524,16 @@
 +    			parameterValues[i + 1] = parameters[i];
 +    		}
 +    		
-+    		Constructor[] constructors = newClass.getDeclaredConstructors();
-+            Constructor constructorToUse = null;
-+            
-+            for (Constructor c : constructors) {
-+                boolean constructorMatches = true;
-+                
-+                Class[] cParamTypes = c.getParameterTypes();
-+                
-+                if (cParamTypes.length == parameterTypes.length) {
-+                    for (int j = 0; j < cParamTypes.length; j++) {
-+                    	if (!(cParamTypes[j].isAssignableFrom(parameterTypes[j]) || 
-+                        		parameterTypes[j].isAssignableFrom(cParamTypes[j]))) {
-+                            constructorMatches = false;
-+                            break;
-+                        }
-+                    }
++    		Constructor constructorToUse = FCUtilsReflection.findMatchingConstructor(newClass, parameterTypes);
++
++            if (constructorToUse == null) {
++            	String message = "No appropriate constructor found for " + itemsList[id] + ": ";
++
++                for (Class<?> paramType : parameterTypes) {
++                	message += paramType.getSimpleName() + ", ";
 +                }
-+                else {
-+                    constructorMatches = false;
-+                    String message = "No appropriate constructor found for " + itemsList[id] + ": ";
-+                    
-+                    for (Class<?> paramType : parameterTypes) {
-+                    	message += paramType.getName() + ", ";
-+                    }
-+                    
-+                    throw new RuntimeException(message);
-+                }
-+                
-+                if (constructorMatches) {
-+                    constructorToUse = c;
-+                    break;
-+                }
++
++                throw new RuntimeException(message);
 +            }
 +    		
 +    		try {

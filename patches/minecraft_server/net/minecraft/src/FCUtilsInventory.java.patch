@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCUtilsInventory.java
-@@ -0,0 +1,587 @@
+@@ -0,0 +1,589 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -52,7 +52,9 @@
 +                }
 +                
 +                itemstack.stackSize -= i1;
-+                EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, world, (float)i + f, (float)j + f1, (float)k + f2, new ItemStack(itemstack.itemID, i1, itemstack.getItemDamage()));
++                EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, world,
++                        (double) ((float) i + f), (double) ((float) j + f1), (double) ((float) k + f2),
++                        new ItemStack(itemstack.itemID, i1, itemstack.getItemDamage()));
 +                
 +                float f3 = 0.05F;
 +                

@@ -1,3 +1,15 @@
+## Version 1.1.1: ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- rockoutwill
+
+/--Gameplay--/
+- Fixed an issue where the game would crash when attempting to spill items out from a mod inventory which was broken.
+
+/--Addon API--/
+- Changed how reflective constructor calls are handled to be less strict about primitives which can normally be passed as arguments.
+- Fixed an issue where the game would crash on load when trying to reflectively use a block or item constructor that was not the first constructor defined for that type.
+
 ## Version 1.1.0: ##
 This release will cause issues with craftguide. It will definitely no longer be able to display kiln and saw recipes, but may cause bigger issues than that. I am unfamiliar with the craftguide codebase but I am definitely willing to work with anyone who is to get it functional again. Once it is fixed though, it should have increased functionality due to how a lot of the BTW-specific recipes are now handled.
 
