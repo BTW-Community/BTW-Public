@@ -115,7 +115,7 @@
          }
  
          return var2;
-@@ -240,5 +281,207 @@
+@@ -240,5 +281,210 @@
          addMapping(EntityIronGolem.class, "VillagerGolem", 99);
          addMapping(EntityVillager.class, "Villager", 120, 5651507, 12422002);
          addMapping(EntityEnderCrystal.class, "EnderCrystal", 200);
@@ -125,8 +125,11 @@
 +        int id = -1;
 +        
 +        addMapping(EntityPlayerMP.class, "PlayerMP", id--);
++        
++        // Client only
 +        addMapping(EntityClientPlayerMP.class, "ClientPlayerMP", id--);
-+
++        addMapping(EntityOtherPlayerMP.class, "OtherPlayerMP", id--);
++        
 +        addMapping(EntityAuraFX.class, "AuraFX", id--);
 +        addMapping(EntityBreakingFX.class, "BreakingFX", id--);
 +        addMapping(EntityBubbleFX.class, "BubbleFX", id--);

@@ -1,3 +1,7 @@
+## Version 1.1.2: ##
+/--Gameplay--/
+- Fixed an issue where clients would crash in multiplayer when more than one person joined the server.
+
 ## Version 1.1.1: ##
 Thanks to the following people who contributed to this release!
 - Dawnraider
