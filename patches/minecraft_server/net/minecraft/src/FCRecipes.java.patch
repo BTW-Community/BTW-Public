@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,6857 @@
+@@ -0,0 +1,6872 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -828,10 +828,25 @@
 +		} );
 +		
 +		AddShapelessRecipeWithSecondaryOutputIndicator(
-+			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), new ItemStack(FCBetterThanWolves.fcItemPileGravel), new Object[] {	    		
-+    		new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, m_iIgnoreMetadata ),
-+    		new ItemStack( Block.stone )
-+		} );		
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), 
++			new ItemStack(FCBetterThanWolves.fcItemPileGravel), 
++			new Object[] {	    		
++					new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, m_iIgnoreMetadata ),
++					new ItemStack( Block.stone )
++		} );
++		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 2 ), new Object[] {	    		
++    		new ItemStack( FCBetterThanWolves.fcItemChiselDiamond, 1, m_iIgnoreMetadata ),
++    		new ItemStack( FCBetterThanWolves.fcItemStoneBrick )
++		} );
++		
++		AddShapelessRecipeWithSecondaryOutputIndicator(
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), 
++			new ItemStack(FCBetterThanWolves.fcItemPileGravel), 
++			new Object[] {	    		
++					new ItemStack( FCBetterThanWolves.fcItemChiselDiamond, 1, m_iIgnoreMetadata ),
++					new ItemStack( Block.stone )
++		} );	
 +	}
 +	
 +	private static void AddLooseNetherBrickRecipes()
