@@ -75,7 +75,7 @@
 +	}
 +	
 +	private static boolean doesParameterTypeSatisfyConstructorType(Class<?> parameterType, Class<?> constructorType) {
-+		if (parameterType.isPrimitive()) {
++		if (parameterType.isPrimitive() && constructorType.isPrimitive()) {
 +			int pSize = getPrimitiveSize(parameterType);
 +			int cSize = getPrimitiveSize(constructorType);
 +			
@@ -96,7 +96,7 @@
 +	
 +	private static int getPrimitiveSize(Class<?> primitive) {
 +		if (!primitive.isPrimitive()) {
-+			throw new IllegalArgumentException("Class must be a primitive");
++			throw new IllegalArgumentException("Expected a primitive but was passed " + primitive.getSimpleName());
 +		}
 +		
 +		if (primitive == byte.class || primitive == char.class)
