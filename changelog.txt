@@ -1,5 +1,10 @@
-## Version 1.1.2: ##
+## Version 1.1.3 ##
 /--Gameplay--/
+- Fixed an issue where diamond chisels were unable to split stone into stone bricks.
+- Fixed an issue where the game would crash when trying to spawn a lightning bolt.
+
+## Version 1.1.2 ##
+/--General--/
 - Fixed an issue where clients would crash in multiplayer when more than one person joined the server.
 
 ## Version 1.1.1: ##
