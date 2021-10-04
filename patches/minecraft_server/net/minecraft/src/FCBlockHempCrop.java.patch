@@ -168,7 +168,7 @@
 +        	// kill the plant below if not harvested by shears
 +        	
 +        	if ( player.getCurrentEquippedItem() == null ||
-+        		player.getCurrentEquippedItem().getItem() instanceof FCItemShears)
++        		!(player.getCurrentEquippedItem().getItem() instanceof FCItemShears))
 +        	{
 +        		if ( world.getBlockId( i, j - 1, k ) == blockID )
 +        		{

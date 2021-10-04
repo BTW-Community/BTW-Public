@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,6872 @@
+@@ -0,0 +1,6892 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -2541,6 +2541,26 @@
 +    		new ItemStack( Item.shears, 1, m_iIgnoreMetadata ),
 +    		new ItemStack( FCBetterThanWolves.fcItemTannedLeatherCut )
 +		} );
++		
++		FCRecipes.AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemLeatherCut, 2), new Object[] {
++				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, 32767), 
++				new ItemStack(Item.leather)
++		});
++		
++		FCRecipes.AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemTannedLeatherCut, 2), new Object[] {
++				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, 32767), 
++				new ItemStack(FCBetterThanWolves.fcItemTannedLeather)
++		});
++		
++		FCRecipes.AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemScouredLeatherCut, 2), new Object[] {
++				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, 32767), 
++				new ItemStack(FCBetterThanWolves.fcItemScouredLeather)
++		});
++		
++		FCRecipes.AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemStrap, 4), new Object[] {
++				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, 32767), 
++				new ItemStack(FCBetterThanWolves.fcItemTannedLeatherCut)
++		});
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemGoldenDung ), new Object[] {
 +    		"ggg", 

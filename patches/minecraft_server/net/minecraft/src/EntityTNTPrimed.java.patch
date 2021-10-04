@@ -1,0 +1,13 @@
+--- a/minecraft_server/net/minecraft/src/EntityTNTPrimed.java
++++ b/minecraft_server/net/minecraft/src/EntityTNTPrimed.java
+@@ -30,6 +30,10 @@
+         this.tntPlacedBy = par8EntityLiving;
+     }
+ 
++    public EntityTNTPrimed(World par1World, double par2, double par4, double par6) {
++    	this(par1World, par2, par4, par6, null);
++    }
++
+     protected void entityInit() {}
+ 
+     /**

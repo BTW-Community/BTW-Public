@@ -107,7 +107,7 @@
          else if (par1Packet23VehicleSpawn.type == 50)
          {
 -            var8 = new EntityTNTPrimed(this.worldClient, var2, var4, var6, (EntityLiving)null);
-+            var8 = EntityList.createEntityOfType(EntityTNTPrimed.class, this.worldClient, var2, var4, var6, (EntityLiving)null);
++            var8 = EntityList.createEntityOfType(EntityTNTPrimed.class, this.worldClient, var2, var4, var6);
          }
          else if (par1Packet23VehicleSpawn.type == 51)
          {
