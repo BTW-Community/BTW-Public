@@ -1,3 +1,20 @@
+## Version 1.1.5 ##
+/--Gameplay--/
+- Fixed an issue where diamond shears could not be used to cut leather.
+- Fixed an issue where hemp could not be harvested using shears.
+- Fixed an issue where placing a brick in multiplayer would crash the server.
+- Fixed an issue where the game would crash upon entering the end.
+- Fixed an issue where throwing an egg would crash the game.
+- Fixed an issue where throwing a snowball would crash the game.
+- Fixed an issue where lighting a powder keg would crash the game.
+- Fixed an issue where casting a fishing rod would crash the game.
+
+/--Creative Mode--/
+- Fixed an issue where an unimplemented item could be obtained through the creative menu.
+
+/--Addon API--/
+- Fixed an issue where addons with no config options defined would display an error to the console.
+
 ## Version 1.1.4 ##
 Sorry to keep spamming releases, the new entity spawning code touched a lot of places and I was bound to miss a few while testing.
 

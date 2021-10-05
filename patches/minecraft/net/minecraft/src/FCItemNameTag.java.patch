@@ -6,8 +6,8 @@
 +public class FCItemNameTag extends Item {
 +	protected FCItemNameTag(int id) {
 +		super(id);
-+		this.setUnlocalizedName("decoItemNameTag");
-+		this.setCreativeTab(CreativeTabs.tabTools);
++		this.setUnlocalizedName("fcItemNameTag");
++		//this.setCreativeTab(CreativeTabs.tabTools);
 +		this.setMaxStackSize(1);
 +	}
 +	

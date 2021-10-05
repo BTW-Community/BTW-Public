@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCAddOnHandler.java
-@@ -0,0 +1,326 @@
+@@ -0,0 +1,329 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -258,8 +258,11 @@
 +			FCAddOn addon = (FCAddOn) mod;
 +			
 +			Map<String, String> addonConfigProperties = addon.loadConfigProperties();
-+			addon.repopulateConfigFile();
-+			addon.handleConfigProperties(addonConfigProperties);
++			
++			if (addonConfigProperties != null) {
++				addon.repopulateConfigFile();
++				addon.handleConfigProperties(addonConfigProperties);
++			}
 +		}
 +	}
 +	
