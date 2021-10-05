@@ -1516,7 +1516,7 @@
 +        	world.setBlockToAir( i, j, k );
 +
 +        	for (ItemStack stack : outputs) {
-+        		FCUtilsItem.EjectStackWithRandomOffset(world, i, j, k, stack);
++        		FCUtilsItem.EjectStackWithRandomOffset(world, i, j, k, stack.copy());
 +        	}
 +    	}
 +    }
@@ -1566,7 +1566,7 @@
 +    	if (recipe != null)
 +    	{
 +    		for (ItemStack stack : recipe.getOutput()) {
-+    			FCUtilsItem.EjectStackWithRandomOffset(world, i, j, k, stack);
++    			FCUtilsItem.EjectStackWithRandomOffset(world, i, j, k, stack.copy());
 +    		}
 +    	}
 +    	else

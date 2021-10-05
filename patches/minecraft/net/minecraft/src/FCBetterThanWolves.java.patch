@@ -25,7 +25,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.1.5";
++	public static final String fcVersionString = "1.1.6";
 +	
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +	
