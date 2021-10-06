@@ -1,3 +1,7 @@
+## Version 1.1.6 ##
+/--Gameplay--/
+-Fixed an issue where the saw and kiln could output items with 0 stack size.
+
 ## Version 1.1.5 ##
 /--Gameplay--/
 - Fixed an issue where diamond shears could not be used to cut leather.
