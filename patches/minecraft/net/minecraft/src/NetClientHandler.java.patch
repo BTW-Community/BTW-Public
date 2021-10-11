@@ -139,7 +139,7 @@
 +        }
 +        else if ( par1Packet23VehicleSpawn.type == FCEntityMovingPlatform.GetVehicleSpawnPacketType() )
 +        {
-+        	var8 = EntityList.createEntityOfType(FCEntityMovingPlatform.class, worldClient, var2, var4, var6, null );
++        	var8 = EntityList.createEntityOfType(FCEntityMovingPlatform.class, worldClient, var2, var4, var6 );
 +        }
 +        else if ( par1Packet23VehicleSpawn.type == FCEntityMovingAnchor.GetVehicleSpawnPacketType() )
 +        {

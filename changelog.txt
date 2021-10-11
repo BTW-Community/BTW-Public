@@ -1,3 +1,16 @@
+## Version 1.1.7 ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- Zhil
+
+/--General--/
+- Fixed an issue where falling sand would generate an error on chunk generation.
+
+/--Gameplay--/
+- Fixed an issue where comparators had the wrong recipe.
+- Fixed an issue where the game would crash when a platform began moving.
+- Fixed an issue where the game could crash when a max level villager tried to refresh its trades.
+
 ## Version 1.1.6 ##
 /--Gameplay--/
 -Fixed an issue where the saw and kiln could output items with 0 stack size.

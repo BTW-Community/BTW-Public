@@ -2603,7 +2603,7 @@
 +    		"SSS",
 +    		'E', FCBetterThanWolves.fcItemPolishedLapis,
 +    		'S', FCBetterThanWolves.fcItemStoneBrick,
-+    		'R', Item.redstone
++    		'R', Block.torchRedstoneActive
 +		});
 +		
 +		// Recipe awaiting renaming functionality to be enabled
