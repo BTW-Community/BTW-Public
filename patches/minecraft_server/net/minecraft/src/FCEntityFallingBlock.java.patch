@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCEntityFallingBlock.java
-@@ -0,0 +1,214 @@
+@@ -0,0 +1,219 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -16,6 +16,11 @@
 +	protected boolean m_bHurtsEntities = false;
 +	protected float m_fHurtsAmount = 2F;
 +	protected int m_fHurtsMaxDamage = 40;
++	
++	public FCEntityFallingBlock( World world )
++    {
++    	super( world );
++    }
 +	
 +    public FCEntityFallingBlock( World world, double dPosX, double dPosY, double dPosZ, int iBlockID, int iBlockMetadata )
 +    {

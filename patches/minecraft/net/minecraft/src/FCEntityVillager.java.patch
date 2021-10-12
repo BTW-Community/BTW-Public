@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityVillager.java
-@@ -0,0 +1,1352 @@
+@@ -0,0 +1,1359 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -521,6 +521,9 @@
 +	}
 +
 +	private boolean checkForLevelUpTrade() {
++		if (this.GetCurrentTradeLevel() >= 5)
++			return false;
++		
 +		MerchantRecipe recipe = this.getProfessionLevelUpTrade(this.GetCurrentTradeLevel());
 +
 +		if (recipe != null && !this.DoesRecipeListAlreadyContainRecipe(recipe)) {
@@ -534,6 +537,10 @@
 +
 +	protected MerchantRecipe getProfessionLevelUpTrade(int level) {
 +		WeightedMerchantEntry entry = levelUpTradeByProfessionList.get(this.getProfessionFromClass()).get(level);
++		
++		if (entry == null) {
++			throw new RuntimeException("Level up entry for profession " + this.getProfessionFromClass() + " on level " + this.GetCurrentTradeLevel() + " was missing!");
++		}
 +
 +		return entry.generateRecipe(this.rand);
 +	}

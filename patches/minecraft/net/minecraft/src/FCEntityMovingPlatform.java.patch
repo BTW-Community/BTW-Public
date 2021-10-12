@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityMovingPlatform.java
-@@ -0,0 +1,560 @@
+@@ -0,0 +1,565 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -39,6 +39,11 @@
 +    	m_AssociatedAnchorLastKnownXPos = 0.0D;
 +    	m_AssociatedAnchorLastKnownYPos = 0.0D;
 +    	m_AssociatedAnchorLastKnownZPos = 0.0D;    	
++    }
++    
++    public FCEntityMovingPlatform( World world, double x, double y, double z )
++    {
++    	this(world, x, y, z, null);
 +    }
 +    
 +    public FCEntityMovingPlatform( World world, double x, double y, double z,
