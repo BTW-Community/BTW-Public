@@ -221,3 +221,48 @@ task updateMd5(type: Exec) {
 }
 
 defaultTasks 'clean', 'updatemd5'
+
+task ingest {
+    finalizedBy updateMd5
+
+    doFirst {
+        delete "$projectDir/changelog.txt"
+        delete "$projectDir/resources"
+
+        delete "$projectDir/src/minecraft"
+        delete "$projectDir/src/minecraft_server"
+
+        delete "$mcpDir/src"
+        delete "$mcpDir/temp"
+
+        copy {
+            eachFile {
+                path -= ~/^.+?\//
+            }
+
+            from zipTree(fileTree("$projectDir/src").singleFile)
+            into "$projectDir/src"
+
+            exclude '**/README.md'
+            include '**/changelog.txt'
+            include '**/resources/**'
+            include '**/minecraft/**'
+            include '**/minecraft_server/**'
+
+            includeEmptyDirs = false
+        }
+
+        copy {
+            from "$projectDir/src/changelog.txt"
+            from("$projectDir/src/resources") {
+                into 'resources'
+            }
+            into projectDir
+        }
+
+        delete "$projectDir/src/changelog.txt"
+        delete "$projectDir/src/resources"
+
+        delete fileTree("$projectDir/src").filter { it.path.endsWith('zip') }
+    }
+}
