@@ -1,24 +1,22 @@
 ![BTW Banner](https://raw.githubusercontent.com/BTW-Community/BTW-Public/main/branding/banner-ultra-high-res.png)
 # Better Than Wolves - Community Edition
 
-This is a continuation of FlowerChild's Better than Wolves total conversion Minecraft mod for 1.5.2.
+This is a continuation of FlowerChild's Better than Wolves total conversion Minecraft mod. Its aim is to both recapture the feeling of that first time you played Minecraft, hiding in a dark hole on your first night with monsters all around, as well as extending gameplay by creating a deep tech tree that lets you slowly master your surroundings, as you craft windmills, kilns and crucibles and eventually reach steel production.
 
-The Community Edition team would like to express its gratitude to all the people that have kept this community alive all these years, but in particular FlowerChild for making BTW, Dawnraider for spearheading the Community Edition effort, Sargunster for keeping the forums and wiki online all these years and Sarudak for moderating them, Zhil for organizing the extended community and all the people that contributed time and effort to the Community Edition.
-
-## Installation
-
-Better Than Wolves is a total overhaul of Minecraft 1.5.2, trying to keep that old beta survival feel of days gone. This means that the installation is a bit different from most mods. Check out [the wiki](https://github.com/BTW-Community/BTW-Public/wiki) for installation instructions.
+Better Than Wolves is trying to keep that old survival feel of versions past and therefore uses an old version of Minecraft: 1.5.2. This means that the installation is a bit different from most mods. Check out [the wiki](https://github.com/BTW-Community/BTW-Public/wiki) for installation instructions.
 
 ## Links
 
-* [Download](https://github.com/BTW-Community/BTW-Public/releases)
+* [Download](https://github.com/BTW-Community/BTW-Public/releases) | [Installation](https://github.com/BTW-Community/BTW-Public/wiki)
 * [Report a bug](https://github.com/BTW-Community/BTW-Public/issues)
 * [MCForum Thread](https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/minecraft-mods/3117153-1-5-2-better-than-wolves-community-edition-v1-0-1)
-* [Forums](http://www.sargunster.com/btwforum/)
-* [Wiki](https://www.sargunster.com/btw/)
-* [Discord](https://discord.gg/fhMK5kx)
+* [Forums](http://www.sargunster.com/btwforum/) | [Wiki](https://www.sargunster.com/btw/) | [Discord](https://discord.gg/fhMK5kx)
 * [Original Wolves Are a Bad Idea Thread](https://www.minecraftforum.net/forums/minecraft-java-edition/survival-mode/220651-notch-wolves-are-a-bad-idea)
 * [Original Better Than Wolves Thread](https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/minecraft-mods/1272992-better-than-wolves-total-conversion)
+
+## A word of gratitude
+
+The Community Edition team would like to express its gratitude to all the people that have kept this community alive all these years, but in particular FlowerChild for making BTW, Dawnraider for spearheading the Community Edition effort, Sargunster for keeping the forums and wiki online all these years and Sarudak for moderating them, Zhil for organizing the extended community and all the people that contributed time and effort to the Community Edition.
 
 ## What is Better Than Wolves?
 
