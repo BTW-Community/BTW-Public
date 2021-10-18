@@ -5,6 +5,10 @@ This is a continuation of FlowerChild's Better than Wolves total conversion Mine
 
 The Community Edition team would like to express its gratitude to all the people that have kept this community alive all these years, but in particular FlowerChild for making BTW, Dawnraider for spearheading the Community Edition effort, Sargunster for keeping the forums and wiki online all these years and Sarudak for moderating them, Zhil for organizing the extended community and all the people that contributed time and effort to the Community Edition.
 
+## Installation
+
+Better Than Wolves is a total overhaul of Minecraft 1.5.2, trying to keep that old beta survival feel of days gone. This means that the installation is a bit different from most mods. Check out [the wiki](https://github.com/BTW-Community/BTW-Public/wiki) for installation instructions.
+
 ## Links
 
 * [Download](https://github.com/BTW-Community/BTW-Public/releases)
