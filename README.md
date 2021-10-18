@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/4284735/135872968-14bd1df8-092a-497b-84e8-5a2ccd5a772b.png)
+![image](https://raw.githubusercontent.com/BTW-Community/BTW-Public/main/branding/banner-high-res.png)
 # Better Than Wolves - Community Edition
 
 This is a continuation of FlowerChild's Better than Wolves total conversion Minecraft mod for 1.5.2.
