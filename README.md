@@ -7,10 +7,10 @@ Better Than Wolves is trying to keep that old survival feel of versions past and
 
 ## Links
 
-* [Download](https://github.com/BTW-Community/BTW-Public/releases) | [Installation](https://github.com/BTW-Community/BTW-Public/wiki)
+* [Download](https://github.com/BTW-Community/BTW-Public/releases) — [Installation](https://github.com/BTW-Community/BTW-Public/wiki)
 * [Report a bug](https://github.com/BTW-Community/BTW-Public/issues)
 * [MCForum Thread](https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/minecraft-mods/3117153-1-5-2-better-than-wolves-community-edition-v1-0-1)
-* [Forums](http://www.sargunster.com/btwforum/) | [Wiki](https://www.sargunster.com/btw/) | [Discord](https://discord.gg/fhMK5kx)
+* [Forums](http://www.sargunster.com/btwforum/) — [Wiki](https://www.sargunster.com/btw/) — [Discord](https://discord.gg/fhMK5kx)
 * [Original Wolves Are a Bad Idea Thread](https://www.minecraftforum.net/forums/minecraft-java-edition/survival-mode/220651-notch-wolves-are-a-bad-idea)
 * [Original Better Than Wolves Thread](https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/minecraft-mods/1272992-better-than-wolves-total-conversion)
 
