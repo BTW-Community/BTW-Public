@@ -224,6 +224,7 @@ task updateMd5(type: Exec) {
 defaultTasks 'clean', 'updatemd5'
 
 task ingest {
+    dependsOn tasks.clean
     finalizedBy updateMd5
 
     doFirst {
