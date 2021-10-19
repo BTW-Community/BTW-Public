@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCRecipesLogChopping.java
-@@ -0,0 +1,220 @@
+@@ -0,0 +1,219 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -152,30 +152,29 @@
 +	public ItemStack[] getSecondaryOutput(IInventory inventory) {
 +		ItemStack result = this.getCraftingResult((InventoryCrafting) inventory);
 +		ItemStack[] outputs;
-+		
-+		boolean isBlood = false;
-+		
++
++		ItemStack logStack = null;
++
 +		for (int i = 0; i < inventory.getSizeInventory(); i++) {
 +			ItemStack craftingStack = inventory.getStackInSlot(i);
-+			
-+			if (craftingStack != null && craftingStack.itemID == FCBetterThanWolves.fcBloodWood.blockID) {
-+				isBlood = true;
-+				break;
++
++			if (craftingStack != null && IsLog(craftingStack)) {
++				logStack = craftingStack.copy();
 +			}
 +		}
-+		
-+		if (isBlood) { //Blood wood
++
++		if (logStack.itemID == FCBetterThanWolves.fcBloodWood.blockID) { //Blood wood
 +			outputs = new ItemStack[3];
 +
 +			if (result.itemID == Block.planks.blockID) {
 +				outputs[0] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 1);
 +				outputs[1] = new ItemStack(FCBetterThanWolves.fcItemSoulDust, 1);
-+				outputs[2] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, result.getItemDamage());
++				outputs[2] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, logStack.getItemDamage());
 +			}
 +			else {
 +				outputs[0] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 3);
 +				outputs[1] = new ItemStack(FCBetterThanWolves.fcItemSoulDust, 1);
-+				outputs[2] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, result.getItemDamage());
++				outputs[2] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, logStack.getItemDamage());
 +			}
 +		}
 +		else {
@@ -183,14 +182,14 @@
 +
 +			if (result.itemID == Block.planks.blockID) {
 +				outputs[0] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 2);
-+				outputs[1] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, result.getItemDamage());
++				outputs[1] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, logStack.getItemDamage());
 +			}
 +			else {
 +				outputs[0] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 4);
-+				outputs[1] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, result.getItemDamage());
++				outputs[1] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, logStack.getItemDamage());
 +			}
 +		}
-+
++		
 +		return outputs;
 +	}
 +

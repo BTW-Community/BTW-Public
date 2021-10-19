@@ -5,16 +5,24 @@
          if (!par1World.isRemote)
          {
 -            EntityTNTPrimed var6 = new EntityTNTPrimed(par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F), par5Explosion.func_94613_c());
-+        	EntityTNTPrimed var6 = (EntityTNTPrimed) EntityList.createEntityOfType(EntityTNTPrimed.class, par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F), par5Explosion.func_94613_c());
++            EntityTNTPrimed var6 = (EntityTNTPrimed) EntityList.createEntityOfType(EntityTNTPrimed.class, par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F), par5Explosion.func_94613_c());
              var6.fuse = par1World.rand.nextInt(var6.fuse / 4) + var6.fuse / 8;
              par1World.spawnEntityInWorld(var6);
          }
-@@ -72,7 +72,7 @@
+@@ -72,7 +72,15 @@
          {
              if ((par5 & 1) == 1)
              {
 -                EntityTNTPrimed var7 = new EntityTNTPrimed(par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F), par6EntityLiving);
-+            	EntityTNTPrimed var7 = (EntityTNTPrimed) EntityList.createEntityOfType(EntityTNTPrimed.class, par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F), par6EntityLiving);
++            	EntityTNTPrimed var7;
++            	
++            	if (par6EntityLiving == null) {
++            		var7 = (EntityTNTPrimed) EntityList.createEntityOfType(EntityTNTPrimed.class, par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F));
++            	}
++            	else {
++            		var7 = (EntityTNTPrimed) EntityList.createEntityOfType(EntityTNTPrimed.class, par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F), par6EntityLiving);
++            	}
++            	
                  par1World.spawnEntityInWorld(var7);
                  par1World.playSoundAtEntity(var7, "random.fuse", 1.0F, 1.0F);
              }

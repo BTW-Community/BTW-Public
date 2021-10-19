@@ -1,3 +1,14 @@
+## Version 1.1.8 ##
+/--Gameplay--/
+- Changed (increased) the chance of breeding villagers producing a villager of a different profession than the parents.
+- Fixed an issue where TNT exploding could still cause a crash in some instances.
+- Fixed an issue where chopping logs with a stone axe always produced oak bark.
+
+/--Addon API--/
+- Added the ability for addons to add custom villagers to existing castes in order to allow addon villagers to be bred from vanilla ones.
+- Added the ability for addons to define their own castes for villager breeding.
+- Fixed an issue where defining villager professions with non-consecutive ids would cause the game to crash when a villager of that profession was created.
+
 ## Version 1.1.7 ##
 Thanks to the following people who contributed to this release!
 - Dawnraider
