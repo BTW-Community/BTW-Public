@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCAddOn.java
-@@ -0,0 +1,303 @@
+@@ -0,0 +1,310 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -186,7 +186,7 @@
 +	 * Rewrites the existing config file to account for missing options
 +	 * Does a complete rewrite instead of appending in order to maintain option order
 +	 */
-+	public void repopulateConfigFile() {
++	public void repopulateConfigFile(Map<String, String> propertyValues) {
 +		String filename = this.prefix + ".properties";
 +		File config = new File("config/" + filename);
 +		
@@ -196,11 +196,20 @@
 +			for (String propertyName : this.configProperties) {
 +				String comment = configPropertyComments.get(propertyName);
 +				
-+				if (comment != null) {
++				if (!comment.equals("")) {
 +					writer.write("\n# " + comment + "\n");
 +				}
 +				
-+				writer.write(propertyName + "=" + configPropertyDefaults.get(propertyName) + "\n");
++				String propertyValue;
++				
++				if (propertyValues.containsKey(propertyName)) {
++					propertyValue = propertyValues.get(propertyName); 
++				}
++				else {
++					propertyValue = configPropertyDefaults.get(propertyName);
++				}
++				
++				writer.write(propertyName + "=" + propertyValue + "\n");
 +			}
 +			
 +			writer.close();
@@ -301,7 +310,5 @@
 +	public FCAddOnUtilsWorldData createWorldData() {
 +		return null;
 +	}
-+
-+	//----------- Client Side Functionality -----------//
 +}
 \ No newline at end of file

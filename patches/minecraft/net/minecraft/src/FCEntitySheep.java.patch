@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntitySheep.java
-@@ -0,0 +1,914 @@
+@@ -0,0 +1,932 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -12,12 +12,15 @@
 +{
 +    private static final int m_iFullWoolAccumulationCount = FCUtilsMisc.m_iTicksPerGameDay;
 +    
-+    private int m_iOriginalFleeceColor = 0;
 +    private int m_iWoolAccumulationCount = 0;
++    
++    private int originalWoolColorWatcherID = 20;
 +    
 +    public FCEntitySheep( World world )
 +    {
 +        super( world );
++
++        this.texture = "/btwmodtex/fcSheep.png";
 +        
 +        tasks.RemoveAllTasks();
 +        
@@ -103,7 +106,7 @@
 +    {
 +        super.writeEntityToNBT( tag );
 +        
-+        tag.setByte( "fcOrgClr", (byte)m_iOriginalFleeceColor );
++        tag.setByte( "fcOrgClr", (byte) this.getOriginalFleeceColor() );
 +        tag.setInteger( "fcWoolCount", m_iWoolAccumulationCount ); 
 +    }
 +
@@ -114,7 +117,7 @@
 +        
 +        if ( tag.hasKey( "fcOrgClr" ) )
 +        {
-+        	m_iOriginalFleeceColor = tag.getByte( "fcOrgClr" );
++        	this.setOriginalFleeceColor(tag.getByte( "fcOrgClr" ));
 +        }
 +        
 +        if ( tag.hasKey( "fcWoolCount" ) )
@@ -224,7 +227,7 @@
 +    {
 +    	super.setFleeceColor( iColor );
 +    	
-+        m_iOriginalFleeceColor = iColor;
++        this.setOriginalFleeceColor(iColor);
 +    }
 +
 +    @Override
@@ -271,7 +274,7 @@
 +        	
 +        	if ( m_iWoolAccumulationCount >= m_iFullWoolAccumulationCount )
 +        	{
-+        		setFleeceColor( m_iOriginalFleeceColor );
++        		setFleeceColor( this.getOriginalFleeceColor() );
 +	    	
 +	        	setSheared( false );	        	
 +	        	m_iWoolAccumulationCount = 0;
@@ -287,7 +290,22 @@
 +    	super.UpdateHungerState();
 +    }
 +    
++    @Override
++    protected void entityInit() {
++    	super.entityInit();
++    	this.dataWatcher.addObject(20, new Byte((byte) 0));
++    }
++    
 +	//------------- Class Specific Methods ------------//
++    
++    public int getOriginalFleeceColor() {
++    	return this.dataWatcher.getWatchableObjectByte(originalWoolColorWatcherID) & 15;
++    }
++    
++    public void setOriginalFleeceColor(int originalColor) {
++        byte byte0 = dataWatcher.getWatchableObjectByte(originalWoolColorWatcherID);
++        dataWatcher.updateObject(originalWoolColorWatcherID, Byte.valueOf((byte)(byte0 & 0xf0 | originalColor & 0xf)));
++    }
 +    
 +    public void setSuperficialFleeceColor(int par1)
 +    {
@@ -329,11 +347,11 @@
 +		}		
 +		else if (this.rand.nextBoolean())
 +        {
-+    		babySheep.setFleeceColor( m_iOriginalFleeceColor );
++    		babySheep.setFleeceColor( this.getOriginalFleeceColor() );
 +        }
 +        else
 +        {
-+    		babySheep.setFleeceColor( parentSheep.m_iOriginalFleeceColor );
++    		babySheep.setFleeceColor( parentSheep.getOriginalFleeceColor() );
 +        }
 +
 +        return babySheep;
@@ -341,8 +359,8 @@
 +    
 +    public int blendParentColors( FCEntitySheep papa, FCEntitySheep mama )
 +    {
-+    	int iPapaItemColor = BlockCloth.getBlockFromDye( papa.m_iOriginalFleeceColor );  
-+    	int iMamaItemColor = BlockCloth.getBlockFromDye( mama.m_iOriginalFleeceColor );
++    	int iPapaItemColor = BlockCloth.getBlockFromDye( papa.getOriginalFleeceColor() );  
++    	int iMamaItemColor = BlockCloth.getBlockFromDye( mama.getOriginalFleeceColor() );
 +    	int iBlendedItemColor = iPapaItemColor;
 +    	
 +        switch ( iPapaItemColor )

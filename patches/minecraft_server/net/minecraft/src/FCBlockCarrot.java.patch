@@ -1,56 +1,22 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockCarrot.java
-@@ -0,0 +1,53 @@
-+// FCMOD
-+
+@@ -0,0 +1,18 @@
 +package net.minecraft.src;
 +
-+import java.util.Random;
++public class FCBlockCarrot extends FCBlockCarrotBase {
++	public FCBlockCarrot(int iBlockID) {
++		super(iBlockID);
++		this.setUnlocalizedName("fcBlockCarrots");
++	}
 +
-+public class FCBlockCarrot extends BlockCarrot
-+{
-+    public FCBlockCarrot( int iBlockID )
-+    {
-+        super( iBlockID );
-+    }
-+    
-+    @Override
-+    public float GetBaseGrowthChance( World world, int i, int j, int k )
-+    {
-+    	return 0.1F;
-+    }
-+    
-+    @Override
-+    protected void IncrementGrowthLevel( World world, int i, int j, int k )
-+    {
-+    	int iGrowthLevel = GetGrowthLevel( world, i, j, k ) + 1;
++	@Override
++	protected int GetCropItemID() {
++		return FCBetterThanWolves.fcItemCarrot.itemID;
++	}
 +
-+    	if ( iGrowthLevel == 7 || ( iGrowthLevel & 1 ) == 0 )
-+    	{
-+    		super.IncrementGrowthLevel( world, i, j, k );
-+    	}
-+    	else
-+    	{    	
-+    		// only notify surrounding blocks and the client on visible change
-+    		
-+            SetGrowthLevelNoNotify( world, i, j, k, iGrowthLevel );
-+    	}    
-+	}    
-+	
-+    @Override
-+    public ItemStack GetStackRetrievedByBlockDispenser( World world, int i, int j, int k )
-+    {
-+		// only retrieve if fully grown
-+		
-+		if ( world.getBlockMetadata( i, j, k ) >= 7 )
-+		{
-+			return super.GetStackRetrievedByBlockDispenser( world, i, j, k );			
-+		}
-+    	
-+    	return null;
-+    }
-+    
-+    //------------- Class Specific Methods ------------//
-+    
-+	//----------- Client Side Functionality -----------//
++	@Override
++	protected int GetSeedItemID() {
++		return 0;
++	}
 +}
+\ No newline at end of file

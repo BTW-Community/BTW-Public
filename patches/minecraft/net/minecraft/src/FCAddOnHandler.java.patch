@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCAddOnHandler.java
-@@ -0,0 +1,329 @@
+@@ -0,0 +1,349 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -21,7 +21,7 @@
 +
 +public class FCAddOnHandler
 +{
-+	public static List m_ModList = new LinkedList();
++	public static List<FCAddOn> m_ModList = new LinkedList();
 +	public static boolean m_bModsInitialized = false;
 +
 +	public static final Logger m_Logger = Logger.getLogger("BetterThanWolves");
@@ -260,7 +260,7 @@
 +			Map<String, String> addonConfigProperties = addon.loadConfigProperties();
 +			
 +			if (addonConfigProperties != null) {
-+				addon.repopulateConfigFile();
++				addon.repopulateConfigFile(addonConfigProperties);
 +				addon.handleConfigProperties(addonConfigProperties);
 +			}
 +		}
@@ -275,6 +275,26 @@
 +
 +	public void setWorldDataForMod(Class<? extends FCAddOn> mod, FCAddOnUtilsWorldData data) {
 +		FCAddOnHandler.addonWorldDataMap.put(mod, data);
++	}
++	
++	public boolean isModInstalled(String name) {
++		for (FCAddOn mod : this.m_ModList) {
++			if (mod.getName().equals(name)) {
++				return true;
++			}
++		}
++		
++		return false;
++	}
++	
++	public FCAddOn getModByName(String name) {
++		for (FCAddOn mod : this.m_ModList) {
++			if (mod.getName().equals(name)) {
++				return mod;
++			}
++		}
++		
++		return null;
 +	}
 +
 +	//----------- Client Side Functionality -----------//

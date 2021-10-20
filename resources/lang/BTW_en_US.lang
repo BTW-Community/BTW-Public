@@ -284,6 +284,8 @@ tile.fcBlockSlabDirt.packed.name=Packed Earth Slab
 tile.fcBlockSlabFalling.name=Gravel Slab
 tile.fcBlockSlabFalling.sand.name=Sand Slab
 
+tile.fcBlockClay.name=Clay Ore
+
 # Vanilla Blocks Renamed
 
 tile.tnt.name=Powder Keg
@@ -306,7 +308,10 @@ tile.torch.name=Old Torch
 
 tile.stone.name=Smooth Stone
 
-
+tile.sapling.oakMature.name=Mature Oak Sapling
+tile.sapling.spruceMature.name=Mature Spruce Sapling
+tile.sapling.birchMature.name=Mature Birch Sapling
+tile.sapling.jungleMature.name=Mature Jungle Sapling
 
 # BTW Items
 
@@ -347,7 +352,7 @@ item.fcItemSwordRefined.name=Refined Sword
 item.fcItemNetherrackGround.name=Ground Netherrack
 item.fcItemDustHellfire.name=Hellfire Dust
 item.fcItemConcentratedHellfire.name=Concentrated Hellfire
-item.fcItemArmorPlate.name=Armor Plate
+item.fcItemArmorPlate.name=Steel Armor Plate
 item.fcItemHelmetPlate.name=Plate Helm
 item.fcItemChestplatePlate.name=Breastplate
 item.fcItemLeggingsPlate.name=Plate Leggings
@@ -496,6 +501,10 @@ item.fcItemBrickNetherUnfired.name=Uncooked Nether Brick
 item.fcItemNameTag.name=Name Tag
 item.fcItemChiselDiamond.name=Diamond Chisel
 item.fcItemShearsDiamond.name=Diamond Shears
+item.fcItemReedRoots.name=Sugar Cane Roots
+item.fcItemCarrot.name=Carrot
+item.fcItemCarrotSeeds.name=Carrot Seeds
+item.fcItemDiamondPlate.name=Diamond Armor Plate
 
 # BTW Complex Items
 
@@ -519,6 +528,7 @@ item.skull.wither.name=Runed Skull
 item.skull.infused.name=Infused Skull
 item.wheat.name=Old Wheat
 item.seeds.name=Old Seeds
+item.carrots.name=Old Carrot
 
 # Potions
 

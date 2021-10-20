@@ -160,8 +160,8 @@
 +    public static Block ice = (new FCBlockIce(79)).setHardness(0.5F).SetBuoyant().setLightOpacity(3).setStepSound(soundGlassFootstep).setUnlocalizedName("ice");
 +    public static Block blockSnow = new FCBlockSnowLegacy( 80 );
 +    public static Block cactus = new FCBlockCactus( 81 );
-+    public static Block blockClay = (new FCBlockClay(82)).setHardness(0.6F).setUnlocalizedName("clay");
-+    public static Block reed = (new FCBlockReed(83)).setHardness(0.0F).SetBuoyant().setStepSound(soundGrassFootstep).setUnlocalizedName("reeds").disableStats();
++    public static Block blockClay = (new FCBlockClay(82)).setHardness(0.6F).setUnlocalizedName("fcBlockClay");
++    public static Block reed = (new FCBlockReedLegacy(83)).setHardness(0.0F).SetBuoyant().setStepSound(soundGrassFootstep).setUnlocalizedName("reeds").disableStats();
 +    public static Block jukebox = new FCBlockJukebox( 84 );
 +    public static Block fence = new FCBlockFenceWood( 85 );
 +    public static Block pumpkin = new FCBlockPumpkinCarved( 86 );
@@ -345,8 +345,8 @@
 +    public static BlockBeacon beacon = (BlockBeacon)(new FCBlockBeacon(138)).setUnlocalizedName("beacon").setLightValue(1.0F);
 +    public static Block cobblestoneWall = (new FCBlockWall(139, cobblestone)).setUnlocalizedName("cobbleWall");
 +    public static Block flowerPot = (new FCBlockFlowerPot(140)).setHardness(0.0F).setStepSound(soundPowderFootstep).setUnlocalizedName("flowerPot");
-+    public static Block carrot = (new FCBlockCarrot(141)).setUnlocalizedName("carrots");
-+    public static Block potato = (new FCBlockPotato(142)).setUnlocalizedName("potatoes");
++    public static Block carrot = (new FCBlockCarrotLegacy(141)).setUnlocalizedName("carrots");
++    public static Block potato = (new FCBlockPotatoLegacy(142)).setUnlocalizedName("potatoes");
 +    public static Block woodenButton = (new FCBlockButtonWood(143)).setHardness(0.5F).setStepSound(soundWoodFootstep).setUnlocalizedName("button");
 +    public static Block skull = new FCBlockSkull( 144 );
 +    public static Block anvil = new FCBlockAnvil( 145 );
@@ -410,13 +410,14 @@
  
      /**
       * Determines how much velocity is maintained while moving on top of this block
-@@ -274,7 +273,15 @@
+@@ -274,7 +273,16 @@
  
      /** The unlocalized name of this block. */
      private String unlocalizedName;
 +    protected Icon blockIcon;
  
 +    public static final boolean[] blockReplaced = new boolean[4096];
++	public static final String[] blockReplacedBy = new String[4096];
 +    
 +    private int idDroppedOnStonecut = -1;
 +    private int countDroppedOnStonecut = 0;
@@ -426,7 +427,7 @@
      protected Block(int par1, Material par2Material)
      {
          this.stepSound = soundPowderFootstep;
-@@ -294,6 +301,10 @@
+@@ -294,6 +302,10 @@
              opaqueCubeLookup[par1] = this.isOpaqueCube();
              lightOpacity[par1] = this.isOpaqueCube() ? 255 : 0;
              canBlockGrass[par1] = !par2Material.getCanBlockGrass();
@@ -437,7 +438,7 @@
          }
      }
  
-@@ -343,7 +354,12 @@
+@@ -343,7 +355,12 @@
      public static boolean isNormalCube(int par0)
      {
          Block var1 = blocksList[par0];
@@ -450,7 +451,7 @@
      }
  
      /**
-@@ -354,6 +370,9 @@
+@@ -354,6 +371,9 @@
          return true;
      }
  
@@ -460,7 +461,7 @@
      public boolean getBlocksMovement(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
      {
          return !this.blockMaterial.blocksMovement();
-@@ -423,16 +442,20 @@
+@@ -423,16 +443,20 @@
      }
  
      /**
@@ -482,7 +483,7 @@
      }
  
      /**
-@@ -447,6 +470,7 @@
+@@ -447,6 +471,7 @@
      /**
       * Adds all intersecting collision boxes to a list. (Be sure to only add boxes to the list if they intersect the
       * mask.) Parameters: World, X, Y, Z, mask, list, colliding entity
@@ -490,7 +491,7 @@
       */
      public void addCollisionBoxesToList(World par1World, int par2, int par3, int par4, AxisAlignedBB par5AxisAlignedBB, List par6List, Entity par7Entity)
      {
-@@ -462,10 +486,14 @@
+@@ -462,10 +487,14 @@
       * Returns a bounding box from the pool of bounding boxes (this means this box can change after the pool has been
       * cleared to be reused)
       */
@@ -505,7 +506,7 @@
  
      /**
       * Is this block (a) opaque and (b) a full 1m cube?  This determines whether or not to render the shared face of two
-@@ -494,17 +522,20 @@
+@@ -494,17 +523,20 @@
  
      /**
       * Ticks the block if it's been scheduled
@@ -526,7 +527,7 @@
       */
      public void onNeighborBlockChange(World par1World, int par2, int par3, int par4, int par5) {}
  
-@@ -518,11 +549,13 @@
+@@ -518,11 +550,13 @@
  
      /**
       * Called whenever the block is added into the world. Args: world, x, y, z
@@ -540,7 +541,7 @@
       */
      public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {}
  
-@@ -546,11 +579,15 @@
+@@ -546,11 +580,15 @@
       * Gets the hardness of block at the given coordinates in the given world, relative to the ability of the given
       * EntityPlayer.
       */
@@ -556,7 +557,7 @@
  
      /**
       * Drops the specified block items
-@@ -595,7 +632,7 @@
+@@ -595,7 +633,7 @@
              double var7 = (double)(par1World.rand.nextFloat() * var6) + (double)(1.0F - var6) * 0.5D;
              double var9 = (double)(par1World.rand.nextFloat() * var6) + (double)(1.0F - var6) * 0.5D;
              double var11 = (double)(par1World.rand.nextFloat() * var6) + (double)(1.0F - var6) * 0.5D;
@@ -565,7 +566,7 @@
              var13.delayBeforeCanPickup = 10;
              par1World.spawnEntityInWorld(var13);
          }
-@@ -606,6 +643,8 @@
+@@ -606,6 +644,8 @@
       */
      protected void dropXpOnBlockBreak(World par1World, int par2, int par3, int par4, int par5)
      {
@@ -574,7 +575,7 @@
          if (!par1World.isRemote)
          {
              while (par5 > 0)
-@@ -615,6 +654,8 @@
+@@ -615,6 +655,8 @@
                  par1World.spawnEntityInWorld(new EntityXPOrb(par1World, (double)par2 + 0.5D, (double)par3 + 0.5D, (double)par4 + 0.5D, var6));
              }
          }
@@ -583,7 +584,7 @@
      }
  
      /**
-@@ -637,6 +678,8 @@
+@@ -637,6 +679,8 @@
       * Ray traces through the blocks collision from start vector to end vector returning a ray trace hit. Args: world,
       * x, y, z, startVec, endVec
       */
@@ -592,7 +593,7 @@
      public MovingObjectPosition collisionRayTrace(World par1World, int par2, int par3, int par4, Vec3 par5Vec3, Vec3 par6Vec3)
      {
          this.setBlockBoundsBasedOnState(par1World, par2, par3, par4);
-@@ -753,29 +796,22 @@
+@@ -753,29 +797,22 @@
          }
      }
  
@@ -624,7 +625,7 @@
  
      /**
       * Called upon the block being destroyed by an explosion
-@@ -835,9 +871,7 @@
+@@ -835,9 +872,7 @@
       */
      public void velocityToAddToEntity(World par1World, int par2, int par3, int par4, Entity par5Entity, Vec3 par6Vec3) {}
  
@@ -635,7 +636,7 @@
      public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, int par2, int par3, int par4) {}
  
      /**
-@@ -928,13 +962,22 @@
+@@ -928,13 +963,22 @@
      /**
       * Called when the player destroys a block with an item that can harvest it. (i, j, k) are the coordinates of the
       * block and l is the block's subtype/damage.
@@ -658,7 +659,7 @@
          {
              ItemStack var8 = this.createStackedBlock(par6);
  
-@@ -961,6 +1004,7 @@
+@@ -961,6 +1005,7 @@
      /**
       * Returns an item stack containing a single instance of the current block type. 'i' is the block's subtype/damage
       * and is ignored for blocks which do not support subtypes. Blocks which cannot be harvested should return null.
@@ -666,7 +667,7 @@
       */
      protected ItemStack createStackedBlock(int par1)
      {
-@@ -992,6 +1036,7 @@
+@@ -992,6 +1037,7 @@
  
      /**
       * Called when the block is placed in the world.
@@ -674,7 +675,7 @@
       */
      public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving, ItemStack par6ItemStack) {}
  
-@@ -1051,6 +1096,7 @@
+@@ -1051,6 +1097,7 @@
      /**
       * Returns the mobility information of the block, 0 = free, 1 = can't push but can move over, 2 = total immobility
       * and stop pistons
@@ -682,7 +683,7 @@
       */
      public int getMobilityFlag()
      {
-@@ -1070,6 +1116,13 @@
+@@ -1070,6 +1117,13 @@
          return this.damageDropped(par1World.getBlockMetadata(par2, par3, par4));
      }
  
@@ -696,7 +697,7 @@
      /**
       * Sets the CreativeTab to display this block on.
       */
-@@ -1176,8 +1229,12 @@
+@@ -1176,8 +1230,12 @@
                      blocksList[var0].initializeBlock();
                  }
  
@@ -709,7 +710,7 @@
                  if (var0 > 0 && blocksList[var0].getRenderType() == 10)
                  {
                      var1 = true;
-@@ -1204,10 +1261,2120 @@
+@@ -1204,10 +1262,2157 @@
                  }
  
                  useNeighborBrightness[var0] = var1;
@@ -955,75 +956,112 @@
 + 	
 +     //------------ Addon interfacing related functionality ----------//
 + 	
-+     /**
-+      * Replaces a reference to an existing block (vanilla or btw)
-+      * @param id The block id to be replaced
-+      * @param newClass The class of the new block
-+      * @param parameters Optional additional parameters to pass to the block, not including the id.
-+      */
-+ 	public static Block replaceBlock(int id, Class newClass, Object ... parameters) {
-+    	if (blockReplaced[id]) {
-+    		throw new RuntimeException("Multiple addons attempting to replace block " + blocksList[id]);
-+    	}
-+    	else {
-+    		Block newBlock = null;
-+    		
-+    		Class[] parameterTypes = new Class[parameters.length + 1];
-+    		Object[] parameterValues = new Object[parameters.length + 1];
-+    		
-+    		parameterTypes[0] = Integer.TYPE;
-+    		parameterValues[0] = id;
++ 	/**
++	 * Deprecated form of replaceBlock for backwards compatibility
++	 */
++	@Deprecated
++	public static Block replaceBlock(int id, Class newClass, Object ... parameters) {
++		return replaceBlock(id, newClass, null, new String[] {}, parameters);
++	}
 +
-+    		Block original = blocksList[id];
-+    		blocksList[id] = null;
-+    		
-+    		for (int i = 0; i < parameters.length; i++) {
-+    			Class<?> type = parameters[i].getClass();
-+    			
-+    			Class<?> primitiveType = FCUtilsReflection.getPrimitiveFromBoxedClass(type);
-+    			
-+    			if (primitiveType != null) {
-+    				type = primitiveType;
-+    			}
-+    			
-+    			parameterTypes[i + 1] = type;
-+    			parameterValues[i + 1] = parameters[i];
-+    		}
-+    		
-+    		Constructor constructorToUse = FCUtilsReflection.findMatchingConstructor(newClass, parameterTypes);
++	/**
++	 * Replaces a reference to an existing block (vanilla or btw)
++	 * @param id The block id to be replaced
++	 * @param newClass The class of the new block
++	 * @param parameters Optional additional parameters to pass to the block, not including the id.
++	 */
++	public static Block replaceBlock(int id, Class newClass, FCAddOn addonPerformingReplacement, Object ... parameters) {
++		return replaceBlock(id, newClass, addonPerformingReplacement, new String[] {}, parameters);
++	}
 +
-+            if (constructorToUse == null) {
-+            	String message = "No appropriate constructor found for " + blocksList[id] + ": ";
++	/**
++	 * Replaces a reference to an existing block (vanilla or btw), with a list of valid addons for which to be able to overwrite their replacement
++	 * @param id The block id to be replaced
++	 * @param newClass The class of the new block
++	 * @param validAddonNamesForOverwrite An array of addon names which should be ignored when handling conflicts
++	 * @param parameters Optional additional parameters to pass to the block, not including the id.
++	 */
++	public static Block replaceBlock(int id, Class newClass, FCAddOn addonPerformingReplacement, String[] validAddonNamesForOverwrite, Object ... parameters) {
++		if (blockReplaced[id]) {
++			String replacedBy = blockReplacedBy[id];
++			boolean isValidOverwrite = false;
++			
++			for (String addonName : validAddonNamesForOverwrite) {
++				if (replacedBy.equals(addonName)) {
++					isValidOverwrite = true;
++				}
++			}
++			
++			if (!isValidOverwrite) {
++				throw new RuntimeException("Multiple addons attempting to replace block " + blocksList[id]);
++			}
++		}
 +
-+                for (Class<?> paramType : parameterTypes) {
-+                	message += paramType.getSimpleName() + ", ";
-+                }
++		Block newBlock = null;
 +
-+                throw new RuntimeException(message);
-+            }
-+    		
-+    		try {
-+    			constructorToUse.setAccessible(true);
-+    			newBlock = (Block) constructorToUse.newInstance(parameterValues);
-+    		} catch (InstantiationException e) {
-+    			throw new RuntimeException("A problem has occured attempting to instantiate replacement for " + blocksList[id]);
-+    		} catch (IllegalArgumentException e) {
-+    			throw new RuntimeException("Incompatible types passed to specified constructor for " + blocksList[id]);
-+    		} catch (Exception e) {
-+    			e.printStackTrace();
-+    		}
-+    		
-+    		blockReplaced[id] = true;
-+    		
-+    		newBlock.setHardness(original.blockHardness).setResistance(original.blockResistance).setStepSound(original.stepSound).setUnlocalizedName(original.unlocalizedName).setCreativeTab(original.getCreativeTabToDisplayOn());
-+    		if (!original.enableStats)
-+    			newBlock.disableStats();
-+    		
-+    		blocksList[id] = newBlock;
-+    		
-+    		return newBlock;
-+    	}
-+    }
++		Class[] parameterTypes = new Class[parameters.length + 1];
++		Object[] parameterValues = new Object[parameters.length + 1];
++
++		parameterTypes[0] = Integer.TYPE;
++		parameterValues[0] = id;
++
++		Block original = blocksList[id];
++		blocksList[id] = null;
++
++		for (int i = 0; i < parameters.length; i++) {
++			Class<?> type = parameters[i].getClass();
++
++			Class<?> primitiveType = FCUtilsReflection.getPrimitiveFromBoxedClass(type);
++
++			if (primitiveType != null) {
++				type = primitiveType;
++			}
++
++			parameterTypes[i + 1] = type;
++			parameterValues[i + 1] = parameters[i];
++		}
++
++		Constructor constructorToUse = FCUtilsReflection.findMatchingConstructor(newClass, parameterTypes);
++
++		if (constructorToUse == null) {
++			String message = "No appropriate constructor found for " + blocksList[id] + ": ";
++
++			for (Class<?> paramType : parameterTypes) {
++				message += paramType.getSimpleName() + ", ";
++			}
++
++			throw new RuntimeException(message);
++		}
++
++		try {
++			constructorToUse.setAccessible(true);
++			newBlock = (Block) constructorToUse.newInstance(parameterValues);
++		} catch (InstantiationException e) {
++			throw new RuntimeException("A problem has occured attempting to instantiate replacement for " + blocksList[id]);
++		} catch (IllegalArgumentException e) {
++			throw new RuntimeException("Incompatible types passed to specified constructor for " + blocksList[id]);
++		} catch (Exception e) {
++			e.printStackTrace();
++		}
++
++		blockReplaced[id] = true;
++		
++		if (addonPerformingReplacement != null) {
++			blockReplacedBy[id] = addonPerformingReplacement.getName();
++		}
++		else {
++			FCAddOnHandler.LogWarning("Deprecated block replacement call for block " + blocksList[id] + ". Please attach addon when handling replacement for mutual replacement handling.");
++			blockReplacedBy[id] = "";
++		}
++
++		newBlock.setHardness(original.blockHardness).setResistance(original.blockResistance).setStepSound(original.stepSound).setUnlocalizedName(original.unlocalizedName).setCreativeTab(original.getCreativeTabToDisplayOn());
++		if (!original.enableStats)
++			newBlock.disableStats();
++
++		blocksList[id] = newBlock;
++
++		return newBlock;
++	}
 + 	
 +     //------------ Harvesting related functionality ----------//
 +     

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/com/prupe/mcpatcher/mal/block/RenderBlocksUtils.java
-@@ -0,0 +1,226 @@
+@@ -0,0 +1,240 @@
 +package com.prupe.mcpatcher.mal.block;
 +
 +import com.prupe.mcpatcher.Config;
@@ -163,8 +163,9 @@
 +		if (!enableBetterGrass || face < 2) {
 +			return null;
 +		}
++		
 +		boolean isSnow = isSnowCovered(blockAccess, i, j, k);
-+		j--;
++		
 +		switch (face) {
 +		case 2:
 +			k--;
@@ -185,13 +186,26 @@
 +		default:
 +			return null;
 +		}
-+		if (block != BlockAPI.getBlockAt(blockAccess, i, j, k)) {
++		
++		if (block == Block.grass && 
++				!(BlockAPI.getBlockAt(blockAccess, i, j - 1, k) == Block.grass || 
++					(BlockAPI.getBlockAt(blockAccess, i, j, k) == FCBetterThanWolves.fcBlockDirtSlab &&
++					FCBetterThanWolves.fcBlockDirtSlab.GetSubtype(BlockAPI.getMetadataAt(blockAccess, i, j, k)) == FCBlockDirtSlab.m_iSubtypeGrass))) {
 +			return null;
 +		}
-+		boolean neighborIsSnow = isSnowCovered(blockAccess, i, j, k);
++		
++		if (block == Block.mycelium && 
++				!(BlockAPI.getBlockAt(blockAccess, i, j - 1, k) == Block.mycelium || 
++				BlockAPI.getBlockAt(blockAccess, i, j, k) == FCBetterThanWolves.fcBlockMyceliumSlab)) {
++			return null;
++		}
++		
++		boolean neighborIsSnow = isSnowCovered(blockAccess, i, j, k) || isSnowCovered(blockAccess, i, j - 1, k);
++		
 +		if (isSnow != neighborIsSnow) {
 +			return null;
 +		}
++		
 +		return isSnow ? BlockAPI.getBlockIcon(snowBlock, blockAccess, i, j, k, face) : topIcon;
 +	}
 +

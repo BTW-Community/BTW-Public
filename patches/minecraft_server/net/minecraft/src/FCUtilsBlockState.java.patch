@@ -1,0 +1,27 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCUtilsBlockState.java
+@@ -0,0 +1,23 @@
++package net.minecraft.src;
++
++public final class FCUtilsBlockState {
++	public final int id;
++	public final int metadata;
++	
++	public FCUtilsBlockState(int id, int metadata) {
++		this.id = id;
++		this.metadata = metadata;
++	}
++	
++	public Block getBlock() {
++		return Block.blocksList[id];
++	}
++	
++	public FCUtilsBlockState copy() {
++		return new FCUtilsBlockState(this.id, this.metadata);
++	}
++	
++	public FCUtilsBlockState copyWithNewMetadata(int newMetadata) {
++		return new FCUtilsBlockState(this.id, newMetadata);
++	}
++}
+\ No newline at end of file

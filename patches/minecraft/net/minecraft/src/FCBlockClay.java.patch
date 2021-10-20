@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockClay.java
-@@ -0,0 +1,86 @@
+@@ -0,0 +1,82 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -17,7 +17,7 @@
 +        
 +        setStepSound( FCBetterThanWolves.fcStepSoundSquish );
 +        
-+        setCreativeTab( null ); // weirdness due to use of item as legacy clay
++        setCreativeTab( CreativeTabs.tabBlock ); // weirdness due to use of item as legacy clay
 +    }
 +
 +    @Override
@@ -48,11 +48,23 @@
 +	}
 +	
 +	@Override
-+    protected boolean canSilkHarvest()
++	public int quantityDroppedWithBonus(int par1, Random par2Random)
 +    {
-+		// can't silk harvest due to conflicting drops and conversion recipes old clay blocks
-+		
-+        return false;
++        if (par1 > 0 && this.blockID != this.idDropped(0, par2Random, par1))
++        {
++            int var3 = par2Random.nextInt(par1 + 2) - 1;
++
++            if (var3 < 0)
++            {
++                var3 = 0;
++            }
++
++            return this.quantityDropped(par2Random) * (var3 + 1);
++        }
++        else
++        {
++            return this.quantityDropped(par2Random);
++        }
 +    }
 +	
 +	@Override
@@ -70,20 +82,4 @@
 +    //------------- Class Specific Methods ------------//    
 +	
 +	//----------- Client Side Functionality -----------//
-+	
-+    protected Icon m_IconNaturalClay;
-+    
-+	@Override
-+    public void registerIcons( IconRegister register )
-+    {
-+		super.registerIcons( register );
-+		
-+		m_IconNaturalClay = register.registerIcon( "fcBlockClay" );
-+    }
-+	
-+	@Override
-+    public Icon getBlockTexture( IBlockAccess blockAccess, int i, int j, int k, int iSide )
-+    {
-+    	return m_IconNaturalClay;
-+    }
 +}

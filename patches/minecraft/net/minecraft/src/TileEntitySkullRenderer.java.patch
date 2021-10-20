@@ -16,10 +16,9 @@
              case 3:
                  if (par7Str != null && par7Str.length() > 0)
                  {
--                    String var9 = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par7Str) + ".png";
 +                	// FCMOD: Changed, client only        	
-+                    //String var9 = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par7Str) + ".png";
-+                    String var9 = FCBetterThanWolves.fcPlayerSkinURL + EntityPlayer.fetchUuid(par7Str);
+                     String var9 = "http://skins.minecraft.net/MinecraftSkins/" + StringUtils.stripControlCodes(par7Str) + ".png";
++                    //String var9 = FCBetterThanWolves.fcPlayerSkinURL + EntityPlayer.fetchUuid(par7Str);
 +                    // END FCMOD
  
                      if (!skullRenderer.tileEntityRenderer.renderEngine.hasImageData(var9))

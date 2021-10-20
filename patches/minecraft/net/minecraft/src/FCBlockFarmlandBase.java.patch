@@ -295,7 +295,7 @@
 +	@Override
 +    public int idPicked( World world, int i, int j, int k )
 +    {
-+        return FCBetterThanWolves.fcBlockDirtLoose.blockID;
++        return FCBetterThanWolves.fcBlockFarmland.blockID;
 +    }
 +	
 +    @Override

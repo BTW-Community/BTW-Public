@@ -1,14 +1,22 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockSapling.java
-@@ -0,0 +1,243 @@
+@@ -0,0 +1,288 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
++import java.util.List;
 +import java.util.Random;
 +
 +public class FCBlockSapling extends BlockSapling
 +{
++    public static final String[] SAPLING_TYPES = new String[] {
++    		"oak", "spruce", "birch", "jungle",
++    		"oak", "spruce", "birch", "jungle",
++    		"oak", "spruce", "birch", "jungle",
++    		"oakMature", "spruceMature", "birchMature", "jungleMature",
++    };
++    
 +    private static final double m_dWidth = 0.8D;
 +    private static final double m_dHalfWidth = ( m_dWidth / 2D );
 +    
@@ -30,7 +38,16 @@
 +        
 +        if ( world.provider.dimensionId != 1 && world.getBlockId( i, j, k ) == blockID ) // necessary because checkFlowerChange() may destroy the sapling
 +        {
-+            if ( world.getBlockLightValue( i, j + 1, k ) >= 9 && random.nextInt( 64 ) == 0 )
++        	int growthChance = 64;
++        	
++        	int blockIDBelow = world.getBlockId(i, j - 1, k);
++        	Block blockBelow = Block.blocksList[blockIDBelow];
++        	
++        	if (blockBelow.GetIsFertilizedForPlantGrowth(world, i, j - 1, k)) {
++        		growthChance /= blockBelow.GetPlantGrowthOnMultiplier(world, i, j - 1, k, this);
++        	}
++        	
++            if ( world.getBlockLightValue( i, j + 1, k ) >= 9 && random.nextInt(growthChance) == 0 )
 +            {
 +                int iMetadata = world.getBlockMetadata( i, j, k );
 +                int iGrowthStage = ( iMetadata & (~3) ) >> 2;
@@ -44,10 +61,21 @@
 +                }
 +                else
 +                {
-+                    growTree( world, i, j, k, random );
++                	if (!(blockBelow instanceof FCBlockPlanterBase)) {
++                		growTree( world, i, j, k, random );
++                	}
++                	//Smash planter when fertilized
++                	else if (blockBelow.GetIsFertilizedForPlantGrowth(world, i, j - 1, k)) {
++                		growTree( world, i, j - 1, k, random );
++                	}
 +                }
 +            }
 +        }
++    }
++    
++    @Override
++    public int damageDropped(int metadata) {
++        return metadata;
 +    }
 +    
 +    @Override
@@ -242,5 +270,22 @@
 +        int iGrowthStage = ( iMetadata & (~3) ) >> 2;
 +    		
 +        return m_IconArray[iSaplingType][iGrowthStage];
++    }
++
++    /**
++     * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
++     */
++    @Override
++    public void getSubBlocks(int par1, CreativeTabs par2CreativeTabs, List par3List)
++    {
++        par3List.add(new ItemStack(par1, 1, 0));
++        par3List.add(new ItemStack(par1, 1, 1));
++        par3List.add(new ItemStack(par1, 1, 2));
++        par3List.add(new ItemStack(par1, 1, 3));
++        
++        par3List.add(new ItemStack(par1, 1, 12));
++        par3List.add(new ItemStack(par1, 1, 13));
++        par3List.add(new ItemStack(par1, 1, 14));
++        par3List.add(new ItemStack(par1, 1, 15));
 +    }
 +}

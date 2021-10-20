@@ -14,7 +14,19 @@
          Iterator var1 = this.specialRendererMap.values().iterator();
  
          while (var1.hasNext())
-@@ -182,4 +189,11 @@
+@@ -65,6 +72,11 @@
+         }
+     }
+ 
++    public void addSpecialRendererForClass(Class<? extends TileEntity> tileEntity, TileEntitySpecialRenderer renderer) {
++    	this.specialRendererMap.put(tileEntity, renderer);
++    	renderer.setTileEntityRenderer(this);
++    }
++
+     /**
+      * Returns the TileEntitySpecialRenderer used to render this TileEntity class, or null if it has no special renderer
+      */
+@@ -182,4 +194,11 @@
      {
          return this.fontRenderer;
      }
