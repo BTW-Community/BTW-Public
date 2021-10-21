@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,6892 @@
+@@ -0,0 +1,7022 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -72,6 +72,7 @@
 +    	return recipe;
 +	}
 +    
++    @Deprecated
 +    public static ShapelessRecipes AddShapelessRecipeWithSecondaryOutputIndicator( ItemStack itemStack, Object aobj[] )
 +	{
 +    	ShapelessRecipes recipe = CraftingManager.getInstance().AddShapelessRecipe( itemStack, aobj );
@@ -558,6 +559,22 @@
 +			'#', Item.stick,
 +			'X', Item.ingotGold			
 +		} );
++		
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemDiamondPlate, 1 ), new Object[] {
++    		"#X#",
++    		" Y ",
++    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStrap, 
++    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemIngotDiamond,
++    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemPadding
++		} );
++		
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorPlate, 1 ), new Object[] {
++			"#X#",
++    		" Y ",
++    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStrap, 
++    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemSteel,
++    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemPadding
++		} );
 +	}
 +	
 +	private static void AddStoneToolRecipes()
@@ -959,7 +976,7 @@
 +    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemWickerPiece 
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemWickerPiece, 1 ), new Object[] {	    		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemWickerPiece, 4 ), new Object[] {	    		
 +			new ItemStack( FCBetterThanWolves.fcBlockBasketWicker )
 +		} );
 +		
@@ -1646,8 +1663,7 @@
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemBreadDough ), new Object[] {
 +    		new ItemStack( FCBetterThanWolves.fcItemFlour ),
 +    		new ItemStack( FCBetterThanWolves.fcItemFlour ),
-+    		new ItemStack( FCBetterThanWolves.fcItemFlour ),
-+    		new ItemStack( Item.bucketWater ),
++    		new ItemStack( FCBetterThanWolves.fcItemFlour )
 +		} );
 +        
 +		
@@ -2037,7 +2053,6 @@
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new Object[] {
-+			"###",
 +    		"###", 
 +    		"XXX", 
 +    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemHempCloth, 
@@ -2045,7 +2060,6 @@
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new Object[] {
-+			"###",
 +    		"###", 
 +    		"XXX", 
 +    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemHempCloth, 
@@ -2541,6 +2555,26 @@
 +    		new ItemStack( Item.shears, 1, m_iIgnoreMetadata ),
 +    		new ItemStack( FCBetterThanWolves.fcItemTannedLeatherCut )
 +		} );
++
++		FCRecipes.AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemLeatherCut, 2), new Object[] {
++				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, 32767), 
++				new ItemStack(Item.leather)
++		});
++		
++		FCRecipes.AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemTannedLeatherCut, 2), new Object[] {
++				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, 32767), 
++				new ItemStack(FCBetterThanWolves.fcItemTannedLeather)
++		});
++		
++		FCRecipes.AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemScouredLeatherCut, 2), new Object[] {
++				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, 32767), 
++				new ItemStack(FCBetterThanWolves.fcItemScouredLeather)
++		});
++		
++		FCRecipes.AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemStrap, 4), new Object[] {
++				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, 32767), 
++				new ItemStack(FCBetterThanWolves.fcItemTannedLeatherCut)
++		});
 +		
 +		FCRecipes.AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemLeatherCut, 2), new Object[] {
 +				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, 32767), 
@@ -2880,10 +2914,6 @@
 +    		Character.valueOf( '#' ), Block.stoneBrick
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( Item.melon, 5 ), new Object[] { 
-+            new ItemStack( Block.melon )
-+        } );
-+		
 +		AddRecipe( new ItemStack( Item.bowlEmpty, 6 ), new Object[] {
 +            "# #", 
 +            " # ", 
@@ -2989,22 +3019,25 @@
 +        
 +		AddRecipe( new ItemStack( Item.helmetDiamond ), new Object[] {
 +			"XXX", 
-+			"X X", 
-+			'X', FCBetterThanWolves.fcItemIngotDiamond
++			"XYX", 
++			'X', FCBetterThanWolves.fcItemIngotDiamond,
++			'Y', FCBetterThanWolves.fcItemDiamondPlate
 +		} ); 
 +	   
 +		AddRecipe( new ItemStack( Item.plateDiamond ), new Object[] {
-+			"X X", 
++			"Y Y", 
 +			"XXX", 
 +			"XXX", 
-+			'X', FCBetterThanWolves.fcItemIngotDiamond
++			'X', FCBetterThanWolves.fcItemIngotDiamond,
++			'Y', FCBetterThanWolves.fcItemDiamondPlate
 +		} );
 +	   
 +		AddRecipe( new ItemStack( Item.legsDiamond ), new Object[] {
 +			"XXX", 
-+			"X X", 
-+			"X X", 
-+			'X', FCBetterThanWolves.fcItemIngotDiamond
++			"Y Y", 
++			"Y Y", 
++			'X', FCBetterThanWolves.fcItemIngotDiamond,
++			'Y', FCBetterThanWolves.fcItemDiamondPlate
 +		} );
 +	   
 +		AddRecipe( new ItemStack( Item.bootsDiamond ), new Object[] {
@@ -3411,13 +3444,6 @@
 +    		" X", 
 +    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
 +    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemHaft 
-+		} );
-+		
-+		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorPlate, 1 ), new Object[] {
-+    		"#XY#", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStrap, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemSteel,
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemPadding
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemPlateHelm, 1 ), new Object[] {
@@ -4813,6 +4839,12 @@
 +		AddStokedCrucibleRecipe(
 +			new ItemStack(FCBetterThanWolves.fcItemIngotDiamond, 1), 
 +			new ItemStack[] {
++				new ItemStack(FCBetterThanWolves.fcItemDiamondPlate)
++		});
++		
++		AddStokedCrucibleRecipe(
++			new ItemStack(FCBetterThanWolves.fcItemIngotDiamond, 1), 
++			new ItemStack[] {
 +				new ItemStack(FCBetterThanWolves.fcItemChiselDiamond, 1, m_iIgnoreMetadata)
 +		});
 +		
@@ -4853,7 +4885,7 @@
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
-+			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 5 ), 
++			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 6 ), 
 +			new ItemStack[] {
 +				new ItemStack( Item.helmetDiamond, 1, m_iIgnoreMetadata )
 +			} );
@@ -5258,108 +5290,119 @@
 +				FCBetterThanWolves.fcBloodWood);
 +		
 +		//Planks
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2, 0),
-+				Block.planks, 0);
++		addSubBlockRecipesToSaw(Block.planks, 0, 
++				FCBetterThanWolves.fcBlockWoodOakSidingAndCorner, 
++				FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative, 
++				FCBetterThanWolves.fcBlockWoodSidingItemStubID, 
++				FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 
++				FCBetterThanWolves.fcBlockWoodCornerItemStubID, 
++				0);
++
++		addSubBlockRecipesToSaw(Block.planks, 1, 
++				FCBetterThanWolves.fcBlockWoodSpruceSidingAndCorner, 
++				FCBetterThanWolves.fcBlockWoodSpruceMouldingAndDecorative, 
++				FCBetterThanWolves.fcBlockWoodSidingItemStubID, 
++				FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 
++				FCBetterThanWolves.fcBlockWoodCornerItemStubID, 
++				1);
++
++		addSubBlockRecipesToSaw(Block.planks, 2, 
++				FCBetterThanWolves.fcBlockWoodBirchSidingAndCorner, 
++				FCBetterThanWolves.fcBlockWoodBirchMouldingAndDecorative, 
++				FCBetterThanWolves.fcBlockWoodSidingItemStubID, 
++				FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 
++				FCBetterThanWolves.fcBlockWoodCornerItemStubID, 
++				2);
++
++		addSubBlockRecipesToSaw(Block.planks, 3, 
++				FCBetterThanWolves.fcBlockWoodJungleSidingAndCorner, 
++				FCBetterThanWolves.fcBlockWoodJungleMouldingAndDecorative, 
++				FCBetterThanWolves.fcBlockWoodSidingItemStubID, 
++				FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 
++				FCBetterThanWolves.fcBlockWoodCornerItemStubID, 
++				3);
++
++		addSubBlockRecipesToSaw(Block.planks, 4, 
++				FCBetterThanWolves.fcBlockWoodBloodSidingAndCorner, 
++				FCBetterThanWolves.fcBlockWoodBloodMouldingAndDecorative, 
++				FCBetterThanWolves.fcBlockWoodSidingItemStubID, 
++				FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 
++				FCBetterThanWolves.fcBlockWoodCornerItemStubID, 
++				4);
 +		
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2, 1),
-+				Block.planks, 1);
++		//Wood slabs
++		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 0), 
++				Block.woodSingleSlab, 0);
++		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 0), 
++				Block.woodSingleSlab, 8);
 +
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2, 2),
-+				Block.planks, 2);
-+
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2, 3),
-+				Block.planks, 3);
-+
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2, 4),
-+				Block.planks, 4);
++		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 1), 
++				Block.woodSingleSlab, 1);
++		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 1), 
++				Block.woodSingleSlab, 9);
 +		
-+		//Siding
-+		//Shared block id with other types requires enumerating siding metadata
-+		for (int i = 0; i < 16; i++) {
-+			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
-+					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
-+					!((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
-+			{
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2, 0),
-+						FCBetterThanWolves.fcBlockWoodOakSidingAndCorner, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2, 1),
-+						FCBetterThanWolves.fcBlockWoodSpruceSidingAndCorner, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2, 2),
-+						FCBetterThanWolves.fcBlockWoodBirchSidingAndCorner, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2, 3),
-+						FCBetterThanWolves.fcBlockWoodJungleSidingAndCorner, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2, 4),
-+						FCBetterThanWolves.fcBlockWoodBloodSidingAndCorner, i);
-+			}
-+		}
++		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 2), 
++				Block.woodSingleSlab, 2);
++		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 2), 
++				Block.woodSingleSlab, 10);
 +		
-+		//Moulding
-+		//Shared block id with other types requires enumerating moulding metadata
-+		for (int i = 0; i < 16; i++) {
-+			if (!((FCBlockWoodMouldingAndDecorative) FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative).IsDecorative(i)) {
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 2, 0),
-+						FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 2, 1),
-+						FCBetterThanWolves.fcBlockWoodSpruceMouldingAndDecorative, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 2, 2),
-+						FCBetterThanWolves.fcBlockWoodBirchMouldingAndDecorative, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 2, 3),
-+						FCBetterThanWolves.fcBlockWoodJungleMouldingAndDecorative, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 2, 4),
-+						FCBetterThanWolves.fcBlockWoodBloodMouldingAndDecorative, i);
-+			}
-+		}
++		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 3), 
++				Block.woodSingleSlab, 3);
++		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 3), 
++				Block.woodSingleSlab, 11);
 +		
-+		//Corners
-+		//Shared block id with other types requires enumerating corner metadata
-+		for (int i = 0; i < 16; i++) {
-+			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
-+					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
-+					((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
-+			{
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 0),
-+						FCBetterThanWolves.fcBlockWoodOakSidingAndCorner, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 1),
-+						FCBetterThanWolves.fcBlockWoodSpruceSidingAndCorner, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 2),
-+						FCBetterThanWolves.fcBlockWoodBirchSidingAndCorner, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 3),
-+						FCBetterThanWolves.fcBlockWoodJungleSidingAndCorner, i);
-+
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 4),
-+						FCBetterThanWolves.fcBlockWoodBloodSidingAndCorner, i);
-+			}
-+		}
++		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 4), 
++				Block.woodSingleSlab, 4);
++		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 4), 
++				Block.woodSingleSlab, 12);
 +		
-+		//Decorative Wood
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, 0),
-+				Block.fence);
++		addSawRecipe(new ItemStack(Block.woodSingleSlab, 2, 0), 
++				Block.woodDoubleSlab, 0);
 +
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, 1),
-+				FCBetterThanWolves.fcBlockWoodSpruceSidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
++		addSawRecipe(new ItemStack(Block.woodSingleSlab, 2, 1), 
++				Block.woodDoubleSlab, 1);
 +
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, 2),
-+				FCBetterThanWolves.fcBlockWoodBirchSidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
++		addSawRecipe(new ItemStack(Block.woodSingleSlab, 2, 2), 
++				Block.woodDoubleSlab, 2);
 +
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, 3),
-+				FCBetterThanWolves.fcBlockWoodJungleSidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
++		addSawRecipe(new ItemStack(Block.woodSingleSlab, 2, 3), 
++				Block.woodDoubleSlab, 3);
 +
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, 4),
-+				FCBetterThanWolves.fcBlockWoodBloodSidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
++		addSawRecipe(new ItemStack(Block.woodSingleSlab, 2, 4), 
++				Block.woodDoubleSlab, 4);
 +		
-+		//Slabs
-+		//TODO: Make sure these slab recipes are actually functioning
++		//Wood stairs
++		addSawRecipe(new ItemStack[] {
++					new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodSidingItemStubID], 1, 0),
++					new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 1, 0)
++				},
++				Block.stairsWoodOak);
++
++		addSawRecipe(new ItemStack[] {
++					new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodSidingItemStubID], 1, 1),
++					new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 1, 1)
++				},
++				Block.stairsWoodSpruce);
++
++		addSawRecipe(new ItemStack[] {
++					new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodSidingItemStubID], 1, 2),
++					new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 1, 2)
++				},
++				Block.stairsWoodBirch);
++
++		addSawRecipe(new ItemStack[] {
++					new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodSidingItemStubID], 1, 3),
++					new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 1, 3)
++				},
++				Block.stairsWoodJungle);
++
++		addSawRecipe(new ItemStack[] {
++					new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodSidingItemStubID], 1, 4),
++					new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 1, 4)
++				},
++				FCBetterThanWolves.fcBlockWoodBloodStairs);
++		
++		//Other Slabs
 +		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWickerSlab, 2),
 +				FCBetterThanWolves.fcBlockWicker);
 +		addSawRecipe(new ItemStack(FCBetterThanWolves.fcBlockWickerSlab, 2),
@@ -5620,6 +5663,92 @@
 +		} );		
 +	}
 +	
++	private static void addSubBlockRecipesToSaw(Block baseBlock, int baseMetadata, Block sidingAndCorner, Block moulding) {
++		//Base
++		addSawRecipe(new ItemStack(sidingAndCorner, 2, 0),
++				baseBlock, baseMetadata);
++		
++		//Siding
++		//Shared block id with other types requires enumerating siding metadata
++		for (int i = 0; i < 16; i++) {
++			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
++					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
++					!((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
++			{
++				addSawRecipe(new ItemStack(moulding, 2, 0), 
++						sidingAndCorner, i);
++			}
++		}
++		
++		//Moulding
++		//Shared block id with other types requires enumerating moulding metadata
++		for (int i = 0; i < 16; i++) {
++			if (!((FCBlockWoodMouldingAndDecorative) FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative).IsDecorative(i)) {
++				addSawRecipe(new ItemStack(sidingAndCorner, 2, 1),
++						moulding, i);
++			}
++		}
++		
++		//Corners
++		//Shared block id with other types requires enumerating corner metadata
++		for (int i = 0; i < 16; i++) {
++			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
++					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
++					((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
++			{
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 0),
++						sidingAndCorner, i);
++			}
++		}
++		
++		//Fence
++		addSawRecipe(new ItemStack(sidingAndCorner, 1, 1),
++				sidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
++	}
++	
++	private static void addSubBlockRecipesToSaw(Block baseBlock, int baseMetadata, Block sidingAndCorner, Block moulding, int sidingItemID, int mouldingItemID, int cornerItemID, int itemMetadata) {
++		//Base
++		addSawRecipe(new ItemStack(sidingItemID, 2, itemMetadata),
++				baseBlock, baseMetadata);
++		
++		//Siding
++		//Shared block id with other types requires enumerating siding metadata
++		for (int i = 0; i < 16; i++) {
++			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
++					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
++					!((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
++			{
++				addSawRecipe(new ItemStack(mouldingItemID, 2, itemMetadata), 
++						sidingAndCorner, i);
++			}
++		}
++		
++		//Moulding
++		//Shared block id with other types requires enumerating moulding metadata
++		for (int i = 0; i < 16; i++) {
++			if (!((FCBlockWoodMouldingAndDecorative) FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative).IsDecorative(i)) {
++				addSawRecipe(new ItemStack(cornerItemID, 2, itemMetadata),
++						moulding, i);
++			}
++		}
++		
++		//Corners
++		//Shared block id with other types requires enumerating corner metadata
++		for (int i = 0; i < 16; i++) {
++			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
++					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
++					((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
++			{
++				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 0),
++						sidingAndCorner, i);
++			}
++		}
++		
++		//Fence
++		addSawRecipe(new ItemStack(cornerItemID, 1, itemMetadata),
++				sidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
++	}
++	
 +	private static void AddWoodSubBlockRecipes()
 +	{
 +		// wood sub-blocks
@@ -5769,16 +5898,16 @@
 +    		new ItemStack( Block.web )
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockUnfiredClay ), new Object[] { 
-+            new ItemStack( Block.blockClay ),
-+        } );
-+		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockLadder ), new Object[] { 
 +			new ItemStack( Block.ladder ) 
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockSnowSolid ), new Object[] {	    		
 +    		new ItemStack( Block.blockSnow )
++		} );
++		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemCarrot ), new Object[] {	    		
++    		new ItemStack( Item.carrot )
 +		} );
 +	}
 +
@@ -5822,6 +5951,7 @@
 +		FCEntityVillager.addTradeToBuySingleItem(farmer, Item.bucketMilk.itemID, 1, 2, 0.25F, 2);
 +		
 +		FCEntityVillager.addTradeToSellMultipleItems(farmer, FCBetterThanWolves.fcItemWheat.itemID, 8, 16, 1F, 2);
++		FCEntityVillager.addTradeToSellSingleItem(farmer, FCBetterThanWolves.fcItemReedRoots.itemID, 6, 8, 1F, 2);
 +		FCEntityVillager.addTradeToSellMultipleItems(farmer, Item.appleRed.itemID, 2, 4, 0.5F, 2);
 +		
 +		FCEntityVillager.addLevelUpTradeToBuySingleItem(farmer, FCBetterThanWolves.fcMillStone.blockID, 2, 2, 2);

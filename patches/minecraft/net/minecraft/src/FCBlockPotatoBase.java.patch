@@ -1,0 +1,89 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockPotatoBase.java
+@@ -0,0 +1,86 @@
++// FCMOD
++
++package net.minecraft.src;
++
++import java.util.Random;
++
++public class FCBlockPotatoBase extends FCBlockCropsDailyGrowth
++{
++    public FCBlockPotatoBase( int iBlockID )
++    {
++        super( iBlockID );
++    }
++    
++    @Override
++    public void dropBlockAsItemWithChance( World world, int i, int j, int k, int iMetadata, 
++    	float fChance, int iFortuneModifier )
++    {
++        if ( !world.isRemote && IsFullyGrown( iMetadata ) )
++        {
++        	super.dropBlockAsItemWithChance( world, i, j, k, iMetadata, fChance, 0 );
++        	
++        	//33% chance of dropping a second potato
++        	if (world.rand.nextInt(3) == 0) {
++        		super.dropBlockAsItemWithChance( world, i, j, k, iMetadata, fChance, 0 );
++        	}
++        }
++    }
++
++	@Override
++	protected int GetCropItemID() {
++		return Item.potato.itemID;
++	}
++
++	@Override
++	protected int GetSeedItemID() {
++		return 0;
++	}
++	
++    @Override
++    public ItemStack GetStackRetrievedByBlockDispenser( World world, int i, int j, int k )
++    {
++    	int iMetadata = world.getBlockMetadata( i, j, k );
++		
++		if ( GetGrowthLevel(iMetadata) >= 7 )
++		{
++			return super.GetStackRetrievedByBlockDispenser( world, i, j, k );			
++		}
++    	
++    	return null;
++    }
++    
++    //------------- Class Specific Methods ------------//
++    
++	//----------- Client Side Functionality -----------//
++	
++	private Icon[] iconArray;
++	
++	public Icon getIcon(int par1, int par2)
++    {
++		par2 = GetGrowthLevel(par2);
++		
++        if (par2 < 7)
++        {
++            if (par2 == 6)
++            {
++                par2 = 5;
++            }
++
++            return this.iconArray[par2 >> 1];
++        }
++        else
++        {
++            return this.iconArray[3];
++        }
++    }
++	
++	public void registerIcons(IconRegister par1IconRegister)
++    {
++        this.iconArray = new Icon[4];
++
++        for (int var2 = 0; var2 < this.iconArray.length; ++var2)
++        {
++            this.iconArray[var2] = par1IconRegister.registerIcon("fcBlockPotatoes_" + var2);
++        }
++    }
++}

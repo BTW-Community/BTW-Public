@@ -1,0 +1,31 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockCarrotFlowers.java
+@@ -0,0 +1,27 @@
++package net.minecraft.src;
++
++public class FCBlockCarrotFlowers extends FCBlockCarrotBase {
++	public FCBlockCarrotFlowers(int iBlockID) {
++		super(iBlockID);
++		this.setUnlocalizedName("fcBlockCarrotFlowers");
++	}
++
++	@Override
++	protected int GetCropItemID() {
++		return FCBetterThanWolves.fcItemCarrotSeeds.itemID;
++	}
++
++	@Override
++	protected int GetSeedItemID() {
++		return FCBetterThanWolves.fcItemCarrotSeeds.itemID;
++	}
++    
++	//------------ Client Side Functionality ----------//
++	
++	@Override
++    public boolean RenderBlock(RenderBlocks renderer, int x, int y, int z) {
++        renderer.setRenderBounds(GetBlockBoundsFromPoolBasedOnState(renderer.blockAccess, x, y, z));
++        
++    	return renderer.renderCrossedSquares(this, x, y, z);
++    }
++}
+\ No newline at end of file

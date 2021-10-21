@@ -1,0 +1,19 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockReedRoots.java
+@@ -0,0 +1,15 @@
++package net.minecraft.src;
++
++import java.util.Random;
++
++public class FCBlockReedRoots extends FCBlockReedBase {
++	public FCBlockReedRoots(int id) {
++		super(id);
++		this.setUnlocalizedName("fcBlockReedRoots");
++	}
++
++	@Override
++	public int idDropped(int par1, Random rand, int par3) {
++        return FCBetterThanWolves.fcItemReedRoots.itemID;
++    }
++}
+\ No newline at end of file

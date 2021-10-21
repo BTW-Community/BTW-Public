@@ -301,7 +301,7 @@
 -    public static Item pumpkinPie = (new ItemFood(144, 8, 0.3F, false)).setUnlocalizedName("pumpkinPie").setCreativeTab(CreativeTabs.tabFood);
 +    public static Item itemFrame = ( new ItemHangingEntity( 133, EntityItemFrame.class ) ).SetBuoyant().SetIncineratedInCrucible().SetFilterableProperties( m_iFilterable_SolidBlock ).setUnlocalizedName( "frame" );
 +    public static Item flowerPot = ( new ItemReed( 134, Block.flowerPot ) ).SetBuoyant().SetFilterableProperties( m_iFilterable_SolidBlock ).setUnlocalizedName( "flowerPot" ).setCreativeTab( CreativeTabs.tabDecorations );
-+    public static Item carrot = ( new FCItemSeedFood( 135, 3, 0F, Block.carrot.blockID ) ).SetFilterableProperties( m_iFilterable_Small ).SetAsBasicPigFood().setUnlocalizedName( "carrots" );
++    public static Item carrot = ( new FCItemSeedFood( 135, 3, 0F, Block.carrot.blockID ) ).SetFilterableProperties( m_iFilterable_Small ).SetAsBasicPigFood().setUnlocalizedName( "carrots" ).setCreativeTab(null);
 +    public static Item potato = ( new FCItemSeedFood( 136, 3, 0F, Block.potato.blockID ) ).SetFilterableProperties( m_iFilterable_Small ).SetAsBasicPigFood().setUnlocalizedName( "potato" );
 +    public static Item bakedPotato = ( new ItemFood( 137, 2, 0F, false ) ).SetFilterableProperties( m_iFilterable_Small ).SetAsBasicPigFood().setUnlocalizedName( "potatoBaked" );	    
 +    public static Item poisonousPotato = ( new ItemFood( 138, 1, 0F, false ) ).setPotionEffect( Potion.poison.id, 5, 0, 0.6F ).SetFilterableProperties( m_iFilterable_Small ).setUnlocalizedName( "potatoPoisonous" );
@@ -355,7 +355,7 @@
  
      /** The ID of this item. */
      public final int itemID;
-@@ -206,19 +211,21 @@
+@@ -206,19 +211,23 @@
       */
      protected boolean hasSubtypes = false;
      private Item containerItem = null;
@@ -369,6 +369,8 @@
      private String unlocalizedName;
  
 +    public static final boolean[] itemReplaced = new boolean[32000];
++    public static final String[] itemReplacedBy = new String[32000];
++    
 +    private Class entityClass = EntityItem.class;
 +
      protected Item(int par1)
@@ -381,7 +383,7 @@
          if (itemsList[256 + par1] != null)
          {
              System.out.println("CONFLICT @ " + par1);
-@@ -246,10 +253,14 @@
+@@ -246,10 +255,14 @@
       * Returns the strength of the stack against a given block. 1.0F base, (Quality+1)*2 if correct blocktype, 1.5F if
       * sword
       */
@@ -396,7 +398,7 @@
  
      /**
       * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
-@@ -338,10 +349,14 @@
+@@ -338,10 +351,14 @@
      /**
       * Returns if the item (tool) can harvest results from the block type.
       */
@@ -411,7 +413,7 @@
  
      /**
       * Called when a player right clicks an entity with an item.
-@@ -445,7 +460,10 @@
+@@ -445,7 +462,10 @@
       * Called each tick as long the item is on a player inventory. Uses by maps to check if is on a player hand and
       * update it's contents.
       */
@@ -423,7 +425,7 @@
  
      /**
       * Called when item is crafted/smelted. Used only by maps so far.
-@@ -573,4 +591,480 @@
+@@ -573,4 +593,518 @@
      {
          StatList.initStats();
      }
@@ -491,79 +493,117 @@
 +    //------------ Addon interfacing related functionality ----------//
 +
 +    /**
-+     * Replaces a reference to an existing block (vanilla or btw)
-+     * @param id The block id to be replaced
-+     * @param newClass The class of the new item
-+     * @param parameters Optional additional parameters to pass to the item, not including the id.
-+     */
-+    public static Item replaceItem(int id, Class newClass, Object ... parameters) {
++	 * Deprecated form of replaceItem for backwards compatibility
++	 */
++	@Deprecated
++	public static Item replaceItem(int id, Class newClass, Object ... parameters) {
++		return replaceItem(id, newClass, null, new String[] {}, parameters);
++	}
++
++	/**
++	 * Replaces a reference to an existing item (vanilla or btw)
++	 * @param id The block id to be replaced
++	 * @param newClass The class of the new item
++	 * @param parameters Optional additional parameters to pass to the block, not including the id.
++	 */
++	public static Item replaceItem(int id, Class newClass, FCAddOn addonPerformingReplacement, Object ... parameters) {
++		return replaceItem(id, newClass, addonPerformingReplacement, new String[] {}, parameters);
++	}
++
++	/**
++	 * Replaces a reference to an existing item (vanilla or btw), with a list of valid addons for which to be able to overwrite their replacement
++	 * @param id The block id to be replaced
++	 * @param newClass The class of the new item
++	 * @param validAddonNamesForOverwrite An array of addon names which should be ignored when handling conflicts
++	 * @param parameters Optional additional parameters to pass to the block, not including the id.
++	 */
++    public static Item replaceItem(int id, Class newClass, FCAddOn addonPerformingReplacement, String[] validAddonNamesForOverwrite, Object ... parameters) {
 +    	if (itemReplaced[id]) {
-+    		throw new RuntimeException("Multiple addons attempting to replace item " + itemsList[id]);
++    		String replacedBy = itemReplacedBy[id];
++			boolean isValidOverwrite = false;
++			
++			for (String addonName : validAddonNamesForOverwrite) {
++				if (replacedBy.equals(addonName)) {
++					isValidOverwrite = true;
++				}
++			}
++			
++			if (!isValidOverwrite) {
++				throw new RuntimeException("Multiple addons attempting to replace item " + itemsList[id]);
++			}
++    	}
++
++    	m_bSuppressConflictWarnings = true;
++
++    	Item newItem = null;
++
++    	Class[] parameterTypes = new Class[parameters.length + 1];
++    	Object[] parameterValues = new Object[parameters.length + 1];
++
++    	parameterTypes[0] = Integer.TYPE;
++    	parameterValues[0] = id - 256;
++
++    	Item original = itemsList[id];
++    	itemsList[id] = null;
++
++    	for (int i = 0; i < parameters.length; i++) {
++    		Class<?> type = parameters[i].getClass();
++
++    		Class<?> primitiveType = FCUtilsReflection.getPrimitiveFromBoxedClass(type);
++
++    		if (primitiveType != null) {
++    			type = primitiveType;
++    		}
++
++    		parameterTypes[i + 1] = type;
++    		parameterValues[i + 1] = parameters[i];
++    	}
++
++    	Constructor constructorToUse = FCUtilsReflection.findMatchingConstructor(newClass, parameterTypes);
++
++    	if (constructorToUse == null) {
++    		String message = "No appropriate constructor found for " + itemsList[id] + ": ";
++
++    		for (Class<?> paramType : parameterTypes) {
++    			message += paramType.getSimpleName() + ", ";
++    		}
++
++    		throw new RuntimeException(message);
++    	}
++
++    	try {
++    		constructorToUse.setAccessible(true);
++    		newItem = (Item) constructorToUse.newInstance(parameterValues);
++    	} catch (InstantiationException e) {
++    		throw new RuntimeException("A problem has occured attempting to instantiate replacement for " + itemsList[id]);
++    	} catch (IllegalArgumentException e) {
++    		throw new RuntimeException("Incompatible types passed to specified constructor for " + itemsList[id]);
++    	} catch (Exception e) {
++    		e.printStackTrace();
++    	}
++
++    	itemReplaced[id] = true;
++
++    	if (addonPerformingReplacement != null) {
++    		itemReplacedBy[id] = addonPerformingReplacement.getName();
 +    	}
 +    	else {
-+    		m_bSuppressConflictWarnings = true;
-+    		
-+    		Item newItem = null;
-+    		
-+    		Class[] parameterTypes = new Class[parameters.length + 1];
-+    		Object[] parameterValues = new Object[parameters.length + 1];
-+    		
-+    		parameterTypes[0] = Integer.TYPE;
-+    		parameterValues[0] = id - 256;
-+    		
-+    		for (int i = 0; i < parameters.length; i++) {
-+    			Class<?> type = parameters[i].getClass();
-+    			
-+    			Class<?> primitiveType = FCUtilsReflection.getPrimitiveFromBoxedClass(type);
-+    			
-+    			if (primitiveType != null) {
-+    				type = primitiveType;
-+    			}
-+    			
-+    			parameterTypes[i + 1] = type;
-+    			parameterValues[i + 1] = parameters[i];
-+    		}
-+    		
-+    		Constructor constructorToUse = FCUtilsReflection.findMatchingConstructor(newClass, parameterTypes);
-+
-+            if (constructorToUse == null) {
-+            	String message = "No appropriate constructor found for " + itemsList[id] + ": ";
-+
-+                for (Class<?> paramType : parameterTypes) {
-+                	message += paramType.getSimpleName() + ", ";
-+                }
-+
-+                throw new RuntimeException(message);
-+            }
-+    		
-+    		try {
-+    			constructorToUse.setAccessible(true);
-+    			newItem = (Item) constructorToUse.newInstance(parameterValues);
-+    		} catch (InstantiationException e) {
-+    			throw new RuntimeException("A problem has occured attempting to instantiate replacement for " + itemsList[id]);
-+    		} catch (IllegalArgumentException e) {
-+    			throw new RuntimeException("Incompatible types passed to specified constructor for " + itemsList[id]);
-+    		} catch (Exception e) {
-+    			e.printStackTrace();
-+    		}
-+    		
-+    		itemReplaced[id] = true;
-+    		Item original = itemsList[id];
-+    		itemsList[id] = null;
-+    		
-+    		newItem.SetFilterableProperties(original.m_iFilterablePropertiesBitfield).SetBuoyancy(original.GetBuoyancy(0));
-+    		
-+    		if (original.IsIncineratedInCrucible())
-+    			newItem.SetIncineratedInCrucible();
-+    		else
-+    			newItem.SetNotIncineratedInCrucible();
-+    		
-+    		itemsList[id] = newItem;
-+    		
-+    		m_bSuppressConflictWarnings = false;
-+    		
-+    		return newItem;
++    		FCAddOnHandler.LogWarning("Deprecated item replacement call for item " + itemsList[id] + ". Please attach addon when handling replacement for mutual replacement handling.");
++    		itemReplacedBy[id] = "";
 +    	}
++
++    	newItem.SetFilterableProperties(original.m_iFilterablePropertiesBitfield).SetBuoyancy(original.GetBuoyancy(0));
++
++    	if (original.IsIncineratedInCrucible())
++    		newItem.SetIncineratedInCrucible();
++    	else
++    		newItem.SetNotIncineratedInCrucible();
++
++    	itemsList[id] = newItem;
++
++    	m_bSuppressConflictWarnings = false;
++
++    	return newItem;
 +    }
 +    
 +    //----------- Animal Food related functionality -----------//

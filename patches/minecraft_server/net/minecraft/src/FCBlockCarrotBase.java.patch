@@ -1,0 +1,34 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCBlockCarrotBase.java
+@@ -0,0 +1,30 @@
++// FCMOD
++
++package net.minecraft.src;
++
++import java.util.Random;
++
++public abstract class FCBlockCarrotBase extends FCBlockCropsDailyGrowth
++{
++    public FCBlockCarrotBase( int iBlockID )
++    {
++        super( iBlockID );
++    }
++	
++    @Override
++    public ItemStack GetStackRetrievedByBlockDispenser( World world, int i, int j, int k )
++    {
++    	int iMetadata = world.getBlockMetadata( i, j, k );
++		
++		if ( GetGrowthLevel(iMetadata) >= 7 )
++		{
++			return super.GetStackRetrievedByBlockDispenser( world, i, j, k );			
++		}
++    	
++    	return null;
++    }
++    
++    //------------- Class Specific Methods ------------//
++    
++	//----------- Client Side Functionality -----------//
++}
+\ No newline at end of file

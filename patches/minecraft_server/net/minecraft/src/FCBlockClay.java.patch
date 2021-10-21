@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockClay.java
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,88 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -17,7 +17,7 @@
 +        
 +        setStepSound( FCBetterThanWolves.fcStepSoundSquish );
 +        
-+        setCreativeTab( null ); // weirdness due to use of item as legacy clay
++        setCreativeTab( CreativeTabs.tabBlock ); // weirdness due to use of item as legacy clay
 +    }
 +
 +    @Override
@@ -50,9 +50,27 @@
 +	@Override
 +    protected boolean canSilkHarvest()
 +    {
-+		// can't silk harvest due to conflicting drops and conversion recipes old clay blocks
-+		
-+        return false;
++        return true;
++    }
++	
++	@Override
++	public int quantityDroppedWithBonus(int par1, Random par2Random)
++    {
++        if (par1 > 0 && this.blockID != this.idDropped(0, par2Random, par1))
++        {
++            int var3 = par2Random.nextInt(par1 + 2) - 1;
++
++            if (var3 < 0)
++            {
++                var3 = 0;
++            }
++
++            return this.quantityDropped(par2Random) * (var3 + 1);
++        }
++        else
++        {
++            return this.quantityDropped(par2Random);
++        }
 +    }
 +	
 +	@Override

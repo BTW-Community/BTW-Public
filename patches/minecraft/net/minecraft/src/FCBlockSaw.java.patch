@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockSaw.java
-@@ -0,0 +1,969 @@
+@@ -0,0 +1,856 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -592,6 +592,7 @@
 +	 */
 +    private boolean HandleSawingExceptionCases( World world, int i, int j, int k, int iSawI, int iSawJ, int iSawK, int iSawFacing, Random random )
 +    {
++    	//TODO: remove piston exception case to be able to completely remove this method
 +		int iTargetBlockID = world.getBlockId( i, j, k );
 +		
 +		if ( iTargetBlockID == Block.pistonMoving.blockID )
@@ -599,121 +600,7 @@
 +			return true;
 +		}
 +		
-+		int iTargetMetadata = world.getBlockMetadata( i, j, k );
-+		
-+		boolean bSawedBlock = false;
-+		
-+		if ( iTargetBlockID == Block.wood.blockID )
-+		{
-+			iTargetMetadata &= 3;
-+			
-+			for ( int iTempCount = 0; iTempCount < 4; iTempCount++ )
-+			{
-+				FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+					Block.planks.blockID, iTargetMetadata );
-+			}
-+			
-+			for ( int iTempCount = 0; iTempCount < 2; iTempCount++ )
-+			{
-+				FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+					FCBetterThanWolves.fcItemSawDust.itemID, 0 );
-+			}
-+			
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+				FCBetterThanWolves.fcItemBark.itemID, iTargetMetadata );
-+			
-+			bSawedBlock = true;				
-+
-+		}
-+		else if ( iTargetBlockID == Block.stairsWoodOak.blockID )				
-+		{
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+				FCBetterThanWolves.fcBlockWoodSidingItemStubID, 0 );
-+			
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+				FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 0 );
-+			
-+			bSawedBlock = true;
-+		}
-+		else if ( iTargetBlockID == Block.stairsWoodSpruce.blockID )				
-+		{
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+				FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1 );
-+			
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+				FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1 );
-+			
-+			bSawedBlock = true;
-+		}
-+		else if ( iTargetBlockID == Block.stairsWoodBirch.blockID )				
-+		{
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+				FCBetterThanWolves.fcBlockWoodSidingItemStubID, 2 );
-+			
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+				FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 2 );
-+			
-+			bSawedBlock = true;
-+		}
-+		else if ( iTargetBlockID == Block.stairsWoodJungle.blockID )				
-+		{
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+				FCBetterThanWolves.fcBlockWoodSidingItemStubID, 3 );
-+			
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+				FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 3 );
-+			
-+			bSawedBlock = true;
-+		}
-+		else if ( iTargetBlockID == Block.woodDoubleSlab.blockID )
-+		{
-+			for ( int iTempCount = 0; iTempCount < 2; iTempCount++ )
-+			{
-+				FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+					Block.woodSingleSlab.blockID, iTargetMetadata & 7 );
-+			}
-+			
-+			bSawedBlock = true;
-+		}
-+		else if ( iTargetBlockID == Block.woodSingleSlab.blockID ) // wood slab
-+		{
-+			for ( int iTempCount = 0; iTempCount < 2; iTempCount++ )
-+			{
-+				FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+					FCBetterThanWolves.fcBlockWoodMouldingItemStubID, iTargetMetadata & 7 );
-+			}
-+			
-+			bSawedBlock = true;
-+		}
-+		else if ( iTargetBlockID == Block.stoneDoubleSlab.blockID && ( iTargetMetadata & 7 ) == 2 ) // legacy double wood slabs
-+		{
-+			for ( int iTempCount = 0; iTempCount < 2; iTempCount++ )
-+			{
-+				FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+					Block.woodSingleSlab.blockID, 0 );
-+			}
-+			
-+			bSawedBlock = true;
-+		}
-+		else if ( iTargetBlockID == Block.stoneSingleSlab.blockID && ( iTargetMetadata & 7 ) == 2 ) // legacy wood slabs
-+		{
-+			for ( int iTempCount = 0; iTempCount < 2; iTempCount++ )
-+			{
-+				FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, 
-+					FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 0 );
-+			}
-+			
-+			bSawedBlock = true;
-+		}			
-+		
-+		if ( bSawedBlock )
-+		{
-+	        EmitSawParticles( world, i, j, k, random );
-+
-+	        world.setBlockToAir( i, j, k );
-+		}
-+		
-+		return bSawedBlock;
++		return false;
 +    }
 +    
 +	public void BreakSaw( World world, int i, int j, int k )

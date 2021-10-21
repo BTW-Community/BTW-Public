@@ -84,7 +84,7 @@
 +    @Override
 +    public int idDropped( int iMetadata, Random rand, int iFortuneModifier )
 +    {
-+        return FCBetterThanWolves.fcBlockDirtLoose.blockID;
++        return FCBetterThanWolves.fcBlockFarmland.blockID;
 +    }
 +    
 +	@Override

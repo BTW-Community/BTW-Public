@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,2655 @@
+@@ -0,0 +1,2693 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -22,8 +22,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.1.8";
-+
++	public static final String fcVersionString = "1.2.0";
 +	
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +	
@@ -320,6 +319,14 @@
 +    public static FCBlockWeeds fcBlockWeeds;
 +    public static FCBlockPlanterSoil fcBlockPlanterSoil;
 +    
++    public static Block fcBlockReeds;
++    public static Block fcBlockReedRoots;
++    
++    public static Block fcBlockCarrot;
++    public static Block fcBlockCarrotFlowers;
++    
++    public static Block fcBlockStructureVoid;
++    
 +	// New Items
 +	
 +    public static Item fcItemBucketCement;    
@@ -610,6 +617,13 @@
 +    public static Item fcItemNameTag;
 +    
 +    public static Item fcItemShearsDiamond;
++    
++    public static Item fcItemReedRoots;
++    
++    public static Item fcItemCarrot;
++    public static Item fcItemCarrotSeeds;
++    
++    public static Item fcItemDiamondPlate;
 +    
 +    // legacy ID for MCPatcher grass slab support
 +    
@@ -1214,7 +1228,13 @@
 +	    fcBlockWheatCrop = new FCBlockWheatCrop(parseID("fcBlockWheatCropID"));
 +	    fcBlockWheatCropTop = new FCBlockWheatCropTop(parseID("fcBlockWheatCropTopID"));
 +	    fcBlockWeeds = new FCBlockWeeds(parseID("fcBlockWeedsID"));
-+	    fcBlockPlanterSoil = new FCBlockPlanterSoil(parseID("fcBlockPlanterSoilID"));	    
++	    fcBlockPlanterSoil = new FCBlockPlanterSoil(parseID("fcBlockPlanterSoilID"));	   
++	    
++	    fcBlockReeds = new FCBlockReed(parseID("fcBlockReedsID"));
++	    fcBlockReedRoots = new FCBlockReedRoots(parseID("fcBlockReedRootsID"));
++	    
++	    fcBlockCarrot = new FCBlockCarrot(parseID("fcBlockCarrotID"));
++	    fcBlockCarrotFlowers = new FCBlockCarrotFlowers(parseID("fcBlockCarrotFlowersID"));
 +    }
 +	    
 +	private void InstantiateModItems()
@@ -1342,6 +1362,8 @@
 +    	
 +    	fcItemArmorPlate = (new Item(parseID("fcArmorPlateID"))).
 +    		setUnlocalizedName("fcItemArmorPlate").setCreativeTab(CreativeTabs.tabMaterials);
++    	fcItemDiamondPlate = (new Item(parseID("fcItemDiamondPlateID"))).
++        		setUnlocalizedName("fcItemDiamondPlate").setCreativeTab(CreativeTabs.tabMaterials);
 +    	
 +    	fcItemPlateHelm = (new FCItemArmorRefined(parseID("fcPlateHelmID"), 0, 10)).setUnlocalizedName("fcItemHelmetPlate");
 +    	fcItemPlateBreastPlate = (new FCItemArmorRefined(parseID("fcPlateBreastPlateID"), 1, 14)).setUnlocalizedName("fcItemChestplatePlate");
@@ -1740,6 +1762,16 @@
 +        
 +        fcItemShearsDiamond = new FCItemShearsDiamond(parseID("fcItemShearsDiamondID"));
 +        
++        fcItemReedRoots = new FCItemPlacesAsBlock(parseID("fcItemReedRootsID"), fcBlockReedRoots.blockID).
++        		SetBuoyant().SetFurnaceBurnTime(FCEnumFurnaceBurnTime.KINDLING).SetIncineratedInCrucible().
++        		SetFilterableProperties(Item.m_iFilterable_Narrow).setUnlocalizedName("fcItemReedRoots").
++        		setCreativeTab(CreativeTabs.tabMaterials);
++	    //Done here because of instantiation order
++	    ((FCItemPlacesAsBlock) Item.reed).SetAssociatedBlockID(fcBlockReeds.blockID);
++	    
++	    fcItemCarrot = new FCItemSeedFood(parseID("fcItemCarrotID"), 3, 0, fcBlockCarrotFlowers.blockID).SetFilterableProperties(Item.m_iFilterable_Small).SetAsBasicPigFood().setUnlocalizedName("fcItemCarrot");
++	    fcItemCarrotSeeds = new FCItemSeeds(parseID("fcItemCarrotSeedsID"), fcBlockCarrot.blockID).SetAsBasicChickenFood().setUnlocalizedName("fcItemCarrotSeeds");
++        
 +	    // ***REMINDER***: Use IDs over 20K here
 +		
 +        CreateAssociatedItemsForModBlocks();
@@ -1755,7 +1787,7 @@
 +            {
 +                Item.itemsList[iTempBlockID] = new ItemBlock(iTempBlockID - 256);
 +            }
-+        }        
++        }
 +	}
 +	
 +	private void RegisterCustomBlockItems()
@@ -1887,7 +1919,7 @@
 +		Item.itemsList[Block.doorWood.blockID] = new FCItemBlockLegacySubstitution(Block.doorWood.blockID - 256, fcBlockDoorWood.blockID);		
 +		Item.itemsList[Block.web.blockID] = new FCItemBlockLegacySubstitution(Block.web.blockID - 256, fcBlockWeb.blockID);		
 +		
-+		Item.itemsList[Block.blockClay.blockID] = new FCItemBlockLegacySubstitution(Block.blockClay.blockID - 256, fcBlockUnfiredClay.blockID);
++		//Item.itemsList[Block.blockClay.blockID] = new FCItemBlockLegacySubstitution(Block.blockClay.blockID - 256, fcBlockUnfiredClay.blockID);
 +		
 +		Item.itemsList[Block.ladder.blockID] = new FCItemBlockLegacySubstitution(Block.ladder.blockID - 256, fcBlockLadder.blockID);
 +		
@@ -2228,6 +2260,10 @@
 +				this.registerProperty("fcBlockWheatCropTopID", "1090");
 +				this.registerProperty("fcBlockWeedsID", "1091");
 +				this.registerProperty("fcBlockPlanterSoilID", "1092");
++				this.registerProperty("fcBlockReedsID", "1093");
++				this.registerProperty("fcBlockReedRootsID", "1094");
++				this.registerProperty("fcBlockCarrotID", "1095");
++				this.registerProperty("fcBlockCarrotFlowersID", "1096");
 +				
 +				//Item ids
 +				this.registerProperty("fcBucketCementID", "222", "***Item IDs***\n\n");
@@ -2417,6 +2453,10 @@
 +				this.registerProperty("fcItemStrawID", "22337");
 +				this.registerProperty("fcItemBrickUnfiredID", "22338");
 +				this.registerProperty("fcItemNetherBrickUnfiredID", "22339");
++				this.registerProperty("fcItemReedRootsID", "22340");
++				this.registerProperty("fcItemCarrotID", "22341");
++				this.registerProperty("fcItemCarrotSeedsID", "22342");
++				this.registerProperty("fcItemDiamondPlateID", "22343");
 +				//Item IDs reused from deco
 +				this.registerProperty("fcItemNameTagID", "30005");
 +				this.registerProperty("fcItemShearsDiamondID", "30006");
@@ -2653,7 +2693,5 @@
 +	public FCAddOnUtilsWorldData createWorldData() {
 +		return new FCUtilsWorldData();
 +	}
-+	
-+	//----------- Client Side Functionality -----------//
 +}
 \ No newline at end of file

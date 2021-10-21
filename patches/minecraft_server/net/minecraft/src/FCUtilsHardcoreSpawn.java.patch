@@ -9,7 +9,8 @@
 +
 +public class FCUtilsHardcoreSpawn
 +{
-+    public static final int m_iHardcoreSpawnTimeBetweenReassignments = 24000;
++	//Timer set to 9 minutes so if you die once night falls you respawn in a new location
++    public static final int m_iHardcoreSpawnTimeBetweenReassignments = 10800;
 +    
 +	private static final double m_dRadiusBase = 2000D;
 +	private static final double m_dRadiusBaseExclusionDistance = 1000D;
@@ -35,7 +36,7 @@
 +	 */
 +	public static double GetPlayerSpawnExclusionRadius()
 +	{
-+		return m_dRadiusBaseExclusionDistance * GetWorldTypeRadiusMultiplier() * GetGameProgressRadiusMultiplier();
++		return m_dRadiusBaseExclusionDistance * GetWorldTypeRadiusMultiplier();
 +	}
 +
 +	/** 
@@ -77,9 +78,8 @@
 +	{
 +		if ( FCUtilsWorld.GameProgressHasEndDimensionBeenAccessedServerOnly() )
 +		{
-+			return 4D;
++			return 2.5D;
 +		}
-+		// FCTODO: I think we should have another stage here at 3D for additional overlap (Cured villagers?)
 +		else if ( FCUtilsWorld.GameProgressHasWitherBeenSummonedServerOnly() )
 +		{
 +			return 2D;
@@ -122,15 +122,15 @@
 +            
 +            iFoodLevel -= 6; // knock off a 1 pip food penalty
 +            
-+            if ( iFoodLevel < 12 )
++            if ( iFoodLevel < 24 )
 +            {
-+            	iFoodLevel = 12;
++            	iFoodLevel = 24;
 +            }
 +
 +        	newPlayer.foodStats.setFoodLevel( iFoodLevel );            
 +		}
 +			
-+		if ( !FCUtilsWorld.GameProgressHasNetherBeenAccessedServerOnly() || FCBetterThanWolves.alwaysSpawnTogether )
++    	if ( !FCUtilsWorld.GameProgressHasNetherBeenAccessedServerOnly() || FCBetterThanWolves.alwaysSpawnTogether )
 +    	{
 +    		// early game, players are tied to respawning together
 +    		
@@ -215,7 +215,7 @@
 +	                
 +	        		long lOverworldTime = FCUtilsWorld.GetOverworldTimeServerOnly();	        		
 +	        		
-+	        		if ( FCBetterThanWolves.IsSinglePlayerNonLan() )
++	        		if ( FCBetterThanWolves.IsSinglePlayerNonLan() || world.playerEntities.size() == 1 )
 +	        		{
 +	        			// set the time to the next morning if this is single player
 +	        			
@@ -391,7 +391,7 @@
 +            player.posY++;
 +        }
 +        while (true);
-+    }    
++    }
 +    
 +    public static boolean IsInLootedTempleRadius( World world, int iX, int iZ )
 +    {
@@ -407,3 +407,4 @@
 +    	return dDistSqFromSpawn < dLootedRadius * dLootedRadius;
 +    }
 +}
+\ No newline at end of file

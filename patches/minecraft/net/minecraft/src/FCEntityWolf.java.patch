@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityWolf.java
-@@ -0,0 +1,1121 @@
+@@ -0,0 +1,1124 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -386,7 +386,7 @@
 +		// wounded like by hand, nor do it for breeding like with other animals.
 +		// Hiracho: changed, do check breeding items on ground
 +
-+		return (!IsFullyFed() || IsReadyToEatBreedingItem());
++		return !IsFullyFed();
 +	}
 +
 +	@Override
@@ -394,7 +394,10 @@
 +	{
 +		Item tempItem = stack.getItem();
 +
-+		if ( IsReadyToEatLooseFood() && tempItem.IsWolfFood() && ( tempItem.itemID != Item.rottenFlesh.itemID || IsStarving() ) )
++		if (this.isBreedingItem(stack) && IsReadyToEatBreedingItem()) {
++			return true;
++		}
++		else if ( IsReadyToEatLooseFood() && tempItem.IsWolfFood() && ( tempItem.itemID != Item.rottenFlesh.itemID || IsStarving() ) )
 +		{
 +			return true;
 +		}

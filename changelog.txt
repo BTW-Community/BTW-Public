@@ -1,3 +1,56 @@
+## Version 1.2.0 ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- Hiracho
+- Sockthing
+
+/--General--/
+- Updated the title splashes.
+- Fixed an issue where config options were not being properly saved.
+- Fixed an issue where better grass did not work for mycelium.
+- Fixed an issue where better grass did not work for grass slabs.
+
+/--Gameplay--/
+- Added several new systems to update more crops to vegehenna. These changes are detailed individually further below. Note that this will be expanded upon in future releases to eventually update all crops to vegehenna standards.
+- Added the ability to silk touch clay ore, and removed the ability to convert old vanilla clay into unfired clay (as that was done by using clay ore's item id). It has been long enough since the original clay change that I find it very unlikely people still have clay that has not been converted.
+- Added the ability to use fortune on clay ore to increase the amount of clay dropped.
+- Added the diamond armor plate, and renamed the steel one to differentiate it. It may be crafted with 2 leather straps with a diamond ingot in the middle, and padding below the diamond ingot. The steel armor plate recipe has also been tweaked to match for consistency.
+- Changed diamond armor to require diamond armor plates in a similar manner to steel armor (straps replacing the shoulders and legs, and added on the chin, for 7 total), though the recipes still use the 3x3 anvil. This should hopefully allow iron armor a bit of room to breathe by making diamond armor a tad more expensive and slightly lossy when melted down.
+- Changed sheep to display their original wool color when shorn.
+- Changed wicker baskets to return all the wicker used in crafting them instead of only 1 to make the transition to hampers less frustrating given the sugar cane changes below.
+- Changed hamper's selection and hit boxes to better match their model.
+- Changed sails to be crafted with 3 fabric instead of 6 to reduce the amount of time spent early game waiting for hemp to grow. This should also make hardcore spawns across oceans slightly less punishing.
+- Changed (reduced) the maximum hardcore spawn range after entering the end to scale linearly with the other range increases instead of being dramatically higher.
+- Changed (reduced) the lockout timer on being assigned a new spawn location after dying. Now if you die after night falls you should be assigned a new location instead of simply death looping until morning. This should hopefully reduce some of the frustration of dying again immediately after a hardcore spawn.
+- Changed (increased) the minimum food value for the player on rapid respawns within the same day so that the player should no longer respawn unable to jump.
+- Removed the scaling minimum distance for hardcore spawn. The minimum is now fixed with only the maximum scaling in order to increase the chances of landing on old bases to generally make HCS reward overworld infrastructure more.
+- Removed the water bucket from the bread dough recipe as it made bread a pain to craft.
+- Fixed an issue where wolves would eat loose food on the ground even when not hungry.
+
+Vegehenna:
+- Added sugar cane roots, which are now required to grow sugar cane as the sugar cane item may no longer be planted (though it may still be placed on top of plants with roots). New roots can be bought from the farmer or found by exploring, as newly generated sugar cane plants will generate with roots which can be picked up and moved. The growth rate of sugar cane has been increased to offset new plants being much more rare. Old sugarcane plants will continue to function as normal so as to not break builds. Old plants will also drop roots when their base block is broken to make conversion easier.
+- Added a new carrot item, which is used for the new carrot crops. Old carrots will function as they used to so as to not break old builds. A crafting recipe has been provided to convert old carrots to new carrots.
+- Added a new flowering carrot plant, which can be obtained by planting a whole carrot. Flowering carrots drop carrot seeds when harvested.
+- Added a new carrot plant grown from carrot seeds, which drops a single carrot when harvested. Both kinds of carrot plants use daily growth like wheat.
+- Changed the textures for carrots and wheat crops.
+- Changed (increased) the chance of villages to have carrots or potatoes slightly to make explorating for them a little less frustrating.
+- Changed (increased) the base growth level of crops in villages to reduce the amount of waiting necessary to be able to harvest the crops.
+- Changed saplings to drop their current growth stage when broken instead of reverting to base.
+- Changed saplings to grow faster when fertilized.
+- Changed saplings to not grow into trees when placed in unfertilized planters. Be careful though, as fertilized saplings may find planters too restrictive for their growing root system.
+- Removed the ability to craft melons into slices by hand, making the saw now the only way to do so. This makes melons less effective as a source of food while travelling by decreasing their efficiency in inventory. Note that seeds may still be obtained without a saw by dropping the melon from a sufficiently high location.
+- Fixed an issue where pumpkins or melons exploding could cause seeds to get stuck in neighboring blocks.
+
+/--Creative Mode--/
+- Fixed an issue where farmland returned loose dirt when using pick block.
+
+/--Addon API--/
+- Added hooks to define custom tile entity renderers without a base class edit.
+- Added hooks to define valid biomes for biome-specific generators: pumpkins, sugar cane, villages
+- Added hooks to determine whether a particular addon is installed.
+- Added hooks to allow for mutual replacement of blocks and items between addons by allowing one addon to define its replacement as able to override the replacement of another addon.
+- Fixed an issue where addons with no config options defined would display an error to the console.
+
 ## Version 1.1.8 ##
 /--Gameplay--/
 - Changed (increased) the chance of breeding villagers producing a villager of a different profession than the parents.
@@ -16,8 +69,6 @@ Thanks to the following people who contributed to this release!
 
 /--General--/
 - Fixed an issue where falling sand would generate an error on chunk generation.
-
-/--Gameplay--/
 - Fixed an issue where comparators had the wrong recipe.
 - Fixed an issue where the game would crash when a platform began moving.
 - Fixed an issue where the game could crash when a max level villager tried to refresh its trades.
@@ -36,12 +87,6 @@ Thanks to the following people who contributed to this release!
 - Fixed an issue where throwing a snowball would crash the game.
 - Fixed an issue where lighting a powder keg would crash the game.
 - Fixed an issue where casting a fishing rod would crash the game.
-
-/--Creative Mode--/
-- Fixed an issue where an unimplemented item could be obtained through the creative menu.
-
-/--Addon API--/
-- Fixed an issue where addons with no config options defined would display an error to the console.
 
 ## Version 1.1.4 ##
 Sorry to keep spamming releases, the new entity spawning code touched a lot of places and I was bound to miss a few while testing.

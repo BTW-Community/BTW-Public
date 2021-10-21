@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockHamper.java
-@@ -0,0 +1,193 @@
+@@ -0,0 +1,207 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -14,6 +14,8 @@
 +        super( iBlockID );
 +        
 +        setUnlocalizedName( "fcBlockHamper" );
++        
++        this.InitBlockBounds(1/16D, 0, 1/16D, 15/16D, 1, 15/16D);
 +    }
 +    
 +    @Override
@@ -70,6 +72,18 @@
 +	{
 +    	return m_model.GetLidRotationPoint();
 +	}
++
++    @Override
++    public MovingObjectPosition collisionRayTrace( World world, int i, int j, int k, Vec3 startRay, Vec3 endRay )
++    {
++    	int iFacing = GetFacing( world, i, j, k );
++    	
++    	FCModelBlock transformedModel = m_model.MakeTemporaryCopy();
++    	
++    	transformedModel.RotateAroundJToFacing( iFacing );
++    	
++    	return transformedModel.CollisionRayTrace( world, i, j, k, startRay, endRay );    	
++    }
 +    
 +	//------------- Class Specific Methods ------------//
 +	
