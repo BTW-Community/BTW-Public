@@ -1,6 +1,6 @@
 --- a/minecraft/net/minecraft/src/RenderSheep.java
 +++ b/minecraft/net/minecraft/src/RenderSheep.java
-@@ -1,31 +1,66 @@
+@@ -1,31 +1,67 @@
  package net.minecraft.src;
  
 +import com.prupe.mcpatcher.mal.resource.FakeResourceLocation;
@@ -28,6 +28,7 @@
 -            this.loadTexture("/mob/sheep_fur.png");
 +			if (!sheep.getSheared()) {
 +				this.renderPassModel = this.woolModel;
++				this.renderPassModel.isChild = sheep.isChild();
 +				
 +				this.loadTexture(FakeResourceLocation.unwrap(MobRandomizer.randomTexture((Entity)sheep, FakeResourceLocation.wrap("/mob/sheep_fur.png"))));
              float var4 = 1.0F;

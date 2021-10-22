@@ -17,13 +17,13 @@
 +    @Override
 +	protected Item ItemToDropOnExplode()
 +    {
-+    	return Item.melonSeeds;
++    	return FCBetterThanWolves.fcItemMelonMashed;
 +    }
 +	
 +    @Override
 +	protected int ItemCountToDropOnExplode()
 +    {
-+    	return 5;
++    	return 2;
 +    }
 +	
 +    @Override

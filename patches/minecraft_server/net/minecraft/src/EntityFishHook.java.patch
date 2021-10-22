@@ -222,7 +222,7 @@
 +	        	
 +	        	if ( iMoonPhase == 0 )
 +	        	{
-+	        		iBiteOdds /= 10;
++	        		iBiteOdds /= 8;
 +	        	}
 +	        	else
 +	        	{

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,7022 @@
+@@ -0,0 +1,7041 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -530,6 +530,11 @@
 +    		new ItemStack( FCBetterThanWolves.fcItemHempFibers ),
 +    		new ItemStack( Item.flint )
 +		} );
++		
++		//other
++		AddShapelessRecipe(new ItemStack(Item.melonSeeds, 2), new Object[] {
++			new ItemStack(FCBetterThanWolves.fcItemMelonMashed)
++		});
 +	}
 +
 +	private static void AddToolRecipes()
@@ -1316,6 +1321,11 @@
 +    		new ItemStack( Item.melonSeeds )
 +		} );
 +		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemChickenFeed ), new Object[] {	    		
++    		new ItemStack( Item.dyePowder, 1, 15 ), // bone meal 
++    		new ItemStack(FCBetterThanWolves.fcItemCarrotSeeds)
++		} );
++		
 +		AddCauldronRecipe(new ItemStack(FCBetterThanWolves.fcItemChickenFeed), new ItemStack[] {
 +				new ItemStack(Item.dyePowder, 1, 15),
 +				new ItemStack(Item.seeds)
@@ -1339,6 +1349,11 @@
 +		AddCauldronRecipe(new ItemStack(FCBetterThanWolves.fcItemChickenFeed), new ItemStack[] {
 +				new ItemStack(Item.dyePowder, 1, 15),
 +				new ItemStack(Item.melonSeeds)
++		});
++		
++		AddCauldronRecipe(new ItemStack(FCBetterThanWolves.fcItemChickenFeed), new ItemStack[] {
++				new ItemStack(Item.dyePowder, 1, 15),
++				new ItemStack(FCBetterThanWolves.fcItemCarrotSeeds)
 +		});
 +	}
 +	
@@ -5513,6 +5528,10 @@
 +
 +		addHopperFilteringRecipe(new ItemStack(FCBetterThanWolves.fcItemWheatSeeds, 2), new ItemStack(FCBetterThanWolves.fcItemStraw), 
 +				new ItemStack(FCBetterThanWolves.fcItemWheat),
++				new ItemStack(FCBetterThanWolves.fcBlockWickerPane));
++		
++		addHopperFilteringRecipe(new ItemStack(Item.melonSeeds, 2), null, 
++				new ItemStack(FCBetterThanWolves.fcItemMelonMashed),
 +				new ItemStack(FCBetterThanWolves.fcBlockWickerPane));
 +		
 +		//Soul filtering

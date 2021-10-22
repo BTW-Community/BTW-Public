@@ -1,12 +1,19 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntitySheep.java
-@@ -0,0 +1,932 @@
+@@ -0,0 +1,637 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
++import java.util.ArrayList;
++import java.util.HashMap;
 +import java.util.Iterator;
 +import java.util.List;
++import java.util.Map;
++
++import javax.management.InstanceAlreadyExistsException;
++
++import com.prupe.mcpatcher.mal.biome.ColorMapBase.Blended;
 +
 +public class FCEntitySheep extends EntitySheep
 +{
@@ -337,6 +344,7 @@
 +			babySheep.setFleeceColor( iBabyColor );			
 +		}
 +		else if ( iMutationChance <= 23  )
++		//else if ( iMutationChance <= 100  )
 +		{
 +			// blend the colors of the adults
 +			
@@ -357,398 +365,95 @@
 +        return babySheep;
 +    }
 +    
-+    public int blendParentColors( FCEntitySheep papa, FCEntitySheep mama )
-+    {
-+    	int iPapaItemColor = BlockCloth.getBlockFromDye( papa.getOriginalFleeceColor() );  
-+    	int iMamaItemColor = BlockCloth.getBlockFromDye( mama.getOriginalFleeceColor() );
-+    	int iBlendedItemColor = iPapaItemColor;
++    private static ArrayList<ColorBlendEntry> colorBlendList = new ArrayList();
++    
++    static {
++    	try {
++			colorBlendList.add(new ColorBlendEntry(FCUtilsColor.BLACK.colorID, FCUtilsColor.WHITE.colorID, FCUtilsColor.GRAY.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.BLACK.colorID, FCUtilsColor.LIGHT_GRAY.colorID, FCUtilsColor.GRAY.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.GRAY.colorID, FCUtilsColor.WHITE.colorID, FCUtilsColor.LIGHT_GRAY.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.BLACK.colorID, FCUtilsColor.LIGHT_BLUE.colorID, FCUtilsColor.BLUE.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.BLACK.colorID, FCUtilsColor.LIME.colorID, FCUtilsColor.GREEN.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.BLACK.colorID, FCUtilsColor.PINK.colorID, FCUtilsColor.RED.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.BLUE.colorID, FCUtilsColor.PINK.colorID, FCUtilsColor.MAGENTA.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.RED.colorID, FCUtilsColor.LIGHT_BLUE.colorID, FCUtilsColor.MAGENTA.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.BLACK.colorID, FCUtilsColor.MAGENTA.colorID, FCUtilsColor.PURPLE.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.RED.colorID, FCUtilsColor.BLUE.colorID, FCUtilsColor.PURPLE.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.BLUE.colorID, FCUtilsColor.GREEN.colorID, FCUtilsColor.CYAN.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.RED.colorID, FCUtilsColor.GREEN.colorID, FCUtilsColor.YELLOW.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.CYAN.colorID, FCUtilsColor.RED.colorID, FCUtilsColor.BROWN.colorID));
++	    	colorBlendList.add(new ColorBlendEntry(FCUtilsColor.YELLOW.colorID, FCUtilsColor.RED.colorID, FCUtilsColor.ORANGE.colorID));
++		} catch (InstanceAlreadyExistsException e) {
++			e.printStackTrace();
++		}
++    }
++    
++    public static class ColorBlendEntry {
++    	private final int color1;
++    	private final int color2;
 +    	
-+        switch ( iPapaItemColor )
-+        {
-+	    	case 0: // black
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 7: // silver
-+	    	    		
-+	    	    		iBlendedItemColor = 8;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 9: // pink
-+	    	    		
-+	    	    		iBlendedItemColor = 1;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 10: // lime
-+	    	    		
-+	    	    		iBlendedItemColor = 2;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 12: // light blue
-+	    	    		
-+	    	    		iBlendedItemColor = 4;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 13: // magenta
-+	    	    		
-+	    	    		iBlendedItemColor = 5;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 15: // white
-+	    	    		
-+	    	    		iBlendedItemColor = 7;	    	    		
-+	    	    		
-+	    	    		break;    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 1: // red
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 2: // green
-+	    	    		
-+	    	    		iBlendedItemColor = 11;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 3: // brown
-+	    	    		
-+	    	    		iBlendedItemColor = 14;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 4: // blue
-+	    	    		
-+	    	    		iBlendedItemColor = 5;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 6: // cyan
-+	    	    		
-+	    	    		iBlendedItemColor = 3;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 11: // yellow
-+	    	    		
-+	    	    		iBlendedItemColor = 14;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 12: // light blue
-+	    	    		
-+	    	    		iBlendedItemColor = 13;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 15: // white
-+	    	    		
-+	    	    		iBlendedItemColor = 9;	    	    		
-+	    	    		
-+	    	    		break;    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 2: // green
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 1: // red
-+	    	    		
-+	    	    		iBlendedItemColor = 11;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 4: // blue
-+	    	    		
-+	    	    		iBlendedItemColor = 6;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 14: // orange
-+	    	    		
-+	    	    		iBlendedItemColor = 11;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 15: // white
-+	    	    		
-+	    	    		iBlendedItemColor = 10;	    	    		
-+	    	    		
-+	    	    		break;    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 3: // brown
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 1: // red
-+	    	    		
-+	    	    		iBlendedItemColor = 14;
-+	    	    		
-+	    	    		break;	    	    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 4: // blue
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 1: // red
-+	    	    		
-+	    	    		iBlendedItemColor = 5;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 2: // green
-+	    	    		
-+	    	    		iBlendedItemColor = 6;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 9: // pink
-+	    	    		
-+	    	    		iBlendedItemColor = 13;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 11: // yellow
-+	    	    		
-+	    	    		iBlendedItemColor = 2;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 15: // white
-+	    	    		
-+	    	    		iBlendedItemColor = 12;
-+	    	    		
-+	    	    		break;    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 5: // purple
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 15: // white
-+	    	    		
-+	    	    		iBlendedItemColor = 13;
-+	    	    		
-+	    	    		break;    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 6: // cyan
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 1: // red
-+	    	    		
-+	    	    		iBlendedItemColor = 3;
-+	    	    		
-+	    	    		break;
-+	    		}
-+	    	    		
-+	    		break;
-+	    		
-+	    	case 7: // silver
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+		    		case 0: // black
-+	    	    		
-+	    	    		iBlendedItemColor = 8;
-+	    	    		
-+	    	    		break;    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 8: // gray
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 15: // white
-+	    	    		
-+	    	    		iBlendedItemColor = 7;
-+	    	    		
-+	    	    		break;    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 9: // pink
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+		    		case 0: // black
-+	    	    		
-+	    	    		iBlendedItemColor = 1;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+			    	case 4: // blue
-+			    		
-+	    	    		iBlendedItemColor = 13;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 10: // lime
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+		    		case 0: // black
-+	    	    		
-+	    	    		iBlendedItemColor = 2;
-+	    	    		
-+	    	    		break;
-+	    		}
-+	    	    		
-+	    		break;
-+	    		
-+	    	case 11: // yellow
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 1: // red
-+	    	    		
-+	    	    		iBlendedItemColor = 14;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 4: // blue
-+	    	    		
-+	    	    		iBlendedItemColor = 2;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 12: // light blue
-+	    	    		
-+	    	    		iBlendedItemColor = 10;
-+	    	    		
-+	    	    		break;	    	    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 12: // light blue
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 0: // black
-+	    	    		
-+	    	    		iBlendedItemColor = 4;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 1: // red
-+	    	    		
-+	    	    		iBlendedItemColor = 13;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 9: // pink
-+	    	    		
-+	    	    		iBlendedItemColor = 13;
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 11: // yellow
-+	    	    		
-+	    	    		iBlendedItemColor = 13;	    	    		
-+	    	    		
-+	    	    		break;	    	    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 13: // magenta
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 0: // black
-+	    	    		
-+	    	    		iBlendedItemColor = 5;	    	    		
-+	    	    		
-+	    	    		break;	    	    		
-+	    		}
-+	    		
-+	    		break;
-+	    		
-+	    	case 14: // orange
-+	    		
-+	    		break;
-+	    		
-+	    	case 15: // white
-+	    		
-+	    		switch ( iMamaItemColor )
-+	    		{
-+	    	    	case 0: // black
-+	    	    		
-+	    	    		iBlendedItemColor = 8;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 1: // red
-+	    	    		
-+	    	    		iBlendedItemColor = 9;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 2: // green
-+	    	    		
-+	    	    		iBlendedItemColor = 10;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 4: // blue
-+	    	    		
-+	    	    		iBlendedItemColor = 12;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 5: // purple
-+	    	    		
-+	    	    		iBlendedItemColor = 13;	    	    		
-+	    	    		
-+	    	    		break;
-+	    	    		
-+	    	    	case 8: // gray
-+	    	    		
-+	    	    		iBlendedItemColor = 7;	    	    		
-+	    	    		
-+	    	    		break;	    	    		
-+	    		}
-+	    		
-+	    		break;    		
-+        }
++    	private final int outputColor;
++    	
++    	private static Map<Integer, ColorBlendEntry> entryCache = new HashMap();
 +
-+        if ( iBlendedItemColor == iPapaItemColor )
-+        {
-+        	if ( rand.nextBoolean() )
-+        	{
-+        		iBlendedItemColor = iMamaItemColor;
-+        	}
-+        }
-+        
-+    	return BlockCloth.getBlockFromDye( iBlendedItemColor );
++		public ColorBlendEntry(int color1, int color2, int outputColor) throws InstanceAlreadyExistsException {
++			if (color1 > color2) {
++				int tempColor = color1;
++				color1 = color2;
++				color2 = tempColor;
++			}
++			
++			this.color1 = color1;
++			this.color2 = color2;
++			
++			this.outputColor = outputColor;
++			
++			int index = ((color1 & 15) << 4) | (color2 & 15);
++			
++			if (entryCache.get(index) != null) {
++				throw new InstanceAlreadyExistsException("Cannot make more than one instance of an entry per color pair");
++			}
++			
++			entryCache.put(index, this);
++		}
++		
++		public int getOutputColor() {
++			return BlockCloth.getBlockFromDye(this.outputColor);
++		}
++		
++		public static ColorBlendEntry getCachedEntry(int color1, int color2) {
++			if (color1 > color2) {
++				int tempColor = color1;
++				color1 = color2;
++				color2 = tempColor;
++			}
++			
++			int index = ((color1 & 15) << 4) | (color2 & 15);
++			
++			return entryCache.get(index);
++		}
++    }
++    
++    public int blendParentColors(FCEntitySheep papa, FCEntitySheep mama) {
++    	int papaItemColor = BlockCloth.getBlockFromDye(papa.getOriginalFleeceColor());
++    	int mamaItemColor = BlockCloth.getBlockFromDye(mama.getOriginalFleeceColor());
++    	
++    	ColorBlendEntry blendEntry = ColorBlendEntry.getCachedEntry(papaItemColor, mamaItemColor);
++    	
++    	if (blendEntry != null) {
++    		if (blendEntry == ColorBlendEntry.getCachedEntry(FCUtilsColor.BLACK.colorID, FCUtilsColor.WHITE.colorID)) {
++    			return this.rand.nextBoolean() ? 
++        				BlockCloth.getBlockFromDye(FCUtilsColor.GRAY.colorID) : 
++        				BlockCloth.getBlockFromDye(FCUtilsColor.LIGHT_GRAY.colorID);
++    		}
++    		
++    		return blendEntry.getOutputColor();
++    	}
++    	else {
++    		return this.rand.nextBoolean() ? 
++    				BlockCloth.getBlockFromDye(papaItemColor) : 
++    				BlockCloth.getBlockFromDye(mamaItemColor);
++    	}
 +    }
 +    
 +    public int getMutantColor( FCEntitySheep papa, FCEntitySheep mama )
