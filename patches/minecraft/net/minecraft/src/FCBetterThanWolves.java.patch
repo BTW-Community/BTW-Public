@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,4321 @@
+@@ -0,0 +1,4326 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -25,7 +25,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.2.0";
++	public static final String fcVersionString = "1.2.1";
 +	
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +	
@@ -627,6 +627,8 @@
 +    public static Item fcItemCarrotSeeds;
 +    
 +    public static Item fcItemDiamondPlate;
++    
++    public static Item fcItemMelonMashed;
 +    
 +    // legacy ID for MCPatcher grass slab support
 +    
@@ -1784,6 +1786,8 @@
 +	    
 +	    fcItemCarrot = new FCItemSeedFood(parseID("fcItemCarrotID"), 3, 0, fcBlockCarrotFlowers.blockID).SetFilterableProperties(Item.m_iFilterable_Small).SetAsBasicPigFood().setUnlocalizedName("fcItemCarrot");
 +	    fcItemCarrotSeeds = new FCItemSeeds(parseID("fcItemCarrotSeedsID"), fcBlockCarrot.blockID).SetAsBasicChickenFood().setUnlocalizedName("fcItemCarrotSeeds");
++
++	    fcItemMelonMashed = new FCItemFoodHighRes(parseID("fcItemMelonMashedID"), 2, 0F, false, "fcItemMelonMashed").SetFilterableProperties(Item.m_iFilterable_Fine);
 +        
 +	    // ***REMINDER***: Use IDs over 20K here
 +		
@@ -2473,6 +2477,7 @@
 +				this.registerProperty("fcItemCarrotID", "22341");
 +				this.registerProperty("fcItemCarrotSeedsID", "22342");
 +				this.registerProperty("fcItemDiamondPlateID", "22343");
++				this.registerProperty("fcItemMelonMashedID", "22344");
 +				//Item IDs reused from deco
 +				this.registerProperty("fcItemNameTagID", "30005");
 +				this.registerProperty("fcItemShearsDiamondID", "30006");

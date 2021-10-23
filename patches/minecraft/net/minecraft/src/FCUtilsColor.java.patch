@@ -1,0 +1,30 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCUtilsColor.java
+@@ -0,0 +1,26 @@
++package net.minecraft.src;
++
++public enum FCUtilsColor {
++	BLACK(0),
++	RED(1),
++	GREEN(2),
++	BROWN(3),
++	BLUE(4),
++	PURPLE(5),
++	CYAN(6),
++	LIGHT_GRAY(7),
++	GRAY(8),
++	PINK(9),
++	LIME(10),
++	YELLOW(11),
++	MAGENTA(12),
++	LIGHT_BLUE(13),
++	ORANGE(14),
++	WHITE(15);
++	
++	public final int colorID;
++	
++	private FCUtilsColor(int colorID) {
++		this.colorID = colorID;
++	}
++}
+\ No newline at end of file

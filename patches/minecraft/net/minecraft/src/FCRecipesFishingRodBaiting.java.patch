@@ -140,7 +140,7 @@
 +    
 +	//------------- Class Specific Methods ------------//
 +    
-+    private boolean IsFishingBait( ItemStack stack )
++    public static boolean IsFishingBait( ItemStack stack )
 +    {
 +    	int iItemID = stack.itemID;
 +    		

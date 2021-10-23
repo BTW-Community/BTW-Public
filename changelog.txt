@@ -1,3 +1,21 @@
+## Version 1.2.1 ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- yany
+
+/--Gameplay--/
+- Added mashed melon as a new item produced when melons explode, and reduced the number of items produced. Mashed melon may be manually crafted into seeds, or passed through a wicker filter in a hopper. This allows melons to be accessed as a food source before having access to the saw, while still maintaining the saw as a far more efficient way of eating melons.
+- Added sounds and particle effects to saplings growing into trees in a fertilized planter.
+- Added the ability to right click a fishing rod to apply bait from the hotbar from yany's Click Bait addon.
+- Changed full moons to be slightly less effective for catching fish given the increase in efficiency by incorporating click bait.
+- Changed hardcore spawn to reset the time to day on a server with only one player online.
+- Refactored how sheep color blending is handled to clean up the related code and fix some inconsistencies.
+- Fixed an issue where a sapling which failed to grow from a fertilized planter would turn the planter into a sapling.
+- Fixed an issue where saplings would not consume fertilizer when they matured.
+- Fixed an issue where baby sheep had far too much fur.
+- Fixed an issue where chicken feed could not be made from carrot seeds.
+- Fixed an issue where chickens affected by Nothing to Worry About did not have their feather drops increased when their normal drops were changed.
+
 ## Version 1.2.0 ##
 Thanks to the following people who contributed to this release!
 - Dawnraider
