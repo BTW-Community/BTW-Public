@@ -16,7 +16,16 @@ Better Than Wolves is trying to keep that old survival feel of versions past and
 
 ## 💜 A word of gratitude
 
-The Community Edition team would like to express its gratitude to all the people that have kept this community alive all these years, but in particular **FlowerChild** for making BTW, **Dawnraider** for spearheading the Community Edition effort, **Sargunster** for keeping the forums and wiki online all these years and **Sarudak** for moderating them, **Zhil** for organizing the extended community and all the people that contributed time and effort to the Community Edition.
+The Community Edition team would like to express its gratitude to all the people that have kept this community alive all these years, but in particular **FlowerChild** for making BTW, **Dawnraider** for spearheading the Community Edition effort, **Sargunster** for keeping the forums and wiki online all these years and **Sarudak** for moderating them, **Zhil** for organizing the extended community and all the following people that contributed time and effort to the Community Edition:
+- Dawnraider
+- Zhil
+- Hiracho
+- yany
+- IssaMe
+- rockoutwill
+- ExpHP
+- AnaRchX
+- Sockthing
 
 ## 🐺 What is Better Than Wolves?
 
