@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,4326 @@
+@@ -0,0 +1,4348 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -25,7 +25,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.2.1";
++	public static final String fcVersionString = "1.2.2";
 +	
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +	
@@ -329,6 +329,9 @@
 +    public static Block fcBlockCarrotFlowers;
 +    
 +    public static Block fcBlockStructureVoid;
++
++    public static Block fcBlockCandlePlain;
++    public static Block[] fcBlockCandlesColored;
 +    
 +	// New Items
 +	
@@ -925,7 +928,7 @@
 +	    
 +		fcBlockAestheticOpaqueEarth = new FCBlockAestheticOpaqueEarth(parseID("fcBlockAestheticOpaqueEarthID"));
 +        
-+		fcBlockCandle = new FCBlockCandle(parseID("fcBlockCandleID"));
++		fcBlockCandle = new FCBlockCandleLegacy(parseID("fcBlockCandleID"));
 +		
 +		fcBlockSandstoneSidingAndCorner = (new FCBlockSandstoneSidingAndCornerAndDecorative(parseID("fcBlockSandstoneSidingAndCornerID"))).SetPicksEffectiveOn();		    
 +		fcBlockSandstoneMouldingAndDecorative = (new FCBlockSandstoneMouldingAndDecorative(parseID("fcBlockSandstoneMouldingAndDecorativeID"),
@@ -1250,6 +1253,17 @@
 +	    
 +	    fcBlockCarrot = new FCBlockCarrot(parseID("fcBlockCarrotID"));
 +	    fcBlockCarrotFlowers = new FCBlockCarrotFlowers(parseID("fcBlockCarrotFlowersID"));
++	    
++	    //fcBlockCandlePlain = new FCBlockCandle(parseID("fcBlockCandlePlainID"), parseID("fcItemCandleID"), 16, "fcBlockCandle");
++	    
++	    fcBlockCandlesColored = new Block[16];
++	    
++	    for (int i = 0; i < 16; i++) {
++	    	String idProperty = "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i] + "ID";
++	    	
++	    	//fcBlockCandlesColored[i] = new FCBlockCandle(parseID(idProperty), parseID("fcItemCandleID"), i, "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i]);
++	    }
++	    
 +    }
 +	    
 +	private void InstantiateModItems()
@@ -1457,7 +1471,7 @@
 +    	
 +    	fcItemArcaneScroll = new FCItemArcaneScroll(parseID("fcItemArcaneScrollID"));
 +    	
-+    	fcItemCandle = new FCItemCandle(parseID("fcItemCandleID"));
++    	fcItemCandle = new FCItemCandleLegacy(parseID("fcItemCandleID"));
 +    	
 +    	fcItemBloodMossSpores = new FCItemBloodMossSpores(parseID("fcItemNetherGrowthSporesID"));
 +    	
@@ -2284,6 +2298,14 @@
 +				this.registerProperty("fcBlockReedRootsID", "1094");
 +				this.registerProperty("fcBlockCarrotID", "1095");
 +				this.registerProperty("fcBlockCarrotFlowersID", "1096");
++				this.registerProperty("fcBlockCandlePlainID", "1097");
++				
++				for (int i = 0; i < 16; i++) {
++					int id = 1098 + i;
++					String idProperty = "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i] + "ID";
++					
++					this.registerProperty(idProperty, Integer.toString(id));
++				}
 +				
 +				//Item ids
 +				this.registerProperty("fcBucketCementID", "222", "***Item IDs***\n\n");
@@ -3908,7 +3930,7 @@
 +    			
 +    		case m_iSheepWoolRegrowAuxFXID:
 +    			
-+                world.playSound(posX, posY, posZ, "mob.slime.attack", 1.0F, (rand.nextFloat() - rand.nextFloat()) * 0.2F + 0.6F);
++                world.playSound(posX, posY, posZ, "step.cloth", 1.0F, rand.nextFloat() * 0.1F + 0.9F);
 +                
 +    			break;
 +    			

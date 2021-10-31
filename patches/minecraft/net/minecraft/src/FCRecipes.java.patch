@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,7041 @@
+@@ -0,0 +1,7051 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -2444,6 +2444,16 @@
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemRawScrambledEggs, 2 ), new Object[] {	    		
 +    		new ItemStack( FCBetterThanWolves.fcItemRawEgg ),
++    		new ItemStack( Item.bucketMilk )
++		} );
++		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemRawScrambledEggs, 2 ), new Object[] {	    		
++    		new ItemStack( FCBetterThanWolves.fcItemHardBoiledEgg ),
++    		new ItemStack( Item.bucketMilk )
++		} );
++		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemRawScrambledEggs, 2 ), new Object[] {	    		
++    		new ItemStack( FCBetterThanWolves.fcItemFriedEgg ),
 +    		new ItemStack( Item.bucketMilk )
 +		} );
 +		

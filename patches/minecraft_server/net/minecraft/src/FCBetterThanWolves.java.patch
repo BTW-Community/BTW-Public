@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,2703 @@
+@@ -0,0 +1,2720 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -22,7 +22,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.2.1";
++	public static final String fcVersionString = "1.2.2";
 +	
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +	
@@ -326,6 +326,9 @@
 +    public static Block fcBlockCarrotFlowers;
 +    
 +    public static Block fcBlockStructureVoid;
++
++    public static Block fcBlockCandlePlain;
++    public static Block[] fcBlockCandlesColored;
 +    
 +	// New Items
 +	
@@ -912,7 +915,7 @@
 +	    
 +		fcBlockAestheticOpaqueEarth = new FCBlockAestheticOpaqueEarth(parseID("fcBlockAestheticOpaqueEarthID"));
 +        
-+		fcBlockCandle = new FCBlockCandle(parseID("fcBlockCandleID"));
++		fcBlockCandle = new FCBlockCandleLegacy(parseID("fcBlockCandleID"));
 +		
 +		fcBlockSandstoneSidingAndCorner = (new FCBlockSandstoneSidingAndCornerAndDecorative(parseID("fcBlockSandstoneSidingAndCornerID"))).SetPicksEffectiveOn();		    
 +		fcBlockSandstoneMouldingAndDecorative = (new FCBlockSandstoneMouldingAndDecorative(parseID("fcBlockSandstoneMouldingAndDecorativeID"),
@@ -1237,6 +1240,17 @@
 +	    
 +	    fcBlockCarrot = new FCBlockCarrot(parseID("fcBlockCarrotID"));
 +	    fcBlockCarrotFlowers = new FCBlockCarrotFlowers(parseID("fcBlockCarrotFlowersID"));
++	    
++	    //fcBlockCandlePlain = new FCBlockCandle(parseID("fcBlockCandlePlainID"), parseID("fcItemCandleID"), 16, "fcBlockCandle");
++	    
++	    fcBlockCandlesColored = new Block[16];
++	    
++	    for (int i = 0; i < 16; i++) {
++	    	String idProperty = "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i] + "ID";
++	    	
++	    	//fcBlockCandlesColored[i] = new FCBlockCandle(parseID(idProperty), parseID("fcItemCandleID"), i, "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i]);
++	    }
++	    
 +    }
 +	    
 +	private void InstantiateModItems()
@@ -1444,7 +1458,7 @@
 +    	
 +    	fcItemArcaneScroll = new FCItemArcaneScroll(parseID("fcItemArcaneScrollID"));
 +    	
-+    	fcItemCandle = new FCItemCandle(parseID("fcItemCandleID"));
++    	fcItemCandle = new FCItemCandleLegacy(parseID("fcItemCandleID"));
 +    	
 +    	fcItemBloodMossSpores = new FCItemBloodMossSpores(parseID("fcItemNetherGrowthSporesID"));
 +    	
@@ -2076,9 +2090,6 @@
 +		this.registerProperty("DisableMillstoneNausea", "False", "Set the following to true to disable the nausea effect from the millstone");
 +		this.registerProperty("IncreaseGhastSpawns", "False", "Restores the increased ghast spawn rates from before v1.1.0.");
 +		
-+		//Client only config
-+		this.registerProperty("UseBetterGrass", "False", "Set to true to enable MCPatcher's Better Grass, which renders the grass top texture on the sides of grass blocks on 1 block tall slopes");
-+		
 +		//Server only config
 +		this.registerProperty("EnableHardcorePlayerNames", "2", "***Server and LAN Settings (do not apply to singleplayer)***\n\n"
 +																+ "# Set to 0 to allow players to always see the names of other players\n"
@@ -2271,6 +2282,14 @@
 +				this.registerProperty("fcBlockReedRootsID", "1094");
 +				this.registerProperty("fcBlockCarrotID", "1095");
 +				this.registerProperty("fcBlockCarrotFlowersID", "1096");
++				this.registerProperty("fcBlockCandlePlainID", "1097");
++				
++				for (int i = 0; i < 16; i++) {
++					int id = 1098 + i;
++					String idProperty = "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i] + "ID";
++					
++					this.registerProperty(idProperty, Integer.toString(id));
++				}
 +				
 +				//Item ids
 +				this.registerProperty("fcBucketCementID", "222", "***Item IDs***\n\n");
@@ -2701,7 +2720,5 @@
 +	public FCAddOnUtilsWorldData createWorldData() {
 +		return new FCUtilsWorldData();
 +	}
-+	
-+	//----------- Client Side Functionality -----------//
 +}
 \ No newline at end of file

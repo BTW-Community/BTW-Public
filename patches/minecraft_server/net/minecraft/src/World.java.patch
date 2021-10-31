@@ -54,19 +54,7 @@
      /** number of ticks until the next random ambients play */
      private int ambientTickCountdown;
  
-@@ -146,6 +168,11 @@
- 
-     public World(ISaveHandler par1ISaveHandler, String par2Str, WorldSettings par3WorldSettings, WorldProvider par4WorldProvider, Profiler par5Profiler, ILogAgent par6ILogAgent)
-     {
-+        // FCMOD: Added
-+    	// function tests internally to make sure this only occurs once
-+        FCAddOnHandler.InitializeMods(); 
-+        // END FCMOD
-+    	
-         this.ambientTickCountdown = this.rand.nextInt(12000);
-         this.lightUpdateBlockList = new int[32768];
-         this.isRemote = false;
-@@ -293,7 +320,14 @@
+@@ -293,7 +315,14 @@
       */
      public boolean isAirBlock(int par1, int par2, int par3)
      {
@@ -81,7 +69,7 @@
      }
  
      /**
-@@ -390,6 +424,10 @@
+@@ -390,6 +419,10 @@
       * cause a block update. Flag 2 will send the change to clients (you almost always want this). Flag 4 prevents the
       * block from being re-rendered, if this is a client world. Flags can be added together.
       */
@@ -92,7 +80,7 @@
      public boolean setBlock(int par1, int par2, int par3, int par4, int par5, int par6)
      {
          if (par1 >= -30000000 && par3 >= -30000000 && par1 < 30000000 && par3 < 30000000)
-@@ -487,6 +525,10 @@
+@@ -487,6 +520,10 @@
       * Sets the blocks metadata and if set will then notify blocks that this block changed, depending on the flag. Args:
       * x, y, z, metadata, flag. See setBlock for flag description
       */
@@ -103,7 +91,7 @@
      public boolean setBlockMetadata(int par1, int par2, int par3, int par4, int par5)
      {
          if (par1 >= -30000000 && par3 >= -30000000 && par1 < 30000000 && par3 < 30000000)
-@@ -987,6 +1029,8 @@
+@@ -987,6 +1024,8 @@
          return this.rayTraceBlocks_do_do(par1Vec3, par2Vec3, par3, false);
      }
  
@@ -112,7 +100,7 @@
      public MovingObjectPosition rayTraceBlocks_do_do(Vec3 par1Vec3, Vec3 par2Vec3, boolean par3, boolean par4)
      {
          if (!Double.isNaN(par1Vec3.xCoord) && !Double.isNaN(par1Vec3.yCoord) && !Double.isNaN(par1Vec3.zCoord))
-@@ -1196,6 +1240,8 @@
+@@ -1196,6 +1235,8 @@
              return null;
          }
      }
@@ -121,7 +109,7 @@
  
      /**
       * Plays a sound at the entity's position. Args: entity, sound, volume (relative to 1.0), and frequency (or pitch,
-@@ -1279,15 +1325,14 @@
+@@ -1279,15 +1320,14 @@
      }
  
      /**
@@ -143,7 +131,7 @@
          {
              var4 = true;
          }
-@@ -1298,16 +1343,16 @@
+@@ -1298,16 +1338,16 @@
          }
          else
          {
@@ -165,7 +153,7 @@
              return true;
          }
      }
-@@ -1425,18 +1470,29 @@
+@@ -1425,18 +1465,29 @@
          }
  
          double var14 = 0.25D;
@@ -199,7 +187,7 @@
  
              if (var13 != null && var13.intersectsWith(par2AxisAlignedBB))
              {
-@@ -1539,6 +1595,7 @@
+@@ -1539,6 +1590,7 @@
  
      /**
       * Finds the highest block on the x, z coordinate that is solid and returns its y coord. Args x, z
@@ -207,7 +195,7 @@
       */
      public int getTopSolidOrLiquidBlock(int par1, int par2)
      {
-@@ -1638,6 +1695,21 @@
+@@ -1638,6 +1690,21 @@
          }
  
          this.unloadedEntityList.clear();
@@ -229,7 +217,7 @@
          this.theProfiler.endStartSection("regular");
  
          for (var1 = 0; var1 < this.loadedEntityList.size(); ++var1)
-@@ -1700,7 +1772,12 @@
+@@ -1700,7 +1767,12 @@
          {
              TileEntity var9 = (TileEntity)var14.next();
  
@@ -243,7 +231,7 @@
              {
                  try
                  {
-@@ -1798,20 +1875,33 @@
+@@ -1798,20 +1870,33 @@
      /**
       * Will update the entity in the world if the chunk the entity is in is currently loaded or its forced to update.
       * Args: entity, forceUpdate
@@ -279,7 +267,7 @@
  
              if (par2 && par1Entity.addedToChunk)
              {
-@@ -2015,8 +2105,15 @@
+@@ -2015,8 +2100,15 @@
      /**
       * Returns whether or not the given bounding box is on fire or not
       */
@@ -296,7 +284,7 @@
          int var2 = MathHelper.floor_double(par1AxisAlignedBB.minX);
          int var3 = MathHelper.floor_double(par1AxisAlignedBB.maxX + 1.0D);
          int var4 = MathHelper.floor_double(par1AxisAlignedBB.minY);
-@@ -2032,9 +2129,16 @@
+@@ -2032,9 +2124,16 @@
                  {
                      for (int var10 = var6; var10 < var7; ++var10)
                      {
@@ -313,7 +301,7 @@
                          {
                              return true;
                          }
-@@ -2268,7 +2372,12 @@
+@@ -2268,7 +2367,12 @@
  
          if (this.getBlockId(par2, par3, par4) == Block.fire.blockID)
          {
@@ -326,7 +314,7 @@
              this.setBlockToAir(par2, par3, par4);
              return true;
          }
-@@ -2426,9 +2535,21 @@
+@@ -2426,9 +2530,21 @@
       */
      public boolean isBlockNormalCube(int par1, int par2, int par3)
      {
@@ -349,7 +337,7 @@
      public boolean func_85174_u(int par1, int par2, int par3)
      {
          int var4 = this.getBlockId(par1, par2, par3);
-@@ -2447,20 +2568,28 @@
+@@ -2447,20 +2563,28 @@
      /**
       * Returns true if the block at the given coordinate has a solid (buildable) top surface.
       */
@@ -378,7 +366,7 @@
  
      /**
       * Checks if the block is a solid, normal cube. If the chunk does not exist, or is not loaded, it returns the
-@@ -2475,7 +2604,12 @@
+@@ -2475,7 +2599,12 @@
              if (var5 != null && !var5.isEmpty())
              {
                  Block var6 = Block.blocksList[this.getBlockId(par1, par2, par3)];
@@ -391,7 +379,7 @@
              }
              else
              {
-@@ -2506,7 +2640,12 @@
+@@ -2506,7 +2635,12 @@
       */
      public void setAllowedSpawnTypes(boolean par1, boolean par2)
      {
@@ -404,7 +392,7 @@
          this.spawnPeacefulMobs = par2;
      }
  
-@@ -2515,7 +2654,15 @@
+@@ -2515,7 +2649,15 @@
       */
      public void tick()
      {
@@ -420,7 +408,7 @@
      }
  
      /**
-@@ -2537,6 +2684,8 @@
+@@ -2537,6 +2679,8 @@
      /**
       * Updates all weather states.
       */
@@ -429,7 +417,7 @@
      protected void updateWeather()
      {
          if (!this.provider.hasNoSky)
-@@ -2632,6 +2781,8 @@
+@@ -2632,6 +2776,8 @@
              }
          }
      }
@@ -438,7 +426,7 @@
  
      /**
       * start precipitation in this world (2 ticks after command posted)
-@@ -2643,6 +2794,8 @@
+@@ -2643,6 +2789,8 @@
  
      protected void setActivePlayerChunksAndCheckLight()
      {
@@ -447,7 +435,7 @@
          this.activeChunkSet.clear();
          this.theProfiler.startSection("buildList");
          int var1;
-@@ -2667,6 +2820,12 @@
+@@ -2667,6 +2815,12 @@
          }
  
          this.theProfiler.endSection();
@@ -460,7 +448,7 @@
  
          if (this.ambientTickCountdown > 0)
          {
-@@ -2819,10 +2978,16 @@
+@@ -2819,10 +2973,16 @@
          {
              if (par2 >= 0 && par2 < 256 && this.getSavedLightValue(EnumSkyBlock.Block, par1, par2, par3) < 10)
              {
@@ -477,7 +465,20 @@
                  {
                      return true;
                  }
-@@ -2913,8 +3078,8 @@
+@@ -2851,10 +3011,10 @@
+         else
+         {
+             int var5 = this.getBlockId(par1, par2, par3);
+-            int var6 = par4EnumSkyBlock == EnumSkyBlock.Sky ? 0 : Block.lightValue[var5];
++            int var6 = par4EnumSkyBlock == EnumSkyBlock.Sky || var5 == 0 ? 0 : Block.getLightValueForBlock(this, par1, par2, par3, Block.blocksList[var5]);
+             int var7 = Block.lightOpacity[var5];
+ 
+-            if (var7 >= 15 && Block.lightValue[var5] > 0)
++            if (var7 >= 15 && Block.getLightValueForBlock(this, par1, par2, par3, Block.blocksList[var5]) > 0)
+             {
+                 var7 = 1;
+             }
+@@ -2913,8 +3073,8 @@
              int var13;
              int var14;
              int var15;
@@ -487,7 +488,7 @@
  
              if (var8 > var7)
              {
-@@ -3053,10 +3218,18 @@
+@@ -3053,10 +3213,18 @@
      public List getEntitiesWithinAABBExcludingEntity(Entity par1Entity, AxisAlignedBB par2AxisAlignedBB, IEntitySelector par3IEntitySelector)
      {
          ArrayList var4 = new ArrayList();
@@ -506,7 +507,7 @@
  
          for (int var9 = var5; var9 <= var6; ++var9)
          {
-@@ -3082,10 +3255,18 @@
+@@ -3082,10 +3250,18 @@
  
      public List selectEntitiesWithinAABB(Class par1Class, AxisAlignedBB par2AxisAlignedBB, IEntitySelector par3IEntitySelector)
      {
@@ -525,7 +526,7 @@
          ArrayList var8 = new ArrayList();
  
          for (int var9 = var4; var9 <= var5; ++var9)
-@@ -3146,6 +3327,8 @@
+@@ -3146,6 +3322,8 @@
      /**
       * Counts how many entities of an entity class exist in the world. Args: entityClass
       */
@@ -534,7 +535,7 @@
      public int countEntities(Class par1Class)
      {
          int var2 = 0;
-@@ -3162,6 +3345,8 @@
+@@ -3162,6 +3340,8 @@
  
          return var2;
      }
@@ -543,7 +544,7 @@
  
      /**
       * adds entities to the loaded entities list, and loads thier skins.
-@@ -3205,7 +3390,14 @@
+@@ -3205,7 +3385,14 @@
          }
          else
          {
@@ -558,7 +559,7 @@
              {
                  var10 = null;
              }
-@@ -3332,6 +3524,22 @@
+@@ -3332,6 +3519,22 @@
      {
          if (this.isBlockNormalCube(par1, par2, par3))
          {
@@ -581,7 +582,7 @@
              return this.getBlockPowerInput(par1, par2, par3);
          }
          else
-@@ -3607,8 +3815,15 @@
+@@ -3607,8 +3810,15 @@
          return (double)this.getRainStrength(1.0F) > 0.2D;
      }
  
@@ -597,7 +598,7 @@
          if (!this.isRaining())
          {
              return false;
-@@ -3626,8 +3841,20 @@
+@@ -3626,8 +3836,20 @@
              BiomeGenBase var4 = this.getBiomeGenForCoords(par1, par3);
              return var4.getEnableSnow() ? false : var4.canSpawnLightningBolt();
          }
@@ -618,7 +619,7 @@
      /**
       * Checks to see if the biome rainfall values for a given x,y,z coordinate set are extremely high
       */
-@@ -3664,6 +3891,10 @@
+@@ -3664,6 +3886,10 @@
          return this.mapStorage.getUniqueDataId(par1Str);
      }
  
@@ -629,7 +630,7 @@
      public void func_82739_e(int par1, int par2, int par3, int par4, int par5)
      {
          for (int var6 = 0; var6 < this.worldAccesses.size(); ++var6)
-@@ -3841,4 +4072,1143 @@
+@@ -3841,4 +4067,1143 @@
      {
          return this.worldLogAgent;
      }

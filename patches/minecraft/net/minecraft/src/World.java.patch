@@ -467,6 +467,19 @@
                  {
                      return true;
                  }
+@@ -3181,10 +3366,10 @@
+         else
+         {
+             int var5 = this.getBlockId(par1, par2, par3);
+-            int var6 = par4EnumSkyBlock == EnumSkyBlock.Sky ? 0 : Block.lightValue[var5];
++            int var6 = par4EnumSkyBlock == EnumSkyBlock.Sky || var5 == 0 ? 0 : Block.getLightValueForBlock(this, par1, par2, par3, Block.blocksList[var5]);
+             int var7 = Block.lightOpacity[var5];
+ 
+-            if (var7 >= 15 && Block.lightValue[var5] > 0)
++            if (var7 >= 15 && Block.getLightValueForBlock(this, par1, par2, par3, Block.blocksList[var5]) > 0)
+             {
+                 var7 = 1;
+             }
 @@ -3243,8 +3428,8 @@
              int var13;
              int var14;

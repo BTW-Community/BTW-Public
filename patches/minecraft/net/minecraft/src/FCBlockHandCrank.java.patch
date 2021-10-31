@@ -357,7 +357,7 @@
 + 
 +        float fBlockBrightness = getBlockBrightness( blockAccess, i, j, k );
 +        
-+        if ( Block.lightValue[blockID] > 0 )
++        if (this.getLightValue(blockAccess, i, j, k) > 0)
 +        {
 +        	fBlockBrightness = 1.0F;
 +        }

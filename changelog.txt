@@ -1,3 +1,18 @@
+## Version 1.2.2 ##
+/--Gameplay--/
+- Added the ability to make scrambled eggs out of fried and poached eggs as well as raw ones for convenience.
+- Changed (increased) the drop rate of jungle saplings to match that of the other sapling types.
+- Changed (reduced) the time required for trees to grow slightly to make farming trees more viable, while still requiring a significant time to grow.
+- Changed the sound on sheep regrowing their wool to be more appropriate.
+- Fixed an issue where attempting to reel a fish in would sometimes immediately re-apply bait to the rod instead of reeling it back in.
+- Fixed an issue where applying bait to a fishing rod with a right click would consume bait from every valid stack instead of only the first.
+- Fixed an issue where the drops from legacy sugar cane depended on the order the blocks were broken in.
+- Fixed an issue where sugar cane and pumpkins were not properly generating.
+- Fixed an issue in multiplayer where the game tried to load world data before mods were initialized.
+
+/--Addon API--/
+- Added hooks for blocks to define their light value dynamically instead of being fixed per blockID.
+
 ## Version 1.2.1 ##
 Thanks to the following people who contributed to this release!
 - Dawnraider

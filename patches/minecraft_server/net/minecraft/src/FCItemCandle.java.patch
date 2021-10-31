@@ -1,49 +1,158 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCItemCandle.java
-@@ -0,0 +1,45 @@
-+// FCMOD
-+
+@@ -0,0 +1,154 @@
 +package net.minecraft.src;
 +
-+import java.util.List;
-+
-+public class FCItemCandle extends FCItemPlacesAsBlock
-+{
-+    public static final int m_iCandeColors[] =
-+    {
-+    	0x101010, 0xb3312c, 0x3b511a, 0x51301a, 0x253192, 0x7b2fbe, 0x287697, 0x838383, 0x434343, 0xd88198,
-+        0x41cd34, 0xdecf2a, 0x6689d3, 0xc354cd, 0xeb8844, 0xffffff
-+    };
-+    
-+    public static final String[] m_sCandleColorNames = new String[] {
-+    	"Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", 
-+    	"Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White"
-+	};
-+    
-+    public FCItemCandle( int iItemID )
-+    {
-+    	super( iItemID, FCBetterThanWolves.fcBlockCandle.blockID, 0, "fcItemCandle" );
-+    	
-+        setMaxDamage( 0 );
-+        setHasSubtypes( true );
++public class FCItemCandle extends FCItemPlacesAsBlock {
++	public FCItemCandle(int itemID) {
++		super(itemID, FCBetterThanWolves.fcBlockCandlePlain.blockID, 0, "fcItemCandle");
++		
++		this.setCreativeTab(CreativeTabs.tabDecorations);
++	}
++	
++	@Override
++    public boolean onItemUse(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int facing, float clickX, float clickY, float clickZ) {
++        int newBlockID = GetBlockIDToPlace(itemStack.getItemDamage(), facing, clickX, clickY, clickZ);
 +        
-+        SetBuoyant();
-+    	
-+    	setCreativeTab( CreativeTabs.tabMaterials );
-+    }
++        if (itemStack.stackSize == 0 ||
++        	(player != null && !player.canPlayerEdit(x, y, z, facing, itemStack)) ||        	
++    		(y == 255 && Block.blocksList[newBlockID].blockMaterial.isSolid()))
++        {
++            return false;
++        }
++        
++		FCUtilsBlockPos targetPos = new FCUtilsBlockPos(x, y, z);
++		
++		int oldBlockID = world.getBlockId(x, y, z);
++        Block oldBlock = Block.blocksList[oldBlockID];
++		
++        if (oldBlock != null) {
++        	if (oldBlock.IsGroundCover()) {
++        		facing = 1;
++        	}
++        	else if (!oldBlock.blockMaterial.isReplaceable() && !isValidCandleForStacking(world, x, y, z)) {
++        		targetPos.AddFacingAsOffset(facing);
++        	}
++        }
 +
-+    @Override
-+    public int getMetadata( int iItemDamage )
-+    {
-+    	return iItemDamage;
-+    }    
++        if (this.canPlaceItemBlockOnSide(world, targetPos.i, targetPos.j, targetPos.k, facing, player, itemStack)) {
++            Block newBlock = Block.blocksList[newBlockID];
++            
++        	int newMetadata = getMetadata(itemStack.getItemDamage());
++        	
++        	newMetadata = newBlock.onBlockPlaced(world, targetPos.i, targetPos.j, targetPos.k, facing, clickX, clickY, clickZ, newMetadata);
++
++        	newMetadata = newBlock.PreBlockPlacedBy(world, targetPos.i, targetPos.j, targetPos.k, newMetadata, player);            
++            
++            if (this.setOrIncrementCandle(world, targetPos.i, targetPos.j, targetPos.k)) {
++                if (world.getBlockId(targetPos.i, targetPos.j, targetPos.k) == newBlockID) {
++                    newBlock.onBlockPlacedBy(world, targetPos.i, targetPos.j, targetPos.k, player, itemStack);
++                    
++                    newBlock.onPostBlockPlaced(world, targetPos.i, targetPos.j, targetPos.k, newMetadata);
++                    
++                    // Panick animals when blocks are placed near them
++                    world.NotifyNearbyAnimalsOfPlayerBlockAddOrRemove(player, newBlock, targetPos.i, targetPos.j, targetPos.k);            
++                }
++                
++                PlayPlaceSound(world, targetPos.i, targetPos.j, targetPos.k, newBlock);
++                
++                itemStack.stackSize--;
++            }
++            
++        	return true;    	
++        }
++        
++    	return false;    	
++    }
 +    
 +    @Override
-+    public String getItemDisplayName( ItemStack stack )
-+    {
-+        int iColor = MathHelper.clamp_int( stack.getItemDamage(), 0, 15 );
++	public boolean OnItemUsedByBlockDispenser(ItemStack stack, World world, int x, int y, int z, int facing) {
++    	FCUtilsBlockPos targetPos = new FCUtilsBlockPos(x, y, z, facing);
++    	int targetDirection = GetTargetFacingPlacedByBlockDispenser(facing);    	
 +    	
-+        return ( "" + m_sCandleColorNames[iColor] + " " + StringTranslate.getInstance().translateNamedKey( getLocalizedName( stack ) ) ).trim();
-+    }    
++    	int blockID = GetBlockIDToPlace(stack.getItemDamage(), targetDirection, 
++    		0.5F, 0.25F, 0.5F); // equivalent to lower half of the middle of the block
++    	
++    	Block newBlock = Block.blocksList[blockID];
++
++    	if (newBlock != null && this.canPlaceItemBlockOnSide(world, targetPos.i, targetPos.j, targetPos.k, targetDirection, null, stack)) {
++    		int blockMetadata = getMetadata(stack.getItemDamage());
++        	
++    		blockMetadata = newBlock.onBlockPlaced(
++    			world, targetPos.i, targetPos.j, targetPos.k, targetDirection,
++    			0.5F, 0.25F, 0.5F, // equivalent to lower half of the middle of the block
++    			blockMetadata);
++        	
++        	this.setOrIncrementCandle(world, targetPos.i, targetPos.j, targetPos.k);
++        	
++            newBlock.onPostBlockPlaced(world, targetPos.i, targetPos.j, targetPos.k, blockMetadata);
++            
++            world.playAuxSFX(FCBetterThanWolves.m_iBlockPlaceAuxFXID, x, y, z, blockID);                            
++
++			return true;
++        }       
++    	
++    	return false;
++	}
++    
++    @Override
++    public boolean canPlaceItemBlockOnSide(World world, int i, int j, int k, int iFacing, EntityPlayer player, ItemStack stack) {
++        int iTargetBlockID = world.getBlockId(i, j, k);
++        Block iTargetBlock = Block.blocksList[iTargetBlockID];
++		FCUtilsBlockPos targetPos = new FCUtilsBlockPos(i, j, k);
++
++        if (iTargetBlock != null) {
++        	if (iTargetBlock.IsGroundCover()) {
++        		iFacing = 1;
++        	}
++        	else if (!iTargetBlock.blockMaterial.isReplaceable()) {
++        		targetPos.AddFacingAsOffset(iFacing);
++        	}
++        }        
++
++        // the following places the click spot right in the center, which while technically not correct, shouldn't
++        // make much of a difference given vanilla ignores it entirely        
++        int iNewBlockID = GetBlockIDToPlace(stack.getItemDamage(), iFacing, 0.5F, 0.5F, 0.5F);
++        
++        return world.canPlaceEntityOnSide(iNewBlockID, targetPos.i, targetPos.j, targetPos.k, false, iFacing, (Entity)null, stack);
++    }
++    
++    @Override
++    public int GetBlockIDToPlace(int itemDamage, int facing, float clickX, float clickY, float clickZ) {
++    	if (itemDamage < 16) {
++    		return FCBetterThanWolves.fcBlockCandlesColored[itemDamage].blockID;
++    	}
++    	else {
++    		return super.GetBlockIDToPlace(itemDamage, facing, clickX, clickY, clickZ);
++    	}
++    }
++    
++    //------ Class specific methods ------//
++    
++    public boolean isValidCandleForStacking(World world, int x, int y, int z) {
++    	int blockID = world.getBlockId(x, y, z);
++    	Block block = Block.blocksList[blockID];
++    	
++    	if (blockID == this.m_iBlockID) {
++    		if (((FCBlockCandle) block).getCandleCount(world, x, y, z) < 4) {
++    			return true;
++    		}
++    	}
++    	
++    	return false;
++    }
++    
++    public boolean setOrIncrementCandle(World world, int x, int y, int z) {
++    	if (isValidCandleForStacking(world, x, y, z)) {
++    		FCBlockCandle candleBlock = (FCBlockCandle) Block.blocksList[this.m_iBlockID];
++    		
++    		int candleCount = candleBlock.getCandleCount(world, x, y, z);
++    		candleBlock.setCandleCount(world, x, y, z, candleCount + 1);
++    		return true;
++    	}
++    	else {
++    		return world.setBlock(x, y, z, this.m_iBlockID);
++    	}
++    }
 +}
 \ No newline at end of file

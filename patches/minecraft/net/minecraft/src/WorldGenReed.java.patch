@@ -1,6 +1,6 @@
 --- a/minecraft/net/minecraft/src/WorldGenReed.java
 +++ b/minecraft/net/minecraft/src/WorldGenReed.java
-@@ -1,30 +1,70 @@
+@@ -1,30 +1,64 @@
  package net.minecraft.src;
  
 +import java.util.ArrayList;
@@ -10,12 +10,6 @@
  {
 -    public boolean generate(World par1World, Random par2Random, int par3, int par4, int par5)
 +	private static ArrayList<BiomeGenBase> validBiomeList = new ArrayList();
-+	
-+	static {
-+		addBiomeToGenerator(BiomeGenBase.swampland);
-+		addBiomeToGenerator(BiomeGenBase.jungle);
-+		addBiomeToGenerator(BiomeGenBase.jungleHills);
-+	}
 +	
 +	public static boolean isBiomeValid(BiomeGenBase biome) {
 +		return validBiomeList.contains(biome);
@@ -56,7 +50,6 @@
 +                	
 +                	continue;
 +                }
-+                // END FCMOD
 +
 +                for (int i = 0; i < var10; ++i)
                      {
@@ -74,6 +67,7 @@
 +                        par1World.setBlock(plantX, plantY + i, plantZ, reedBlock.blockID, 0, 2);
              }
          }
++                // END FCMOD
 +            }
 +        }
  
