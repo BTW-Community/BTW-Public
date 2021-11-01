@@ -488,7 +488,24 @@
      }
  
      /**
-@@ -458,10 +483,14 @@
+@@ -443,7 +468,7 @@
+      */
+     public float getBlockBrightness(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
+     {
+-        return par1IBlockAccess.getBrightness(par2, par3, par4, lightValue[par1IBlockAccess.getBlockId(par2, par3, par4)]);
++		return par1IBlockAccess.getBrightness(par2, par3, par4, getLightValueForBlock(par1IBlockAccess, par2, par3, par4, blocksList[par1IBlockAccess.getBlockId(par2, par3, par4)]));
+     }
+ 
+     /**
+@@ -451,17 +476,21 @@
+      */
+     public int getMixedBrightnessForBlock(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
+     {
+-        return par1IBlockAccess.getLightBrightnessForSkyBlocks(par2, par3, par4, lightValue[par1IBlockAccess.getBlockId(par2, par3, par4)]);
++		return par1IBlockAccess.getLightBrightnessForSkyBlocks(par2, par3, par4, getLightValueForBlock(par1IBlockAccess, par2, par3, par4, blocksList[par1IBlockAccess.getBlockId(par2, par3, par4)]));
+     }
+ 
+     /**
       * Returns true if the given side of this block type should be rendered, if the adjacent block is at the given
       * coordinates.  Args: blockAccess, x, y, z, side
       */
@@ -774,7 +791,7 @@
                  if (var0 > 0 && blocksList[var0].getRenderType() == 10)
                  {
                      var1 = true;
-@@ -1364,10 +1425,2394 @@
+@@ -1364,10 +1425,2409 @@
                  }
  
                  useNeighborBrightness[var0] = var1;
@@ -2925,6 +2942,21 @@
 +		return this;
 +	}
 +
++	//------ Light Functionality ------//
++	
++	public static int getLightValueForBlock(IBlockAccess blockAccess, int x, int y, int z, Block block) {
++		if (block != null) {
++			return block.getLightValue(blockAccess, x, y, z);
++		}
++		else {
++			return 0;
++		}
++	}
++    
++    public int getLightValue(IBlockAccess blockAccess, int x, int y, int z) {
++    	return lightValue[this.blockID];
++    }
++	
 +	//----------------- Integrity Test ----------------//
 +
 +	static public boolean InstallationIntegrityTest()

@@ -8,7 +8,19 @@
  public class WorldInfo
  {
      /** Holds the seed of the currently world. */
-@@ -166,6 +168,10 @@
+@@ -71,6 +73,11 @@
+ 
+     public WorldInfo(NBTTagCompound par1NBTTagCompound)
+     {
++    	// FCMOD: Added
++    	// function tests internally to make sure this only occurs once
++        FCAddOnHandler.InitializeMods(); 
++        // END FCMOD
++    	
+         this.terrainType = WorldType.DEFAULT;
+         this.generatorOptions = "";
+         this.theGameRules = new GameRules();
+@@ -166,6 +173,10 @@
          {
              this.theGameRules.readGameRulesFromNBT(par1NBTTagCompound.getCompoundTag("GameRules"));
          }
@@ -19,7 +31,7 @@
      }
  
      public WorldInfo(WorldSettings par1WorldSettings, String par2Str)
-@@ -213,6 +219,9 @@
+@@ -213,6 +224,9 @@
          this.allowCommands = par1WorldInfo.allowCommands;
          this.initialized = par1WorldInfo.initialized;
          this.theGameRules = par1WorldInfo.theGameRules;
@@ -29,7 +41,7 @@
      }
  
      /**
-@@ -261,6 +270,10 @@
+@@ -261,6 +275,10 @@
          par1NBTTagCompound.setBoolean("initialized", this.initialized);
          par1NBTTagCompound.setCompoundTag("GameRules", this.theGameRules.writeGameRulesToNBT());
  
@@ -40,7 +52,7 @@
          if (par2NBTTagCompound != null)
          {
              par1NBTTagCompound.setCompoundTag("Player", par2NBTTagCompound);
-@@ -312,6 +325,11 @@
+@@ -312,6 +330,11 @@
          return this.worldTime;
      }
  
@@ -52,7 +64,7 @@
      /**
       * Returns the player's NBTTagCompound to be loaded
       */
-@@ -320,11 +338,39 @@
+@@ -320,11 +343,39 @@
          return this.playerTag;
      }
  
@@ -92,7 +104,7 @@
      public void incrementTotalWorldTime(long par1)
      {
          this.totalTime = par1;
-@@ -378,6 +424,14 @@
+@@ -378,6 +429,14 @@
      }
  
      /**
@@ -107,7 +119,7 @@
       * Returns true if it is thundering, false otherwise.
       */
      public boolean isThundering()
-@@ -632,4 +686,89 @@
+@@ -632,4 +691,89 @@
      {
          return par0WorldInfo.allowCommands;
      }

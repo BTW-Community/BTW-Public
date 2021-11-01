@@ -1,49 +1,52 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCItemFishingRod.java
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,48 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
 +public class FCItemFishingRod extends ItemFishingRod
 +{
-+    public FCItemFishingRod( int iItemID )
-+    {
-+        super( iItemID );
-+        
-+        setMaxDamage( 32 );
-+        
-+        SetBuoyant();
-+        SetFilterableProperties( m_iFilterable_Narrow );
-+        
-+        setUnlocalizedName( "fishingRod" );
-+    }
-+    
-+    public ItemStack onItemRightClick( ItemStack stack, World world, EntityPlayer player )
-+    {
-+    	boolean appliedBait = false;
++	public FCItemFishingRod( int iItemID )
++	{
++		super( iItemID );
 +
-+    	for (int i = 0; i < 9; i++) {
-+    		ItemStack stackInSlot = player.inventory.getStackInSlot(i);
++		setMaxDamage( 32 );
 +
-+    		if (stackInSlot != null && FCRecipesFishingRodBaiting.IsFishingBait(stackInSlot)) {
-+    			world.playSoundAtEntity(player, "mob.slime.attack", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
++		SetBuoyant();
++		SetFilterableProperties( m_iFilterable_Narrow );
 +
-+    			player.inventory.consumeInventoryItem(stackInSlot.itemID);
-+    			ItemStack baitedRodStack = player.getCurrentEquippedItem().copy();
-+    			baitedRodStack.itemID = FCBetterThanWolves.fcItemFishingRodBaited.itemID;
-+    			player.inventory.setInventorySlotContents(player.inventory.currentItem, baitedRodStack);
++		setUnlocalizedName( "fishingRod" );
++	}
 +
-+    			appliedBait = true;
-+    		}
-+    	}
++	public ItemStack onItemRightClick( ItemStack stack, World world, EntityPlayer player )
++	{
++		boolean appliedBait = false;
++		
++		if (player.fishEntity == null) {
++			for (int i = 0; i < 9; i++) {
++				ItemStack stackInSlot = player.inventory.getStackInSlot(i);
 +
-+    	if (appliedBait) {
-+        	return stack;
-+    	}
-+    	else {
-+    		player.swingItem();
-+    		return super.onItemRightClick(stack, world, player);
-+    	}
-+    }
++				if (stackInSlot != null && FCRecipesFishingRodBaiting.IsFishingBait(stackInSlot)) {
++					world.playSoundAtEntity(player, "mob.slime.attack", 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
++
++					player.inventory.consumeInventoryItem(stackInSlot.itemID);
++					ItemStack baitedRodStack = player.getCurrentEquippedItem().copy();
++					baitedRodStack.itemID = FCBetterThanWolves.fcItemFishingRodBaited.itemID;
++					player.inventory.setInventorySlotContents(player.inventory.currentItem, baitedRodStack);
++
++					appliedBait = true;
++					break;
++				}
++			}
++
++			if (appliedBait) {
++				return stack;
++			}
++		}
++		
++		player.swingItem();
++		return super.onItemRightClick(stack, world, player);
++	}
 +}
+\ No newline at end of file

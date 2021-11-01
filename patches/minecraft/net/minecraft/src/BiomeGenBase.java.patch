@@ -80,7 +80,22 @@
      public String biomeName;
      public int color;
  
-@@ -135,18 +151,35 @@
+@@ -113,6 +129,14 @@
+     /** The swamp tree generator. */
+     protected WorldGenSwamp worldGeneratorSwamp;
+ 
++	static {
++		WorldGenReed.addBiomeToGenerator(BiomeGenBase.swampland);
++		WorldGenReed.addBiomeToGenerator(BiomeGenBase.jungle);
++		WorldGenReed.addBiomeToGenerator(BiomeGenBase.jungleHills);
++		
++		WorldGenPumpkin.addBiomeToGenerator(BiomeGenBase.plains);
++	}
++
+     protected BiomeGenBase(int par1)
+     {
+         this.topBlock = (byte)Block.grass.blockID;
+@@ -135,18 +159,35 @@
          this.biomeID = par1;
          biomeList[par1] = this;
          this.theBiomeDecorator = this.createBiomeDecorator();
@@ -128,7 +143,7 @@
      }
  
      /**
-@@ -275,10 +308,15 @@
+@@ -275,10 +316,15 @@
      /**
       * Return true if the biome supports lightning bolt spawn, either by have the bolts enabled and have rain enabled.
       */
@@ -144,7 +159,7 @@
  
      /**
       * Checks to see if the rainfall level of the biome is extremely high
-@@ -352,4 +390,20 @@
+@@ -352,4 +398,20 @@
          double var3 = (double)MathHelper.clamp_float(this.getFloatRainfall(), 0.0F, 1.0F);
          return ColorizerFoliage.getFoliageColor(var1, var3);
      }

@@ -68,7 +68,54 @@
          }
      }
  
-@@ -1445,4 +1469,56 @@
+@@ -1410,32 +1434,40 @@
+ 
+                 if (this.storageArrays[var2] == null && (var7 == 0 || var7 == 15 || var3 == 0 || var3 == 15 || var4 == 0 || var4 == 15) || this.storageArrays[var2] != null && this.storageArrays[var2].getExtBlockID(var3, var7, var4) == 0)
+                 {
+-                    if (Block.lightValue[this.worldObj.getBlockId(var5, var8 - 1, var6)] > 0)
++                	int blockID;
++                	
++                	blockID = this.worldObj.getBlockId(var5, var8 - 1, var6);
++                    if (blockID != 0 && Block.blocksList[blockID].getLightValue(this.worldObj, var5, var8 - 1, var6) > 0)
+                     {
+                         this.worldObj.updateAllLightTypes(var5, var8 - 1, var6);
+                     }
+ 
+-                    if (Block.lightValue[this.worldObj.getBlockId(var5, var8 + 1, var6)] > 0)
++                	blockID = this.worldObj.getBlockId(var5, var8 - 1, var6);
++                    if (blockID != 0 && Block.blocksList[blockID].getLightValue(this.worldObj, var5, var8 + 1, var6) > 0)
+                     {
+                         this.worldObj.updateAllLightTypes(var5, var8 + 1, var6);
+                     }
+ 
+-                    if (Block.lightValue[this.worldObj.getBlockId(var5 - 1, var8, var6)] > 0)
++                	blockID = this.worldObj.getBlockId(var5 - 1, var8, var6);
++                    if (blockID != 0 && Block.blocksList[blockID].getLightValue(this.worldObj, var5 - 1, var8, var6) > 0)
+                     {
+                         this.worldObj.updateAllLightTypes(var5 - 1, var8, var6);
+                     }
+ 
+-                    if (Block.lightValue[this.worldObj.getBlockId(var5 + 1, var8, var6)] > 0)
++                	blockID = this.worldObj.getBlockId(var5 + 1, var8, var6);
++                    if (blockID != 0 && Block.blocksList[blockID].getLightValue(this.worldObj, var5 + 1, var8, var6) > 0)
+                     {
+                         this.worldObj.updateAllLightTypes(var5 + 1, var8, var6);
+                     }
+ 
+-                    if (Block.lightValue[this.worldObj.getBlockId(var5, var8, var6 - 1)] > 0)
++                	blockID = this.worldObj.getBlockId(var5, var8, var6 - 1);
++                    if (blockID != 0 && Block.blocksList[blockID].getLightValue(this.worldObj, var5, var8, var6 - 1) > 0)
+                     {
+                         this.worldObj.updateAllLightTypes(var5, var8, var6 - 1);
+                     }
+ 
+-                    if (Block.lightValue[this.worldObj.getBlockId(var5, var8, var6 + 1)] > 0)
++                	blockID = this.worldObj.getBlockId(var5, var8, var6 + 1);
++                    if (blockID != 0 && Block.blocksList[blockID].getLightValue(this.worldObj, var5, var8, var6 + 1) > 0)
+                     {
+                         this.worldObj.updateAllLightTypes(var5, var8, var6 + 1);
+                     }
+@@ -1445,4 +1477,56 @@
              }
          }
      }

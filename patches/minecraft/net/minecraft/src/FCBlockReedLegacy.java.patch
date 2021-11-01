@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockReedLegacy.java
-@@ -0,0 +1,121 @@
+@@ -0,0 +1,123 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -58,7 +58,9 @@
 +    @Override
 +    public void dropBlockAsItemWithChance( World world, int i, int j, int k, int iMetadata, float fChance, int iFortuneModifier )
 +    {
-+    	if (world.getBlockId(i, j, k) != Block.reed.blockID) {
++    	int idBelow = world.getBlockId(i, j - 1, k);
++    	
++    	if (idBelow == Block.reed.blockID || idBelow == 0) {
 +    		super.dropBlockAsItemWithChance( world, i, j, k, iMetadata, fChance, iFortuneModifier );
 +    	}
 +    	else if (!world.isRemote) {

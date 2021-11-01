@@ -1,120 +1,115 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockCandle.java
-@@ -0,0 +1,116 @@
-+// FCMOD
-+
+@@ -0,0 +1,111 @@
 +package net.minecraft.src;
 +
-+import java.util.Random;
-+
-+public class FCBlockCandle extends Block
-+{
-+	private static final double m_dStickHeight = ( 6D / 16D ); 
-+	private static final double m_dStickWidth = ( 2D / 16D ); 
-+	private static final double m_dStickHalfWidth = ( m_dStickWidth / 2D );
++public class FCBlockCandle extends Block {
++	private int idDropped;
++	private int metaDropped;
 +	
-+	private static final double m_dWickHeight = ( 1D / 16D );
-+	private static final double m_dWickWidth = ( 0.5D / 16D );
-+	private static final double m_dWickHalfWidth = ( m_dWickWidth / 2D );
-+	
-+    public FCBlockCandle( int iBlockID )
-+    {
-+        super( iBlockID, FCBetterThanWolves.fcMaterialCandle );
++	protected FCBlockCandle(int id, int idDropped, int metaDropped, String name) {
++		super(id, FCBetterThanWolves.fcMaterialCandle);
 +        
-+        setHardness( 0F );    	
-+    	SetPicksEffectiveOn( true );        
-+        SetAxesEffectiveOn( true );        
++        setHardness(0F);
++    	SetPicksEffectiveOn(true);
++        SetAxesEffectiveOn(true);
 +        
-+        setLightValue( 1F );
-+        
-+    	InitBlockBounds( 0.5D - m_dStickHalfWidth, 0D, 0.5D - m_dStickHalfWidth, 
-+    		0.5D + m_dStickHalfWidth, m_dStickHeight, 0.5D + m_dStickHalfWidth );
++        setLightValue(1F);
 +    	
-+        setStepSound( soundStoneFootstep );
++        setStepSound(soundStoneFootstep);
 +        
-+        setUnlocalizedName( "fcBlockCandle" );        
-+    }
++        setUnlocalizedName(name);
++        
++        this.idDropped = idDropped;
++        this.metaDropped = metaDropped;
++	}
 +    
 +    @Override
-+    public boolean isOpaqueCube()
-+    {
++    public boolean isOpaqueCube() {
 +        return false;
 +    }
 +    
 +    @Override
-+    public boolean renderAsNormalBlock()
-+    {
++    public boolean renderAsNormalBlock() {
 +        return false;
-+    }
-+    
-+    @Override
-+    public boolean canPlaceBlockAt( World world, int i, int j, int k )
-+    {
-+		int iBlockBelowID = world.getBlockId( i, j - 1, k );
-+		int iBlockBelowMetadata = world.getBlockMetadata( i, j - 1, k ) ;
-+		
-+		if ( iBlockBelowID == FCBetterThanWolves.fcAestheticNonOpaque.blockID && iBlockBelowMetadata == FCBlockAestheticNonOpaque.m_iSubtypeLightningRod )
-+		{
-+			return true;
-+		}
-+
-+		return FCUtilsWorld.DoesBlockHaveSmallCenterHardpointToFacing( world, i, j - 1, k, 1, true );
 +    }
 +    
 +	@Override
-+    public AxisAlignedBB getCollisionBoundingBoxFromPool( World world, int i, int j, int k )
-+    {
++    public AxisAlignedBB getCollisionBoundingBoxFromPool( World world, int i, int j, int k ) {
 +		return null;
 +    }
 +	
 +	@Override
-+    public int idDropped( int iMetaData, Random random, int iFortuneModifier )
-+    {
-+        return FCBetterThanWolves.fcItemCandle.itemID;
-+    }
-+	
-+	@Override
-+    public int damageDropped( int iMetadata )
-+    {
-+    	return iMetadata;
-+    }
-+	
-+	@Override
-+    public void onNeighborBlockChange( World world, int i, int j, int k, int iNeighborBlockID )
-+    {
-+    	// pop the block off if it no longer has a valid anchor point
-+    	
-+		if ( !canPlaceBlockAt( world, i, j, k ) )
-+		{
-+            dropBlockAsItem( world, i, j, k, world.getBlockMetadata( i, j, k ), 0 );
-+            world.setBlockWithNotify( i, j, k, 0 );
++	public int getLightValue(IBlockAccess blockAccess, int x, int y, int z) {
++		if (isLit(blockAccess, x, y, z)) {
++			int candleCount = this.getCandleCount(blockAccess, x, y, z);
++			
++			return (int) (lightValue[this.blockID] / ((float) 4 - candleCount));
++		}
++		else {
++			return 0;
 +		}
 +    }
-+	
-+    @Override
-+	public boolean IsBlockRestingOnThatBelow( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+        return true;
++
++	public boolean CanConvertBlock(ItemStack stack, World world, int x, int y, int z) {
++		return true;
 +	}
 +
-+    @Override
-+    public boolean GetCanBlockLightItemOnFire( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+    	return true;
-+    }
-+    
-+	@Override
-+	public void OnNeighborDisrupted( World world, int i, int j, int k, int iToFacing )
-+	{
-+		if ( iToFacing == 0 )
-+		{
-+            dropBlockAsItem( world, i, j, k, world.getBlockMetadata( i, j, k ), 0 );
-+            world.setBlockWithNotify( i, j, k, 0 );
-+		}
++	/**
++	 * Returns false if the block has not been replaced with another, and should be removed
++	 */
++	public boolean ConvertBlock(ItemStack stack, World world, int x, int y, int z, int fromSide) {
++		int candleCount = this.getCandleCount(world, x, y, z);
++		this.setCandleCount(world, x, y, z, candleCount - 1);
++		this.dropBlockAsItem(world, x, y, z, 0, 0);
++		
++		return true;
 +	}
 +	
-+	//------------- Class Specific Methods ------------//
++	//------ Class specific methods ------//
 +	
-+	//----------- Client Side Functionality -----------//
++	public int getCandleCount(IBlockAccess blockAccess, int x, int y, int z) {
++		int meta = blockAccess.getBlockMetadata(x, y, z);
++		return (meta & 3) + 1;
++	}
++	
++	public void setCandleCount(World world, int x, int y, int z, int count) {
++		if (count == 0) {
++			world.setBlock(x, y, z, 0);
++			return;
++		}
++		
++		if (count > 4) {
++			Exception e = new IllegalArgumentException("Cannot set candle count higher than 4");
++			e.printStackTrace();
++			
++			count = 4;
++		}
++		
++		int meta = world.getBlockMetadata(x, y, z);
++		int newMeta = meta & 4;
++		
++		newMeta += count - 1;
++		
++		world.setBlockMetadataWithNotify(x, y, z, newMeta);
++	}
++	
++	public boolean isLit(IBlockAccess blockAccess, int x, int y, int z) {
++		return blockAccess.getBlockMetadata(x, y, z) >> 2 > 1;
++	}
++	
++	public void setLit(World world, int x, int y, int z, boolean isLit) {
++		int meta = world.getBlockMetadata(x, y, z);
++		int newMeta;
++		
++		if (isLit) {
++			newMeta = meta | 4;
++		}
++		else {
++			newMeta = meta & 3;
++		}
++		
++		world.setBlockMetadata(x, y, z, newMeta);
++	}
 +}
 \ No newline at end of file

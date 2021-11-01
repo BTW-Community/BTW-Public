@@ -238,7 +238,7 @@
 +    	
 +    	if ( iTargetBlockID > 0 )
 +    	{
-+    		if ( lightValue[iTargetBlockID] > fMinTriggerLightValue )
++    		if ( Block.getLightValueForBlock(world, i, j, k, Block.blocksList[iTargetBlockID]) > fMinTriggerLightValue )
 +    		{
 +    			if ( iTargetBlockID != FCBetterThanWolves.fcBlockDetectorGlowingLogic.blockID )
 +    			{

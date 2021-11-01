@@ -1,6 +1,6 @@
 --- a/minecraft/net/minecraft/src/WorldGenPumpkin.java
 +++ b/minecraft/net/minecraft/src/WorldGenPumpkin.java
-@@ -1,11 +1,33 @@
+@@ -1,11 +1,29 @@
  package net.minecraft.src;
  
 +import java.util.ArrayList;
@@ -9,10 +9,6 @@
  public class WorldGenPumpkin extends WorldGenerator
  {
 +	private static ArrayList<BiomeGenBase> validBiomeList = new ArrayList();
-+	
-+	static {
-+		addBiomeToGenerator(BiomeGenBase.plains);
-+	}
 +	
 +	public static boolean isBiomeValid(BiomeGenBase biome) {
 +		return validBiomeList.contains(biome);
@@ -34,7 +30,7 @@
          for (int var6 = 0; var6 < 64; ++var6)
          {
              int var7 = par3 + par2Random.nextInt(8) - par2Random.nextInt(8);
-@@ -14,10 +36,47 @@
+@@ -14,10 +32,47 @@
  
              if (par1World.isAirBlock(var7, var8, var9) && par1World.getBlockId(var7, var8 - 1, var9) == Block.grass.blockID && Block.pumpkin.canPlaceBlockAt(par1World, var7, var8, var9))
              {

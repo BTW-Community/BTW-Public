@@ -442,7 +442,14 @@
      {
          int var6 = this.blockAccess.getBlockMetadata(par2, par3, par4);
          int var7 = BlockPistonExtension.getDirectionMeta(var6);
-@@ -1585,7 +1680,7 @@
+@@ -1579,13 +1674,13 @@
+         var8.setBrightness(par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4));
+         float var13 = 1.0F;
+ 
+-        if (Block.lightValue[par1Block.blockID] > 0)
++        if (Block.blocksList[par1Block.blockID].getLightValue(this.blockAccess, par2, par3, par4) > 0)
+         {
+             var13 = 1.0F;
          }
  
          var8.setColorOpaque_F(var13, var13, var13);
@@ -451,7 +458,14 @@
  
          if (this.hasOverrideBlockTexture())
          {
-@@ -1806,7 +1901,7 @@
+@@ -1800,13 +1895,13 @@
+         var5.setBrightness(par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4));
+         float var17 = 1.0F;
+ 
+-        if (Block.lightValue[par1Block.blockID] > 0)
++        if (Block.blocksList[par1Block.blockID].getLightValue(this.blockAccess, par2, par3, par4) > 0)
+         {
+             var17 = 1.0F;
          }
  
          var5.setColorOpaque_F(var17, var17, var17);
@@ -1366,7 +1380,7 @@
 +        RenderBlocksUtils.setupColorMultiplier(block, this.blockAccess, x, y, z, this.hasOverrideBlockTexture(), red, green, blue);
  
 -        return Minecraft.isAmbientOcclusionEnabled() && Block.lightValue[par1Block.blockID] == 0 ? (this.partialRenderBounds ? this.func_102027_b(par1Block, par2, par3, par4, var6, var7, var8) : this.renderStandardBlockWithAmbientOcclusion(par1Block, par2, par3, par4, var6, var7, var8)) : this.renderStandardBlockWithColorMultiplier(par1Block, par2, par3, par4, var6, var7, var8);
-+        if (Minecraft.isAmbientOcclusionEnabled()&& Block.lightValue[block.blockID] == 0) {
++        if (Minecraft.isAmbientOcclusionEnabled() && Block.blocksList[block.blockID].getLightValue(this.blockAccess, x, y, z) == 0) {
 +        	if (this.partialRenderBounds) {
 +        		return this.func_102027_b(block, x, y, z, red, green, blue);
      }
