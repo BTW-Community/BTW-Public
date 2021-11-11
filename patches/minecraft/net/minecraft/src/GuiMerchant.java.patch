@@ -245,9 +245,9 @@
 +	        				sXPString = "++";
 +	        			}
 +	        		}
-+	        		else if ( tempRecipe.m_iTradeLevel == associatedContainer.m_iAssociatedVillagerTradeLevel && tempRecipe.m_iTradeLevel < 5 )
++	        		else if ( tempRecipe.m_iTradeLevel == associatedContainer.m_iAssociatedVillagerTradeLevel && tempRecipe.m_iTradeLevel < 5 && !tempRecipe.isMandatory())
 +	        		{
-+	        			sXPString = "+";    			
++	        			sXPString = "+";
 +	        		}
 +	        		
 +	        		if ( sXPString != null )

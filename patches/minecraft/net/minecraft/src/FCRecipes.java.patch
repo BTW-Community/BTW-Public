@@ -2254,7 +2254,7 @@
 +    		Character.valueOf( 'W' ), new ItemStack( FCBetterThanWolves.fcItemWool, 1, m_iIgnoreMetadata )
 +        } );
 +        
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemDynamite ), new Object[] {
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemDynamite, 2 ), new Object[] {
 +    		"PF", 
 +    		"PN", 
 +    		"PS", 
@@ -6127,7 +6127,8 @@
 +		FCEntityVillager.addLevelUpTradeToBuySingleItem(priest, Item.skull.itemID, 1, 3, 3, 3);
 +		
 +		//Level 4
-+		FCEntityVillager.addTradeToBuyMultipleItems(priest, FCBetterThanWolves.fcItemSoulUrn.itemID, 2, 3, 1F, 4);
++		FCEntityVillager.addTradeToBuyMultipleItems(priest, FCBetterThanWolves.fcItemSoulUrn.itemID, 2, 3, 2F, 4);
++		FCEntityVillager.addTradeToBuySingleItem(priest, FCBetterThanWolves.fcItemCanvas.itemID, 2, 3, 1F, 5);
 +		
 +		FCEntityVillager.addLevelUpTradeToBuySingleItem(priest, FCBetterThanWolves.fcInfernalEnchanter.blockID, 4, 4, 4);
 +		
@@ -6150,8 +6151,6 @@
 +			});
 +		
 +		//Level 5
-+		FCEntityVillager.addTradeToBuySingleItem(priest, FCBetterThanWolves.fcItemCanvas.itemID, 2, 3, 1F, 5);
-+		
 +		FCEntityVillager.addArcaneScrollTrade(priest, Enchantment.fortune.effectId, 48, 64, 1F, 5);
 +		
 +		// ------ Blacksmith ------ //
@@ -6247,7 +6246,8 @@
 +		FCEntityVillager.addLevelUpTradeToBuySingleItem(butcher, FCBetterThanWolves.fcSaw.blockID, 2, 2, 2);
 +		
 +		//Level 3
-+		FCEntityVillager.addTradeToBuyMultipleItems(butcher, Item.carrot.itemID, 10, 16, 1F, 3);
++		//FCEntityVillager.addTradeToBuyMultipleItems(butcher, Item.carrot.itemID, 10, 16, 1F, 3);
++		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemCarrot.itemID, 10, 16, 1F, 3);
 +		FCEntityVillager.addTradeToBuyMultipleItems(butcher, Item.potato.itemID, 10, 16, 1F, 3);
 +		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemBeastLiverRaw.itemID, 1, 2, 1F, 3);
 +

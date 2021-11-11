@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCEntityWindMill.java
-@@ -0,0 +1,432 @@
+@@ -0,0 +1,439 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -163,6 +163,13 @@
 +    	
 +        return super.interact( player );
 +    }
++	
++	@Override
++	public void onStruckByLightning(EntityLightningBolt par1EntityLightningBolt) {
++		if (this.worldObj.getGameRules().getGameRuleBooleanValue("doFireTick")) {
++			this.setDead();
++		}
++	}
 +    
 +    //************* FCEntityMechPower ************//
 +	

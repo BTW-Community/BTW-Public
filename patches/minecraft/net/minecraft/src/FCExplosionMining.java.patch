@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCExplosionMining.java
-@@ -0,0 +1,224 @@
+@@ -0,0 +1,214 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -200,28 +200,18 @@
 +        }
 +    }
 +    
-+    private void DestroyBlock( int i, int j, int k )
++    private void DestroyBlock(int x, int y, int z)
 +    {
-+        int iBlockID = worldObj.getBlockId( i, j, k );
++        int blockID = worldObj.getBlockId(x, y, z);
++        int meta = worldObj.getBlockMetadata(x, y, z);
 +        
-+        if ( iBlockID > 0 )
-+        {
-+        	Block destroyedBlock = Block.blocksList[iBlockID];
++        if (blockID > 0) {
++        	Block destroyedBlock = Block.blocksList[blockID];
 +        	
-+        	if ( iBlockID == Block.cobblestone.blockID  )
-+        	{
-+        		// FCTODO: Move this to individual cobble classes
-+        		// convert stone to gravel
-+        		destroyedBlock.dropBlockAsItem_do( worldObj, i, j, k, new ItemStack( Block.gravel.blockID, 1, 0 ) );
-+        	}
-+        	else        		
-+        	{
-+        		destroyedBlock.DropItemsOnDestroyedByExplosion( worldObj, i, j, k, null );
-+        	}
++        	destroyedBlock.dropItemsOnDestroyedByMiningCharge(worldObj, x, y, z, meta);
++        	destroyedBlock.onBlockDestroyedByMiningCharge(worldObj, x, y, z);
 +            
-+        	destroyedBlock.onBlockDestroyedByExplosion( worldObj, i, j, k, null );
-+            
-+            worldObj.setBlockWithNotify( i, j, k, 0 );
++            worldObj.setBlockWithNotify(x, y, z, 0);
 +        }
 +    }    
 +}

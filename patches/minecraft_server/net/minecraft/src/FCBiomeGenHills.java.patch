@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBiomeGenHills.java
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,88 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -13,13 +13,19 @@
 +	private static final int m_iNumSilverfishBlocksPerCluster = 8;
 +	
 +    protected WorldGenerator m_generatorSilverfish;
++    protected WorldGenerator m_generatorSilverfishSecondStrata;
++    protected WorldGenerator m_generatorSilverfishThirdStrata;
 +
 +    protected FCBiomeGenHills( int iBiomeID )
 +    {
 +        super( iBiomeID );
 +        
-+        m_generatorSilverfish = new WorldGenMinable( Block.silverfish.blockID, 
++        m_generatorSilverfish = new WorldGenMinable( FCBetterThanWolves.fcBlockSilverfishStone.blockID, 
 +        	m_iNumSilverfishBlocksPerCluster );
++        m_generatorSilverfishSecondStrata = new WorldGenMinable( FCBetterThanWolves.fcBlockSilverfishStoneSecondStrata.blockID, 
++            	m_iNumSilverfishBlocksPerCluster );
++        m_generatorSilverfishThirdStrata = new WorldGenMinable( FCBetterThanWolves.fcBlockSilverfishStoneThirdStrata.blockID, 
++            	m_iNumSilverfishBlocksPerCluster );
 +    }
 +
 +    public void decorate( World world, Random rand, int iChunkX, int iChunkZ )
@@ -71,6 +77,14 @@
 +            int iTempJ = rand.nextInt( 64 );
 +            int iTempK = iChunkZ + rand.nextInt( 16 );
 +            
++    		if ( iTempJ <= 48 + world.rand.nextInt( 2 ) )
++    		{
++    			if ( iTempJ <= 24 + world.rand.nextInt( 2 ) )
++    			{
++    	            m_generatorSilverfishThirdStrata.generate( world, rand, iTempI, iTempJ, iTempK );
++    			}
++                m_generatorSilverfishSecondStrata.generate( world, rand, iTempI, iTempJ, iTempK );
++    		}          
 +            m_generatorSilverfish.generate( world, rand, iTempI, iTempJ, iTempK );
 +        }
 +    }

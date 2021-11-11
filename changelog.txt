@@ -1,3 +1,30 @@
+## Version 1.2.3 ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- Hiracho
+
+/--Gameplay--/
+- Added the ability for mob spawners to convert loose cobblestone into mossy cobblestone.
+- Added silverfish versions of mossy, cracked, and chiseled stone brick, and changed strongholds to generate those variants.
+- Changed silverfish variants to use their own block ids to open up metadata for later.
+- Changed windmills to be completely destroyed by lightning instead of dropping as an item to encourage protecting windmills from storms.
+- Changed (increased) the weight on the soul urn trade for the priest to make levelling the priest from 4 to 5 less frustrating.
+- Changed the canvas trade for the priest from level 5 to level 4 to further improve levelling a priest from 4 to 5.
+- Changed the dynamite recipe to output 2.
+- Changed mining charges to drop items as if the blocks were mined instead of their normal explosion drops.
+- Fixed an issue where the butcher still requested old carrots.
+- Fixed an issue where invalid trades were not being properly removed from villager trade lists.
+- Fixed an issue where guaranteed villager trades, like runed and infused skulls, displayed the "+" for xp even though such trades do not provide xp.
+- Fixed an issue where smooth lighting did not properly apply to grass and grass slabs.
+- Fixed an issue where grass slabs erroneously always used better grass for their sides when that was enabled, even when it should have used the default texture.
+- Fixed an issue where the mysterious gland, witch wart, and vessel of the dragon were missing from the creative inventory.
+- Fixed an issue where magenta and light blue were swapped when mixing colors for sheep.
+
+/--Addon API--/
+- Added hooks to define custom behavior when a block is destroyed by a mining charge.
+- Added hooks to define whether a block can be converted by a mob spawner.
+- Added hooks to define new silverfish invested variants.
+
 ## Version 1.2.2 ##
 /--Gameplay--/
 - Added the ability to make scrambled eggs out of fried and poached eggs as well as raw ones for convenience.

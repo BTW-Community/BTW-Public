@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockStoneBrick.java
-@@ -0,0 +1,89 @@
+@@ -0,0 +1,117 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -15,7 +15,7 @@
 +    	
 +    	setHardness( 2.25F );
 +    	setResistance( 10F );
-+        
++    	
 +        SetPicksEffectiveOn();
 +    	
 +    	setStepSound( soundStoneFootstep );
@@ -85,8 +85,37 @@
 +	{
 +		return true;
 +	}
-+	
++
++	@Override
++	public boolean isBlockInfestable(EntityLiving entity, int metadata)
++	{
++		return (entity instanceof EntitySilverfish);
++	}
++
++	@Override
++	public int getBlockIDOnInfest(EntityLiving entity, int metadata)
++	{
++
++		if (metadata == 1)
++		{
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksMossy.blockID;
++		}
++
++		if (metadata == 2)
++		{
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksCracked.blockID;
++		}
++
++		if (metadata == 3)
++		{
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksChiseled.blockID;
++		}
++
++		return FCBetterThanWolves.fcBlockSilverfishStoneBricks.blockID;
++	}
++
 +    //------------- Class Specific Methods ------------//    
 +    
 +	//----------- Client Side Functionality -----------//
 +}
+\ No newline at end of file

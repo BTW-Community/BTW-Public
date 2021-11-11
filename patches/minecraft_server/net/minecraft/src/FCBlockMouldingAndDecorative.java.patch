@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockMouldingAndDecorative.java
-@@ -0,0 +1,391 @@
+@@ -0,0 +1,365 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -362,32 +362,6 @@
 +	   		0.5F + m_dTableLegHalfWidth, m_dTableLegHeight, 0.5F + m_dTableLegHalfWidth );
 +    	
 +        return rayTrace.GetFirstIntersection();        
-+    }
-+    
-+    //------------- Stonecutter related functionality ------------//
-+    // Only called by Automation+ addon
-+    // Can be used by other addons to interface
-+    
-+    private int cornerIDDropped = -1;
-+    
-+    public void setCornerIDDroppedOnStonecutter(int id) {
-+    	this.cornerIDDropped = id;
-+    }
-+
-+    public int getItemIDDroppedOnStonecutter(World var1, int var2, int var3, int var4)
-+    {
-+        return this.IsDecorative(var1, var2, var3, var4) ? super.getItemIDDroppedOnStonecutter(var1, var2, var3, var4) : this.cornerIDDropped;
-+    }
-+
-+    public int getItemCountDroppedOnStonecutter(World var1, int var2, int var3, int var4)
-+    {
-+        return this.IsDecorative(var1, var2, var3, var4) ? super.getItemCountDroppedOnStonecutter(var1, var2, var3, var4) : 2;
-+    }
-+
-+    public int getItemDamageDroppedOnStonecutter(World var1, int var2, int var3, int var4)
-+    {
-+        int var5 = var1.getBlockMetadata(var2, var3, var4);
-+        return this.IsDecorative(var5) ? super.getItemDamageDroppedOnStonecutter(var1, var2, var3, var4) : 1;
 +    }
 +
 +	//----------- Client Side Functionality -----------//

@@ -1,21 +1,33 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockSilverfish.java
-@@ -0,0 +1,189 @@
+@@ -0,0 +1,111 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
++import java.util.List;
 +import java.util.Random;
 +
 +public class FCBlockSilverfish extends BlockSilverfish
 +{
 +	private static final int m_iHatchFrequency = 1200;
-+	
-+    public FCBlockSilverfish( int iBlockID )
++    protected final Block referenceBlock;
++    protected final int referenceBlockMetadata;
++    
++	/**
++	 * 
++	 * @param iBlockID
++	 * @param reference Block
++	 * @param reference Block Metadata
++	 */
++    public FCBlockSilverfish( int iBlockID, Block refBlock, int refBlockMetadata )
 +    {
 +    	super( iBlockID );
 +    	
 +    	setHardness( 1.5F );
++        referenceBlock = refBlock;
++        referenceBlockMetadata = refBlockMetadata;
++
 +    	
 +    	SetPicksEffectiveOn();
 +        SetChiselsEffectiveOn();
@@ -66,79 +78,23 @@
 +    @Override
 +    protected ItemStack createStackedBlock( int iMetadata )
 +    {
-+        Block block = Block.stone;
-+        int iItemDamage = 0;
-+
-+        if (iMetadata == 1)
-+        {
-+            block = Block.cobblestone;
-+        }
-+        else if (iMetadata == 2)
-+        {
-+            block = Block.stoneBrick;
-+        }
-+        else if ( iMetadata == 14 )
-+        {
-+        	iItemDamage = 1;
-+        }
-+        else if ( iMetadata == 15 )
-+        {
-+        	iItemDamage = 2;
-+        }
-+
-+        return new ItemStack( block, 1, iItemDamage );
++        return new ItemStack( referenceBlock, 1, referenceBlockMetadata );
 +    }
 +    
 +    @Override
-+    public boolean HasStrata()
-+    {
-+    	return true;
-+    }
-+    
-+    @Override
-+    public int GetMetadataConversionForStrataLevel( int iLevel, int iMetadata )
-+    {
-+    	if ( iMetadata == 0 ) // regular stone block
-+    	{
-+    		if ( iLevel == 1 )
-+    		{
-+    			iMetadata = 14;
-+    		}
-+    		else if ( iLevel == 2 )
-+    		{
-+    			iMetadata = 15;
-+    		}
-+    	}
-+    	
-+    	return iMetadata;
-+    }
-+    
-+    public static int GetMetadataConversionOnInfest( int iBlockID, int iMetadata )
-+    {
-+    	int iNewMetadata = 0;
-+    	
-+    	if ( iBlockID == Block.cobblestone.blockID )
-+    	{
-+    		iNewMetadata = 1;
-+    	}
-+    	else if ( iBlockID == Block.stoneBrick.blockID )
-+    	{
-+    		iNewMetadata = 2;
-+    	}
-+    	else if ( iMetadata == 1 )
-+    	{
-+    		iNewMetadata = 14;    		
-+    	}
-+    	else if ( iMetadata == 2 )
-+    	{
-+    		iNewMetadata = 15;    		
-+    	}
-+    	
-+        return iNewMetadata;
-+    }
-+    
++	public boolean isBlockInfestedBy(EntityLiving entity)
++	{
++		return (entity instanceof EntitySilverfish);
++	}
++	
 +	//----------- Client Side Functionality -----------//
-+    
++	
++    @Override
++    public Icon getIcon( int iSide, int iMetadata )
++    {
++		return referenceBlock.getIcon( iSide, referenceBlockMetadata );
++    }
++
 +	@Override
 +    public void randomDisplayTick( World world, int i, int j, int k, Random rand )
 +    {
@@ -149,44 +105,10 @@
 +        }
 +    }
 +	
-+    @Override
-+    public Icon getIcon( int iSide, int iMetadata )
++	//override regular silverfish to prevent triple creative inventory blocks
++	@Override
++    public void getSubBlocks(int par1, CreativeTabs par2CreativeTabs, List par3List)
 +    {
-+    	if ( iMetadata == 1 )
-+    	{
-+    		return Block.cobblestone.getBlockTextureFromSide( iSide );
-+    	}
-+    	else if ( iMetadata == 2 )
-+    	{
-+    		return Block.stoneBrick.getBlockTextureFromSide( iSide );
-+    	}
-+    	else if ( iMetadata == 14 )
-+		{
-+			return Block.stone.getIcon( iSide, 1 );
-+		}
-+		else if ( iMetadata == 15 )
-+		{
-+			return Block.stone.getIcon( iSide, 2 );
-+		}
-+    	
-+        return Block.stone.getBlockTextureFromSide( iSide );
++		par3List.add(new ItemStack(par1, 1, 0));
 +    }
-+    
-+    @Override
-+    public boolean RenderBlock( RenderBlocks renderer, int i, int j, int k )
-+    {
-+    	return renderer.RenderStandardFullBlock( this, i, j, k );
-+    }
-+    
-+    @Override
-+    public boolean DoesItemRenderAsBlock( int iItemDamage )
-+    {
-+    	return true;
-+    }    
-+    
-+    @Override
-+    public void RenderBlockMovedByPiston( RenderBlocks renderBlocks, int i, int j, int k )
-+    {
-+    	renderBlocks.RenderStandardFullBlockMovedByPiston( this, i, j, k );
-+    }    
 +}

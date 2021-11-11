@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockStoneBrick.java
-@@ -0,0 +1,95 @@
+@@ -0,0 +1,123 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -85,7 +85,35 @@
 +	{
 +		return true;
 +	}
-+	
++
++	@Override
++	public boolean isBlockInfestable(EntityLiving entity, int metadata)
++	{
++		return (entity instanceof EntitySilverfish);
++	}
++
++	@Override
++	public int getBlockIDOnInfest(EntityLiving entity, int metadata)
++	{
++
++		if (metadata == 1)
++		{
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksMossy.blockID;
++		}
++
++		if (metadata == 2)
++		{
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksCracked.blockID;
++		}
++
++		if (metadata == 3)
++		{
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksChiseled.blockID;
++		}
++
++		return FCBetterThanWolves.fcBlockSilverfishStoneBricks.blockID;
++	}
++
 +    //------------- Class Specific Methods ------------//    
 +    
 +	//----------- Client Side Functionality -----------//
@@ -96,3 +124,4 @@
 +		return world.getBlockMetadata(x, y, z);
 +    }
 +}
+\ No newline at end of file

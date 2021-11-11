@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockDirtSlab.java
-@@ -0,0 +1,568 @@
+@@ -0,0 +1,567 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -463,7 +463,7 @@
 +			}
 +		}
 +
-+		Icon icon = RenderBlocksUtils.getGrassTexture(this, blockAccess, i, j, k, iSide, this.m_IconGrassTop);
++		Icon icon = RenderBlocksUtils.getGrassTexture(Block.grass, blockAccess, i, j, k, iSide, this.m_IconGrassTop);
 +
 +		if (icon != null && iSubtype == m_iSubtypeGrass && iSide >= 1)
 +		{
@@ -511,8 +511,7 @@
 +
 +			if ( Minecraft.isAmbientOcclusionEnabled() )
 +			{
-+	        	//return renderer.renderGrassBlockWithAmbientOcclusion( this, i, j, k, var6, var7, var8, BlockGrass.getIconSideOverlay() );
-+	        	return renderer.renderGrassBlockWithColorMultiplier( this, i, j, k, fRed, fGreen, fBlue, GetSideOverlayTexture( blockAccess, i, j, k ) );
++	        	return renderer.renderGrassBlockWithAmbientOcclusion( this, i, j, k, fRed, fGreen, fBlue, GetSideOverlayTexture( blockAccess, i, j, k ) );
 +			}
 +			else
 +			{

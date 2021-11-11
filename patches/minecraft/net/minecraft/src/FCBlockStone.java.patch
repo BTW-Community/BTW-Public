@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockStone.java
-@@ -0,0 +1,343 @@
+@@ -0,0 +1,367 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -217,6 +217,30 @@
 +    public boolean IsNaturalStone( IBlockAccess blockAccess, int i, int j, int k )
 +    {
 +    	return true;
++    }
++    
++    @Override
++    public boolean isBlockInfestable(EntityLiving entity, int metadata)
++    {
++		return (entity instanceof EntitySilverfish);
++    }
++
++    @Override
++    public int getBlockIDOnInfest(EntityLiving entity, int metadata)
++    {
++    	int strata = GetStrata(metadata);
++
++    	if (strata == 1)
++    	{
++    		return FCBetterThanWolves.fcBlockSilverfishStoneSecondStrata.blockID;
++    	}
++
++    	else if (strata == 2)
++    	{
++    		return FCBetterThanWolves.fcBlockSilverfishStoneThirdStrata.blockID;
++    	}
++
++    	return FCBetterThanWolves.fcBlockSilverfishStone.blockID;
 +    }
 +    
 +    //------------- Class Specific Methods ------------//
