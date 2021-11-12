@@ -1,21 +1,33 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockSilverfish.java
-@@ -0,0 +1,137 @@
+@@ -0,0 +1,86 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
++import java.util.List;
 +import java.util.Random;
 +
 +public class FCBlockSilverfish extends BlockSilverfish
 +{
 +	private static final int m_iHatchFrequency = 1200;
-+	
-+    public FCBlockSilverfish( int iBlockID )
++    protected final Block referenceBlock;
++    protected final int referenceBlockMetadata;
++    
++	/**
++	 * 
++	 * @param iBlockID
++	 * @param reference Block
++	 * @param reference Block Metadata
++	 */
++    public FCBlockSilverfish( int iBlockID, Block refBlock, int refBlockMetadata )
 +    {
 +    	super( iBlockID );
 +    	
 +    	setHardness( 1.5F );
++        referenceBlock = refBlock;
++        referenceBlockMetadata = refBlockMetadata;
++
 +    	
 +    	SetPicksEffectiveOn();
 +        SetChiselsEffectiveOn();
@@ -49,7 +61,7 @@
 +				
 +				for ( int iTempCount = 0; iTempCount < iNumSilverfish; iTempCount++ )
 +				{
-+					EntitySilverfish silverfish = (EntitySilverfish) EntityList.createEntityOfType(EntitySilverfish.class, world);
++		            EntitySilverfish silverfish = (EntitySilverfish) EntityList.createEntityOfType(EntitySilverfish.class, world);
 +		            
 +		            silverfish.setLocationAndAngles( (double)i + 0.5D, (double)j, (double)k + 0.5D, 0.0F, 0.0F);
 +		            
@@ -66,75 +78,13 @@
 +    @Override
 +    protected ItemStack createStackedBlock( int iMetadata )
 +    {
-+        Block block = Block.stone;
-+        int iItemDamage = 0;
-+
-+        if (iMetadata == 1)
-+        {
-+            block = Block.cobblestone;
-+        }
-+        else if (iMetadata == 2)
-+        {
-+            block = Block.stoneBrick;
-+        }
-+        else if ( iMetadata == 14 )
-+        {
-+        	iItemDamage = 1;
-+        }
-+        else if ( iMetadata == 15 )
-+        {
-+        	iItemDamage = 2;
-+        }
-+
-+        return new ItemStack( block, 1, iItemDamage );
++        return new ItemStack( referenceBlock, 1, referenceBlockMetadata );
 +    }
 +    
 +    @Override
-+    public boolean HasStrata()
-+    {
-+    	return true;
-+    }
-+    
-+    @Override
-+    public int GetMetadataConversionForStrataLevel( int iLevel, int iMetadata )
-+    {
-+    	if ( iMetadata == 0 ) // regular stone block
-+    	{
-+    		if ( iLevel == 1 )
-+    		{
-+    			iMetadata = 14;
-+    		}
-+    		else if ( iLevel == 2 )
-+    		{
-+    			iMetadata = 15;
-+    		}
-+    	}
-+    	
-+    	return iMetadata;
-+    }
-+    
-+    public static int GetMetadataConversionOnInfest( int iBlockID, int iMetadata )
-+    {
-+    	int iNewMetadata = 0;
-+    	
-+    	if ( iBlockID == Block.cobblestone.blockID )
-+    	{
-+    		iNewMetadata = 1;
-+    	}
-+    	else if ( iBlockID == Block.stoneBrick.blockID )
-+    	{
-+    		iNewMetadata = 2;
-+    	}
-+    	else if ( iMetadata == 1 )
-+    	{
-+    		iNewMetadata = 14;    		
-+    	}
-+    	else if ( iMetadata == 2 )
-+    	{
-+    		iNewMetadata = 15;    		
-+    	}
-+    	
-+        return iNewMetadata;
-+    }
-+    
++	public boolean isBlockInfestedBy(EntityLiving entity)
++	{
++		return (entity instanceof EntitySilverfish);
++	}
 +}
+\ No newline at end of file

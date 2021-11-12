@@ -88,7 +88,7 @@
 +	public static Block dirt = new FCBlockDirt( 3 );
 +	public static Block cobblestone = (new FCBlockCobblestone(4)).setHardness(2.0F).setResistance(10.0F).setStepSound(soundStoneFootstep).setUnlocalizedName("stonebrick").setCreativeTab(CreativeTabs.tabBlock);
 +	public static Block planks = new FCBlockPlanks( 5 );
-+	public static Block sapling = (new FCBlockSapling(6)).setHardness(0.0F).SetBuoyant().setStepSound(soundGrassFootstep).setUnlocalizedName("sapling");
++	public static Block sapling = (new FCBlockSaplingLegacy(6)).setHardness(0.0F).SetBuoyant().setStepSound(soundGrassFootstep).setUnlocalizedName("sapling");
 +	public static Block bedrock = new FCBlockBedrock( 7 );
 +	public static BlockFluid waterMoving = (BlockFluid)(new FCBlockWaterFlowing(8, Material.water)).setHardness(100.0F).setLightOpacity(3).setUnlocalizedName("water").setCreativeTab(CreativeTabs.tabBlock).disableStats();
 +	public static Block waterStill = (new FCBlockWaterStationary(9, Material.water)).setHardness(100.0F).setLightOpacity(3).setUnlocalizedName("water").disableStats();
@@ -267,7 +267,7 @@
 -    public static final Block endPortalFrame = (new BlockEndPortalFrame(120)).setStepSound(soundGlassFootstep).setLightValue(0.125F).setHardness(-1.0F).setUnlocalizedName("endPortalFrame").setResistance(6000000.0F).setCreativeTab(CreativeTabs.tabDecorations);
 +	public static Block lockedChest = (new BlockLockedChest(95)).setHardness(0.0F).setLightValue(1.0F).setStepSound(soundWoodFootstep).setUnlocalizedName("lockedchest").setTickRandomly(true);
 +	public static Block trapdoor = new FCBlockTrapDoor( 96 );
-+	public static Block silverfish = new FCBlockSilverfish( 97 );
++	public static Block silverfish = new FCBlockSilverfishLegacy( 97 );
 +	public static Block stoneBrick = new FCBlockStoneBrick( 98 );
 +	public static Block mushroomCapBrown = new FCBlockMushroomCapLegacy( 99, 0 );
 +	public static Block mushroomCapRed = new FCBlockMushroomCapLegacy( 100, 1 );
@@ -644,7 +644,7 @@
      public MovingObjectPosition collisionRayTrace(World par1World, int par2, int par3, int par4, Vec3 par5Vec3, Vec3 par6Vec3)
      {
          this.setBlockBoundsBasedOnState(par1World, par2, par3, par4);
-@@ -818,29 +871,22 @@
+@@ -818,35 +871,32 @@
          }
      }
  
@@ -676,7 +676,17 @@
  
      /**
       * Called upon the block being destroyed by an explosion
-@@ -908,9 +954,7 @@
+      */
+     public void onBlockDestroyedByExplosion(World par1World, int par2, int par3, int par4, Explosion par5Explosion) {}
+ 
++	public void onBlockDestroyedByMiningCharge(World world, int x, int y, int z) {
++		this.onBlockDestroyedByExplosion(world, x, y, z, null);
++	}
++
+     /**
+      * Returns which pass should this block be rendered on. 0 for solids and 1 for alpha
+      */
+@@ -908,9 +958,7 @@
       */
      public void velocityToAddToEntity(World par1World, int par2, int par3, int par4, Entity par5Entity, Vec3 par6Vec3) {}
  
@@ -687,7 +697,7 @@
      public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, int par2, int par3, int par4) {}
  
      /**
-@@ -963,7 +1007,7 @@
+@@ -963,7 +1011,7 @@
  
      public int getBlockColor()
      {
@@ -696,7 +706,7 @@
      }
  
      /**
-@@ -971,7 +1015,7 @@
+@@ -971,7 +1019,7 @@
       */
      public int getRenderColor(int par1)
      {
@@ -705,7 +715,7 @@
      }
  
      /**
-@@ -980,7 +1024,7 @@
+@@ -980,7 +1028,7 @@
       */
      public int colorMultiplier(IBlockAccess par1IBlockAccess, int par2, int par3, int par4)
      {
@@ -714,7 +724,7 @@
      }
  
      /**
-@@ -1023,13 +1067,22 @@
+@@ -1023,13 +1071,22 @@
      /**
       * Called when the player destroys a block with an item that can harvest it. (i, j, k) are the coordinates of the
       * block and l is the block's subtype/damage.
@@ -737,7 +747,7 @@
          {
              ItemStack var8 = this.createStackedBlock(par6);
  
-@@ -1056,6 +1109,7 @@
+@@ -1056,6 +1113,7 @@
      /**
       * Returns an item stack containing a single instance of the current block type. 'i' is the block's subtype/damage
       * and is ignored for blocks which do not support subtypes. Blocks which cannot be harvested should return null.
@@ -745,7 +755,7 @@
       */
      protected ItemStack createStackedBlock(int par1)
      {
-@@ -1087,6 +1141,7 @@
+@@ -1087,6 +1145,7 @@
  
      /**
       * Called when the block is placed in the world.
@@ -753,7 +763,7 @@
       */
      public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving, ItemStack par6ItemStack) {}
  
-@@ -1154,6 +1209,7 @@
+@@ -1154,6 +1213,7 @@
      /**
       * Returns the mobility information of the block, 0 = free, 1 = can't push but can move over, 2 = total immobility
       * and stop pistons
@@ -761,7 +771,7 @@
       */
      public int getMobilityFlag()
      {
-@@ -1175,6 +1231,7 @@
+@@ -1175,6 +1235,7 @@
  
      /**
       * only called by clickMiddleMouseButton , and passed to inventory.setCurrentItem (along with isCreative)
@@ -769,16 +779,16 @@
       */
      public int idPicked(World par1World, int par2, int par3, int par4)
      {
-@@ -1315,7 +1372,7 @@
+@@ -1315,7 +1376,7 @@
          Item.itemsList[stoneDoubleSlab.blockID] = (new ItemSlab(stoneDoubleSlab.blockID - 256, stoneSingleSlab, stoneDoubleSlab, true)).setUnlocalizedName("stoneSlab");
          Item.itemsList[woodSingleSlab.blockID] = (new ItemSlab(woodSingleSlab.blockID - 256, woodSingleSlab, woodDoubleSlab, false)).setUnlocalizedName("woodSlab");
          Item.itemsList[woodDoubleSlab.blockID] = (new ItemSlab(woodDoubleSlab.blockID - 256, woodSingleSlab, woodDoubleSlab, true)).setUnlocalizedName("woodSlab");
 -        Item.itemsList[sapling.blockID] = (new ItemMultiTextureTile(sapling.blockID - 256, sapling, BlockSapling.WOOD_TYPES)).setUnlocalizedName("sapling");
-+		Item.itemsList[sapling.blockID] = (new ItemMultiTextureTile(sapling.blockID - 256, sapling, FCBlockSapling.SAPLING_TYPES)).setUnlocalizedName("sapling");
++		Item.itemsList[sapling.blockID] = (new ItemMultiTextureTile(sapling.blockID - 256, sapling, FCBlockSaplingLegacy.SAPLING_TYPES)).setUnlocalizedName("sapling");
          Item.itemsList[leaves.blockID] = (new ItemLeaves(leaves.blockID - 256)).setUnlocalizedName("leaves");
          Item.itemsList[vine.blockID] = new ItemColored(vine.blockID - 256, false);
          Item.itemsList[tallGrass.blockID] = (new ItemColored(tallGrass.blockID - 256, true)).setBlockNames(new String[] {"shrub", "grass", "fern"});
-@@ -1336,8 +1393,12 @@
+@@ -1336,8 +1397,12 @@
                      blocksList[var0].initializeBlock();
                  }
  
@@ -791,7 +801,7 @@
                  if (var0 > 0 && blocksList[var0].getRenderType() == 10)
                  {
                      var1 = true;
-@@ -1364,10 +1425,2409 @@
+@@ -1364,10 +1429,2396 @@
                  }
  
                  useNeighborBrightness[var0] = var1;
@@ -1204,6 +1214,12 @@
 +			{
 +				dropBlockAsItemWithChance( world, i, j, k, iMetadata, fChance, 0 );
 +			}
++		}
++	}
++	
++	public void dropItemsOnDestroyedByMiningCharge(World world, int x, int y, int z, int metadata) {
++		if (!world.isRemote) {
++			dropBlockAsItem(world, x, y, z, metadata, 0);
 +		}
 +	}
 +
@@ -1653,75 +1669,48 @@
 +		return blockMaterial.isSolid();
 +	}
 +
-+	//------------- Stonecutter related functionality ------------//
-+	// Only called by New Age Automation addon
-+	// Can be used by other addons to interface
-+
-+	public void setItemIDDroppedOnStonecutter(int id) {
-+		this.idDroppedOnStonecut = id;
++	//------------- silverfish related functionality ------------//
++	
++	public int getBlockIDOnInfest(EntityLiving entity, int metadata)
++	{
++		return FCBetterThanWolves.fcBlockSilverfishStone.blockID;
 +	}
-+
-+	public void setItemCountDroppedOnStonecutter(int count) {
-+		this.countDroppedOnStonecut = count;
-+	}
-+
-+	public void setItemDamageDroppedOnStonecutter(int meta) {
-+		this.metaDroppedOnStonecut = meta;
-+	}
-+
-+	public int getItemIDDroppedOnStonecutter(World world, int x, int y, int z) {
-+		return this.idDroppedOnStonecut;
-+	}
-+
-+	public int getItemCountDroppedOnStonecutter(World world, int x, int y, int z) {
-+		return this.countDroppedOnStonecut;
-+	}
-+
-+	public int getItemDamageDroppedOnStonecutter(World world, int x, int y, int z)  {
-+		return this.metaDroppedOnStonecut;
-+	}
-+
-+	public boolean doesBlockDropAsItemOnStonecutter(World world, int x, int y, int z)  {
-+		return this.blockMaterial.isSolid();
-+	}
-+
-+	public boolean doesBlockBreakStonecutter(World world, int x, int y, int z) {
-+		return this.blockMaterial.isSolid() && this.blockMaterial != Material.rock && this.blockMaterial != Material.snow && this.blockMaterial != Material.craftedSnow && this.blockMaterial != FCBetterThanWolves.fcMaterialAsh && this.blockMaterial != FCBetterThanWolves.fcMaterialNetherRock;
-+	}
-+
-+	public boolean onBlockStonecut(World world, int x, int y, int z, int stonecutterX, int stonecutterY, int stonecutterZ) {
-+		return this.onBlockStonecut(world, x, y, z);
-+	}
-+
++	
 +	/**
-+	 * Override this method to provide finer control over stonecutter behavior.
-+	 * @param world
-+	 * @param x
-+	 * @param y
-+	 * @param z
++	 * handles all things that happen on infestation, including what should happen to the infector
++	 */
++	public void onInfested(World world, EntityLiving entity, int x, int y, int z, int metadata)
++	{
++		infestBlock(world, entity, x, y, z, metadata);
++		entity.spawnExplosionParticle();
++		entity.setDead();
++	}
++	
++	/**
++	 * Basically set block but uses entity and metadata to pick blockID
++	 */
++	public void infestBlock(World world, EntityLiving entity, int x, int y, int z, int metadata)
++	{
++		world.setBlock(x, y, z, getBlockIDOnInfest(entity, metadata), 0, 3);
++	}
++	
++	/**
++	 * If this block is infested by linked entity, used by silverfish
++	 */
++	public boolean isBlockInfestedBy(EntityLiving entity)
++	{
++		return false;
++	}
++	
++	/**
++	 *
++	 * @param entity for having hook for other infesting mobs
++	 * @param metadata for having single blockID be infestable depending on metadata
 +	 * @return
 +	 */
-+	public boolean onBlockStonecut(World world, int x, int y, int z){
-+		int id = this.getItemIDDroppedOnStonecutter(world, x, y, z);
-+
-+		if (id >= 0) {
-+			int count = this.getItemCountDroppedOnStonecutter(world, x, y, z);
-+			int meta = this.getItemDamageDroppedOnStonecutter(world, x, y, z);
-+
-+			for (int i = 0; i < count; i++) {
-+				FCUtilsItem.EjectSingleItemWithRandomOffset(world, x, y, z, id, meta);
-+			}
-+		}
-+		else {
-+			if (!this.doesBlockDropAsItemOnStonecutter(world, x, y, z)) {
-+				return false;
-+			}
-+
-+			this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
-+		}
-+
-+		world.setBlockToAir(x, y, z);
-+		return true;
++	public boolean isBlockInfestable(EntityLiving entity, int metadata)
++	{
++		return false;
 +	}
 +
 +	//------------- Mechanical power related functionality ------------//
@@ -2956,6 +2945,14 @@
 +    public int getLightValue(IBlockAccess blockAccess, int x, int y, int z) {
 +    	return lightValue[this.blockID];
 +    }
++    
++    //------ Mob spawner conversion functionality ------//
++    
++    public boolean canBeCovertedByMobSpawner(World world, int x, int y, int z) {
++    	return false;
++    }
++    
++    public void convertBlockFromMobSpawner(World world, int x, int y, int z) {}
 +	
 +	//----------------- Integrity Test ----------------//
 +

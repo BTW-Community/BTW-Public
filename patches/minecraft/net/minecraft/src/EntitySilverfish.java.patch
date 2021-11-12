@@ -1,23 +1,46 @@
 --- a/minecraft/net/minecraft/src/EntitySilverfish.java
 +++ b/minecraft/net/minecraft/src/EntitySilverfish.java
-@@ -177,7 +177,16 @@
+@@ -150,10 +150,10 @@
+                             {
+                                 int var8 = this.worldObj.getBlockId(var1 + var6, var2 + var5, var3 + var7);
  
-                 if (BlockSilverfish.getPosingIdByMetadata(var5))
+-                                if (var8 == Block.silverfish.blockID)
++                                if (var8 !=0 && Block.blocksList[var8].isBlockInfestedBy(this))
+                                 {
+                                     this.worldObj.destroyBlock(var1 + var6, var2 + var5, var3 + var7, false);
+-                                    Block.silverfish.onBlockDestroyedByPlayer(this.worldObj, var1 + var6, var2 + var5, var3 + var7, 0);
++                                    Block.blocksList[var8].onBlockDestroyedByPlayer(this.worldObj, var1 + var6, var2 + var5, var3 + var7, 0);
+ 
+                                     if (this.rand.nextBoolean())
+                                     {
+@@ -175,17 +175,22 @@
+                 int var9 = this.rand.nextInt(6);
+                 var5 = this.worldObj.getBlockId(var1 + Facing.offsetsXForSide[var9], var2 + Facing.offsetsYForSide[var9], var3 + Facing.offsetsZForSide[var9]);
+ 
+-                if (BlockSilverfish.getPosingIdByMetadata(var5))
++                if (var5 !=0)
                  {
-+                	// FCMOD: Code change
-+                	/*
-                     this.worldObj.setBlock(var1 + Facing.offsetsXForSide[var9], var2 + Facing.offsetsYForSide[var9], var3 + Facing.offsetsZForSide[var9], Block.silverfish.blockID, BlockSilverfish.getMetadataForBlockType(var5), 3);
-+                    */
-+                	int iNewBlockMetadata = FCBlockSilverfish.GetMetadataConversionOnInfest( var5, 
-+                		worldObj.getBlockMetadata( var1 + Facing.offsetsXForSide[var9], var2 + Facing.offsetsYForSide[var9], var3 + Facing.offsetsZForSide[var9] ) );
-+                	
-+                    worldObj.setBlock(var1 + Facing.offsetsXForSide[var9], var2 + Facing.offsetsYForSide[var9], var3 + Facing.offsetsZForSide[var9], 
-+                    	Block.silverfish.blockID, iNewBlockMetadata, 3);
-+                	// END FCMOD
-                     this.spawnExplosionParticle();
-                     this.setDead();
+-                    this.worldObj.setBlock(var1 + Facing.offsetsXForSide[var9], var2 + Facing.offsetsYForSide[var9], var3 + Facing.offsetsZForSide[var9], Block.silverfish.blockID, BlockSilverfish.getMetadataForBlockType(var5), 3);
+-                    this.spawnExplosionParticle();
+-                    this.setDead();
++                	int infestmetadata = worldObj.getBlockMetadata( var1 + Facing.offsetsXForSide[var9], var2 + Facing.offsetsYForSide[var9], var3 + Facing.offsetsZForSide[var9]);
++
++                	if (Block.blocksList[var5].isBlockInfestable(this, infestmetadata))
++                	{
++                		Block.blocksList[var5].onInfested(worldObj, this, 
++                				var1 + Facing.offsetsXForSide[var9], var2 + Facing.offsetsYForSide[var9], var3 + Facing.offsetsZForSide[var9],
++                				infestmetadata);
                  }
-@@ -241,4 +250,34 @@
+                 else
+                 {
+                     this.updateWanderPath();
+                 }
+             }
++            }
+             else if (this.entityToAttack != null && !this.hasPath())
+             {
+                 this.entityToAttack = null;
+@@ -241,4 +246,34 @@
      {
          return EnumCreatureAttribute.ARTHROPOD;
      }

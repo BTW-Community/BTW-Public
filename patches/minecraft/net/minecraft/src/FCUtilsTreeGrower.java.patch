@@ -1,0 +1,35 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCUtilsTreeGrower.java
+@@ -0,0 +1,31 @@
++package net.minecraft.src;
++
++import java.util.Random;
++
++public abstract class FCUtilsTreeGrower {
++	/**
++	 * Grow a tree at the specified location
++	 * @param world
++	 * @param rand
++	 * @param x
++	 * @param y
++	 * @param z
++	 * @param causeUpdates Whether block updates should be triggered when growing the tree. This should be true when grown from a sapling 
++	 * and false when generated at world gen
++	 * @return
++	 */
++	public abstract boolean growTree(World world, Random rand, int x, int y, int z, boolean isWorldGen);
++	
++	protected void setBlock(World world, int x, int y, int z, int id, boolean notify) {
++        this.setBlockAndMetadata(world, x, y, z, id, 0, notify);
++    }
++	
++    protected void setBlockAndMetadata(World world, int x, int y, int z, int id, int meta, boolean notify) {
++        if (notify) {
++            world.setBlock(x, y, z, id, meta, 3);
++        }
++        else {
++            world.setBlock(x, y, z, id, meta, 2);
++        }
++    }
++}
+\ No newline at end of file

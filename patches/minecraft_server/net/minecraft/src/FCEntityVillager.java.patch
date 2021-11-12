@@ -652,7 +652,7 @@
 +			}
 +
 +			//Level up trades
-+			for (int i = 1; i <= 5; i++) {
++			for (int i = 1; i < 5; i++) {
 +				WeightedMerchantEntry entry = levelUpTradeByProfessionList.get(this.getProfessionFromClass()).get(i);
 +
 +				if (entry.matchesMerchantRecipe(trade)) {
@@ -889,7 +889,7 @@
 +		}
 +
 +		//Level up trades
-+		for (int i = 1; i <= 5; i++) {
++		for (int i = 1; i < 5; i++) {
 +			WeightedMerchantEntry entry = levelUpTradeByProfessionList.get(profession).get(i);
 +
 +			if (entry.equals(entryToRemove)) {

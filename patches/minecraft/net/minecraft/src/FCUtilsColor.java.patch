@@ -19,8 +19,8 @@
 +	PINK(9),
 +	LIME(10),
 +	YELLOW(11),
-+	MAGENTA(12),
-+	LIGHT_BLUE(13),
++	LIGHT_BLUE(12),
++	MAGENTA(13),
 +	ORANGE(14),
 +	WHITE(15);
 +	

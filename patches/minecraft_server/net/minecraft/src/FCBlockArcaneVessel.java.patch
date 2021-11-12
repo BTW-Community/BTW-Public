@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockArcaneVessel.java
-@@ -0,0 +1,117 @@
+@@ -0,0 +1,119 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -19,6 +19,8 @@
 +    	SetPicksEffectiveOn( true );
 +        
 +        setStepSound( soundMetalFootstep );
++        
++        setCreativeTab(CreativeTabs.tabRedstone);
 +        
 +        setUnlocalizedName( "fcBlockArcaneVessel" );        
 +    }

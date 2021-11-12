@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockCobblestone.java
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,66 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -33,7 +33,36 @@
 +	{
 +		return true;
 +	}
++
++	@Override
++	public boolean isBlockInfestable(EntityLiving entity, int metadata)
++	{
++		return (entity instanceof EntitySilverfish);
++	}
++
++	@Override
++	public int getBlockIDOnInfest(EntityLiving entity, int metadata)
++	{
++		return FCBetterThanWolves.fcBlockSilverfishCobblestone.blockID;
++	}
 +	
++	@Override
++	public void dropItemsOnDestroyedByMiningCharge(World world, int x, int y, int z, int metadata) {
++		if (!world.isRemote) {
++			dropBlockAsItem_do(world, x, y, z, new ItemStack(Block.gravel));
++		}
++	}
++    
++	@Override
++    public boolean canBeCovertedByMobSpawner(World world, int x, int y, int z) {
++    	return true;
++    }
++    
++	@Override
++    public void convertBlockFromMobSpawner(World world, int x, int y, int z) {
++		world.setBlockWithNotify(x, y, z, Block.cobblestoneMossy.blockID);
++	}
++
 +    //------------- Class Specific Methods ------------//    
 +    
 +	//----------- Client Side Functionality -----------//

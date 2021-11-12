@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCTileEntityMobSpawner.java
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,42 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -15,29 +15,26 @@
 +    }
 +
 +    @Override
-+    public void updateEntity()
-+    {    	
-+        if ( !worldObj.isRemote )
-+        {
++    public void updateEntity() {
++        if (!worldObj.isRemote) {
 +			// check for generation of mossy cobble
 +			
-+	    	if ( worldObj.rand.nextInt( 1200 ) == 0 ) // about once a minute
-+	    	{
-+	            if ( worldObj.checkChunksExist( xCoord - 4, yCoord - 1, zCoord - 4, xCoord + 4, yCoord + 4, zCoord + 4 ) )
-+	            {
-+		    		// generate a random co-ordinate around the spawner
++	    	if (worldObj.rand.nextInt(1200) == 0) { // about once a minute
++	            if (worldObj.checkChunksExist(xCoord - 4, yCoord - 1, zCoord - 4, xCoord + 4, yCoord + 4, zCoord + 4)) {
++		    		// generate a random coordinate around the spawner
++		    		int xOffset = worldObj.rand.nextInt(9);
++		    		int yOffset = worldObj.rand.nextInt(6);
++		    		int zOffset = worldObj.rand.nextInt(9);
 +		    		
-+		    		int iOffset = worldObj.rand.nextInt( 9 );
-+		    		int jOffset = worldObj.rand.nextInt( 6 );
-+		    		int kOffset = worldObj.rand.nextInt( 9 );
++		    		int x = xCoord - 4 + xOffset;
++		    		int y = yCoord - 1 + yOffset;
++		    		int z = zCoord - 4 + zOffset;
 +		    		
-+		    		int targetI = xCoord - 4 + iOffset;
-+		    		int targetJ = yCoord - 1 + jOffset;
-+		    		int targetK = zCoord - 4 + kOffset;
++		    		int targetBlockID = worldObj.getBlockId(x, y, z);
++		    		Block targetBlock = Block.blocksList[targetBlockID];
 +		    		
-+		    		if ( worldObj.getBlockId( targetI, targetJ, targetK ) == Block.cobblestone.blockID )
-+		    		{
-+		    			worldObj.setBlockWithNotify( targetI, targetJ, targetK, Block.cobblestoneMossy.blockID );
++		    		if (targetBlock != null && targetBlock.canBeCovertedByMobSpawner(worldObj, x, y, z)) {
++		    			targetBlock.convertBlockFromMobSpawner(worldObj, x, y, z);
 +		    		}
 +	            }
 +	    	}

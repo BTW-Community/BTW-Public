@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityWindMillVertical.java
-@@ -0,0 +1,635 @@
+@@ -0,0 +1,642 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -219,6 +219,13 @@
 +    	
 +        super.setDead();
 +    }
++	
++	@Override
++	public void onStruckByLightning(EntityLightningBolt par1EntityLightningBolt) {
++		if (this.worldObj.getGameRules().getGameRuleBooleanValue("doFireTick")) {
++			this.setDead();
++		}
++	}
 +    
 +    //------------- FCEntityMechPower ------------//
 +	
