@@ -27,6 +27,7 @@ The Community Edition team would like to express its gratitude to all the people
 - AnaRchX
 - Sockthing
 - cocona20xx
+- vgl266
 
 ## 🐺 What is Better Than Wolves?
 
