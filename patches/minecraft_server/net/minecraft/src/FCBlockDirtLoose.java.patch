@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockDirtLoose.java
-@@ -0,0 +1,128 @@
+@@ -0,0 +1,127 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -45,11 +45,10 @@
 +    	return false;
 +    }
 +    
-+	@Override
-+    public boolean SpreadGrassToBlock( World world, int i, int j, int k )
-+    {
-+        world.setBlockWithNotify( i, j, k, Block.grass.blockID );
-+        
++	public boolean SpreadGrassToBlock(World world, int x, int y, int z) {
++        world.setBlockWithNotify(x, y, z, Block.grass.blockID);
++        ((FCBlockGrass) Block.grass).setSparse(world, x, y, z);
++
 +    	return true;
 +    }
 +    
@@ -60,9 +59,9 @@
 +    }
 +    
 +	@Override
-+    public boolean SpreadMyceliumToBlock( World world, int i, int j, int k )
-+    {
-+        world.setBlockWithNotify( i, j, k, Block.mycelium.blockID );
++    public boolean SpreadMyceliumToBlock(World world, int x, int y, int z) {
++        world.setBlockWithNotify(x, y, z, Block.mycelium.blockID);
++        ((FCBlockMycelium) Block.mycelium).setSparse(world, x, y, z);
 +        
 +    	return true;
 +    }

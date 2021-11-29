@@ -1,0 +1,85 @@
+--- a/minecraft/net/minecraft/src/EntityClientPlayerMP.java
++++ b/minecraft/net/minecraft/src/EntityClientPlayerMP.java
+@@ -20,6 +20,9 @@
+     /** should the player stop sneaking? */
+     private boolean shouldStopSneaking = false;
+     private boolean wasSneaking = false;
++    
++    private boolean isUsingSpecial = false;
++    
+     private int field_71168_co = 0;
+ 
+     /** has the client player's health been set? */
+@@ -61,38 +64,52 @@
+      */
+     public void sendMotionUpdates()
+     {
+-        boolean var1 = this.isSprinting();
++    	int actionState = -1;
+ 
+-        if (var1 != this.wasSneaking)
+-        {
+-            if (var1)
+-            {
+-                this.sendQueue.addToSendQueue(new Packet19EntityAction(this, 4));
++        boolean sneaking = this.isSprinting();
++
++        if (sneaking != this.wasSneaking) {
++            if (sneaking) {
++                actionState = 4;
+             }
+-            else
+-            {
+-                this.sendQueue.addToSendQueue(new Packet19EntityAction(this, 5));
++            else {
++                actionState = 5;
+             }
+ 
+-            this.wasSneaking = var1;
++            this.wasSneaking = sneaking;
+         }
+ 
+-        boolean var2 = this.isSneaking();
++        boolean sprinting = this.isSneaking();
+ 
+-        if (var2 != this.shouldStopSneaking)
+-        {
+-            if (var2)
+-            {
+-                this.sendQueue.addToSendQueue(new Packet19EntityAction(this, 1));
++        if (sprinting != this.shouldStopSneaking) {
++            if (sprinting) {
++                actionState = 1;
+             }
+-            else
+-            {
+-                this.sendQueue.addToSendQueue(new Packet19EntityAction(this, 2));
++            else {
++                actionState = 2;
+             }
+ 
+-            this.shouldStopSneaking = var2;
++            this.shouldStopSneaking = sprinting;
+         }
+ 
++        boolean usingSpecial = this.isUsingSpecialKey();
++        
++        if (usingSpecial != this.isUsingSpecial) {
++        	if (actionState == -1) {
++        		actionState = 0;
++        	}
++        	
++        	if (usingSpecial) {
++        		actionState |= 8;
++        	}
++        	
++        	this.isUsingSpecial = usingSpecial;
++        }
++        
++        if (actionState != -1) {
++            this.sendQueue.addToSendQueue(new Packet19EntityAction(this, actionState));
++        }
++
+         double var3 = this.posX - this.oldPosX;
+         double var5 = this.boundingBox.minY - this.oldMinY;
+         double var7 = this.posZ - this.oldPosZ;

@@ -141,7 +141,19 @@
                                                          {
                                                              if (var22 == null)
                                                              {
-@@ -153,6 +201,10 @@
+@@ -145,7 +193,10 @@
+ 
+                                                             try
+                                                             {
+-                                                                var39 = (EntityLiving)var22.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {par0WorldServer});
++																Class entityClass = var22.entityClass;
++																entityClass = EntityList.getRegisteredReplacement(entityClass);
++																
++																var39 = (EntityLiving)entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {par0WorldServer});
+                                                             }
+                                                             catch (Exception var31)
+                                                             {
+@@ -153,6 +204,10 @@
                                                                  return var4;
                                                              }
  
@@ -152,7 +164,7 @@
                                                              var39.setLocationAndAngles((double)var24, (double)var25, (double)var26, par0WorldServer.rand.nextFloat() * 360.0F, 0.0F);
  
                                                              if (var39.getCanSpawnHere())
-@@ -194,6 +246,8 @@
+@@ -194,6 +249,8 @@
      /**
       * Returns whether or not the specified creature type can spawn at the specified location.
       */
@@ -161,7 +173,7 @@
      public static boolean canCreatureTypeSpawnAtLocation(EnumCreatureType par0EnumCreatureType, World par1World, int par2, int par3, int par4)
      {
          if (par0EnumCreatureType.getCreatureMaterial() == Material.water)
-@@ -210,6 +264,8 @@
+@@ -210,6 +267,8 @@
              return var5 != Block.bedrock.blockID && !par1World.isBlockNormalCube(par2, par3, par4) && !par1World.getBlockMaterial(par2, par3, par4).isLiquid() && !par1World.isBlockNormalCube(par2, par3 + 1, par4);
          }
      }
@@ -170,7 +182,7 @@
  
      /**
       * determines if a skeleton spawns on a spider, and if a sheep is a different color
-@@ -245,7 +301,7 @@
+@@ -245,7 +304,7 @@
                      {
                          int var17 = par0World.getTopSolidOrLiquidBlock(var10, var11);
  
@@ -179,7 +191,17 @@
                          {
                              float var18 = (float)var10 + 0.5F;
                              float var19 = (float)var17;
-@@ -262,6 +318,9 @@
+@@ -254,6 +313,9 @@
+ 
+                             try
+                             {
++								Class entityClass = var8.entityClass;
++								entityClass = EntityList.getRegisteredReplacement(entityClass);
++								
+                                 var21 = (EntityLiving)var8.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {par0World});
+                             }
+                             catch (Exception var23)
+@@ -262,6 +324,9 @@
                                  continue;
                              }
  
@@ -189,7 +211,7 @@
                              var21.setLocationAndAngles((double)var18, (double)var19, (double)var20, par6Random.nextFloat() * 360.0F, 0.0F);
                              par0World.spawnEntityInWorld(var21);
                              creatureSpecificInit(var21, par0World, var18, var19, var20);
-@@ -279,4 +338,138 @@
+@@ -279,4 +344,138 @@
              }
          }
      }

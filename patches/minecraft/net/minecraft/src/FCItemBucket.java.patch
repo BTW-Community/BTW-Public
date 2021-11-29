@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemBucket.java
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,56 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -24,8 +24,9 @@
 +    @Override
 +    public boolean onItemUse( ItemStack stack, EntityPlayer player, World world, int i, int j, int k, int iFacing, float fClickX, float fClickY, float fClickZ )
 +    {
-+    	if ( DoesContextOverridePlacingAsBlock( stack, player, world, i, j, k, iFacing, 
-+    		fClickX, fClickY, fClickZ ) )
++//    	if ( DoesContextOverridePlacingAsBlock( stack, player, world, i, j, k, iFacing, 
++//    		fClickX, fClickY, fClickZ ) )
++    	if(!player.isUsingSpecialKey())
 +		{
 +    		// override normal block place behavior so it goes to onItemRightClick()
 +    		

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockPistonBase.java
-@@ -0,0 +1,526 @@
+@@ -0,0 +1,531 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -372,7 +372,12 @@
 +    public int PreBlockPlacedBy( World world, int i, int j, int k, int iMetadata, 
 +    	EntityLiving entityBy ) 
 +    {
-+    	return determineOrientation( world, i, j, k, entityBy );    	
++		int facing = determineOrientation( world, i, j, k, entityBy );
++		if(entityBy.isUsingSpecialKey())
++		{
++			//facing = Facing.oppositeSide[facing];
++		}
++    	return facing;    	
 +    }
 +
 +	@Override

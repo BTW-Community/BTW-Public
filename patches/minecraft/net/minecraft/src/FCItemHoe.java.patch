@@ -45,13 +45,13 @@
 +    }
 +    
 +    @Override
-+    protected float GetVisualVerticalOffsetAsBlock()
++	public float GetVisualVerticalOffsetAsBlock()
 +    {
 +    	return 0.80F;
 +    }    
 +    
 +    @Override
-+    protected float GetBlockBoundingBoxHeight()
++	public float GetBlockBoundingBoxHeight()
 +    {
 +    	return 0.79F;
 +    }

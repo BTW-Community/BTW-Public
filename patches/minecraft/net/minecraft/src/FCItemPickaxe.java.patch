@@ -94,31 +94,31 @@
 +    }
 +    
 +    @Override
-+    protected float GetVisualVerticalOffsetAsBlock()
++	public float GetVisualVerticalOffsetAsBlock()
 +    {
 +    	return 0.72F;
 +    }
 +
 +    @Override
-+    protected float GetVisualHorizontalOffsetAsBlock()
++	public float GetVisualHorizontalOffsetAsBlock()
 +    {
 +    	return 0.35F;
 +    }
 +    
 +    @Override
-+    protected float GetVisualRollOffsetAsBlock()
++	public float GetVisualRollOffsetAsBlock()
 +    {
 +    	return 20F;
 +    }
 +    
 +    @Override
-+    protected float GetBlockBoundingBoxHeight()
++	public float GetBlockBoundingBoxHeight()
 +    {
 +    	return 0.65F;
 +    }
 +    
 +    @Override
-+    protected float GetBlockBoundingBoxWidth()
++	public float GetBlockBoundingBoxWidth()
 +    {
 +    	return 1F;
 +    }

@@ -465,10 +465,21 @@
          return this.capabilities.allowEdit ? true : (par5ItemStack != null ? par5ItemStack.func_82835_x() : false);
      }
  
-@@ -2183,4 +2374,1139 @@
+@@ -2183,4 +2374,1150 @@
      {
          return ScorePlayerTeam.func_96667_a(this.getTeam(), this.username);
      }
++    
++    private boolean usingSpecialKey = false;
++    
++    @Override
++    public boolean isUsingSpecialKey() {
++    	return this.usingSpecialKey;
+ }
++    
++    public void setUsingSpecialKey(boolean usingSpecialKey) {
++    	this.usingSpecialKey = usingSpecialKey;
++    }
 +
 +    // FCMOD: Added New
 +    public ChunkCoordinates m_HardcoreSpawnChunk;
@@ -509,7 +520,7 @@
 +	    if ( tag.hasKey( "fcTimeOfLastSpawnAssignment" ) )
 +	    {
 +	    	m_lTimeOfLastSpawnAssignment = tag.getLong( "fcTimeOfLastSpawnAssignment" );
- }
++	    }
 +	    
 +	    if ( tag.hasKey( "fcTimeOfLastDimensionSwitch" ) )
 +	    {

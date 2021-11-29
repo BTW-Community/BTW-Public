@@ -1972,7 +1972,16 @@
  
              var8 = true;
          }
-@@ -5827,112 +6168,129 @@
+@@ -5818,7 +6159,7 @@
+     /**
+      * Renders a standard cube block at the given coordinates, with a given color ratio.  Args: block, x, y, z, r, g, b
+      */
+-    public boolean renderStandardBlockWithColorMultiplier(Block par1Block, int par2, int par3, int par4, float par5, float par6, float par7)
++    public boolean renderStandardBlockWithColorMultiplier(Block block, int x, int y, int z, float red, float green, float blue)
+     {
+         this.enableAO = false;
+         Tessellator var8 = Tessellator.instance;
+@@ -5827,113 +6168,83 @@
          float var11 = 1.0F;
          float var12 = 0.8F;
          float var13 = 0.6F;
@@ -1980,9 +1989,9 @@
 -        float var15 = var11 * par6;
 -        float var16 = var11 * par7;
 -        float var17 = var10;
-+        float var10000 = var11 * par5;
-+        var10000 = var11 * par6;
-+        var10000 = var11 * par7;
++        float var10000 = var11 * red;
++        var10000 = var11 * green;
++        var10000 = var11 * blue;
          float var18 = var12;
          float var19 = var13;
 -        float var20 = var10;
@@ -1992,138 +2001,142 @@
          float var24 = var12;
          float var25 = var13;
  
-+        // FCMOD: Code removed
-+        /*
-         if (par1Block != Block.grass)
-+        */
-+        // END FCMOD
-         {
+-        if (par1Block != Block.grass)
+-        {
 -            var17 = var10 * par5;
-+        	var10000 = var10 * par5;
-             var18 = var12 * par5;
-             var19 = var13 * par5;
+-            var18 = var12 * par5;
+-            var19 = var13 * par5;
 -            var20 = var10 * par6;
-+            float var20 = var10 * par6;
-             var21 = var12 * par6;
-             var22 = var13 * par6;
+-            var21 = var12 * par6;
+-            var22 = var13 * par6;
 -            var23 = var10 * par7;
-+            float var23 = var10 * par7;
-             var24 = var12 * par7;
-             var25 = var13 * par7;
-         }
+-            var24 = var12 * par7;
+-            var25 = var13 * par7;
+-        }
++    	var10000 = var10 * red;
++        var18 = var12 * red;
++        var19 = var13 * red;
++        float var20 = var10 * green;
++        var21 = var12 * green;
++        var22 = var13 * green;
++        float var23 = var10 * blue;
++        var24 = var12 * blue;
++        var25 = var13 * blue;
  
-         int var26 = par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4);
+-        int var26 = par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4);
++        int var26 = block.getMixedBrightnessForBlock(this.blockAccess, x, y, z);
  
 -        if (this.renderAllFaces || par1Block.shouldSideBeRendered(this.blockAccess, par2, par3 - 1, par4, 0))
-+        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(par1Block, this.blockAccess, par2, par3 - 1, par4, 0))
++        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(block, this.blockAccess, x, y - 1, z, 0))
          {
-             var8.setBrightness(this.renderMinY > 0.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3 - 1, par4));
+-            var8.setBrightness(this.renderMinY > 0.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3 - 1, par4));
 -            var8.setColorOpaque_F(var17, var20, var23);
+-            this.renderFaceYNeg(par1Block, (double)par2, (double)par3, (double)par4, this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 0));
++            var8.setBrightness(this.renderMinY > 0.0D ? var26 : block.getMixedBrightnessForBlock(this.blockAccess, x, y - 1, z));
 +            var8.setColorOpaque_F(RenderBlocksUtils.getColorMultiplierRed(0), RenderBlocksUtils.getColorMultiplierGreen(0), RenderBlocksUtils.getColorMultiplierBlue(0));
-             this.renderFaceYNeg(par1Block, (double)par2, (double)par3, (double)par4, this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 0));
++            this.renderFaceYNeg(block, (double)x, (double)y, (double)z, this.getBlockIcon(block, this.blockAccess, x, y, z, 0));
              var9 = true;
          }
  
 -        if (this.renderAllFaces || par1Block.shouldSideBeRendered(this.blockAccess, par2, par3 + 1, par4, 1))
-+        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(par1Block, this.blockAccess, par2, par3 + 1, par4, 1))
++        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(block, this.blockAccess, x, y + 1, z, 1))
          {
-             var8.setBrightness(this.renderMaxY < 1.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3 + 1, par4));
+-            var8.setBrightness(this.renderMaxY < 1.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3 + 1, par4));
 -            var8.setColorOpaque_F(var14, var15, var16);
+-            this.renderFaceYPos(par1Block, (double)par2, (double)par3, (double)par4, this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 1));
++            var8.setBrightness(this.renderMaxY < 1.0D ? var26 : block.getMixedBrightnessForBlock(this.blockAccess, x, y + 1, z));
 +            var8.setColorOpaque_F(RenderBlocksUtils.getColorMultiplierRed(1), RenderBlocksUtils.getColorMultiplierGreen(1), RenderBlocksUtils.getColorMultiplierBlue(1));
-             this.renderFaceYPos(par1Block, (double)par2, (double)par3, (double)par4, this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 1));
++            this.renderFaceYPos(block, (double)x, (double)y, (double)z, this.getBlockIcon(block, this.blockAccess, x, y, z, 1));
              var9 = true;
          }
  
          Icon var28;
  
 -        if (this.renderAllFaces || par1Block.shouldSideBeRendered(this.blockAccess, par2, par3, par4 - 1, 2))
-+        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(par1Block, this.blockAccess, par2, par3, par4 - 1, 2))
++        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(block, this.blockAccess, x, y, z - 1, 2))
          {
-             var8.setBrightness(this.renderMinZ > 0.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4 - 1));
+-            var8.setBrightness(this.renderMinZ > 0.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4 - 1));
 -            var8.setColorOpaque_F(var18, var21, var24);
+-            var28 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 2);
+-            this.renderFaceZNeg(par1Block, (double)par2, (double)par3, (double)par4, var28);
++            var8.setBrightness(this.renderMinZ > 0.0D ? var26 : block.getMixedBrightnessForBlock(this.blockAccess, x, y, z - 1));
 +            var8.setColorOpaque_F(RenderBlocksUtils.getColorMultiplierRed(2), RenderBlocksUtils.getColorMultiplierGreen(2), RenderBlocksUtils.getColorMultiplierBlue(2));
-             var28 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 2);
-             this.renderFaceZNeg(par1Block, (double)par2, (double)par3, (double)par4, var28);
++            var28 = this.getBlockIcon(block, this.blockAccess, x, y, z, 2);
++            this.renderFaceZNeg(block, (double)x, (double)y, (double)z, var28);
  
-+            // FCMOD: Code removed
-+            /*
-             if (fancyGrass && var28.getIconName().equals("grass_side") && !this.hasOverrideBlockTexture())
-             {
-                 var8.setColorOpaque_F(var18 * par5, var21 * par6, var24 * par7);
-                 this.renderFaceZNeg(par1Block, (double)par2, (double)par3, (double)par4, BlockGrass.getIconSideOverlay());
-             }
-+            */
-+            // END FCMOD
- 
+-            if (fancyGrass && var28.getIconName().equals("grass_side") && !this.hasOverrideBlockTexture())
+-            {
+-                var8.setColorOpaque_F(var18 * par5, var21 * par6, var24 * par7);
+-                this.renderFaceZNeg(par1Block, (double)par2, (double)par3, (double)par4, BlockGrass.getIconSideOverlay());
+-            }
+-
              var9 = true;
          }
  
 -        if (this.renderAllFaces || par1Block.shouldSideBeRendered(this.blockAccess, par2, par3, par4 + 1, 3))
-+        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(par1Block, this.blockAccess, par2, par3, par4 + 1, 3))
++        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(block, this.blockAccess, x, y, z + 1, 3))
          {
-             var8.setBrightness(this.renderMaxZ < 1.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4 + 1));
+-            var8.setBrightness(this.renderMaxZ < 1.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4 + 1));
 -            var8.setColorOpaque_F(var18, var21, var24);
+-            var28 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 3);
+-            this.renderFaceZPos(par1Block, (double)par2, (double)par3, (double)par4, var28);
++            var8.setBrightness(this.renderMaxZ < 1.0D ? var26 : block.getMixedBrightnessForBlock(this.blockAccess, x, y, z + 1));
 +            var8.setColorOpaque_F(RenderBlocksUtils.getColorMultiplierRed(3), RenderBlocksUtils.getColorMultiplierGreen(3), RenderBlocksUtils.getColorMultiplierBlue(3));
-             var28 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 3);
-             this.renderFaceZPos(par1Block, (double)par2, (double)par3, (double)par4, var28);
++            var28 = this.getBlockIcon(block, this.blockAccess, x, y, z, 3);
++            this.renderFaceZPos(block, (double)x, (double)y, (double)z, var28);
  
-+            // FCMOD: Code removed
-+            /*
-             if (fancyGrass && var28.getIconName().equals("grass_side") && !this.hasOverrideBlockTexture())
-             {
-                 var8.setColorOpaque_F(var18 * par5, var21 * par6, var24 * par7);
-                 this.renderFaceZPos(par1Block, (double)par2, (double)par3, (double)par4, BlockGrass.getIconSideOverlay());
-             }
-+            */
-+            // END FCMOD
- 
+-            if (fancyGrass && var28.getIconName().equals("grass_side") && !this.hasOverrideBlockTexture())
+-            {
+-                var8.setColorOpaque_F(var18 * par5, var21 * par6, var24 * par7);
+-                this.renderFaceZPos(par1Block, (double)par2, (double)par3, (double)par4, BlockGrass.getIconSideOverlay());
+-            }
+-
              var9 = true;
          }
  
 -        if (this.renderAllFaces || par1Block.shouldSideBeRendered(this.blockAccess, par2 - 1, par3, par4, 4))
-+        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(par1Block, this.blockAccess, par2 - 1, par3, par4, 4))
++        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(block, this.blockAccess, x - 1, y, z, 4))
          {
-             var8.setBrightness(this.renderMinX > 0.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2 - 1, par3, par4));
+-            var8.setBrightness(this.renderMinX > 0.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2 - 1, par3, par4));
 -            var8.setColorOpaque_F(var19, var22, var25);
+-            var28 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 4);
+-            this.renderFaceXNeg(par1Block, (double)par2, (double)par3, (double)par4, var28);
++            var8.setBrightness(this.renderMinX > 0.0D ? var26 : block.getMixedBrightnessForBlock(this.blockAccess, x - 1, y, z));
 +            var8.setColorOpaque_F(RenderBlocksUtils.getColorMultiplierRed(4), RenderBlocksUtils.getColorMultiplierGreen(4), RenderBlocksUtils.getColorMultiplierBlue(4));
-             var28 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 4);
-             this.renderFaceXNeg(par1Block, (double)par2, (double)par3, (double)par4, var28);
++            var28 = this.getBlockIcon(block, this.blockAccess, x, y, z, 4);
++            this.renderFaceXNeg(block, (double)x, (double)y, (double)z, var28);
  
-+            // FCMOD: Code removed
-+            /*
-             if (fancyGrass && var28.getIconName().equals("grass_side") && !this.hasOverrideBlockTexture())
-             {
-                 var8.setColorOpaque_F(var19 * par5, var22 * par6, var25 * par7);
-                 this.renderFaceXNeg(par1Block, (double)par2, (double)par3, (double)par4, BlockGrass.getIconSideOverlay());
-             }
-+            */
-+            // END FCMOD
- 
+-            if (fancyGrass && var28.getIconName().equals("grass_side") && !this.hasOverrideBlockTexture())
+-            {
+-                var8.setColorOpaque_F(var19 * par5, var22 * par6, var25 * par7);
+-                this.renderFaceXNeg(par1Block, (double)par2, (double)par3, (double)par4, BlockGrass.getIconSideOverlay());
+-            }
+-
              var9 = true;
          }
  
 -        if (this.renderAllFaces || par1Block.shouldSideBeRendered(this.blockAccess, par2 + 1, par3, par4, 5))
-+        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(par1Block, this.blockAccess, par2 + 1, par3, par4, 5))
++        if (this.renderAllFaces || RenderPass.shouldSideBeRendered(block, this.blockAccess, x + 1, y, z, 5))
          {
-             var8.setBrightness(this.renderMaxX < 1.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2 + 1, par3, par4));
+-            var8.setBrightness(this.renderMaxX < 1.0D ? var26 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2 + 1, par3, par4));
 -            var8.setColorOpaque_F(var19, var22, var25);
+-            var28 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 5);
+-            this.renderFaceXPos(par1Block, (double)par2, (double)par3, (double)par4, var28);
++            var8.setBrightness(this.renderMaxX < 1.0D ? var26 : block.getMixedBrightnessForBlock(this.blockAccess, x + 1, y, z));
 +            var8.setColorOpaque_F(RenderBlocksUtils.getColorMultiplierRed(5), RenderBlocksUtils.getColorMultiplierGreen(5), RenderBlocksUtils.getColorMultiplierBlue(5));
-             var28 = this.getBlockIcon(par1Block, this.blockAccess, par2, par3, par4, 5);
-             this.renderFaceXPos(par1Block, (double)par2, (double)par3, (double)par4, var28);
++            var28 = this.getBlockIcon(block, this.blockAccess, x, y, z, 5);
++            this.renderFaceXPos(block, (double)x, (double)y, (double)z, var28);
  
-+            // FCMOD: Code removed
-+            /*
-             if (fancyGrass && var28.getIconName().equals("grass_side") && !this.hasOverrideBlockTexture())
-             {
-                 var8.setColorOpaque_F(var19 * par5, var22 * par6, var25 * par7);
-                 this.renderFaceXPos(par1Block, (double)par2, (double)par3, (double)par4, BlockGrass.getIconSideOverlay());
-             }
-+            */
-+            // END FCMOD
- 
+-            if (fancyGrass && var28.getIconName().equals("grass_side") && !this.hasOverrideBlockTexture())
+-            {
+-                var8.setColorOpaque_F(var19 * par5, var22 * par6, var25 * par7);
+-                this.renderFaceXPos(par1Block, (double)par2, (double)par3, (double)par4, BlockGrass.getIconSideOverlay());
+-            }
+-
              var9 = true;
          }
-@@ -6129,6 +6487,8 @@
+ 
+@@ -6129,6 +6440,8 @@
          float var7 = (float)(var5 >> 8 & 255) / 255.0F;
          float var8 = (float)(var5 & 255) / 255.0F;
  
@@ -2132,7 +2145,7 @@
          if (EntityRenderer.anaglyphEnable)
          {
              float var9 = (var6 * 30.0F + var7 * 59.0F + var8 * 11.0F) / 100.0F;
-@@ -6138,6 +6498,8 @@
+@@ -6138,6 +6451,8 @@
              var7 = var10;
              var8 = var11;
          }
@@ -2141,7 +2154,7 @@
  
          return this.renderBlockCactusImpl(par1Block, par2, par3, par4, var6, var7, var8);
      }
-@@ -6168,7 +6530,7 @@
+@@ -6168,7 +6483,7 @@
          float var26 = 0.0625F;
          int var28 = par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4);
  
@@ -2150,7 +2163,7 @@
          {
              var8.setBrightness(this.renderMinY > 0.0D ? var28 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3 - 1, par4));
              var8.setColorOpaque_F(var14, var18, var22);
-@@ -6176,7 +6538,7 @@
+@@ -6176,7 +6491,7 @@
              var9 = true;
          }
  
@@ -2159,7 +2172,7 @@
          {
              var8.setBrightness(this.renderMaxY < 1.0D ? var28 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3 + 1, par4));
              var8.setColorOpaque_F(var15, var19, var23);
-@@ -6184,7 +6546,7 @@
+@@ -6184,7 +6499,7 @@
              var9 = true;
          }
  
@@ -2168,7 +2181,7 @@
          {
              var8.setBrightness(this.renderMinZ > 0.0D ? var28 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4 - 1));
              var8.setColorOpaque_F(var16, var20, var24);
-@@ -6194,7 +6556,7 @@
+@@ -6194,7 +6509,7 @@
              var9 = true;
          }
  
@@ -2177,7 +2190,7 @@
          {
              var8.setBrightness(this.renderMaxZ < 1.0D ? var28 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2, par3, par4 + 1));
              var8.setColorOpaque_F(var16, var20, var24);
-@@ -6204,7 +6566,7 @@
+@@ -6204,7 +6519,7 @@
              var9 = true;
          }
  
@@ -2186,7 +2199,7 @@
          {
              var8.setBrightness(this.renderMinX > 0.0D ? var28 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2 - 1, par3, par4));
              var8.setColorOpaque_F(var17, var21, var25);
-@@ -6214,7 +6576,7 @@
+@@ -6214,7 +6529,7 @@
              var9 = true;
          }
  
@@ -2195,7 +2208,7 @@
          {
              var8.setBrightness(this.renderMaxX < 1.0D ? var28 : par1Block.getMixedBrightnessForBlock(this.blockAccess, par2 + 1, par3, par4));
              var8.setColorOpaque_F(var17, var21, var25);
-@@ -6315,6 +6677,10 @@
+@@ -6315,6 +6630,10 @@
          boolean var10 = !var7 && !var8 && var5 && var6;
          boolean var11 = this.blockAccess.isAirBlock(par2, par3 + 1, par4);
  
@@ -2206,7 +2219,7 @@
          if ((var9 || var10) && var11)
          {
              if (var9)
-@@ -6457,8 +6823,8 @@
+@@ -6457,8 +6776,8 @@
  
          this.renderAllFaces = true;
          float var15;
@@ -2216,7 +2229,7 @@
          float var18;
  
          if (var8 != 3 && var8 != 1)
-@@ -6626,6 +6992,8 @@
+@@ -6626,6 +6945,8 @@
          float var9 = (float)(var7 >> 8 & 255) / 255.0F;
          float var10 = (float)(var7 & 255) / 255.0F;
  
@@ -2225,7 +2238,7 @@
          if (EntityRenderer.anaglyphEnable)
          {
              float var11 = (var8 * 30.0F + var9 * 59.0F + var10 * 11.0F) / 100.0F;
-@@ -6635,6 +7003,8 @@
+@@ -6635,6 +6956,8 @@
              var9 = var12;
              var10 = var13;
          }
@@ -2234,7 +2247,7 @@
  
          var5.setColorOpaque_F(var6 * var8, var6 * var9, var6 * var10);
          return this.renderBlockHopperMetadata(par1BlockHopper, par2, par3, par4, this.blockAccess.getBlockMetadata(par2, par3, par4), false);
-@@ -6651,27 +7021,27 @@
+@@ -6651,27 +6974,27 @@
          {
              var7.startDrawingQuads();
              var7.setNormal(0.0F, -1.0F, 0.0F);
@@ -2268,7 +2281,7 @@
              var7.draw();
          }
          else
-@@ -6690,6 +7060,8 @@
+@@ -6690,6 +7013,8 @@
              float var14 = (float)(var12 >> 8 & 255) / 255.0F;
              float var15 = (float)(var12 & 255) / 255.0F;
  
@@ -2277,7 +2290,7 @@
              if (EntityRenderer.anaglyphEnable)
              {
                  float var16 = (var13 * 30.0F + var14 * 59.0F + var15 * 11.0F) / 100.0F;
-@@ -6699,6 +7071,8 @@
+@@ -6699,6 +7024,8 @@
                  var14 = var17;
                  var15 = var18;
              }
@@ -2286,7 +2299,7 @@
  
              var7.setColorOpaque_F(var11 * var13, var11 * var14, var11 * var15);
          }
-@@ -7546,7 +7920,11 @@
+@@ -7546,7 +7873,11 @@
      /**
       * Is called to render the image of a block on an inventory, as a held item, or as a an item on the ground
       */
@@ -2298,7 +2311,7 @@
      {
          Tessellator var4 = Tessellator.instance;
          boolean var5 = par1Block.blockID == Block.grass.blockID;
-@@ -7593,7 +7971,9 @@
+@@ -7593,7 +7924,9 @@
              {
                  var4.startDrawingQuads();
                  var4.setNormal(0.0F, -1.0F, 0.0F);
@@ -2309,7 +2322,7 @@
                  this.renderBlockStemSmall(par1Block, par2, this.renderMaxY, -0.5D, -0.5D, -0.5D);
                  var4.draw();
              }
-@@ -7601,12 +7981,16 @@
+@@ -7601,12 +7934,16 @@
              {
                  var4.startDrawingQuads();
                  var4.setNormal(0.0F, -1.0F, 0.0F);
@@ -2328,7 +2341,7 @@
                  GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
                  var7 = 0.0625F;
                  var4.startDrawingQuads();
-@@ -7681,27 +8065,57 @@
+@@ -7681,27 +8018,57 @@
                      GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
                      var4.startDrawingQuads();
                      var4.setNormal(0.0F, -1.0F, 0.0F);
@@ -2386,7 +2399,7 @@
                      var4.draw();
                      GL11.glTranslatef(0.5F, 0.5F, 0.5F);
                  }
-@@ -8008,8 +8422,11 @@
+@@ -8008,8 +8375,11 @@
                  par2 = 1;
              }
  
@@ -2400,7 +2413,7 @@
              GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
              GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
              var4.startDrawingQuads();
-@@ -8059,24 +8476,29 @@
+@@ -8059,24 +8429,29 @@
      /**
       * Checks to see if the item's render type indicates that it should be rendered as a regular block or not.
       */
@@ -2433,7 +2446,7 @@
      }
  
      public Icon getBlockIcon(Block par1Block)
-@@ -8088,4 +8510,2469 @@
+@@ -8088,4 +8463,2469 @@
      {
          return par1Icon == null ? this.minecraftRB.renderEngine.getMissingIcon(0) : par1Icon;
      }

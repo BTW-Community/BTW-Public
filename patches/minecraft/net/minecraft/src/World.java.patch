@@ -632,7 +632,7 @@
      public void func_82739_e(int par1, int par2, int par3, int par4, int par5)
      {
          for (int var6 = 0; var6 < this.worldAccesses.size(); ++var6)
-@@ -4240,4 +4491,1148 @@
+@@ -4240,4 +4491,1205 @@
      {
          return this.worldLogAgent;
      }
@@ -1344,6 +1344,63 @@
 +        }
 +        else
 +        {
++            return 15;
++        }
++    }
++
++    public int getBlockLightValueNoSky(int x, int y, int z) {
++    	return getBlockLightValueNoSky_do(x, y, z, true);
++    }
++    
++    private int getBlockLightValueNoSky_do(int x, int y, int z, boolean considerNeighbors) {
++        if (x >= -30000000 && z >= -30000000 && x < 30000000 && z < 30000000) {
++            if (considerNeighbors) {
++                int blockID = this.getBlockId(x, y, z);
++
++                if (Block.useNeighborBrightness[blockID]) {
++                    int neighbor1 = this.getBlockLightValue_do(x, y + 1, z, false);
++                    int neighbor2 = this.getBlockLightValue_do(x + 1, y, z, false);
++                    int neighbor3 = this.getBlockLightValue_do(x - 1, y, z, false);
++                    int neighbor4 = this.getBlockLightValue_do(x, y, z + 1, false);
++                    int neighbor5 = this.getBlockLightValue_do(x, y, z - 1, false);
++
++                    if (neighbor2 > neighbor1) {
++                        neighbor1 = neighbor2;
++                    }
++
++                    if (neighbor3 > neighbor1) {
++                        neighbor1 = neighbor3;
++                    }
++
++                    if (neighbor4 > neighbor1) {
++                        neighbor1 = neighbor4;
++                    }
++
++                    if (neighbor5 > neighbor1) {
++                        neighbor1 = neighbor5;
++                    }
++
++                    return neighbor1;
++                }
++            }
++
++            if (y < 0) {
++                return 0;
++            }
++            else {
++                if (y >= 256) {
++                    y = 255;
++                }
++
++                Chunk chunk = this.getChunkFromChunkCoords(x >> 4, z >> 4);
++                
++                x &= 15;
++                z &= 15;
++                
++                return chunk.getBlockLightValueNoSky(x, y, z);
++            }
++        }
++        else {
 +            return 15;
 +        }
 +    }

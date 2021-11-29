@@ -67,7 +67,7 @@
 +		            {
 +		            	if ( convertToFullBlock( world, i, j, k ) )
 +		            	{		            		
-+			                world.playSoundEffect((float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, slabBlock.stepSound.getStepSound(), 
++			                world.playSoundEffect((float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, slabBlock.stepSound.getPlaceSound(), 
 +			                		( slabBlock.stepSound.getVolume() + 1.0F) / 2.0F, slabBlock.stepSound.getPitch() * 0.8F);
 +			            	
 +			                itemStack.stackSize--;

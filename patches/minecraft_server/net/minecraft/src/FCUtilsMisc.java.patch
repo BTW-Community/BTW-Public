@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCUtilsMisc.java
-@@ -0,0 +1,915 @@
+@@ -0,0 +1,922 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -21,13 +21,21 @@
 +		if ( pitch > 60.0F )
 +		{
 +			// looking down
-+			
++			//if(GuiScreen.isSpecialKeyDown())
++			//{
++			//	return 0;
++			//}
++			//else
 +			return 1;			
 +		}
 +		else if ( pitch < -60.0F )
 +		{
 +			// looking up
-+
++			//if(GuiScreen.isSpecialKeyDown())
++			//{
++			//	return 1;
++			//}
++			//else
 +			return 0;
 +		}
 +		else
@@ -58,7 +66,7 @@
 +	    {
 +			iFacing = 4;			
 +	    }
-+		
++	    
 +		return iFacing;
 +    }
 +    
@@ -84,7 +92,6 @@
 +	    {
 +			iFacing = 5;			
 +	    }
-+		
 +		return iFacing;
 +    }
 +    

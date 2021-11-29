@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockCactus.java
-@@ -0,0 +1,112 @@
+@@ -0,0 +1,111 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -35,16 +35,15 @@
 +    }
 +    
 +    @Override
-+    public boolean canPlaceBlockAt( World world, int i, int j, int k )
-+    {
++    public boolean canPlaceBlockAt(World world, int x, int y, int z) {
 +    	// only allow replanting onto planters
 +    	
-+    	if ( super.canPlaceBlockAt( world, i, j, k ) )
-+    	{
-+    		int iBlockBelowID = world.getBlockId( i, j - 1, k );
++    	if (super.canPlaceBlockAt(world, x, y, z)) {
++    		int blockBelowID = world.getBlockId(x, y - 1, z);
 +    		
-+    		return iBlockBelowID == FCBetterThanWolves.fcPlanter.blockID ||
-+    			iBlockBelowID == FCBetterThanWolves.fcBlockPlanterSoil.blockID;
++    		return blockBelowID == FCBetterThanWolves.fcPlanter.blockID ||
++    			blockBelowID == FCBetterThanWolves.fcBlockPlanterSoil.blockID ||
++    			blockBelowID == this.blockID;
 +    	}
 +    	
 +    	return false;

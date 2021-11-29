@@ -45,26 +45,26 @@
 +    }
 +    
 +	@Override
-+    public boolean SpreadGrassToBlock( World world, int i, int j, int k )
-+    {
-+		world.setBlockAndMetadataWithNotify( i, j, k, FCBetterThanWolves.fcBlockDirtSlab.blockID, ( FCBlockDirtSlab.m_iSubtypeGrass ) << 1 );
-+        
-+    	return true;
-+    }
++	public boolean SpreadGrassToBlock(World world, int x, int y, int z) {
++		world.setBlockWithNotify(x, y, z, FCBetterThanWolves.fcBlockGrassSlab.blockID);
++		FCBetterThanWolves.fcBlockGrassSlab.setSparse(world, x, y, z);
++
++		return true;
++	}
 +    
 +	@Override
 +    public boolean GetCanMyceliumSpreadToBlock( World world, int i, int j, int k )
 +    {
 +    	return true;
 +    }
-+    
++
 +	@Override
-+    public boolean SpreadMyceliumToBlock( World world, int i, int j, int k )
-+    {
-+        world.setBlockWithNotify( i, j, k, FCBetterThanWolves.fcBlockMyceliumSlab.blockID );
-+        
-+    	return true;
-+    }
++	public boolean SpreadMyceliumToBlock(World world, int x, int y, int z) {
++		world.setBlockWithNotify(x, y, z, FCBetterThanWolves.fcBlockMyceliumSlab.blockID);
++		FCBetterThanWolves.fcBlockMyceliumSlab.setSparse(world, x, y, z);
++
++		return true;
++	}
 +    
 +	@Override
 +	public int GetCombinedBlockID( int iMetadata )

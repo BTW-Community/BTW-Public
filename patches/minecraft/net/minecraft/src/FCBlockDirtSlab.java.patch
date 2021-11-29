@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockDirtSlab.java
-@@ -0,0 +1,567 @@
+@@ -0,0 +1,563 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -32,7 +32,7 @@
 +
 +		setUnlocalizedName( "fcBlockSlabDirt" );
 +
-+		setTickRandomly( true );        
++		setTickRandomly( true );
 +
 +		setCreativeTab( CreativeTabs.tabBlock );        
 +	}
@@ -44,22 +44,8 @@
 +
 +		if ( iSubType == m_iSubtypeGrass )
 +		{
-+			int iBlockAboveMaxNaturalLight = world.GetBlockNaturalLightValueMaximum( i, j + 1, k );
-+			int iBlockAboveCurrentNaturalLight = iBlockAboveMaxNaturalLight - world.skylightSubtracted;
-+
-+			boolean bIsUpsideDown = GetIsUpsideDown( world, i, j, k );
-+			int iBlockAboveID = world.getBlockId( i, j + 1, k );
-+			Block blockAbove = Block.blocksList[iBlockAboveID];            
-+
-+			if ( ( blockAbove != null && !blockAbove.GetCanGrassGrowUnderBlock( world, i, j + 1, k, !bIsUpsideDown ) ) || 
-+					iBlockAboveMaxNaturalLight < FCBlockGrass.m_iGrassSurviveMinimumLightLevel || Block.lightOpacity[world.getBlockId( i, j + 1, k )] > 2 )
-+			{
-+				SetSubtype( world, i, j, k, m_iSubtypeDirt );
-+			}
-+			else if ( iBlockAboveCurrentNaturalLight >= FCBlockGrass.m_iGrassSpreadFromLightLevel )
-+			{
-+				FCBlockGrass.CheckForGrassSpreadFromLocation( world, i, j, k );
-+			}
++			world.setBlock(i, j, k, FCBetterThanWolves.fcBlockGrassSlab.blockID);
++			FCBetterThanWolves.fcBlockGrassSlab.updateTick(world, i, j, k, rand);
 +		}
 +	}
 +
@@ -154,9 +140,12 @@
 +	}
 +
 +	@Override
-+	public boolean SpreadGrassToBlock( World world, int i, int j, int k )
-+	{
-+		SetSubtype( world, i, j, k, m_iSubtypeGrass );
++	public boolean SpreadGrassToBlock(World world, int x, int y, int z) {
++		boolean isUpsideDown = GetIsUpsideDown(world, x, y, z);
++		
++		world.setBlockWithNotify(x, y, z, FCBetterThanWolves.fcBlockGrassSlab.blockID);
++		FCBetterThanWolves.fcBlockGrassSlab.setSparse(world, x, y, z);
++		FCBetterThanWolves.fcBlockGrassSlab.SetIsUpsideDown(world, x, y, z, isUpsideDown);
 +
 +		return true;
 +	}
@@ -176,11 +165,12 @@
 +	}
 +
 +	@Override
-+	public boolean SpreadMyceliumToBlock( World world, int i, int j, int k )
-+	{
-+		int iNewMetadata = ((FCBlockMyceliumSlab)FCBetterThanWolves.fcBlockMyceliumSlab).SetIsUpsideDown( 0, GetIsUpsideDown( world, i, j, k ) );
-+
-+		world.setBlockAndMetadataWithNotify( i, j, k, FCBetterThanWolves.fcBlockMyceliumSlab.blockID, iNewMetadata );
++	public boolean SpreadMyceliumToBlock(World world, int x, int y, int z) {
++		boolean isUpsideDown = GetIsUpsideDown(world, x, y, z);
++		
++		world.setBlockWithNotify(x, y, z, FCBetterThanWolves.fcBlockMyceliumSlab.blockID);
++		FCBetterThanWolves.fcBlockMyceliumSlab.setSparse(world, x, y, z);
++		FCBetterThanWolves.fcBlockMyceliumSlab.SetIsUpsideDown(world, x, y, z, isUpsideDown);
 +
 +		return true;
 +	}
@@ -202,15 +192,14 @@
 +
 +		return super.AttemptToCombineWithFallingEntity( world, i, j, k, entity );
 +	}
-+
++	
 +	@Override
-+	protected void OnAnchorBlockLost( World world, int i, int j, int k )
-+	{
++	protected void OnAnchorBlockLost(World world, int i, int j, int k) {
 +		if (this.GetSubtype(world.getBlockId(i, j, k)) != m_iSubtypePackedEarth) {
-+			world.setBlock(i, j, k, FCBetterThanWolves.fcBlockDirtLooseSlab.blockID, world.getBlockMetadata(i, j, k) & 8, 2);
++			world.setBlock(i, j, k, FCBetterThanWolves.fcBlockDirtLooseSlab.blockID, world.getBlockMetadata(i, j, k) & 3, 2);
 +		}
 +		else {
-+			DropComponentItemsOnBadBreak( world, i, j, k, world.getBlockMetadata( i, j, k ), 1F );
++			DropComponentItemsOnBadBreak(world, i, j, k, world.getBlockMetadata(i, j, k), 1F);
 +		}
 +	}
 +
@@ -253,9 +242,16 @@
 +	}
 +
 +	@Override
-+	protected ItemStack createStackedBlock( int iMetadata )
++	protected ItemStack createStackedBlock( int metadata )
 +	{
-+		return new ItemStack( blockID, 1, GetSubtype( iMetadata ) );
++		int subtype = GetSubtype(metadata);
++		
++		if (subtype == this.m_iSubtypeGrass) {
++			return new ItemStack(FCBetterThanWolves.fcBlockGrassSlab);
++		}
++		else {
++			return new ItemStack(blockID, 1, subtype);
++		}
 +	}
 +
 +	@Override
@@ -270,7 +266,8 @@
 +	{
 +		if ( !animal.GetDisruptsEarthOnGraze() )
 +		{
-+			SetSubtype( world, i, j, k, m_iSubtypeDirt );
++			world.setBlockWithNotify(i, j, k, FCBetterThanWolves.fcBlockGrassSlab.blockID);
++			FCBetterThanWolves.fcBlockGrassSlab.setSparse(world, i, j, k);
 +		}
 +		else
 +		{
@@ -487,7 +484,6 @@
 +	public void getSubBlocks( int iBlockID, CreativeTabs creativeTabs, List list )
 +	{
 +		list.add( new ItemStack( iBlockID, 1, m_iSubtypeDirt ) );
-+		list.add( new ItemStack( iBlockID, 1, m_iSubtypeGrass ) );
 +		list.add( new ItemStack( iBlockID, 1, m_iSubtypePackedEarth ) );
 +	}
 +
@@ -516,7 +512,7 @@
 +			else
 +			{
 +				return renderer.renderGrassBlockWithColorMultiplier( this, i, j, k, fRed, fGreen, fBlue, GetSideOverlayTexture( blockAccess, i, j, k ) );
-+			}        	
++			}
 +		}
 +		else
 +		{

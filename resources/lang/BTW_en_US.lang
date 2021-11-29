@@ -13,7 +13,6 @@ tile.fcBlockBloodWood.name=Blood Wood
 tile.fcBlockMiningCharge.name=Mining Charge
 tile.fcBlockBuddyBlock.name=Buddy Block
 tile.fcBlockKiln.name=Kiln
-tile.fcBlockWoolSlab.name=Wool Slab
 tile.fcBlockAnvil.name=Soulforge
 tile.fcBlockLightBlock.name=Light Block
 tile.fcBlockHibachi.name=Hibachi
@@ -112,6 +111,16 @@ tile.fcBlockGrate.name=Grate
 tile.fcBlockSlats.name=Slats
 tile.fcBlockFarmlandNew.name=Farmland
 tile.fcBlockPlanterSoil.name=Planter With Soil
+tile.fcBlockSilverfishStone.name=Infested Stone
+tile.fcBlockSilverfishStone2.name=Infested Stone
+tile.fcBlockSilverfishStone3.name=Infested Stone
+tile.fcBlockSilverfishCobblestone.name=Infested Cobblestone
+tile.fcBlockSilverfishStoneBrick.name=Infested Stone Bricks
+tile.fcBlockSilverfishStoneBrickMossy.name=Infested Mossy Stone Bricks
+tile.fcBlockSilverfishStoneCracked.name=Infested Cracked Stone Bricks
+tile.fcBlockSilverfishStoneChiseled.name=Infested Chiseled Stone Bricks
+tile.fcBlockClay.name=Clay Ore
+tile.fcBlockGrassSlab.name=Grass Slab
 
 # BTW Complex Blocks
 
@@ -279,23 +288,19 @@ tile.fcBlockAestheticOpaqueEarth.blight3.name=Mature Blight
 tile.fcBlockAestheticOpaqueEarth.packed.name=Packed Earth
 tile.fcBlockAestheticOpaqueEarth.dung.name=Block of Dung
 tile.fcBlockSlabDirt.name=Dirt Slab
-tile.fcBlockSlabDirt.grass.name=Grass Slab
+tile.fcBlockSlabDirt.grass.name=Old Grass Slab
 tile.fcBlockSlabDirt.packed.name=Packed Earth Slab
 tile.fcBlockSlabFalling.name=Gravel Slab
 tile.fcBlockSlabFalling.sand.name=Sand Slab
-
-tile.fcBlockClay.name=Clay Ore
 
 # Vanilla Blocks Renamed
 
 tile.tnt.name=Powder Keg
 tile.mushroom.name=Old Mushroom
-tile.mushroom.name=Old Mushroom
 tile.anvil.intact.name=Dead Weight
 tile.anvil.slightlyDamaged.name=Dead Weight
 tile.anvil.veryDamaged.name=Dead Weight
 tile.stairsQuartz.name=Black Stone Stairs
-tile.stoneSlab.quartz.name=Black Stone Slab
 tile.stoneSlab.quartz.name=Black Stone Slab
 tile.quartzBlock.default.name=Black Stone
 tile.quartzBlock.chiseled.name=Chiseled Black Stone
@@ -552,3 +557,6 @@ entity.addonVillagerBlacksmith.name=Blacksmith
 entity.addonVillagerButcher.name=Butcher
 entity.addonVillagerLibrarian.name=Librarian
 entity.addonVillagerPriest.name=Priest
+
+# KeyBindings
+key.special=Alternative Use

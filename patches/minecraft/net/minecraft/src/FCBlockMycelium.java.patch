@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockMycelium.java
-@@ -0,0 +1,243 @@
+@@ -0,0 +1,246 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -9,239 +9,242 @@
 +
 +import com.prupe.mcpatcher.mal.block.RenderBlocksUtils;
 +
-+public class FCBlockMycelium extends BlockMycelium
-+{
-+    public static final int m_iMyceliumSurviveMinimumLightLevel = 4;
-+    public static final int m_iMyceliumSpreadToMinimumLightLevel = 4;
-+	
-+    protected FCBlockMycelium( int iBlockID )
-+    {
-+        super( iBlockID );
++public class FCBlockMycelium extends BlockMycelium {
++    protected FCBlockMycelium(int blockID) {
++        super(blockID);
 +        
-+        setHardness( 0.6F );
++        setHardness(0.6F);
 +        SetShovelsEffectiveOn();
 +    	SetHoesEffectiveOn();
 +        
-+        setStepSound( soundGrassFootstep );
++        setStepSound(soundGrassFootstep);
 +        
-+        setUnlocalizedName( "mycel" );        
++        setUnlocalizedName("mycel");
 +    }
 +
-+    @Override
-+    public void updateTick( World world, int i, int j, int k, Random rand )
-+    {
-+    	int iBlockAboveID = world.getBlockId( i, j + 1, k );
-+    	Block blockAbove = Block.blocksList[iBlockAboveID];
-+    	
-+        if ( world.getBlockLightValue( i, j + 1, k ) < m_iMyceliumSurviveMinimumLightLevel || 
-+        	Block.lightOpacity[iBlockAboveID] > 2 ||
-+        	( blockAbove != null && blockAbove.HasLargeCenterHardPointToFacing( world, i, j + 1, k, 0 ) ) )
-+        	
-+        {
-+            world.setBlockWithNotify( i, j, k, Block.dirt.blockID );
-+        }
-+    	else
-+    	{
-+        	CheckForMyceliumSpreadFromLocation( world, i, j, k );
-+    	}
-+    }    
++	@Override
++	public void updateTick(World world, int x, int y, int z, Random rand) {
++		if (!canMyceliumSurviveAtLocation(world, x, y, z)) {
++			// convert back to dirt in low light
++			world.setBlockWithNotify(x, y, z, Block.dirt.blockID);
++		}
++		else {
++			checkForMyceliumSpreadFromLocation(world, x, y, z);
++
++			if (isSparse(world, x, y, z) && rand.nextInt(4) == 0) {
++				this.setFullyGrown(world, x, y, z);
++			}
++		}
++	}
 +    
 +    @Override
-+    public int idDropped( int iMetadata, Random rand, int iFortuneModifier )
-+    {
++    public int idDropped(int metadata, Random rand, int fortuneModifier) {
 +        return FCBetterThanWolves.fcBlockDirtLoose.blockID;
 +    }
 +    
 +	@Override
-+	public boolean DropComponentItemsOnBadBreak( World world, int i, int j, int k, int iMetadata, float fChanceOfDrop )
-+	{
-+		DropItemsIndividualy( world, i, j, k, FCBetterThanWolves.fcItemPileDirt.itemID, 6, 0, fChanceOfDrop );
-+		
++	public boolean DropComponentItemsOnBadBreak(World world, int x, int y, int z, int metadata, float chanceOfDrop) {
++		DropItemsIndividualy(world, x, y, z, FCBetterThanWolves.fcItemPileDirt.itemID, 6, 0, chanceOfDrop);
 +		return true;
 +	}
 +	
 +    @Override
-+    public void OnBlockDestroyedWithImproperTool( World world, EntityPlayer player, int i, int j, int k, int iMetadata )
-+    {
-+    	super.OnBlockDestroyedWithImproperTool( world, player, i, j, k, iMetadata );
++    public void OnBlockDestroyedWithImproperTool(World world, EntityPlayer player, int x, int y, int z, int metadata) {
++    	super.OnBlockDestroyedWithImproperTool(world, player, x, y, z, metadata);
 +    	
-+    	OnDirtDugWithImproperTool( world, i, j, k );    	
++    	OnDirtDugWithImproperTool(world, x, y, z);
 +    }
 +    
 +	@Override
-+    public void onBlockDestroyedByExplosion( World world, int i, int j, int k, Explosion explosion )
-+    {
-+		super.onBlockDestroyedByExplosion( world, i, j, k, explosion );
++    public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion explosion) {
++		super.onBlockDestroyedByExplosion(world, x, y, z, explosion);
 +		
-+    	OnDirtDugWithImproperTool( world, i, j, k );    	
++    	OnDirtDugWithImproperTool(world, x, y, z);    	
 +    }
 +	
 +    @Override
-+    protected void OnNeighborDirtDugWithImproperTool( World world, int i, int j, int k, 
-+    	int iToFacing )
-+    {
++    protected void OnNeighborDirtDugWithImproperTool(World world, int x, int y, int z, int toFacing) {
 +    	// only disrupt grass/mycelium when block below is dug out
 +    	
-+		if ( iToFacing == 0 )
-+		{
-+			world.setBlockWithNotify( i, j, k, FCBetterThanWolves.fcBlockDirtLoose.blockID );
++		if (toFacing == 0) {
++			world.setBlockWithNotify(x, y, z, FCBetterThanWolves.fcBlockDirtLoose.blockID);
 +		}    		
 +    }
 +    
 +    @Override
-+    public boolean CanBePistonShoveled( World world, int i, int j, int k )
-+    {
++    public boolean CanBePistonShoveled(World world, int x, int y, int z) {
 +    	return true;
 +    }
 +    
 +    @Override
-+    public boolean CanMobsSpawnOn( World world, int i, int j, int k )
-+    {
++    public boolean CanMobsSpawnOn(World world, int x, int y, int z) {
 +    	return false;
 +    }
 +    
-+    @Override
-+    public boolean CanBeGrazedOn( IBlockAccess blockAccess, int i, int j, int k, 
-+    	EntityAnimal animal )
-+    {
-+    	return animal.CanGrazeMycelium();
-+    }
-+    
-+    @Override
-+    public void OnGrazed( World world, int i, int j, int k, EntityAnimal animal )
-+    {
-+        if ( !animal.GetDisruptsEarthOnGraze() )
-+        {
-+        	world.setBlockWithNotify( i, j, k, Block.dirt.blockID );
-+        }
-+        else
-+        {
-+        	world.setBlockWithNotify( i, j, k, FCBetterThanWolves.fcBlockDirtLoose.blockID );
-+        	
-+        	NotifyNeighborsBlockDisrupted( world, i, j, k );
-+        }
-+    }
-+    
-+    @Override
-+	public void OnVegetationAboveGrazed( World world, int i, int j, int k, EntityAnimal animal )
-+	{
-+        if ( animal.GetDisruptsEarthOnGraze() )
-+        {
-+        	world.setBlockWithNotify( i, j, k, FCBetterThanWolves.fcBlockDirtLoose.blockID );
-+        	
-+        	NotifyNeighborsBlockDisrupted( world, i, j, k );
-+        }
++	@Override
++	public boolean CanBeGrazedOn(IBlockAccess blockAccess, int x, int y, int z, EntityAnimal animal) {
++		if (!isSparse(blockAccess, x, y, z) || animal.IsStarving() || animal.GetDisruptsEarthOnGraze()) {
++			return animal.CanGrazeMycelium();
++		}
++		
++		return false;
++	}
++
++	@Override
++	public void OnGrazed(World world, int x, int y, int z, EntityAnimal animal) {
++		if (!animal.GetDisruptsEarthOnGraze()) {
++			if (isSparse(world, x, y, z)) {
++				world.setBlockWithNotify(x, y, z, Block.dirt.blockID);
++			}
++			else {
++				setSparse(world, x, y, z);
++			}
++		}
++		else {
++			world.setBlockWithNotify(x, y, z, FCBetterThanWolves.fcBlockDirtLoose.blockID);
++			NotifyNeighborsBlockDisrupted(world, x, y, z);
++		}
++	}
++
++	@Override
++	public void OnVegetationAboveGrazed(World world, int x, int y, int z, EntityAnimal animal) {
++		if (animal.GetDisruptsEarthOnGraze()) {
++			world.setBlockWithNotify(x, y, z, FCBetterThanWolves.fcBlockDirtLoose.blockID);
++			NotifyNeighborsBlockDisrupted(world, x, y, z);
++		}
 +	}
 +    
 +	@Override
-+    public boolean GetCanBlightSpreadToBlock( World world, int i, int j, int k, int iBlightLevel )
-+    {
-+    	return iBlightLevel >= 2;
++    public boolean GetCanBlightSpreadToBlock(World world, int x, int y, int z, int blightLevel) {
++    	return blightLevel >= 2;
 +    }
 +    
 +	@Override
-+    public boolean CanConvertBlock( ItemStack stack, World world, int i, int j, int k )
-+    {
++    public boolean CanConvertBlock(ItemStack stack, World world, int x, int y, int z) {
 +    	return stack != null && stack.getItem() instanceof FCItemHoe;
 +    }
 +	
 +    @Override
-+    public boolean ConvertBlock( ItemStack stack, World world, int i, int j, int k, int iFromSide )
-+    {
-+    	world.setBlockWithNotify( i, j, k, FCBetterThanWolves.fcBlockDirtLoose.blockID );
-+
-+    	if ( !world.isRemote )
-+		{
-+            world.playAuxSFX( 2001, i, j, k, blockID ); // block break FX
-+		}
-+    	
++    public boolean ConvertBlock(ItemStack stack, World world, int x, int y, int z, int fromSide) {
++    	world.setBlockWithNotify(x, y, z, FCBetterThanWolves.fcBlockDirtLoose.blockID);
 +    	return true;
 +    }
-+    
-+    //------------- Class Specific Methods ------------//
-+	
-+	public static void CheckForMyceliumSpreadFromLocation( World world, int i, int j, int k )
-+	{
-+    	if ( world.provider.dimensionId != 1 )
-+    	{
-+	        if ( world.getBlockLightValue( i, j + 1, k ) >= 9 &&
-+	        	!FCBlockGroundCover.IsGroundCoverRestingOnBlock( world, i, j, k ) )
-+	        {
-+	            for ( int iTempCount = 0; iTempCount < 2; iTempCount++ )
-+	            {
-+	            	CheckForMyceliumSpreadToRandomBlockAround( world, i, j, k );
-+	            }
-+	        }
-+    	}
-+	}
-+	
-+	public static void CheckForMyceliumSpreadToRandomBlockAround( World world, int i, int j, int k )
-+	{
-+        int iTargetI = i + world.rand.nextInt( 3 ) - 1;
-+        int iTargetJ = j + world.rand.nextInt( 5 ) - 3;
-+        int iTargetK = k + world.rand.nextInt( 3 ) - 1;
 +
-+        Block targetBlock = Block.blocksList[world.getBlockId( 
-+        	iTargetI, iTargetJ, iTargetK )];
-+        
-+        if ( targetBlock != null )
-+        {
-+        	targetBlock.AttempToSpreadMyceliumToBlock( world, 
-+        		iTargetI, iTargetJ, iTargetK );
-+        }
++	//------------- Class Specific Methods ------------//
++
++	public static boolean canMyceliumSurviveAtLocation(World world, int x, int y, int z) {
++		int blockAboveID = world.getBlockId(x, y + 1, z);
++		Block blockAbove = Block.blocksList[blockAboveID];
++		
++		if (Block.lightOpacity[blockAboveID] > 2 || (blockAbove != null && !blockAbove.GetCanGrassGrowUnderBlock(world, x, y + 1, z, false))) {
++			return false;
++		}
++
++		return true;
++	}
++
++	public static void checkForMyceliumSpreadFromLocation(World world, int x, int y, int z) {
++		if (world.provider.dimensionId != 1 && !FCBlockGroundCover.IsGroundCoverRestingOnBlock(world, x, y, z)) {
++			// check for grass spread
++
++			int i = x + world.rand.nextInt(3) - 1;
++			int j = y + world.rand.nextInt(4) - 2;
++			int k = z + world.rand.nextInt(3) - 1;
++
++			Block targetBlock = Block.blocksList[world.getBlockId(i, j, k)];
++
++			if (targetBlock != null) {
++				attempToSpreadMyceliumToLocation(world, i, j, k);
++			}
++		}
++	}
++
++	public static boolean attempToSpreadMyceliumToLocation(World world, int x, int y, int z) {
++		int targetBlockID = world.getBlockId(x, y, z);
++		Block targetBlock = Block.blocksList[targetBlockID];
++
++		if (targetBlock.GetCanMyceliumSpreadToBlock(world, x, y, z) &&
++				Block.lightOpacity[world.getBlockId(x, y + 1, z)] <= 2 &&
++				!FCBlockGroundCover.IsGroundCoverRestingOnBlock(world, x, y, z))    		
++		{
++			return targetBlock.SpreadMyceliumToBlock(world, x, y, z);
++		}
++
++		return false;
++	}
++
++	public boolean isSparse(IBlockAccess blockAccess, int x, int y, int z) {
++		return isSparse(blockAccess.getBlockMetadata(x, y, z));
++	}
++
++	public boolean isSparse(int metadata) {
++		return metadata == 1;
++	}
++
++	public void setSparse(World world, int x, int y, int z) {
++		world.setBlockMetadataWithNotify(x, y, z, 1);
++	}
++
++	public void setFullyGrown(World world, int x, int y, int z) {
++		world.setBlockMetadataWithNotify(x, y, z, 0);
 +	}
 +	
 +	//----------- Client Side Functionality -----------//
 +	
-+    private boolean m_bTempHasSnowOnTop; // temporary variable used by rendering
++    private boolean hasSnowOnTop; // temporary variable used by rendering
 +    
 +    // duplicate variables to parent class to avoid base class modification
 +    
-+    private Icon m_iconTop; // field_94422_a in parent
-+    private Icon m_iconSnowSide; // field_94421_b in parent
++    private Icon iconTop; // field_94422_a in parent
++    private Icon iconTopSparse;
++    private Icon iconSnowSide; // field_94421_b in parent
 +    
 +    @Override
-+    public void registerIcons( IconRegister register )
-+    {
-+    	super.registerIcons( register );
++    public void registerIcons(IconRegister register) {
++    	super.registerIcons(register);
 +    	
-+        m_iconTop = register.registerIcon( "mycel_top" );
-+        m_iconSnowSide = register.registerIcon( "snow_side" );
++        iconTop = register.registerIcon("mycel_top");
++        iconTopSparse = register.registerIcon("fcBlockMyceliumSparse");
++        iconSnowSide = register.registerIcon("snow_side");
 +    }
 +    
 +    @Override
-+    public Icon getBlockTexture( IBlockAccess blockAccess, int i, int j, int k, int side )
-+    {
-+    	Icon var7 = RenderBlocksUtils.getGrassTexture(this, blockAccess, i, j, k, side, this.m_iconTop);
++    public Icon getBlockTexture(IBlockAccess blockAccess, int x, int y, int z, int side) {
++    	Icon topIcon;
++    	
++    	if (isSparse(blockAccess, x, y, z)) {
++    		topIcon = this.iconTopSparse;
++    	}
++    	else {
++    		topIcon = this.iconTop;
++    	}
++    	
++    	Icon betterGrassIcon = RenderBlocksUtils.getGrassTexture(this, blockAccess, x, y, z, side, topIcon);
 +
-+        if (var7 != null)
-+        {
-+            return var7;
++        if (betterGrassIcon != null) {
++            return betterGrassIcon;
 +        }
-+        else if ( side == 1 )
-+        {
-+            return m_iconTop;
++        else if (side == 1) {
++            return topIcon;
 +        }
-+        else if ( side == 0 )
-+        {
-+            return Block.dirt.getBlockTextureFromSide( side );
++        else if (side == 0) {
++            return Block.dirt.getBlockTextureFromSide(side);
 +        }
-+        else if ( m_bTempHasSnowOnTop )
-+    	{
-+    		return m_iconSnowSide;
++        else if (hasSnowOnTop) {
++    		return iconSnowSide;
 +    	}
 +        
 +		return blockIcon;
 +    }
 +    
 +    @Override
-+    public boolean RenderBlock( RenderBlocks renderer, int i, int j, int k )
-+    {
++    public boolean RenderBlock(RenderBlocks renderer, int x, int y, int z) {
 +    	IBlockAccess blockAccess = renderer.blockAccess;
 +    	
-+        m_bTempHasSnowOnTop = IsSnowCoveringTopSurface( blockAccess, i, j, k ); 
++        hasSnowOnTop = IsSnowCoveringTopSurface(blockAccess, x, y, z); 
 +        
-+    	return renderer.RenderStandardFullBlock( this, i, j, k );
++        renderer.setRenderBounds(0, 0, 0, 1, 1, 1);
++    	return renderer.renderStandardBlock(this, x, y, z);
 +    }
 +}
 \ No newline at end of file

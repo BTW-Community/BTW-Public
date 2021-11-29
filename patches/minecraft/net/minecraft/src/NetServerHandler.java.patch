@@ -99,7 +99,22 @@
      /**
       * addToSendQueue. if it is a chat packet, check before sending it
       */
-@@ -720,6 +758,16 @@
+@@ -690,7 +728,14 @@
+             this.playerEntity.wakeUpPlayer(false, true, true);
+             this.hasMoved = false;
+         }
++        
++        if ((par1Packet19EntityAction.state & 8) == 8) {
++        	this.playerEntity.setUsingSpecialKey(true);
+     }
++        else {
++        	this.playerEntity.setUsingSpecialKey(false);
++        }
++    }
+ 
+     public void handleKickDisconnect(Packet255KickDisconnect par1Packet255KickDisconnect)
+     {
+@@ -720,6 +765,16 @@
                  var5 = 9.0D;
              }
  
@@ -116,7 +131,7 @@
              if (this.playerEntity.getDistanceSqToEntity(var3) < var5)
              {
                  if (par1Packet7UseEntity.isLeftClick == 0)
-@@ -802,7 +850,33 @@
+@@ -802,7 +857,33 @@
                  this.playerEntity.openContainer.detectAndSendChanges();
                  this.playerEntity.updateHeldItem();
                  this.playerEntity.playerInventoryBeingManipulated = false;
@@ -150,7 +165,7 @@
              else
              {
                  this.field_72586_s.addKey(this.playerEntity.openContainer.windowId, Short.valueOf(par1Packet102WindowClick.action));
-@@ -990,7 +1064,25 @@
+@@ -990,7 +1071,25 @@
      public void handleClientInfo(Packet204ClientInfo par1Packet204ClientInfo)
      {
          this.playerEntity.updateClientInfo(par1Packet204ClientInfo);
@@ -176,7 +191,7 @@
  
      public void handleCustomPayload(Packet250CustomPayload par1Packet250CustomPayload)
      {
-@@ -1051,19 +1143,19 @@
+@@ -1051,19 +1150,19 @@
          }
          else
          {
@@ -201,7 +216,7 @@
                      }
                  }
                  catch (Exception var10)
-@@ -1073,7 +1165,7 @@
+@@ -1073,7 +1172,7 @@
              }
              else
              {
@@ -210,7 +225,7 @@
  
                  if ("MC|AdvCdm".equals(par1Packet250CustomPayload.channel))
                  {
-@@ -1086,16 +1178,16 @@
+@@ -1086,16 +1185,16 @@
                          try
                          {
                              var2 = new DataInputStream(new ByteArrayInputStream(par1Packet250CustomPayload.data));
@@ -231,7 +246,7 @@
                                  this.playerEntity.sendChatToPlayer("Command set: " + var6);
                              }
                          }
-@@ -1116,17 +1208,17 @@
+@@ -1116,17 +1215,17 @@
                          try
                          {
                              var2 = new DataInputStream(new ByteArrayInputStream(par1Packet250CustomPayload.data));
@@ -256,7 +271,7 @@
                                  var20.onInventoryChanged();
                              }
                          }
-@@ -1138,23 +1230,143 @@
+@@ -1138,23 +1237,143 @@
                  }
                  else if ("MC|ItemName".equals(par1Packet250CustomPayload.channel) && this.playerEntity.openContainer instanceof ContainerRepair)
                  {

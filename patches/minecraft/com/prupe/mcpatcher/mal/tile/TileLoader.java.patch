@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/com/prupe/mcpatcher/mal/tile/TileLoader.java
-@@ -0,0 +1,317 @@
+@@ -0,0 +1,321 @@
 +package com.prupe.mcpatcher.mal.tile;
 +
 +import com.prupe.mcpatcher.Config;
@@ -273,6 +273,9 @@
 +        }
 +        int width = image.getWidth();
 +        int height = image.getHeight();
++        /*Hiracho: disabled for now as getTextureSize(map.values() returns zero making this a useless check as is:
++         * Cannot invoke "net.minecraft.src.Texture.getWidth()" because "this.textureSheet" is null
++
 +        long currentSize = getTextureSize(map.values());
 +        long newSize = 4 * width * width;
 +        if (newSize + currentSize > MAX_TILESHEET_SIZE) {
@@ -286,6 +289,7 @@
 +                return false;
 +            }
 +        }
++        */
 +        Icon icon;
 +        
 +        icon = textureMap.registerIcon(name);

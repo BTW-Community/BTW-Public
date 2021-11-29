@@ -95,7 +95,113 @@
                  var11 *= var11;
                  this.motionX += var3 / var9 * var11 * 0.1D;
                  this.motionY += var5 / var9 * var11 * 0.1D;
-@@ -189,6 +231,9 @@
+@@ -181,6 +223,105 @@
+         }
+     }
+ 
++    @Override
++    protected boolean pushOutOfBlocks(double par1, double par3, double par5)
++    {
++    	// Inherited function added to revert Mojang's changes 
++
++        int var7 = MathHelper.floor_double(par1);
++        int var8 = MathHelper.floor_double(par3);
++        int var9 = MathHelper.floor_double(par5);
++        double var10 = par1 - (double)var7;
++        double var12 = par3 - (double)var8;
++        double var14 = par5 - (double)var9;
++
++        if (this.worldObj.isBlockNormalCube(var7, var8, var9))
++        {
++            boolean var16 = !this.worldObj.isBlockNormalCube(var7 - 1, var8, var9);
++            boolean var17 = !this.worldObj.isBlockNormalCube(var7 + 1, var8, var9);
++            boolean var18 = !this.worldObj.isBlockNormalCube(var7, var8 - 1, var9);
++            boolean var19 = !this.worldObj.isBlockNormalCube(var7, var8 + 1, var9);
++            boolean var20 = !this.worldObj.isBlockNormalCube(var7, var8, var9 - 1);
++            boolean var21 = !this.worldObj.isBlockNormalCube(var7, var8, var9 + 1);
++            byte var22 = -1;
++            double var23 = 9999.0D;
++
++            if (var16 && var10 < var23)
++            {
++                var23 = var10;
++                var22 = 0;
++            }
++
++            if (var17 && 1.0D - var10 < var23)
++            {
++                var23 = 1.0D - var10;
++                var22 = 1;
++            }
++
++            if (var18 && var12 < var23)
++            {
++                var23 = var12;
++                var22 = 2;
++            }
++
++            if (var19 && 1.0D - var12 < var23)
++            {
++                var23 = 1.0D - var12;
++                var22 = 3;
++            }
++
++            if (var20 && var14 < var23)
++            {
++                var23 = var14;
++                var22 = 4;
++            }
++
++            if (var21 && 1.0D - var14 < var23)
++            {
++                var23 = 1.0D - var14;
++                var22 = 5;
++            }
++
++            float var25 = this.rand.nextFloat() * 0.2F + 0.1F;
++
++            if (var22 == 0)
++            {
++                this.motionX = (double)(-var25);
++            }
++
++            if (var22 == 1)
++            {
++                this.motionX = (double)var25;
++            }
++
++            if (var22 == 2)
++            {
++                this.motionY = (double)(-var25);
++            }
++
++            if (var22 == 3)
++            {
++                this.motionY = (double)var25;
++            }
++
++            if (var22 == 4)
++            {
++                this.motionZ = (double)(-var25);
++            }
++
++            if (var22 == 5)
++            {
++                this.motionZ = (double)var25;
++            }
++
++            return true;
++        }
++        else
++        {
++            return false;
++        }
++    }
++
+     /**
+      * (abstract) Protected helper method to write subclass entity data to NBT.
+      */
+@@ -189,6 +330,9 @@
          par1NBTTagCompound.setShort("Health", (short)((byte)this.xpOrbHealth));
          par1NBTTagCompound.setShort("Age", (short)this.xpOrbAge);
          par1NBTTagCompound.setShort("Value", (short)this.xpValue);
@@ -105,7 +211,7 @@
      }
  
      /**
-@@ -199,13 +244,25 @@
+@@ -199,13 +343,25 @@
          this.xpOrbHealth = par1NBTTagCompound.getShort("Health") & 255;
          this.xpOrbAge = par1NBTTagCompound.getShort("Age");
          this.xpValue = par1NBTTagCompound.getShort("Value");
@@ -131,7 +237,7 @@
          if (!this.worldObj.isRemote)
          {
              if (this.field_70532_c == 0 && par1EntityPlayer.xpCooldown == 0)
-@@ -242,4 +299,42 @@
+@@ -242,4 +398,42 @@
      {
          return false;
      }

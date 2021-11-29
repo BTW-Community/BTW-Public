@@ -109,7 +109,19 @@
      }
  
      /**
-@@ -617,4 +650,183 @@
+@@ -428,6 +461,11 @@
+         return this.movementInput.sneak && !this.sleeping;
+     }
+ 
++    @Override
++    public boolean isUsingSpecialKey() {
++    	return this.movementInput.special;
++    }
++
+     /**
+      * Updates health locally.
+      */
+@@ -617,4 +655,183 @@
      {
          this.worldObj.playSound(this.posX, this.posY - (double)this.yOffset, this.posZ, par1Str, par2, par3, false);
      }

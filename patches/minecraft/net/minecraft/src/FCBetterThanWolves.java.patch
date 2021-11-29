@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,4376 @@
+@@ -0,0 +1,4401 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -25,7 +25,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.2.3";
++	public static final String fcVersionString = "1.3.0";
 +
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +
@@ -247,7 +247,7 @@
 +	public static Block fcBlockWeb;
 +
 +	public static Block fcBlockUnfiredClay;
-+	public static Block fcBlockMyceliumSlab;    
++	public static FCBlockMyceliumSlab fcBlockMyceliumSlab;    
 +	public static FCBlockToolPlaced fcBlockToolPlaced;
 +
 +	public static Block fcBlockBrickLooseStairs;    
@@ -342,6 +342,8 @@
 +	public static FCBlockSilverfish fcBlockSilverfishStoneBricksMossy;
 +	public static FCBlockSilverfish fcBlockSilverfishStoneBricksCracked;
 +	public static FCBlockSilverfish fcBlockSilverfishStoneBricksChiseled;
++	
++	public static FCBlockGrassSlab fcBlockGrassSlab;
 +
 +	// New Items
 +
@@ -807,8 +809,7 @@
 +	}
 +
 +	@Override
-+	public void Initialize()
-+	{
++	public void Initialize() {
 +		FCAddOnHandler.LogMessage("Better Than Wolves Community Edition Version " + getVersion() + " Initializing...");        	
 +		ModInstallationIntegrityTest();
 +
@@ -830,16 +831,18 @@
 +
 +		InitCustomPackets();
 +
++		if (!FCUtilsReflection.isObfuscated()) {
++			initDebug();
++		}
++		
 +		// client only
 +		PostInitClient();
 +
 +		FCAddOnHandler.LogMessage("Better Than Wolves Initialization Complete.");
 +	}
-+
-+	@Override
-+	public String GetLanguageFilePrefix()
-+	{
-+		return "BTW";
++	
++	private void initDebug() {
++		
 +	}
 +
 +	//------------- Class Specific Methods ------------//
@@ -1038,248 +1041,268 @@
 +		fcKiln = new FCBlockKiln(parseID("fcKilnID"));
 +
 +		fcWoolSlab = new FCBlockWoolSlab(parseID("fcWoolSlabID"), false);
-+		fcAnvil = new FCBlockSoulforge(parseID("fcAnvilID"));
-+
-+		fcLightBulbOff = new FCBlockLightBulb(parseID("fcLightBulbOffID"), false);
-+		fcLightBulbOn = new FCBlockLightBulb(parseID("fcLightBulbOnID"), true);
-+
-+		fcBBQ = new FCBlockBBQ(parseID("fcBBQID"));
-+
-+		fcHopper = new FCBlockHopper(parseID("fcHopperID"));
-+
-+		fcSaw = new FCBlockSaw(parseID("fcSawID"));
-+
-+		fcPlatform = new FCBlockPlatform(parseID("fcPlatformID"));
-+
-+		fcCement = new FCBlockCement(parseID("fcCementID"));        
-+
-+		fcPulley = new FCBlockPulley(parseID("fcPulleyID"));
-+
-+		fcBlockPressurePlateSoulforgedSteel = (new FCBlockPressurePlate(parseID("fcPressurePlateObsidianID"), 
-+				"fcBlockPressurePlateSoulforgedSteel", fcMaterialSoulforgedSteel, EnumMobType.players)).setHardness(1.0F).setResistance(2000F).
-+				setStepSound(Block.soundMetalFootstep).setUnlocalizedName("pressurePlate");
-+
-+		fcBlockWoodOakMouldingAndDecorative = new FCBlockWoodMouldingAndDecorative(parseID("fcMouldingID"), 
-+				"FCBlockDecorativeWoodOak", "fcBlockColumnWoodOak_side", fcBlockWoodOakSidingAndCorner.blockID, "fcBlockWoodOakMoulding");
-+
-+		fcBlockLegacySmoothstoneAndOakCorner = new FCBlockLegacyCorner(parseID("fcCornerID"));        
-+
-+		fcBlockDispenser = new FCBlockBlockDispenser(parseID("fcBlockDispenserID"));
-+
-+		fcCauldron = new FCBlockCauldron(parseID("fcCauldronID"));
-+
-+		fcDetectorRailWood = (new FCBlockDetectorRail(parseID("fcDetectorRailWoodID"))).
-+				setHardness(0.7F).setStepSound(Block.soundMetalFootstep).setUnlocalizedName("fcBlockDetectorRailWood");
-+
-+		fcBlockDetectorRailSoulforgedSteel = (new FCBlockDetectorRail(parseID("fcDetectorRailObsidianID"))).
-+				setHardness(0.7F).setStepSound(Block.soundMetalFootstep).setUnlocalizedName("fcBlockDetectorRailSoulforgedSteel");
-+
-+		fcCompanionCube = new FCBlockCompanionCube(parseID("fcCompanionCubeID"));
-+
-+		fcBlockDetector = new FCBlockDetectorBlock(parseID("fcBlockDetectorID"));
-+		fcBlockDetectorLogic = (new FCBlockDetectorLogic(parseID("fcBlockDetectorLogicID"))).setUnlocalizedName("fcBlockDetectorLogic");
-+
-+		fcLens = new FCBlockLens(parseID("fcBlockLensID"));
-+
-+		fcBlockHempCrop = new FCBlockHempCrop(parseID("fcHempCropID"));
-+
-+		fcHandCrank = new FCBlockHandCrank(parseID("fcHandCrankID"));
-+
-+		fcMillStone = new FCBlockMillStone(parseID("fcMillStoneID"));
-+
-+		fcAnchor = new FCBlockAnchor(parseID("fcAnchorID"));
-+
-+		fcRopeBlock = new FCBlockRope(parseID("fcRopeBlockID"));
-+
-+		fcBlockLegacySmoothstoneAndOakSiding = new FCBlockLegacyOmniSlab(parseID("fcOmniSlabID"));
-+
-+		fcBlockAxle = new FCBlockAxle(parseID("fcAxleBlockID"));
-+
-+		fcBlockRedstoneClutch = new FCBlockRedstoneClutch(parseID("fcGearBoxID"));
-+
-+		fcTurntable = new FCBlockTurntable(parseID("fcTurntableID"));
-+
-+		fcBellows = new FCBlockBellows(parseID("fcBellowsID"));
-+
-+		fcBlockFireStoked = new FCBlockFireStoked(parseID("fcStokedFireID"));
-+
-+		fcUnfiredPottery = new FCBlockUnfiredPottery(parseID("fcUnfiredPotteryID"));
-+
-+		fcCrucible = new FCBlockCrucible(parseID("fcCrucibleID"));
-+		fcPlanter = new FCBlockPlanter(parseID("fcPlanterID"));
-+		fcVase = new FCBlockVase(parseID("fcVaseID"));
-+
-+		fcBlockRottenFlesh = new FCBlockRottenFlesh(parseID("fcBlockRottenFleshID"));
-+
-+		fcBlockShaft = new FCBlockShaft(parseID("fcBlockShaftID"));
-+
-+		fcBlockSoulforgeDormant = new FCBlockSoulforgeDormant(parseID("fcBlockSoulforgeDormantID"));
-+
-+		fcBlockSmoothstoneStairs = (new FCBlockStairs(parseID("fcBlockSmoothstoneStairsID"), Block.stone, 0)).
-+				SetPicksEffectiveOn().setUnlocalizedName("fcBlockSmoothstoneStairs");
-+
-+		fcBlockRottenFleshSlab = new FCBlockRottenFleshSlab(parseID("fcBlockRottenFleshSlabID"));
-+
-+		fcBlockBoneSlab = new FCBlockBoneSlab(parseID("fcBlockBoneSlabID"));
-+
-+		fcBlockPumpkinFresh = (new FCBlockPumpkin(parseID("fcBlockPumpkinFreshID"), false));
-+		((FCBlockStem)Block.pumpkinStem).SetFruitBlock(fcBlockPumpkinFresh); // do this after pumpkin is instantiated
-+
-+		fcBlockWoodBloodSidingAndCorner = new FCBlockWoodSidingAndCornerAndDecorative(parseID("fcBlockWoodBloodSidingAndCornerID"), 
-+				"fcBlockDecorativeWoodBlood", "fcWoodBloodSiding");
-+
-+		fcBlockWoodBloodMouldingAndDecorative = new FCBlockWoodMouldingAndDecorative(parseID("fcBlockWoodBloodMouldingAndDecorativeID"), 
-+				"fcBlockDecorativeWoodBlood", "fcBlockColumnWoodBlood_side", 
-+				fcBlockWoodBloodSidingAndCorner.blockID, "fcWoodBloodMoulding");
-+
-+		fcBlockWoodBloodStairs = (new FCBlockStairsWood(parseID("fcBlockWoodBloodStairsID"), 
-+				Block.planks, 4)).setUnlocalizedName("fcBlockWoodBloodStairs");
-+
-+		fcBlockLogDamaged = new FCBlockLogDamaged(parseID("fcBlockLogDamagedID"));
-+
-+		fcBlockDirtLoose = new FCBlockDirtLoose(parseID("fcBlockDirtLooseID"));
-+		fcBlockDirtLooseSlab = new FCBlockDirtLooseSlab(parseID("fcBlockDirtLooseSlabID"));
-+
-+		fcBlockCampfireUnlit = (FCBlockCampfire)(new FCBlockCampfire(parseID("fcBlockCampfireUnlitID"), 0)).setCreativeTab(CreativeTabs.tabDecorations);
-+		fcBlockCampfireSmall = (FCBlockCampfire)(new FCBlockCampfire(parseID("fcBlockCampfireSmallID"), 1).setLightValue(0.25F));
-+		fcBlockCampfireMedium = (FCBlockCampfire)(new FCBlockCampfire(parseID("fcBlockCampfireMediumID"), 2).setLightValue(0.5F));
-+		fcBlockCampfireLarge = (FCBlockCampfire)(new FCBlockCampfire(parseID("fcBlockCampfireLargeID"), 3).setLightValue(0.875F));
-+
-+		fcBlockUnfiredBrick = new FCBlockUnfiredBrick(parseID("fcBlockUnfiredBrickID"));
-+		fcBlockCookedBrick = new FCBlockCookedBrick(parseID("fcBlockCookedBrickID"));
-+
-+		fcBlockBrickLoose = new FCBlockBrickLoose(parseID("fcBlockBrickLooseID"));
-+		fcBlockBrickLooseSlab = new FCBlockBrickLooseSlab(parseID("fcBlockBrickLooseSlabID"));
-+
-+		fcBlockCobblestoneLoose = new FCBlockCobblestoneLoose(parseID("fcBlockCobblestoneLooseID"));
-+		fcBlockCobblestoneLooseSlab = new FCBlockCobblestoneLooseSlab(parseID("fcBlockCobblestoneLooseSlabID"));
-+
-+		fcBlockFurnaceBrickIdle = new FCBlockFurnaceBrickIdle(parseID("fcBlockFurnaceBrickIdleID"));
-+		fcBlockFurnaceBrickBurning = new FCBlockFurnaceBrickBurning(parseID("fcBlockFurnaceBrickBurningID"));
-+
-+		fcBlockTorchFiniteUnlit = new FCBlockTorchFiniteUnlit(parseID("fcBlockTorchFiniteIdleID"));
-+		fcBlockTorchFiniteBurning = new FCBlockTorchFiniteBurning(parseID("fcBlockTorchFiniteBurningID"));
-+
-+		fcBlockStoneRough = (new FCBlockStoneRough(parseID("fcBlockStoneRoughID"), 0));
-+		fcBlockStoneRoughMidStrata = (new FCBlockStoneRough(parseID("fcBlockStoneRoughMidStrataID"), 1));
-+		fcBlockStoneRoughDeepStrata = (new FCBlockStoneRough(parseID("fcBlockStoneRoughDeepStrataID"), 2));
-+
-+		fcBlockWorkStump = new FCBlockWorkStump(parseID("fcBlockWorkStumpID"));
-+
-+		fcBlockBasketWicker = new FCBlockBasketWicker(parseID("fcBlockBasketWickerID"));
-+
-+		fcBlockLogSpike = new FCBlockLogSpike(parseID("fcBlockLogSpikeID"));
-+
-+		fcBlockTorchNetherUnlit = new FCBlockTorchNetherUnlit(parseID("fcBlockTorchIdleID"));
-+
-+		// flammable versions of vanilla blocks.  Keep flammability attributes out of class so as not to affect original blocks.
-+		fcBlockWorkbench = (new FCBlockWorkbench(parseID("fcBlockWorkbenchID"))).SetFireProperties(5, 20);
-+		fcBlockChest = (new FCBlockChest(parseID("fcBlockChestID"))).SetFireProperties(5, 20);
-+		fcBlockDoorWood  = (new FCBlockDoorWood(parseID("fcBlockDoorWoodID"))).SetFireProperties(5, 20);
-+		fcBlockWeb = (new FCBlockWeb(parseID("fcBlockWebID"))).SetFireProperties(60, 100).setCreativeTab(CreativeTabs.tabDecorations);
-+
-+		fcBlockUnfiredClay = new FCBlockUnfiredClay(parseID("fcBlockUnfiredClayID"));
-+		fcBlockMyceliumSlab = new FCBlockMyceliumSlab(parseID("fcBlockMyceliumSlabID"));
-+		fcBlockToolPlaced = new FCBlockToolPlaced(parseID("fcBlockToolPlacedID"));
-+
-+		fcBlockBrickLooseStairs = new FCBlockBrickLooseStairs(parseID("fcBlockBrickLooseStairsID"));
-+		fcBlockCobblestoneLooseStairs = new FCBlockCobblestoneLooseStairs(parseID("fcBlockCobblestoneLooseStairsID"));
-+
-+		fcBlockLogSmouldering = new FCBlockLogSmouldering(parseID("fcBlockLogSmoulderingID"));
-+		fcBlockWoodCinders = new FCBlockWoodCinders(parseID("fcBlockWoodCindersID"));
-+		fcBlockStumpCharred = new FCBlockStumpCharred(parseID("fcBlockStumpCharredID"));
-+		fcBlockAshGroundCover = new FCBlockAshGroundCover(parseID("fcBlockAshGroundCoverID"));
-+
-+		fcBlockSnowLoose = new FCBlockSnowLoose(parseID("fcBlockSnowLooseID"));
-+		fcBlockSnowLooseSlab = new FCBlockSnowLooseSlab(parseID("fcBlockSnowLooseSlabID"));	    
-+		fcBlockSnowSolid = new FCBlockSnowSolid(parseID("fcBlockSnowSolidID"));
-+		fcBlockSnowSolidSlab = new FCBlockSnowSolidSlab(parseID("fcBlockSnowSolidSlabID"));
-+
-+		fcBlockLadder = new FCBlockLadder(parseID("fcBlockLadderID"));
-+		fcBlockLadderOnFire = new FCBlockLadderOnFire(parseID("fcBlockLadderOnFireID"));
-+
-+		fcBlockShovel = new FCBlockShovel(parseID("fcBlockShovelID"));
-+		fcBlockHamper = new FCBlockHamper(parseID("fcBlockHamperID"));
-+
-+		fcBlockCreeperOysters = new FCBlockCreeperOysters(parseID("fcBlockCreeperOystersID"));
-+		fcBlockCreeperOystersSlab = new FCBlockCreeperOystersSlab(parseID("fcBlockCreeperOystersSlabID"));
-+
-+		fcBlockTorchNetherBurning = (FCBlockTorchNetherBurning)(new FCBlockTorchNetherBurning(parseID("fcBlockTorchNetherBurningID")))
-+				.setCreativeTab(CreativeTabs.tabDecorations);
-+
-+		fcBlockBucketEmpty = new FCBlockBucket(parseID("fcBlockBucketEmptyID"));	    
-+		fcBlockBucketWater = new FCBlockBucketWater(parseID("fcBlockBucketWaterID"));
-+		fcBlockBucketCement = new FCBlockBucketCement(parseID("fcBlockBucketCementID"));
-+		fcBlockBucketMilk = new FCBlockBucketMilk(parseID("fcBlockBucketMilkID"));
-+		fcBlockBucketMilkChocolate = new FCBlockBucketMilkChocolate(parseID("fcBlockBucketMilkChocolateID"));
-+
-+		fcBlockMilk = new FCBlockMilk(parseID("fcBlockMilkID"));
-+		fcBlockMilkChocolate = new FCBlockMilkChocolate(parseID("fcBlockMilkChocolateID"));
-+
-+		fcBlockGearBox = new FCBlockGearBox(parseID("fcBlockGearBoxID"));
-+
-+		fcBlockSpikeIron = new FCBlockSpike(parseID("fcBlockSpikeIronID"));
-+		fcBlockLightningRod = new FCBlockLightningRod(parseID("fcBlockLightningRodID"));
-+
-+		fcBlockChunkOreIron = new FCBlockChunkOreIron(parseID("fcBlockChunkOreIronID"));
-+		fcBlockChunkOreGold = new FCBlockChunkOreGold(parseID("fcBlockChunkOreGoldID"));
-+
-+		fcBlockStoneBrickLoose = new FCBlockStoneBrickLoose(parseID("fcBlockStoneBrickLooseID"));
-+		fcBlockStoneBrickLooseSlab = new FCBlockStoneBrickLooseSlab(parseID("fcBlockStoneBrickLooseSlabID"));
-+		fcBlockStoneBrickLooseStairs = new FCBlockStoneBrickLooseStairs(parseID("fcBlockStoneBrickLooseStairsID"));
-+
-+		fcBlockNetherBrickLoose = new FCBlockNetherBrickLoose(parseID("fcBlockNetherBrickLooseID"));
-+		fcBlockNetherBrickLooseSlab = new FCBlockNetherBrickLooseSlab(parseID("fcBlockNetherBrickLooseSlabID"));
-+		fcBlockNetherBrickLooseStairs = new FCBlockNetherBrickLooseStairs(parseID("fcBlockNetherBrickLooseStairsID"));
-+
-+		fcBlockNetherrackFalling = new FCBlockNetherrackFalling(parseID("fcBlockNetherrackFallingID"));
-+
-+		fcBlockLavaPillow = new FCBlockLavaPillow(parseID("fcBlockLavaPillowID"));
-+
-+		fcBlockMushroomCapBrown = new FCBlockMushroomCap(parseID("fcBlockMushroomCapBrownID"), 0);
-+		fcBlockMushroomCapRed = new FCBlockMushroomCap(parseID("fcBlockMushroomCapRedID"), 1);
-+
-+		fcBlockChunkOreStorageIron = new FCBlockChunkOreStorageIron(parseID("fcBlockChunkOreStorageIronID"));
-+		fcBlockChunkOreStorageGold = new FCBlockChunkOreStorageGold(parseID("fcBlockChunkOreStorageGoldID"));
-+
-+		fcBlockWicker = new FCBlockWicker(parseID("fcBlockWickerID"));
-+		fcBlockWickerSlab = new FCBlockWickerSlab(parseID("fcBlockWickerSlabID"));	    
-+		fcBlockWickerPane = new FCBlockWickerPane(parseID("fcBlockWickerPaneID"));
-+
-+		fcBlockGrate = new FCBlockGrate(parseID("fcBlockGrateID"));
-+		fcBlockSlats = new FCBlockSlats(parseID("fcBlockSlatsID"));
-+
-+		fcBlockFarmland = new FCBlockFarmland(parseID("fcBlockFarmlandNewID"));
-+		fcBlockFarmlandFertilized = new FCBlockFarmlandFertilized(parseID("fcBlockFarmlandFertilizedNewID"));
-+
-+		fcBlockWheatCrop = new FCBlockWheatCrop(parseID("fcBlockWheatCropID"));
-+		fcBlockWheatCropTop = new FCBlockWheatCropTop(parseID("fcBlockWheatCropTopID"));
-+		fcBlockWeeds = new FCBlockWeeds(parseID("fcBlockWeedsID"));
-+		fcBlockPlanterSoil = new FCBlockPlanterSoil(parseID("fcBlockPlanterSoilID"));	   
-+
-+		fcBlockReeds = new FCBlockReed(parseID("fcBlockReedsID"));
-+		fcBlockReedRoots = new FCBlockReedRoots(parseID("fcBlockReedRootsID"));
-+
-+		fcBlockCarrot = new FCBlockCarrot(parseID("fcBlockCarrotID"));
-+		fcBlockCarrotFlowers = new FCBlockCarrotFlowers(parseID("fcBlockCarrotFlowersID"));
-+
-+		//fcBlockCandlePlain = new FCBlockCandle(parseID("fcBlockCandlePlainID"), parseID("fcItemCandleID"), 16, "fcBlockCandle");
-+
-+		fcBlockCandlesColored = new Block[16];
-+
-+		for (int i = 0; i < 16; i++) {
-+			String idProperty = "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i] + "ID";
-+
-+			//fcBlockCandlesColored[i] = new FCBlockCandle(parseID(idProperty), parseID("fcItemCandleID"), i, "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i]);
-+		}
-+		fcBlockSilverfishStone = new FCBlockSilverfish(parseID("fcBlockSilverfishStoneID"), Block.stone,0);
-+		fcBlockSilverfishStoneSecondStrata = new FCBlockSilverfish(parseID("fcBlockSilverfishStoneSecondStrataID"), Block.stone,1);
-+		fcBlockSilverfishStoneThirdStrata = new FCBlockSilverfish(parseID("fcBlockSilverfishStoneThirdStrataID"), Block.stone,2);
-+		fcBlockSilverfishCobblestone = new FCBlockSilverfish(parseID("fcBlockSilverfishCobblestoneID"), Block.cobblestone,0);
-+		fcBlockSilverfishStoneBricks = new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksID"), Block.stoneBrick,0);
-+		fcBlockSilverfishStoneBricksMossy = new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksMossyID"), Block.stoneBrick,1);
-+		fcBlockSilverfishStoneBricksCracked = new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksCrackedID"), Block.stoneBrick,2);
-+		fcBlockSilverfishStoneBricksChiseled = new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksChiseledID"), Block.stoneBrick,3);
++		
++        fcAnvil = new FCBlockSoulforge(parseID("fcAnvilID"));
++        
++        fcLightBulbOff = new FCBlockLightBulb(parseID("fcLightBulbOffID"), false);
++        fcLightBulbOn = new FCBlockLightBulb(parseID("fcLightBulbOnID"), true);
++        
++        fcBBQ = new FCBlockBBQ(parseID("fcBBQID"));
++        
++        fcHopper = new FCBlockHopper(parseID("fcHopperID"));
++
++        fcSaw = new FCBlockSaw(parseID("fcSawID"));
++        
++        fcPlatform = new FCBlockPlatform(parseID("fcPlatformID"));
++        
++        fcCement = new FCBlockCement(parseID("fcCementID"));        
++
++        fcPulley = new FCBlockPulley(parseID("fcPulleyID"));
++        
++        fcBlockPressurePlateSoulforgedSteel = (new FCBlockPressurePlate(parseID("fcPressurePlateObsidianID"), 
++        	"fcBlockPressurePlateSoulforgedSteel", fcMaterialSoulforgedSteel, EnumMobType.players)).setHardness(1.0F).setResistance(2000F).
++        	setStepSound(Block.soundMetalFootstep).setUnlocalizedName("pressurePlate");
++
++	    fcBlockWoodOakMouldingAndDecorative = new FCBlockWoodMouldingAndDecorative(parseID("fcMouldingID"), 
++	    	"FCBlockDecorativeWoodOak", "fcBlockColumnWoodOak_side", fcBlockWoodOakSidingAndCorner.blockID, "fcBlockWoodOakMoulding");
++	    
++        fcBlockLegacySmoothstoneAndOakCorner = new FCBlockLegacyCorner(parseID("fcCornerID"));        
++        
++        fcBlockDispenser = new FCBlockBlockDispenser(parseID("fcBlockDispenserID"));
++        
++        fcCauldron = new FCBlockCauldron(parseID("fcCauldronID"));
++
++        fcDetectorRailWood = (new FCBlockDetectorRail(parseID("fcDetectorRailWoodID"))).
++        	setHardness(0.7F).setStepSound(Block.soundMetalFootstep).setUnlocalizedName("fcBlockDetectorRailWood");
++        
++        fcBlockDetectorRailSoulforgedSteel = (new FCBlockDetectorRail(parseID("fcDetectorRailObsidianID"))).
++        	setHardness(0.7F).setStepSound(Block.soundMetalFootstep).setUnlocalizedName("fcBlockDetectorRailSoulforgedSteel");
++        
++        fcCompanionCube = new FCBlockCompanionCube(parseID("fcCompanionCubeID"));
++
++        fcBlockDetector = new FCBlockDetectorBlock(parseID("fcBlockDetectorID"));
++        fcBlockDetectorLogic = (new FCBlockDetectorLogic(parseID("fcBlockDetectorLogicID"))).setUnlocalizedName("fcBlockDetectorLogic");
++        
++        fcLens = new FCBlockLens(parseID("fcBlockLensID"));
++        
++        fcBlockHempCrop = new FCBlockHempCrop(parseID("fcHempCropID"));
++
++        fcHandCrank = new FCBlockHandCrank(parseID("fcHandCrankID"));
++        
++        fcMillStone = new FCBlockMillStone(parseID("fcMillStoneID"));
++
++        fcAnchor = new FCBlockAnchor(parseID("fcAnchorID"));
++
++        fcRopeBlock = new FCBlockRope(parseID("fcRopeBlockID"));
++
++        fcBlockLegacySmoothstoneAndOakSiding = new FCBlockLegacyOmniSlab(parseID("fcOmniSlabID"));
++
++        fcBlockAxle = new FCBlockAxle(parseID("fcAxleBlockID"));
++
++        fcBlockRedstoneClutch = new FCBlockRedstoneClutch(parseID("fcGearBoxID"));
++        
++        fcTurntable = new FCBlockTurntable(parseID("fcTurntableID"));
++        
++        fcBellows = new FCBlockBellows(parseID("fcBellowsID"));
++        
++        fcBlockFireStoked = new FCBlockFireStoked(parseID("fcStokedFireID"));
++        
++        fcUnfiredPottery = new FCBlockUnfiredPottery(parseID("fcUnfiredPotteryID"));
++        
++        fcCrucible = new FCBlockCrucible(parseID("fcCrucibleID"));
++        fcPlanter = new FCBlockPlanter(parseID("fcPlanterID"));
++        fcVase = new FCBlockVase(parseID("fcVaseID"));
++        
++        fcBlockRottenFlesh = new FCBlockRottenFlesh(parseID("fcBlockRottenFleshID"));
++        
++        fcBlockShaft = new FCBlockShaft(parseID("fcBlockShaftID"));
++        
++        fcBlockSoulforgeDormant = new FCBlockSoulforgeDormant(parseID("fcBlockSoulforgeDormantID"));
++        
++	    fcBlockSmoothstoneStairs = (new FCBlockStairs(parseID("fcBlockSmoothstoneStairsID"), Block.stone, 0)).
++	    	SetPicksEffectiveOn().setUnlocalizedName("fcBlockSmoothstoneStairs");
++	    
++	    fcBlockRottenFleshSlab = new FCBlockRottenFleshSlab(parseID("fcBlockRottenFleshSlabID"));
++	    
++	    fcBlockBoneSlab = new FCBlockBoneSlab(parseID("fcBlockBoneSlabID"));
++	    
++	    fcBlockPumpkinFresh = (new FCBlockPumpkin(parseID("fcBlockPumpkinFreshID"), false));
++	    ((FCBlockStem)Block.pumpkinStem).SetFruitBlock(fcBlockPumpkinFresh); // do this after pumpkin is instantiated
++	    
++        fcBlockWoodBloodSidingAndCorner = new FCBlockWoodSidingAndCornerAndDecorative(parseID("fcBlockWoodBloodSidingAndCornerID"), 
++        	"fcBlockDecorativeWoodBlood", "fcWoodBloodSiding");
++        
++	    fcBlockWoodBloodMouldingAndDecorative = new FCBlockWoodMouldingAndDecorative(parseID("fcBlockWoodBloodMouldingAndDecorativeID"), 
++	    	"fcBlockDecorativeWoodBlood", "fcBlockColumnWoodBlood_side", 
++	    	fcBlockWoodBloodSidingAndCorner.blockID, "fcWoodBloodMoulding");
++	    
++	    fcBlockWoodBloodStairs = (new FCBlockStairsWood(parseID("fcBlockWoodBloodStairsID"), 
++	    	Block.planks, 4)).setUnlocalizedName("fcBlockWoodBloodStairs");
++	    
++	    fcBlockLogDamaged = new FCBlockLogDamaged(parseID("fcBlockLogDamagedID"));
++	    
++	    fcBlockDirtLoose = new FCBlockDirtLoose(parseID("fcBlockDirtLooseID"));
++	    fcBlockDirtLooseSlab = new FCBlockDirtLooseSlab(parseID("fcBlockDirtLooseSlabID"));
++	    
++	    fcBlockCampfireUnlit = (FCBlockCampfire)(new FCBlockCampfire(parseID("fcBlockCampfireUnlitID"), 0)).setCreativeTab(CreativeTabs.tabDecorations);
++	    fcBlockCampfireSmall = (FCBlockCampfire)(new FCBlockCampfire(parseID("fcBlockCampfireSmallID"), 1).setLightValue(0.25F));
++	    fcBlockCampfireMedium = (FCBlockCampfire)(new FCBlockCampfire(parseID("fcBlockCampfireMediumID"), 2).setLightValue(0.5F));
++	    fcBlockCampfireLarge = (FCBlockCampfire)(new FCBlockCampfire(parseID("fcBlockCampfireLargeID"), 3).setLightValue(0.875F));
++	    
++	    fcBlockUnfiredBrick = new FCBlockUnfiredBrick(parseID("fcBlockUnfiredBrickID"));
++	    fcBlockCookedBrick = new FCBlockCookedBrick(parseID("fcBlockCookedBrickID"));
++	    
++	    fcBlockBrickLoose = new FCBlockBrickLoose(parseID("fcBlockBrickLooseID"));
++	    fcBlockBrickLooseSlab = new FCBlockBrickLooseSlab(parseID("fcBlockBrickLooseSlabID"));
++	    
++	    fcBlockCobblestoneLoose = new FCBlockCobblestoneLoose(parseID("fcBlockCobblestoneLooseID"));
++	    fcBlockCobblestoneLooseSlab = new FCBlockCobblestoneLooseSlab(parseID("fcBlockCobblestoneLooseSlabID"));
++	    
++	    fcBlockFurnaceBrickIdle = new FCBlockFurnaceBrickIdle(parseID("fcBlockFurnaceBrickIdleID"));
++	    fcBlockFurnaceBrickBurning = new FCBlockFurnaceBrickBurning(parseID("fcBlockFurnaceBrickBurningID"));
++	    
++	    fcBlockTorchFiniteUnlit = new FCBlockTorchFiniteUnlit(parseID("fcBlockTorchFiniteIdleID"));
++	    fcBlockTorchFiniteBurning = new FCBlockTorchFiniteBurning(parseID("fcBlockTorchFiniteBurningID"));
++	    
++	    fcBlockStoneRough = (new FCBlockStoneRough(parseID("fcBlockStoneRoughID"), 0));
++	    fcBlockStoneRoughMidStrata = (new FCBlockStoneRough(parseID("fcBlockStoneRoughMidStrataID"), 1));
++	    fcBlockStoneRoughDeepStrata = (new FCBlockStoneRough(parseID("fcBlockStoneRoughDeepStrataID"), 2));
++	    
++	    fcBlockWorkStump = new FCBlockWorkStump(parseID("fcBlockWorkStumpID"));
++	    
++	    fcBlockBasketWicker = new FCBlockBasketWicker(parseID("fcBlockBasketWickerID"));
++	    
++	    fcBlockLogSpike = new FCBlockLogSpike(parseID("fcBlockLogSpikeID"));
++	    
++	    fcBlockTorchNetherUnlit = new FCBlockTorchNetherUnlit(parseID("fcBlockTorchIdleID"));
++
++	    // flammable versions of vanilla blocks.  Keep flammability attributes out of class so as not to affect original blocks.
++	    fcBlockWorkbench = (new FCBlockWorkbench(parseID("fcBlockWorkbenchID"))).SetFireProperties(5, 20);
++	    fcBlockChest = (new FCBlockChest(parseID("fcBlockChestID"))).SetFireProperties(5, 20);
++	    fcBlockDoorWood  = (new FCBlockDoorWood(parseID("fcBlockDoorWoodID"))).SetFireProperties(5, 20);
++	    fcBlockWeb = (new FCBlockWeb(parseID("fcBlockWebID"))).SetFireProperties(60, 100).setCreativeTab(CreativeTabs.tabDecorations);
++	    
++	    fcBlockUnfiredClay = new FCBlockUnfiredClay(parseID("fcBlockUnfiredClayID"));
++	    fcBlockMyceliumSlab = new FCBlockMyceliumSlab(parseID("fcBlockMyceliumSlabID"));
++	    fcBlockToolPlaced = new FCBlockToolPlaced(parseID("fcBlockToolPlacedID"));
++	    
++	    fcBlockBrickLooseStairs = new FCBlockBrickLooseStairs(parseID("fcBlockBrickLooseStairsID"));
++	    fcBlockCobblestoneLooseStairs = new FCBlockCobblestoneLooseStairs(parseID("fcBlockCobblestoneLooseStairsID"));
++	    
++	    fcBlockLogSmouldering = new FCBlockLogSmouldering(parseID("fcBlockLogSmoulderingID"));
++	    fcBlockWoodCinders = new FCBlockWoodCinders(parseID("fcBlockWoodCindersID"));
++	    fcBlockStumpCharred = new FCBlockStumpCharred(parseID("fcBlockStumpCharredID"));
++	    fcBlockAshGroundCover = new FCBlockAshGroundCover(parseID("fcBlockAshGroundCoverID"));
++	    
++	    fcBlockSnowLoose = new FCBlockSnowLoose(parseID("fcBlockSnowLooseID"));
++	    fcBlockSnowLooseSlab = new FCBlockSnowLooseSlab(parseID("fcBlockSnowLooseSlabID"));	    
++	    fcBlockSnowSolid = new FCBlockSnowSolid(parseID("fcBlockSnowSolidID"));
++	    fcBlockSnowSolidSlab = new FCBlockSnowSolidSlab(parseID("fcBlockSnowSolidSlabID"));
++	    
++	    fcBlockLadder = new FCBlockLadder(parseID("fcBlockLadderID"));
++	    fcBlockLadderOnFire = new FCBlockLadderOnFire(parseID("fcBlockLadderOnFireID"));
++	    
++	    fcBlockShovel = new FCBlockShovel(parseID("fcBlockShovelID"));
++	    fcBlockHamper = new FCBlockHamper(parseID("fcBlockHamperID"));
++	    
++	    fcBlockCreeperOysters = new FCBlockCreeperOysters(parseID("fcBlockCreeperOystersID"));
++	    fcBlockCreeperOystersSlab = new FCBlockCreeperOystersSlab(parseID("fcBlockCreeperOystersSlabID"));
++	    
++	    fcBlockTorchNetherBurning = (FCBlockTorchNetherBurning)(new FCBlockTorchNetherBurning(parseID("fcBlockTorchNetherBurningID")))
++	    		.setCreativeTab(CreativeTabs.tabDecorations);
++	    
++	    fcBlockBucketEmpty = new FCBlockBucket(parseID("fcBlockBucketEmptyID"));	    
++	    fcBlockBucketWater = new FCBlockBucketWater(parseID("fcBlockBucketWaterID"));
++	    fcBlockBucketCement = new FCBlockBucketCement(parseID("fcBlockBucketCementID"));
++	    fcBlockBucketMilk = new FCBlockBucketMilk(parseID("fcBlockBucketMilkID"));
++	    fcBlockBucketMilkChocolate = new FCBlockBucketMilkChocolate(parseID("fcBlockBucketMilkChocolateID"));
++	    
++	    fcBlockMilk = new FCBlockMilk(parseID("fcBlockMilkID"));
++	    fcBlockMilkChocolate = new FCBlockMilkChocolate(parseID("fcBlockMilkChocolateID"));
++	    
++	    fcBlockGearBox = new FCBlockGearBox(parseID("fcBlockGearBoxID"));
++	    
++	    fcBlockSpikeIron = new FCBlockSpike(parseID("fcBlockSpikeIronID"));
++	    fcBlockLightningRod = new FCBlockLightningRod(parseID("fcBlockLightningRodID"));
++	    
++	    fcBlockChunkOreIron = new FCBlockChunkOreIron(parseID("fcBlockChunkOreIronID"));
++	    fcBlockChunkOreGold = new FCBlockChunkOreGold(parseID("fcBlockChunkOreGoldID"));
++	    
++	    fcBlockStoneBrickLoose = new FCBlockStoneBrickLoose(parseID("fcBlockStoneBrickLooseID"));
++	    fcBlockStoneBrickLooseSlab = new FCBlockStoneBrickLooseSlab(parseID("fcBlockStoneBrickLooseSlabID"));
++	    fcBlockStoneBrickLooseStairs = new FCBlockStoneBrickLooseStairs(parseID("fcBlockStoneBrickLooseStairsID"));
++	    
++	    fcBlockNetherBrickLoose = new FCBlockNetherBrickLoose(parseID("fcBlockNetherBrickLooseID"));
++	    fcBlockNetherBrickLooseSlab = new FCBlockNetherBrickLooseSlab(parseID("fcBlockNetherBrickLooseSlabID"));
++	    fcBlockNetherBrickLooseStairs = new FCBlockNetherBrickLooseStairs(parseID("fcBlockNetherBrickLooseStairsID"));
++	    
++	    fcBlockNetherrackFalling = new FCBlockNetherrackFalling(parseID("fcBlockNetherrackFallingID"));
++	    
++	    fcBlockLavaPillow = new FCBlockLavaPillow(parseID("fcBlockLavaPillowID"));
++	    
++	    fcBlockMushroomCapBrown = new FCBlockMushroomCap(parseID("fcBlockMushroomCapBrownID"), 0);
++	    fcBlockMushroomCapRed = new FCBlockMushroomCap(parseID("fcBlockMushroomCapRedID"), 1);
++	    
++	    fcBlockChunkOreStorageIron = new FCBlockChunkOreStorageIron(parseID("fcBlockChunkOreStorageIronID"));
++	    fcBlockChunkOreStorageGold = new FCBlockChunkOreStorageGold(parseID("fcBlockChunkOreStorageGoldID"));
++	    
++	    fcBlockWicker = new FCBlockWicker(parseID("fcBlockWickerID"));
++	    fcBlockWickerSlab = new FCBlockWickerSlab(parseID("fcBlockWickerSlabID"));	    
++	    fcBlockWickerPane = new FCBlockWickerPane(parseID("fcBlockWickerPaneID"));
++	    
++	    fcBlockGrate = new FCBlockGrate(parseID("fcBlockGrateID"));
++	    fcBlockSlats = new FCBlockSlats(parseID("fcBlockSlatsID"));
++	    
++	    fcBlockFarmland = new FCBlockFarmland(parseID("fcBlockFarmlandNewID"));
++	    fcBlockFarmlandFertilized = new FCBlockFarmlandFertilized(parseID("fcBlockFarmlandFertilizedNewID"));
++	    
++	    fcBlockWheatCrop = new FCBlockWheatCrop(parseID("fcBlockWheatCropID"));
++	    fcBlockWheatCropTop = new FCBlockWheatCropTop(parseID("fcBlockWheatCropTopID"));
++	    fcBlockWeeds = new FCBlockWeeds(parseID("fcBlockWeedsID"));
++	    fcBlockPlanterSoil = new FCBlockPlanterSoil(parseID("fcBlockPlanterSoilID"));	   
++	    
++	    fcBlockReeds = new FCBlockReed(parseID("fcBlockReedsID"));
++	    fcBlockReedRoots = new FCBlockReedRoots(parseID("fcBlockReedRootsID"));
++	    
++	    fcBlockCarrot = new FCBlockCarrot(parseID("fcBlockCarrotID"));
++	    fcBlockCarrotFlowers = new FCBlockCarrotFlowers(parseID("fcBlockCarrotFlowersID"));
++	    
++	    //fcBlockCandlePlain = new FCBlockCandle(parseID("fcBlockCandlePlainID"), parseID("fcItemCandleID"), 16, "fcBlockCandle");
++	    
++	    fcBlockCandlesColored = new Block[16];
++	    
++	    for (int i = 0; i < 16; i++) {
++	    	String idProperty = "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i] + "ID";
++	    	
++	    	//fcBlockCandlesColored[i] = new FCBlockCandle(parseID(idProperty), parseID("fcItemCandleID"), i, "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i]);
++	    }
++    
++		fcBlockSilverfishStone = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneID"), 
++				Block.stone, 0)
++				.setUnlocalizedName("fcBlockSilverfishStone");
++		fcBlockSilverfishStoneSecondStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneSecondStrataID"), 
++				Block.stone, 1)
++				.setUnlocalizedName("fcBlockSilverfishStone2");
++		fcBlockSilverfishStoneThirdStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneThirdStrataID"), 
++				Block.stone, 2)
++				.setUnlocalizedName("fcBlockSilverfishStone3");
++		fcBlockSilverfishCobblestone = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishCobblestoneID"), 
++				Block.cobblestone, 0)
++				.setUnlocalizedName("fcBlockSilverfishCobblestone");
++		fcBlockSilverfishStoneBricks = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksID"), 
++				Block.stoneBrick, 0)
++				.setUnlocalizedName("fcBlockSilverfishStoneBrick");
++		fcBlockSilverfishStoneBricksMossy = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksMossyID"), 
++				Block.stoneBrick, 1)
++				.setUnlocalizedName("fcBlockSilverfishStoneBrickMossy");
++		fcBlockSilverfishStoneBricksCracked = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksCrackedID"), 
++				Block.stoneBrick, 2)
++				.setUnlocalizedName("fcBlockSilverfishStoneCracked");
++		fcBlockSilverfishStoneBricksChiseled = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksChiseledID"), 
++				Block.stoneBrick, 3)
++				.setUnlocalizedName("fcBlockSilverfishStoneChiseled");
++		
++		fcBlockGrassSlab = new FCBlockGrassSlab(parseID("fcBlockGrassSlabID"));
 +
 +	}
 +
@@ -1918,7 +1941,8 @@
 +		Item.itemsList[fcBlockTorchFiniteBurning.blockID] = new FCItemBlockTorchFiniteBurning(fcBlockTorchFiniteBurning.blockID - 256);
 +		Item.itemsList[fcBlockTorchNetherUnlit.blockID] = new FCItemBlockTorchIdle(fcBlockTorchNetherUnlit.blockID - 256);        
 +
-+		Item.itemsList[fcBlockMyceliumSlab.blockID] = new FCItemBlockSlab(fcBlockMyceliumSlab.blockID - 256);
++		Item.itemsList[fcBlockMyceliumSlab.blockID] = new FCItemBlockMyceliumSlab(fcBlockMyceliumSlab.blockID - 256);
++		Item.itemsList[fcBlockGrassSlab.blockID] = new FCItemBlockGrassSlab(fcBlockGrassSlab.blockID - 256);
 +
 +		Item.itemsList[fcBlockStumpCharred.blockID] = new FCItemBlockDamageToMetadata(fcBlockStumpCharred.blockID - 256);
 +
@@ -2332,6 +2356,7 @@
 +		this.registerProperty("fcBlockSilverfishStoneBricksMossyID", "1119");
 +		this.registerProperty("fcBlockSilverfishStoneBricksCrackedID", "1120");
 +		this.registerProperty("fcBlockSilverfishStoneBricksChiseledID", "1121");
++		this.registerProperty("fcBlockGrassSlabID", "1122");
 +
 +
 +		//Item ids

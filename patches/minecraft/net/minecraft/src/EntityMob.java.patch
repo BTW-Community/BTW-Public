@@ -84,7 +84,55 @@
          if (this.attackTime <= 0 && par2 < 2.0F && par1Entity.boundingBox.maxY > this.boundingBox.minY && par1Entity.boundingBox.minY < this.boundingBox.maxY)
          {
              this.attackTime = 20;
-@@ -185,7 +219,10 @@
+@@ -154,38 +188,41 @@
+     /**
+      * Checks to make sure the light is not too bright where the mob is spawning
+      */
+-    protected boolean isValidLightLevel()
+-    {
+-        int var1 = MathHelper.floor_double(this.posX);
+-        int var2 = MathHelper.floor_double(this.boundingBox.minY);
+-        int var3 = MathHelper.floor_double(this.posZ);
++    protected boolean isValidLightLevel() {
++        int x = MathHelper.floor_double(this.posX);
++        int y = MathHelper.floor_double(this.boundingBox.minY);
++        int z = MathHelper.floor_double(this.posZ);
+ 
+-        if (this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, var1, var2, var3) > this.rand.nextInt(32))
+-        {
++        if (this.worldObj.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) > this.rand.nextInt(32)) {
+             return false;
+         }
+-        else
+-        {
+-            int var4 = this.worldObj.getBlockLightValue(var1, var2, var3);
++        else {
++            int blockLightValue = this.worldObj.getBlockLightValueNoSky(x, y, z);
+ 
+-            if (this.worldObj.isThundering())
+-            {
+-                int var5 = this.worldObj.skylightSubtracted;
+-                this.worldObj.skylightSubtracted = 10;
+-                var4 = this.worldObj.getBlockLightValue(var1, var2, var3);
+-                this.worldObj.skylightSubtracted = var5;
++            if (blockLightValue > 0) {
++            	return false;
+             }
++            else {
++                int naturalLightValue = this.worldObj.GetBlockNaturalLightValue(x, y, z);
+ 
+-            return var4 <= this.rand.nextInt(8);
++                if (this.worldObj.isThundering()) {
++                	naturalLightValue = Math.min(naturalLightValue, 5);
+         }
++                
++                return naturalLightValue <= this.rand.nextInt(8);
+     }
++        }
++    }
+ 
+     /**
+      * Checks if the entity's current position is a valid location to spawn this entity.
       */
      public boolean getCanSpawnHere()
      {

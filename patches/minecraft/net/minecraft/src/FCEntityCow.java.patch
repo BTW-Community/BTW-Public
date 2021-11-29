@@ -135,7 +135,7 @@
 +		        {
 +		            if ( isBurning() )
 +		            {
-+		                dropItem( FCBetterThanWolves.fcItemMeatBurned.itemID, 1 );
++		                dropItem( Item.beefCooked.itemID, 1 );
 +		            }
 +		            else
 +		            {

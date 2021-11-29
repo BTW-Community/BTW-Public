@@ -17,7 +17,7 @@
 +    	SetFurnaceBurnTime( FCEnumFurnaceBurnTime.KINDLING );
 +    	SetFilterableProperties( m_iFilterable_Narrow );
 +        
-+    	SetHerbivoreFoodValue( EntityAnimal.m_iBaseGrazeFoodValue );
++    	SetHerbivoreFoodValue( m_iBaseHerbivoreItemFoodValue / 4 );
 +    	
 +    	setUnlocalizedName( "fcItemStraw" );
 +    	
