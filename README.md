@@ -26,6 +26,8 @@ The Community Edition team would like to express its gratitude to all the people
 - ExpHP
 - AnaRchX
 - Sockthing
+- cocona20xx
+- Quanteus
 
 ## 🐺 What is Better Than Wolves?
 
