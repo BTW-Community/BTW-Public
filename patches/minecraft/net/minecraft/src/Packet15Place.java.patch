@@ -1,5 +1,21 @@
 --- a/minecraft/net/minecraft/src/Packet15Place.java
 +++ b/minecraft/net/minecraft/src/Packet15Place.java
+@@ -25,11 +25,11 @@
+ 
+     public Packet15Place() {}
+ 
+-    public Packet15Place(int par1, int par2, int par3, int par4, ItemStack par5ItemStack, float par6, float par7, float par8)
++    public Packet15Place(int x, int y, int z, int par4, ItemStack par5ItemStack, float par6, float par7, float par8)
+     {
+-        this.xPosition = par1;
+-        this.yPosition = par2;
+-        this.zPosition = par3;
++        this.xPosition = x;
++        this.yPosition = y;
++        this.zPosition = z;
+         this.direction = par4;
+         this.itemStack = par5ItemStack != null ? par5ItemStack.copy() : null;
+         this.xOffset = par6;
 @@ -47,9 +47,16 @@
          this.zPosition = par1DataInputStream.readInt();
          this.direction = par1DataInputStream.read();

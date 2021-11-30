@@ -425,7 +425,7 @@
  
      /**
       * Called when item is crafted/smelted. Used only by maps so far.
-@@ -573,4 +593,518 @@
+@@ -573,4 +593,510 @@
      {
          StatList.initStats();
      }
@@ -493,21 +493,13 @@
 +    //------------ Addon interfacing related functionality ----------//
 +
 +    /**
-+	 * Deprecated form of replaceItem for backwards compatibility
-+	 */
-+	@Deprecated
-+	public static Item replaceItem(int id, Class newClass, Object ... parameters) {
-+		return replaceItem(id, newClass, null, new String[] {}, parameters);
-+	}
-+
-+	/**
 +	 * Replaces a reference to an existing item (vanilla or btw)
 +	 * @param id The block id to be replaced
 +	 * @param newClass The class of the new item
 +	 * @param parameters Optional additional parameters to pass to the block, not including the id.
 +	 */
 +	public static Item replaceItem(int id, Class newClass, FCAddOn addonPerformingReplacement, Object ... parameters) {
-+		return replaceItem(id, newClass, addonPerformingReplacement, new String[] {}, parameters);
++		return replaceItem(id, newClass, new String[] {}, addonPerformingReplacement, parameters);
 +	}
 +
 +	/**
@@ -517,7 +509,7 @@
 +	 * @param validAddonNamesForOverwrite An array of addon names which should be ignored when handling conflicts
 +	 * @param parameters Optional additional parameters to pass to the block, not including the id.
 +	 */
-+    public static Item replaceItem(int id, Class newClass, FCAddOn addonPerformingReplacement, String[] validAddonNamesForOverwrite, Object ... parameters) {
++    public static Item replaceItem(int id, Class newClass, String[] validAddonNamesForOverwrite, FCAddOn addonPerformingReplacement, Object ... parameters) {
 +    	if (itemReplaced[id]) {
 +    		String replacedBy = itemReplacedBy[id];
 +			boolean isValidOverwrite = false;
@@ -608,9 +600,9 @@
 +    
 +    //----------- Animal Food related functionality -----------//
 +    
-+    public static final int m_iBaseHerbivoreItemFoodValue = ( EntityAnimal.m_iBaseGrazeFoodValue * 4 );
-+    public static final int m_iBasePigItemFoodValue = ( EntityAnimal.m_iBaseGrazeFoodValue * 4 );
-+    public static final int m_iBaseChickenItemFoodValue = ( EntityAnimal.m_iBaseGrazeFoodValue * 8 );
++    public static final int m_iBaseHerbivoreItemFoodValue = ( EntityAnimal.m_iBaseGrazeFoodValue * 32 );
++    public static final int m_iBasePigItemFoodValue = ( EntityAnimal.m_iBaseGrazeFoodValue * 32 );
++    public static final int m_iBaseChickenItemFoodValue = ( EntityAnimal.m_iBaseGrazeFoodValue * 64 );
 +
 +    private int m_iHerbivoreFoodValue = 0;
 +    private int m_iBirdFoodValue = 0;

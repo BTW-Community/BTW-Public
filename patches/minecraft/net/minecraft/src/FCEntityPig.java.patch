@@ -52,7 +52,7 @@
 +	        {
 +	            if ( isBurning() )
 +	            {
-+	                dropItem( FCBetterThanWolves.fcItemMeatBurned.itemID, 1 );
++	                dropItem( Item.porkCooked.itemID, 1 );
 +	            }
 +	            else
 +	            {
@@ -200,8 +200,8 @@
 +    @Override
 +    protected int GetFoodValueMultiplier()
 +    {
-+    	return 3;
-+    }    
++    	return 4;
++    }
 +
 +    @Override
 +    public boolean GetDisruptsEarthOnGraze()

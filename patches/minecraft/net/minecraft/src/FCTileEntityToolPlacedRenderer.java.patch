@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCTileEntityToolPlacedRenderer.java
-@@ -0,0 +1,152 @@
+@@ -0,0 +1,156 @@
 +// FCMOD: Client Only
 +
 +package net.minecraft.src;
@@ -29,16 +29,17 @@
 +    	int iFacingLevel = FCBetterThanWolves.fcBlockToolPlaced.GetVerticalOrientation( iMetadata );
 +    	
 +        EntityItem entityTool = (EntityItem) EntityList.createEntityOfType(EntityItem.class, tileEntityTool.worldObj, 0.0D, 0.0D, 0.0D, toolStack );
-+        FCItemTool toolItem = (FCItemTool)toolStack.getItem();
++
++        FCIPlaceableAsItem toolItem = (FCIPlaceableAsItem) toolStack.getItem();
++
 +        
 +        entityTool.getEntityItem().stackSize = 1;
 +        entityTool.hoverStart = 0F;
 +    	
 +        GL11.glPushMatrix();
-+        
-+        float fVerticalOffset = toolItem.GetVisualVerticalOffsetAsBlock();
-+        float fHorizontalOffset = toolItem.GetVisualHorizontalOffsetAsBlock();
-+        
++        float fVerticalOffset = ((FCIPlaceableAsItem)toolItem).GetVisualVerticalOffsetAsBlock();
++        float fHorizontalOffset = ((FCIPlaceableAsItem)toolItem).GetVisualHorizontalOffsetAsBlock();
++    
 +        float fXOffset = 0.5F;
 +        float fZOffset = 0.5F;
 +        float fYOffset = 0.5F;
@@ -139,7 +140,10 @@
 +        	fRoll = 270F;
 +        }
 +        
-+        fRoll += toolItem.GetVisualRollOffsetAsBlock();
++
++       	fRoll += ((FCIPlaceableAsItem)toolItem).GetVisualRollOffsetAsBlock();
++
++        
 +        
 +    	GL11.glRotatef( fPitch, 0F, 1F, 0F );
 +    	GL11.glRotatef( fRoll, 0F, 0F, 1F );

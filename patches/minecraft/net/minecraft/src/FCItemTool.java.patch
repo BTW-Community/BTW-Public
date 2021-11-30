@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemTool.java
-@@ -0,0 +1,264 @@
+@@ -0,0 +1,267 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -8,7 +8,7 @@
 +/** 
 + * Class to fully replace ItemTool due to large amount of refactoring that was applied to that class
 + */
-+public abstract class FCItemTool extends Item
++public abstract class FCItemTool extends Item implements FCIPlaceableAsItem
 +{
 +    protected float efficiencyOnProperMaterial = 4F;
 +    protected int damageVsEntity;
@@ -136,73 +136,76 @@
 +    
 +    @Override
 +    public boolean onItemUse( ItemStack stack, EntityPlayer player, World world, int i, int j, int k, int iFacing, 
-+    	float fClickX, float fClickY, float fClickZ )
++    		float fClickX, float fClickY, float fClickZ )
 +    {
-+        if ( player != null && player.canPlayerEdit( i, j, k, iFacing, stack ) && GetCanBePlacedAsBlock() )
-+        {
-+        	FCUtilsBlockPos placementPos = new FCUtilsBlockPos( i, j, k );
-+        	FCUtilsBlockPos stuckInPos = new FCUtilsBlockPos( i, j, k );
-+
-+        	if ( !FCUtilsWorld.IsReplaceableBlock( world, i, j, k ) )
-+        	{
-+        		placementPos.AddFacingAsOffset( iFacing );
-+        	}
-+        	else
++    	if (player.isUsingSpecialKey())
++    	{
++    		if ( player != null && player.canPlayerEdit( i, j, k, iFacing, stack ) && GetCanBePlacedAsBlock() )
 +    		{
-+    			iFacing = 1;
-+    			stuckInPos.AddFacingAsOffset( 0 );
++    			FCUtilsBlockPos placementPos = new FCUtilsBlockPos( i, j, k );
++    			FCUtilsBlockPos stuckInPos = new FCUtilsBlockPos( i, j, k );
++
++    			if ( !FCUtilsWorld.IsReplaceableBlock( world, i, j, k ) )
++    			{
++    				placementPos.AddFacingAsOffset( iFacing );
++    			}
++    			else
++    			{
++    				iFacing = 1;
++    				stuckInPos.AddFacingAsOffset( 0 );
++    			}
++
++    			if ( FCUtilsWorld.DoesBlockHaveCenterHardpointToFacing( world, stuckInPos.i, stuckInPos.j, stuckInPos.k, iFacing, true ) &&        		
++    					FCBetterThanWolves.fcBlockToolPlaced.canPlaceBlockAt( world, placementPos.i, placementPos.j, placementPos.k ) )
++    			{
++    				Block blockStuckIn = Block.blocksList[world.getBlockId( stuckInPos.i, stuckInPos.j, stuckInPos.k )];
++
++    				if ( blockStuckIn != null &&
++    						blockStuckIn.CanToolsStickInBlock( world, stuckInPos.i, stuckInPos.j, stuckInPos.k ) &&
++    						CanToolStickInBlock( stack, blockStuckIn, world, stuckInPos.i, stuckInPos.j, stuckInPos.k ) )            	
++    				{
++    					int iTargetFacing;
++    					int iTargetFacingLevel;
++
++    					if ( iFacing >= 2 )
++    					{
++    						iTargetFacing = Block.GetOppositeFacing( iFacing );
++    						iTargetFacingLevel = 2;
++    					}
++    					else
++    					{
++    						iTargetFacing = FCUtilsMisc.ConvertOrientationToFlatBlockFacing( player );
++    						iTargetFacingLevel = Block.GetOppositeFacing( iFacing );            			
++    					}
++
++    					int iMetadata = FCBetterThanWolves.fcBlockToolPlaced.SetFacing( 0, iTargetFacing );     
++
++    					iMetadata = FCBetterThanWolves.fcBlockToolPlaced.SetVerticalOrientation( iMetadata, iTargetFacingLevel );
++
++    					world.setBlockAndMetadataWithNotify( placementPos.i, placementPos.j, placementPos.k, 
++    							FCBetterThanWolves.fcBlockToolPlaced.blockID, iMetadata );
++
++    					TileEntity targetTileEntity = world.getBlockTileEntity( placementPos.i, placementPos.j, placementPos.k );
++
++    					if ( targetTileEntity != null && targetTileEntity instanceof FCTileEntityToolPlaced )
++    					{
++    						((FCTileEntityToolPlaced)targetTileEntity).SetToolStack( stack );
++
++    						if ( !world.isRemote )
++    						{
++    							PlayPlacementSound( stack, blockStuckIn, world, placementPos.i, placementPos.j, placementPos.k );
++    						}
++
++    						stack.stackSize--;
++
++    						return true;
++    					}
++    				}
++    			}
 +    		}
-+        	
-+        	if ( FCUtilsWorld.DoesBlockHaveCenterHardpointToFacing( world, stuckInPos.i, stuckInPos.j, stuckInPos.k, iFacing, true ) &&        		
-+        		FCBetterThanWolves.fcBlockToolPlaced.canPlaceBlockAt( world, placementPos.i, placementPos.j, placementPos.k ) )
-+        	{
-+            	Block blockStuckIn = Block.blocksList[world.getBlockId( stuckInPos.i, stuckInPos.j, stuckInPos.k )];
-+            	
-+            	if ( blockStuckIn != null &&
-+            		blockStuckIn.CanToolsStickInBlock( world, stuckInPos.i, stuckInPos.j, stuckInPos.k ) &&
-+            		CanToolStickInBlock( stack, blockStuckIn, world, stuckInPos.i, stuckInPos.j, stuckInPos.k ) )            	
-+        		{
-+            		int iTargetFacing;
-+            		int iTargetFacingLevel;
-+            		
-+            		if ( iFacing >= 2 )
-+            		{
-+            			iTargetFacing = Block.GetOppositeFacing( iFacing );
-+            			iTargetFacingLevel = 2;
-+            		}
-+            		else
-+            		{
-+            			iTargetFacing = FCUtilsMisc.ConvertOrientationToFlatBlockFacing( player );
-+            			iTargetFacingLevel = Block.GetOppositeFacing( iFacing );            			
-+            		}
++    	}
 +
-+            		int iMetadata = FCBetterThanWolves.fcBlockToolPlaced.SetFacing( 0, iTargetFacing );     
-+            		
-+            		iMetadata = FCBetterThanWolves.fcBlockToolPlaced.SetVerticalOrientation( iMetadata, iTargetFacingLevel );
-+            		
-+            		world.setBlockAndMetadataWithNotify( placementPos.i, placementPos.j, placementPos.k, 
-+            			FCBetterThanWolves.fcBlockToolPlaced.blockID, iMetadata );
-+            		
-+                    TileEntity targetTileEntity = world.getBlockTileEntity( placementPos.i, placementPos.j, placementPos.k );
-+
-+                    if ( targetTileEntity != null && targetTileEntity instanceof FCTileEntityToolPlaced )
-+                    {
-+                    	((FCTileEntityToolPlaced)targetTileEntity).SetToolStack( stack );
-+                    	
-+                    	if ( !world.isRemote )
-+                    	{
-+                    		PlayPlacementSound( stack, blockStuckIn, world, placementPos.i, placementPos.j, placementPos.k );
-+                    	}
-+                    	
-+                        stack.stackSize--;
-+                        
-+                        return true;
-+                    }
-+        		}
-+        	}
-+        }
-+        
-+        return false;
++    	return false;
 +    }
 +    
 +    //------------- Class Specific Methods ------------//
@@ -232,27 +235,27 @@
 +    	return true;
 +    }
 +    
-+    protected float GetVisualVerticalOffsetAsBlock()
++    public float GetVisualVerticalOffsetAsBlock()
 +    {
 +    	return 0.75F;
 +    }
 +    
-+    protected float GetVisualHorizontalOffsetAsBlock()
++    public float GetVisualHorizontalOffsetAsBlock()
 +    {
 +    	return 0.5F;
 +    }
 +    
-+    protected float GetVisualRollOffsetAsBlock()
++    public float GetVisualRollOffsetAsBlock()
 +    {
 +    	return 0F;
 +    }
 +    
-+    protected float GetBlockBoundingBoxHeight()
++    public float GetBlockBoundingBoxHeight()
 +    {
 +    	return 0.75F;
 +    }
 +    
-+    protected float GetBlockBoundingBoxWidth()
++    public float GetBlockBoundingBoxWidth()
 +    {
 +    	return 0.75F;
 +    }

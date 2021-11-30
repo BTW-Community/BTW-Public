@@ -1,120 +1,103 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemBlockDirtSlab.java
-@@ -0,0 +1,117 @@
+@@ -0,0 +1,100 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
-+public class FCItemBlockDirtSlab extends FCItemBlockSlab
-+{
-+    public FCItemBlockDirtSlab( int iItemID )
-+    {
-+        super( iItemID );        
-+    }
++public class FCItemBlockDirtSlab extends FCItemBlockSlab {
++	public FCItemBlockDirtSlab(int id) {
++		super(id);        
++	}
 +
-+    @Override
-+    public int getMetadata( int iItemDamage )
-+    {
-+		return iItemDamage << 1;    	
-+    }
-+    
-+    @Override
-+    public String getUnlocalizedName( ItemStack itemstack )
-+    {
-+    	switch( itemstack.getItemDamage() )
-+    	{
-+    		case FCBlockDirtSlab.m_iSubtypePackedEarth:
-+    			
-+                return (new StringBuilder()).append(super.getUnlocalizedName()).append(".").append("packed").toString();
-+                
-+    		case FCBlockDirtSlab.m_iSubtypeGrass:
-+    			
-+                return (new StringBuilder()).append(super.getUnlocalizedName()).append(".").append("grass").toString();
-+                
-+			default:
-+				
-+				return super.getUnlocalizedName();
-+    	}
-+    }
-+    
-+    //------------- FCItemBlockSlab ------------//
-+    
-+    @Override
-+    public boolean canCombineWithBlock( World world, int i, int j, int k, int iItemDamage )
-+    {
-+        int iBlockID = world.getBlockId( i, j, k );
-+        
-+        if ( iBlockID == FCBetterThanWolves.fcBlockDirtSlab.blockID )
-+        {
-+        	int iTargetSubtype = ((FCBlockDirtSlab)FCBetterThanWolves.fcBlockDirtSlab).GetSubtype( world, i, j, k );
-+        	
-+        	if ( iTargetSubtype == FCBlockDirtSlab.m_iSubtypePackedEarth || iItemDamage == FCBlockDirtSlab.m_iSubtypePackedEarth  )
-+        	{
-+        		if ( iTargetSubtype == iItemDamage )
-+        		{
-+        			return true;
-+        		}
-+        	}
-+        	else
-+        	{
-+        		return true;
-+        	}
-+        }
-+        else if ( iBlockID == FCBetterThanWolves.fcBlockMyceliumSlab.blockID )
-+        {
-+        	if ( iItemDamage != FCBlockDirtSlab.m_iSubtypePackedEarth )
-+        	{
-+        		return true;
-+        	}
-+        }
-+        
-+    	return false;
-+    }
-+    
-+    @Override
-+    public boolean convertToFullBlock( World world, int i, int j, int k )
-+    {
-+        int iBlockID = world.getBlockId( i, j, k );
-+        
-+        if ( iBlockID == FCBetterThanWolves.fcBlockDirtSlab.blockID )
-+        {
-+        	FCBlockDirtSlab slabBlock = (FCBlockDirtSlab)(FCBetterThanWolves.fcBlockDirtSlab);
-+        	
-+        	boolean bIsTargetUpsideDown = slabBlock.GetIsUpsideDown( world, i, j, k );
-+        	int iTargetSubType = slabBlock.GetSubtype( world, i, j, k  );
-+        	
-+        	int iNewBlockID = Block.dirt.blockID;
-+        	int iNewMetadata = 0;
-+        	
-+        	if ( iTargetSubType == FCBlockDirtSlab.m_iSubtypePackedEarth )
-+        	{
-+        		iNewBlockID = FCBetterThanWolves.fcBlockAestheticOpaqueEarth.blockID;
-+        		iNewMetadata = FCBlockAestheticOpaqueEarth.m_iSubtypePackedEarth;
-+        	}
-+        	else if ( bIsTargetUpsideDown )
-+        	{
-+        		if ( iTargetSubType == FCBlockDirtSlab.m_iSubtypeGrass )
-+        		{
-+        			iNewBlockID = Block.grass.blockID;
-+        		}
-+        	}
-+        	
-+        	return world.setBlockAndMetadataWithNotify( i, j, k, iNewBlockID, iNewMetadata );
-+        }
-+        else if ( iBlockID == FCBetterThanWolves.fcBlockMyceliumSlab.blockID )
-+        {
-+        	if ( ((FCBlockMyceliumSlab)FCBetterThanWolves.fcBlockMyceliumSlab).GetIsUpsideDown( world, i, j, k ) )
-+        	{
-+        		return world.setBlockAndMetadataWithNotify( i, j, k, Block.mycelium.blockID, 0 );
-+        	}
-+        	else
-+        	{
-+        		return world.setBlockAndMetadataWithNotify( i, j, k, Block.dirt.blockID, 0 );
-+        	}
-+        }
-+        	
-+    	return false;
-+    }
-+    
-+    //------------- Class Specific Methods ------------//
++	@Override
++	public int getMetadata(int itemDamage) {
++		return itemDamage << 1;    	
++	}
++
++	@Override
++	public String getUnlocalizedName(ItemStack itemstack) {
++		switch(itemstack.getItemDamage()) {
++		case FCBlockDirtSlab.m_iSubtypePackedEarth:
++			return super.getUnlocalizedName() + "." + "packed";
++		case FCBlockDirtSlab.m_iSubtypeGrass:
++			return super.getUnlocalizedName() + "." + "grass";
++		default:
++			return super.getUnlocalizedName();
++		}
++	}
++
++	//------------- FCItemBlockSlab ------------//
++
++	@Override
++	public boolean canCombineWithBlock(World world, int x, int y, int z, int itemDamage) {
++		int blockID = world.getBlockId(x, y, z);
++
++		if (blockID == FCBetterThanWolves.fcBlockDirtSlab.blockID) {
++			int targetSubtype = ((FCBlockDirtSlab)FCBetterThanWolves.fcBlockDirtSlab).GetSubtype(world, x, y, z);
++
++			if (targetSubtype == FCBlockDirtSlab.m_iSubtypePackedEarth || itemDamage == FCBlockDirtSlab.m_iSubtypePackedEarth) {
++				if (targetSubtype == itemDamage) {
++					return true;
++				}
++			}
++			else {
++				return true;
++			}
++		}
++		else if (blockID == FCBetterThanWolves.fcBlockMyceliumSlab.blockID || blockID == FCBetterThanWolves.fcBlockGrassSlab.blockID) {
++			if (itemDamage != FCBlockDirtSlab.m_iSubtypePackedEarth) {
++				return true;
++			}
++		}
++
++		return false;
++	}
++
++	@Override
++	public boolean convertToFullBlock(World world, int x, int y, int z) {
++		int blockID = world.getBlockId(x, y, z);
++
++		if (blockID == FCBetterThanWolves.fcBlockDirtSlab.blockID) {
++			FCBlockDirtSlab slabBlock = (FCBlockDirtSlab)(FCBetterThanWolves.fcBlockDirtSlab);
++
++			boolean isTargetUpsideDown = slabBlock.GetIsUpsideDown(world, x, y, z);
++			int targetSubType = slabBlock.GetSubtype(world, x, y, z);
++
++			int newBlockID = Block.dirt.blockID;
++			int newMetadata = 0;
++
++			if (targetSubType == FCBlockDirtSlab.m_iSubtypePackedEarth) {
++				newBlockID = FCBetterThanWolves.fcBlockAestheticOpaqueEarth.blockID;
++				newMetadata = FCBlockAestheticOpaqueEarth.m_iSubtypePackedEarth;
++			}
++			else if (isTargetUpsideDown) {
++				if (targetSubType == FCBlockDirtSlab.m_iSubtypeGrass) {
++					newBlockID = Block.grass.blockID;
++				}
++			}
++
++			return world.setBlockAndMetadataWithNotify(x, y, z, newBlockID, newMetadata);
++		}
++		else if (blockID == FCBetterThanWolves.fcBlockMyceliumSlab.blockID) {
++			if (((FCBlockMyceliumSlab)FCBetterThanWolves.fcBlockMyceliumSlab).GetIsUpsideDown(world, x, y, z)) {
++				return world.setBlockAndMetadataWithNotify(x, y, z, Block.mycelium.blockID, 0);
++			}
++			else {
++				return world.setBlockAndMetadataWithNotify(x, y, z, Block.dirt.blockID, 0);
++			}
++		}
++		else if (blockID == FCBetterThanWolves.fcBlockGrassSlab.blockID) {
++			if (((FCBlockGrassSlab)FCBetterThanWolves.fcBlockGrassSlab).GetIsUpsideDown(world, x, y, z)) {
++				return world.setBlockAndMetadataWithNotify(x, y, z, Block.grass.blockID, 0);
++			}
++			else {
++				return world.setBlockAndMetadataWithNotify(x, y, z, Block.dirt.blockID, 0);
++			}
++		}
++
++		return false;
++	}
++
++	//------------- Class Specific Methods ------------//
 +}

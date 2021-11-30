@@ -266,7 +266,18 @@
       */
      public void unmountEntity(Entity par1Entity)
      {
-@@ -2344,7 +2405,12 @@
+@@ -2023,6 +2084,10 @@
+         this.setFlag(1, par1);
+     }
+ 
++    public boolean isUsingSpecialKey() {
++    	return false;
++    }
++
+     /**
+      * Get if the Entity is sprinting.
+      */
+@@ -2344,7 +2409,12 @@
  
      public float func_82146_a(Explosion par1Explosion, World par2World, int par3, int par4, int par5, Block par6Block)
      {
@@ -279,7 +290,7 @@
      }
  
      public boolean func_96091_a(Explosion par1Explosion, World par2World, int par3, int par4, int par5, int par6, float par7)
-@@ -2400,4 +2466,709 @@
+@@ -2400,4 +2470,709 @@
      {
          return this.getEntityName();
      }

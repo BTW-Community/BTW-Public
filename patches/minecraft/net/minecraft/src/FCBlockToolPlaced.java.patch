@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockToolPlaced.java
-@@ -0,0 +1,320 @@
+@@ -0,0 +1,322 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -127,14 +127,16 @@
 +		if ( tileEntity != null )
 +		{
 +			ItemStack toolStack = tileEntity.GetToolStack();
-+			
++
 +			if ( toolStack != null )
 +			{
-+				fHeight = ((FCItemTool)toolStack.getItem()).GetBlockBoundingBoxHeight();
-+				fWidth = ((FCItemTool)toolStack.getItem()).GetBlockBoundingBoxWidth();
++
++				fHeight = ((FCIPlaceableAsItem)toolStack.getItem()).GetBlockBoundingBoxHeight();
++				fWidth = ((FCIPlaceableAsItem)toolStack.getItem()).GetBlockBoundingBoxWidth();
++
 +			}
 +		}
-+		
++
 +		double fXMin = 0.5F - ( fWidth / 2F );
 +		double fXMax = 0.5F + ( fWidth / 2F );
 +		

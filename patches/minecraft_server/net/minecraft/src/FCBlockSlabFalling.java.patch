@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockSlabFalling.java
-@@ -0,0 +1,78 @@
+@@ -0,0 +1,82 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -66,6 +66,10 @@
 +    @Override
 +    protected void onStartFalling( EntityFallingSand entity ) 
 +    {
++    	if (GetIsUpsideDown(entity.metadata)) {
++    		entity.posY += 0.5;
++    	}
++    	
 +    	entity.metadata = SetIsUpsideDown( entity.metadata, false );
 +    }
 +    

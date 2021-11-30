@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemRefinedShovel.java
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,40 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -29,16 +29,13 @@
 +    @Override
 +    public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer entityplayer)
 +    {
++    	if (!entityplayer.isUsingSpecialKey())
++    	{
 +        entityplayer.setItemInUse(itemstack, getMaxItemUseDuration(itemstack));
-+        
++    	}
 +        return itemstack;
 +    }
 +
-+    @Override
-+    protected boolean GetCanBePlacedAsBlock()
-+    {
-+    	return false;
-+    }    
 +
 +    //------------- Class Specific Methods ------------//
 +    

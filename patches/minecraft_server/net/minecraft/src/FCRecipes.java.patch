@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,7051 @@
+@@ -0,0 +1,7045 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -68,21 +68,6 @@
 +    	{
 +    		recipe.SetSecondaryOutput(secondaryOutputs);
 +    	}
-+    	
-+    	return recipe;
-+	}
-+    
-+    @Deprecated
-+    public static ShapelessRecipes AddShapelessRecipeWithSecondaryOutputIndicator( ItemStack itemStack, Object aobj[] )
-+	{
-+    	ShapelessRecipes recipe = CraftingManager.getInstance().AddShapelessRecipe( itemStack, aobj );
-+    	
-+    	if ( recipe != null )
-+    	{
-+    		recipe.SetSecondaryOutput(null);
-+    	}
-+    	
-+    	FCAddOnHandler.LogWarning("Warning: Secondary output recipes have changed. Call made to deprecated method.");
 +    	
 +    	return recipe;
 +	}
@@ -1773,7 +1758,7 @@
 +    		Character.valueOf( '#' ), Item.enderPearl
 +		} );
 +
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockMiningCharge, 2 ), new Object[] {
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockMiningCharge, 3 ), new Object[] {
 +    		"XYX", 
 +    		"###", 
 +    		"###", 
@@ -2264,7 +2249,7 @@
 +    		Character.valueOf( 'S' ), FCBetterThanWolves.fcItemSawDust 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemDynamite ), new Object[] {
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemDynamite, 2 ), new Object[] {
 +    		"PF", 
 +    		"PN", 
 +    		"PS", 
@@ -2426,7 +2411,7 @@
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemRawKebab, 3 ), new Object[] {	    		
 +    		new ItemStack( FCBetterThanWolves.fcItemMushroomBrown ),
-+    		new ItemStack( Item.carrot ),
++    		new ItemStack( FCBetterThanWolves.fcItemCarrot ),
 +    		new ItemStack( FCBetterThanWolves.fcItemMuttonRaw ),
 +    		new ItemStack( Item.stick ),
 +		} );
@@ -3366,7 +3351,7 @@
 +		
 +		FurnaceRecipes.smelting().addSmelting( FCBetterThanWolves.fcItemMuttonRaw.itemID, new ItemStack( FCBetterThanWolves.fcItemMuttonCooked ), 0 );
 +		
-+		FurnaceRecipes.smelting().addSmelting( Item.carrot.itemID, new ItemStack( FCBetterThanWolves.fcItemCookedCarrot ), 0 );
++		FurnaceRecipes.smelting().addSmelting( FCBetterThanWolves.fcItemCarrot.itemID, new ItemStack( FCBetterThanWolves.fcItemCookedCarrot ), 0 );
 +		
 +		FurnaceRecipes.smelting().addSmelting( FCBetterThanWolves.fcItemRawKebab.itemID, new ItemStack( FCBetterThanWolves.fcItemCookedKebab ), 0 );
 +		
@@ -3919,7 +3904,7 @@
 +        AddCauldronRecipe( 
 +    		new ItemStack( FCBetterThanWolves.fcItemCookedCarrot ), 
 +    		new ItemStack[] {
-+				new ItemStack( Item.carrot ) 
++				new ItemStack( FCBetterThanWolves.fcItemCarrot ) 
 +		} );
 +        
 +        AddCauldronRecipe( 
@@ -4291,6 +4276,12 @@
 +				new ItemStack( FCBetterThanWolves.fcItemPotash, 1 ), 
 +				new ItemStack[] {
 +					new ItemStack( FCBetterThanWolves.fcItemSawDust, 16 )
++			} );
++
++        AddStokedCauldronRecipe(
++				new ItemStack( FCBetterThanWolves.fcItemPotash, 1 ), 
++				new ItemStack[] {
++					new ItemStack( FCBetterThanWolves.fcItemBark, 64, m_iIgnoreMetadata )
 +			} );
 +        
 +        AddStokedCauldronRecipe(
@@ -5936,7 +5927,11 @@
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemCarrot ), new Object[] {	    		
-+    		new ItemStack( Item.carrot )
++    		new ItemStack( FCBetterThanWolves.fcItemCarrot )
++		} );
++		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockGrassSlab ), new Object[] { 
++			new ItemStack( FCBetterThanWolves.fcBlockDirtSlab, 1, FCBlockDirtSlab.m_iSubtypeGrass ) 
 +		} );
 +	}
 +
@@ -6246,7 +6241,6 @@
 +		FCEntityVillager.addLevelUpTradeToBuySingleItem(butcher, FCBetterThanWolves.fcSaw.blockID, 2, 2, 2);
 +		
 +		//Level 3
-+		//FCEntityVillager.addTradeToBuyMultipleItems(butcher, Item.carrot.itemID, 10, 16, 1F, 3);
 +		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemCarrot.itemID, 10, 16, 1F, 3);
 +		FCEntityVillager.addTradeToBuyMultipleItems(butcher, Item.potato.itemID, 10, 16, 1F, 3);
 +		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemBeastLiverRaw.itemID, 1, 2, 1F, 3);
@@ -6280,12 +6274,12 @@
 +		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemDynamite.itemID, 4, 6, 1F, 5);
 +		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcItemBattleAxe.itemID, 4, 5, 1F, 5);
 +		FCEntityVillager.addTradeToBuySingleItem(butcher, FCBetterThanWolves.fcCompanionCube.blockID, 1, 2, 1F, 5)
-+				.registerEffectForTrade(butcher, new TradeEffect() {
-+					@Override
-+					public void playEffect(FCEntityVillager villager) {
-+						villager.worldObj.playSoundAtEntity(villager, "mob.wolf.hurt", 5.0F, (villager.rand.nextFloat() - villager.rand.nextFloat()) * 0.2F + 1.0F);
-+					}
-+				});
++			.registerEffectForTrade(butcher, new TradeEffect() {
++				@Override
++				public void playEffect(FCEntityVillager villager) {
++					villager.worldObj.playSoundAtEntity(villager, "mob.wolf.hurt", 5.0F, (villager.rand.nextFloat() - villager.rand.nextFloat()) * 0.2F + 1.0F);
++				}
++			});
 +		FCEntityVillager.addTradeToBuyMultipleItems(butcher, FCBetterThanWolves.fcItemBroadheadArrow.itemID, 6, 12, 1F, 5);
 +		FCEntityVillager.addComplexTrade(
 +				butcher,

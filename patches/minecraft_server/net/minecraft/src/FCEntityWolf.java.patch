@@ -230,7 +230,7 @@
 +
 +			if ( isBurning() )
 +			{
-+				return FCBetterThanWolves.fcItemMeatBurned.itemID;
++				return FCBetterThanWolves.fcItemWolfCooked.itemID;
 +			} 
 +			else
 +			{            

@@ -115,7 +115,7 @@
                      {
                          this.worldObj.updateAllLightTypes(var5, var8, var6 + 1);
                      }
-@@ -1445,4 +1477,56 @@
+@@ -1445,4 +1477,66 @@
              }
          }
      }
@@ -141,34 +141,44 @@
 +    	}
 +    }
 +    
-+    public int GetBlockNaturalLightValue( int i, int j, int k, int iSkylightSubtracted )
-+    {
-+    	// modified version of getBlockLightValue that only considers natural light
-+    	
-+        ExtendedBlockStorage blockStorage = this.storageArrays[j >> 4];
++    /**
++     * Modified version of getBlockLightValue that only considers natural light
++     */
++    public int GetBlockNaturalLightValue(int x, int y, int z, int skylightSubtracted) {
++        ExtendedBlockStorage blockStorage = this.storageArrays[y >> 4];
 +
-+        if ( blockStorage == null )
-+        {
-+            return !this.worldObj.provider.hasNoSky && iSkylightSubtracted < EnumSkyBlock.Sky.defaultLightValue ? EnumSkyBlock.Sky.defaultLightValue - iSkylightSubtracted : 0;
++        if (blockStorage == null) {
++            return !this.worldObj.provider.hasNoSky && skylightSubtracted < EnumSkyBlock.Sky.defaultLightValue ? EnumSkyBlock.Sky.defaultLightValue - skylightSubtracted : 0;
 +        }
-+        else
-+        {
-+            int iLightValue = this.worldObj.provider.hasNoSky ? 0 : blockStorage.getExtSkylightValue(i, j & 15, k);
++        else {
++            int lightValue = this.worldObj.provider.hasNoSky ? 0 : blockStorage.getExtSkylightValue(x, y & 15, z);
 +
-+            if (iLightValue > 0)
-+            {
++            if (lightValue > 0) {
 +                isLit = true;
 +            }
 +
-+            iLightValue -= iSkylightSubtracted;
++            lightValue -= skylightSubtracted;
 +            
-+            if ( iLightValue < 0 )
-+            {
-+            	iLightValue = 0;
++            if ( lightValue < 0 ) {
++            	lightValue = 0;
 +            }
 +
-+            return iLightValue;
++            return lightValue;
 +        }
-+    }    
++    }
++
++    /**
++     * Gets the amount of light on a block ignoring sunlight
++     */
++    public int getBlockLightValueNoSky(int x, int y, int z) {
++        ExtendedBlockStorage blockStorage = this.storageArrays[y >> 4];
++
++        if (blockStorage == null) {
++            return 0;
++        }
++        else {
++            return blockStorage.getExtBlocklightValue(x, y & 15, z);
++        }
++    }
 +    // END FCMOD
 +}

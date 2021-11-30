@@ -1,0 +1,19 @@
+--- a/minecraft/net/minecraft/src/Packet19EntityAction.java
++++ b/minecraft/net/minecraft/src/Packet19EntityAction.java
+@@ -35,7 +35,7 @@
+     public void writePacketData(DataOutputStream par1DataOutputStream) throws IOException
+     {
+         par1DataOutputStream.writeInt(this.entityId);
+-        par1DataOutputStream.writeByte(this.state);
++        par1DataOutputStream.writeInt(this.state);
+     }
+ 
+     /**
+@@ -51,6 +51,6 @@
+      */
+     public int getPacketSize()
+     {
+-        return 5;
++        return 8;
+     }
+ }

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCEntityVillager.java
-@@ -0,0 +1,1376 @@
+@@ -0,0 +1,1378 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -340,7 +340,7 @@
 +
 +			if (isBurning())
 +			{
-+				iDropItemID = FCBetterThanWolves.fcItemMeatBurned.itemID;
++				iDropItemID = FCBetterThanWolves.fcItemCookedMysteryMeat.itemID;
 +			}
 +
 +			int iNumDropped = rand.nextInt(3) + 1 + rand.nextInt(1 + iLootingModifier);
@@ -430,6 +430,8 @@
 +		Class villagerClass = professionMap.get(profession);
 +
 +		try {
++			villagerClass = EntityList.getRegisteredReplacement(villagerClass);
++			
 +			FCEntityVillager villager = (FCEntityVillager) villagerClass.getConstructor(World.class).newInstance(world);
 +			villager.setProfession(profession);
 +
@@ -1367,11 +1369,11 @@
 +		}
 +	}
 +
-+	public static abstract class TradeEffect {
++	public static abstract interface TradeEffect {
 +		public abstract void playEffect(FCEntityVillager villager);
 +	}
 +
-+	public static abstract class TradeConditional {
++	public static abstract interface TradeConditional {
 +		public abstract boolean shouldAddTrade(FCEntityVillager villager);
 +	}
 +

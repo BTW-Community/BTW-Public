@@ -1,3 +1,67 @@
+## Version 1.3.0 ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- Hiracho
+- ExpHP
+- rockoutwill
+- Quanteus
+
+/--General--/
+- Added a full Russian translation. Thanks to Quanteus for providing the translation!
+- Fixed an issue where texturepacks took a very long time to load.
+- Fixed an issue where a couple of translation entries were duplicated.
+
+/--Gameplay--/
+- Added new grass and mycelium growth mechanics, which are detailed further below.
+- Added a new system for farming silverfish in the end, based loosely on the old system, which is left to the player to discover.
+- Added the ability to turn a stack of bark into potash.
+- Added a new keybinding as an alternate use key, bound to ctrl by default, allowing items to have multiple right click functionalities.
+- Added the ability to place swords into soft materials using alt use + right click.
+- Changed tools to be placed using alt use + right click to allow adding right click functionality to tools and to decrease the occurrance of accidentally placing tools. This also enables placing of steel tools.
+- Changed buckets to be placed using alt use + right click, allowing them to be placed once again without requiring block dispensers.
+- Changed hostile mobs to only spawn in complete darkness (aka gloom) in order to decrease torch spam. Note that they can still spawn in sunlight of 7 or less so normal nighttime spawns are unaffected when artifical light is not present.
+- Changed cactus to be able to be planted on itself for decorative uses. Note that the base plant must still be placed in a planter.
+- Changed dragon orbs to collide with blocks in the same way as items, which should hopefully make them easier to work with in automated systems.
+- Changed the recipe for mining charges to produce 3 instead of 2.
+- Changed the ender spectacles overlay to remove the green tint.
+- Fixed an issue where crafting dynamite with soul dust still only produced 1.
+- Fixed an issue where cooking recipes still used the old carrot.
+- Fixed an issue where sugar cane roots could be placed on top of other sugar cane plants.
+- Fixed an issue where combining slabs played the block's step sound instead of its place sound.
+- Fixed an issue where upside down slabs which started falling (such as when a dirt slab lost its anchor) immediately rendered as normal slabs instead of rendering as upside down.
+- Fixed a vanilla issue where the game would be unable to load a save if you exited with a fishing line cast.
+- Fixed an issue in multiplayer where the game would crash when generating mountains.
+- Fixed an issue in multiplayer where the game would crash when a player died with items in their inventory.
+
+/--Animageddon--/
+- Added sparse grass as a new grass growth stage. When eating grass, animals will turn grass into sparse grass instead of dirt, and animals will only eat sparse grass when they are starving. This makes animal pens far less subject to snowballing failure and makes it easier to tell if a pen is too small before it is too late. Note that pigs are an exception to this and will still turn grass directly into loose dirt.
+- Added sparse mycelium which serves the same purpose as above. Furthermore, this fixes an issue where mooshrooms would create patches of spawnable ground on the surface of mushroom biomes.
+- Changed grass to be able to grow under artifical light so long as it can still see the sky, meaning grass can now grow at night as long as it is lit. This fixes an issue where animals could die through no fault of your own simply by leaving your base for several days in a row, returning only at night.
+- Changed (reduced) the distance which grass and mycelium can grow downwards from 3 blocks to 2. This fixes an exploit where animal pens could be constructed with grass roofs to significantly improve their output. The primary purpose of these, preventing snowballing, has now been handled as a legitimate feature through sparse grass and mycelium.
+- Changed grass slabs to use their own block ids instead of sharing with dirt slabs. Old grass slabs in the world will convert to the new ones over time, and a conversion recipe has been provided to convert the old items into the new ones.
+- Changed (removed) the light level requirement for mycelium to grow as it ran somewhat counter to its purpose in blocking mob spawns, and didn't make a lot of sense when mushrooms would still grow without light. This also increases the value of mooshrooms by allowing pens for them to be built without sunlight.
+- Changed (refactored) how grass and mycelium spread are handled internally.
+- Changed (refactored) how grass rendering is handled internally.
+- Changed (increased) the food value multiplier for pigs slightly to account for the changes made to grass spread, since they did not benefit as much from the new mechanics.
+- Changed (reduced) the overall necessary pen size for animals as the old values were far too cumbersome to make use of late game.
+- Changed (increased) the food value items provide to animals significantly, as feeding animals with items was entirely unreasonable to do previously.
+- Changed animals to once again drop cooked meat if they die while on fire. With mobs setting you on fire and animals dropping burned meat, fire aspect was a wholly detrimental enchantment and this should hopefully return some value to it.
+- Fixed an issue where animals could not eat ferns.
+- Fixed an issue where mycelium slabs could not be combined with dirt slabs.
+- Fixed an issue where combining two grass slabs resulted in a dirt block.
+
+/--Creative Mode--/
+- Fixed an issue where the new silverfish blocks were missing translation entries.
+
+/--Addon API--/
+- Reformatted FCAddOn class to make it more clear what kind of functionality is present for addon authors.
+- Added hooks to get block light value only, ignoring sunlight.
+- Fixed an issue where several FCAddOnHandler methods were not static.
+- Fixed an issue where naturally spawned entities were not respecting class mapping replacements.
+- Fixed an issue where block and item replacement used the wrong method overloads when registering addons for mutual replacement.
+- Removed deprecated versions of block and item replacement as a part of the above fix.
+- Removed deprecated versions of secondary output recipe definitions.
+
 ## Version 1.2.3 ##
 Thanks to the following people who contributed to this release!
 - Dawnraider

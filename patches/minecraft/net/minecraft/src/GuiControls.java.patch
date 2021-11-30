@@ -1,0 +1,40 @@
+--- a/minecraft/net/minecraft/src/GuiControls.java
++++ b/minecraft/net/minecraft/src/GuiControls.java
+@@ -37,13 +37,15 @@
+     {
+         StringTranslate var1 = StringTranslate.getInstance();
+         int var2 = this.getLeftBorder();
++        int totalButtons = this.options.keyBindings.length;
++        int verticalButtons = Math.floorDiv(totalButtons + (totalButtons % 2), 2);
+ 
+         for (int var3 = 0; var3 < this.options.keyBindings.length; ++var3)
+         {
+-            this.buttonList.add(new GuiSmallButton(var3, var2 + var3 % 2 * 160, this.height / 6 + 24 * (var3 >> 1), 70, 20, this.options.getOptionDisplayString(var3)));
++            this.buttonList.add(new GuiSmallButton(var3, var2 + var3 % 2 * 160, this.height / verticalButtons + (168 / verticalButtons) * (var3 >> 1), 70, 144 / verticalButtons, this.options.getOptionDisplayString(var3)));
+         }
+ 
+-        this.buttonList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168, var1.translateKey("gui.done")));
++        this.buttonList.add(new GuiButton(200, this.width / 2 - 100, this.height / verticalButtons + 168, var1.translateKey("gui.done")));
+         this.screenTitle = var1.translateKey("controls.title");
+     }
+ 
+@@ -113,7 +115,10 @@
+         this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 20, 16777215);
+         int var4 = this.getLeftBorder();
+         int var5 = 0;
++        int totalButtons = this.options.keyBindings.length;
++        int verticalButtons = Math.floorDiv(totalButtons +(totalButtons % 2), 2);
+ 
++
+         while (var5 < this.options.keyBindings.length)
+         {
+             boolean var6 = false;
+@@ -145,7 +150,7 @@
+                     ((GuiButton)this.buttonList.get(var5)).displayString = this.options.getOptionDisplayString(var5);
+                 }
+ 
+-                this.drawString(this.fontRenderer, this.options.getKeyBindingDescription(var5), var4 + var5 % 2 * 160 + 70 + 6, this.height / 6 + 24 * (var5 >> 1) + 7, -1);
++                this.drawString(this.fontRenderer, this.options.getKeyBindingDescription(var5), var4 + var5 % 2 * 160 + 70 + 6, this.height / verticalButtons + (168/verticalButtons) *  (var5 >> 1) + 7, -1);
+                 ++var5;
+                 break;
+             }

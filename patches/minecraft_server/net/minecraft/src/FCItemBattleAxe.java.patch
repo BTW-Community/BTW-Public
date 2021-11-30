@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCItemBattleAxe.java
-@@ -0,0 +1,105 @@
+@@ -0,0 +1,101 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -33,7 +33,9 @@
 +    @Override
 +    public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer entityplayer)
 +    {
-+        entityplayer.setItemInUse( itemstack, getMaxItemUseDuration( itemstack ) );
++    	if (!entityplayer.isUsingSpecialKey()) {
++    		entityplayer.setItemInUse( itemstack, getMaxItemUseDuration( itemstack ) );
++    	}
 +        
 +        return itemstack;
 +    }
@@ -94,13 +96,7 @@
 +    	}
 +    	
 +    	return super.IsEnchantmentApplicable( enchantment );
-+    }    
-+    
-+    @Override
-+    protected boolean GetCanBePlacedAsBlock()
-+    {
-+    	return false;
-+    }    
++    }
 +    
 +    //------------- Class Specific Methods ------------//
 +    

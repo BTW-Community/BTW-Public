@@ -720,7 +720,7 @@
                  if (var0 > 0 && blocksList[var0].getRenderType() == 10)
                  {
                      var1 = true;
-@@ -1204,10 +1266,2159 @@
+@@ -1204,10 +1266,2123 @@
                  }
  
                  useNeighborBrightness[var0] = var1;
@@ -967,21 +967,13 @@
 +	//------------ Addon interfacing related functionality ----------//
 +
 +	/**
-+	 * Deprecated form of replaceBlock for backwards compatibility
-+	 */
-+	@Deprecated
-+	public static Block replaceBlock(int id, Class newClass, Object ... parameters) {
-+		return replaceBlock(id, newClass, null, new String[] {}, parameters);
-+	}
-+
-+	/**
 +	 * Replaces a reference to an existing block (vanilla or btw)
 +	 * @param id The block id to be replaced
 +	 * @param newClass The class of the new block
 +	 * @param parameters Optional additional parameters to pass to the block, not including the id.
 +	 */
 +	public static Block replaceBlock(int id, Class newClass, FCAddOn addonPerformingReplacement, Object ... parameters) {
-+		return replaceBlock(id, newClass, addonPerformingReplacement, new String[] {}, parameters);
++		return replaceBlock(id, newClass, new String[] {}, addonPerformingReplacement, parameters);
 +	}
 +
 +	/**
@@ -991,17 +983,17 @@
 +	 * @param validAddonNamesForOverwrite An array of addon names which should be ignored when handling conflicts
 +	 * @param parameters Optional additional parameters to pass to the block, not including the id.
 +	 */
-+	public static Block replaceBlock(int id, Class newClass, FCAddOn addonPerformingReplacement, String[] validAddonNamesForOverwrite, Object ... parameters) {
++	public static Block replaceBlock(int id, Class newClass, String[] validAddonNamesForOverwrite, FCAddOn addonPerformingReplacement, Object ... parameters) {
 +		if (blockReplaced[id]) {
 +			String replacedBy = blockReplacedBy[id];
 +			boolean isValidOverwrite = false;
-+
++			
 +			for (String addonName : validAddonNamesForOverwrite) {
 +				if (replacedBy.equals(addonName)) {
 +					isValidOverwrite = true;
 +				}
 +			}
-+
++			
 +			if (!isValidOverwrite) {
 +				throw new RuntimeException("Multiple addons attempting to replace block " + blocksList[id]);
 +			}
@@ -1055,7 +1047,7 @@
 +		}
 +
 +		blockReplaced[id] = true;
-+
++		
 +		if (addonPerformingReplacement != null) {
 +			blockReplacedBy[id] = addonPerformingReplacement.getName();
 +		}
@@ -1839,20 +1831,6 @@
 +		return false;
 +	}
 +
-+	public boolean AttempToSpreadGrassToBlock( World world, int i, int j, int k )
-+	{
-+		if ( GetCanGrassSpreadToBlock( world, i, j, k ) &&
-+				world.GetBlockNaturalLightValueMaximum( i, j + 1, k ) >= 
-+				FCBlockGrass.m_iGrassSpreadToLightLevel && 
-+				Block.lightOpacity[world.getBlockId( i, j + 1, k )] <= 2 &&
-+				!FCBlockGroundCover.IsGroundCoverRestingOnBlock( world, i, j, k ) )    		
-+		{
-+			return SpreadGrassToBlock( world, i, j, k );
-+		}
-+
-+		return false;
-+	}
-+
 +	public boolean GetCanGrassSpreadToBlock( World world, int i, int j, int k )
 +	{
 +		return false;
@@ -1871,20 +1849,6 @@
 +		}
 +
 +		return true;
-+	}
-+
-+	public boolean AttempToSpreadMyceliumToBlock( World world, int i, int j, int k )
-+	{
-+		if ( GetCanMyceliumSpreadToBlock( world, i, j, k ) &&
-+				world.getBlockLightValue( i, j + 1, k ) >= 
-+				FCBlockMycelium.m_iMyceliumSpreadToMinimumLightLevel &&
-+				Block.lightOpacity[world.getBlockId( i, j + 1, k )] <= 2 &&
-+				!FCBlockGroundCover.IsGroundCoverRestingOnBlock( world, i, j, k ) )    		
-+		{
-+			return SpreadMyceliumToBlock( world, i, j, k );
-+		}
-+
-+		return false;
 +	}
 +
 +	public boolean GetCanMyceliumSpreadToBlock( World world, int i, int j, int k )

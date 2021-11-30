@@ -20,8 +20,15 @@
      }
  
      protected void entityInit() {}
-@@ -106,7 +112,15 @@
+@@ -104,9 +110,22 @@
+         {
+             if (!this.worldObj.isRemote)
              {
++            	if (this.angler == null) {
++            		this.setDead();
++            		return;
++            	}
++            	
                  ItemStack var1 = this.angler.getCurrentEquippedItem();
  
 +                // FCMOD: Changed
@@ -36,7 +43,7 @@
                  {
                      this.setDead();
                      this.angler.fishEntity = null;
-@@ -254,22 +268,22 @@
+@@ -254,22 +273,22 @@
                      var25 = 0.5F;
                  }
  
@@ -66,7 +73,7 @@
                  {
                      if (this.ticksCatchable > 0)
                      {
-@@ -277,14 +291,19 @@
+@@ -277,14 +296,19 @@
                      }
                      else
                      {
@@ -89,7 +96,7 @@
                          {
                              this.ticksCatchable = this.rand.nextInt(30) + 10;
                              this.motionY -= 0.20000000298023224D;
-@@ -307,19 +326,26 @@
+@@ -307,19 +331,26 @@
                                  var17 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
                                  this.worldObj.spawnParticle("splash", this.posX + (double)var31, (double)(var30 + 1.0F), this.posZ + (double)var17, this.motionX, this.motionY, this.motionZ);
                              }
@@ -118,7 +125,7 @@
                  {
                      var25 = (float)((double)var25 * 0.9D);
                      this.motionY *= 0.8D;
-@@ -383,7 +409,17 @@
+@@ -383,7 +414,17 @@
              }
              else if (this.ticksCatchable > 0)
              {
@@ -137,7 +144,7 @@
                  double var3 = this.angler.posX - this.posX;
                  double var5 = this.angler.posY - this.posY;
                  double var7 = this.angler.posZ - this.posZ;
-@@ -394,7 +430,11 @@
+@@ -394,7 +435,11 @@
                  var13.motionZ = var7 * var11;
                  this.worldObj.spawnEntityInWorld(var13);
                  this.angler.addStat(StatList.fishCaughtStat, 1);
@@ -149,7 +156,7 @@
                  var1 = 1;
              }
  
-@@ -421,4 +461,123 @@
+@@ -421,4 +466,123 @@
              this.angler.fishEntity = null;
          }
      }

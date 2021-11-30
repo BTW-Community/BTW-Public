@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockReedRoots.java
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,26 @@
 +package net.minecraft.src;
 +
 +import java.util.Random;
@@ -16,17 +16,15 @@
 +        return FCBetterThanWolves.fcItemReedRoots.itemID;
 +    }
 +    
-+    @Override
++	@Override
 +    public boolean canPlaceBlockAt(World world, int x, int y, int z) {
-+    	if (world.getBlockMaterial(x, y, z) == Material.water)
-+    		return false;
-+    	
 +        int blockBelowID = world.getBlockId(x, y - 1, z);
 +        Block blockBelow = Block.blocksList[blockBelowID];
 +
-+    	return !(Block.blocksList[blockBelowID] instanceof FCBlockReedBase) && blockBelow != null && 
-+    		blockBelow.CanReedsGrowOnBlock(world, x, y - 1, z) &&
-+    		blockBelow.IsConsideredNeighbouringWaterForReedGrowthOn(world, x, y - 1, z);
++    	return blockBelow != null && 
++    		!(blockBelow instanceof FCBlockReedBase) &&
++    		!(blockBelow instanceof FCBlockReedLegacy) &&
++    		super.canPlaceBlockAt(world, x, y, z);
 +    }
 +}
 \ No newline at end of file

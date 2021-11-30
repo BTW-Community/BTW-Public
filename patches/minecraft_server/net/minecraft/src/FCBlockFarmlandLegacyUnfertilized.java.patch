@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockFarmlandLegacyUnfertilized.java
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,64 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -21,22 +21,15 @@
 +    }
 +    
 +	@Override
-+    public boolean AttempToSpreadGrassToBlock( World world, int i, int j, int k )
-+    {
-+    	if ( world.rand.nextInt( 3 ) == 0 )
-+    	{
-+    		return super.AttempToSpreadGrassToBlock( world, i, j, k );
-+    	}
-+    	
-+    	return false;
-+    }
-+    
-+	@Override
 +    public boolean SpreadGrassToBlock( World world, int i, int j, int k )
 +    {
-+		world.setBlockAndMetadataWithNotify( i, j + 1, k, Block.tallGrass.blockID, 1 );
-+		
-+    	return true;
++		if ( world.rand.nextInt( 3 ) == 0 )
++    	{
++			world.setBlockAndMetadataWithNotify( i, j + 1, k, Block.tallGrass.blockID, 1 );
++	    	return true;
++    	}
++
++		return false;
 +    }
 +    
 +	@Override

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemRefinedPickAxe.java
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,62 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -29,8 +29,10 @@
 +    @Override
 +    public ItemStack onItemRightClick(ItemStack itemstack, World world, EntityPlayer entityplayer)
 +    {
++    	if (!entityplayer.isUsingSpecialKey())
++    	{
 +        entityplayer.setItemInUse(itemstack, getMaxItemUseDuration(itemstack));
-+        
++    	}
 +        return itemstack;
 +    }
 +
@@ -55,12 +57,7 @@
 +    	
 +    	return super.getStrVsBlock( toolItemStack, world, block, i, j, k );
 +    }
-+    
-+    @Override
-+    protected boolean GetCanBePlacedAsBlock()
-+    {
-+    	return false;
-+    }    
++       
 +    
 +    //------------- Class Specific Methods ------------//
 +    

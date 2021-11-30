@@ -1,17 +1,19 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCAddOnHandler.java
-@@ -0,0 +1,349 @@
+@@ -0,0 +1,402 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
-+import java.io.File;
++import java.io.File;import java.nio.channels.ReadPendingException;
 +import java.util.ArrayList;
 +import java.util.HashMap;
++import java.util.HashSet;
 +import java.util.Iterator;
 +import java.util.LinkedList;
 +import java.util.List;
 +import java.util.Map;
++import java.util.Set;
 +import java.util.logging.FileHandler;
 +import java.util.logging.Level;
 +import java.util.logging.Logger;
@@ -29,7 +31,7 @@
 +	// Client version
 +	private static final File m_LogFile = new File(Minecraft.getMinecraftDir(), "BTWLog.txt");    
 +	// Server version
-+	//private static final File m_LogFile = new File(new File("."), "BTWLog.txt");    
++	//private static final File m_LogFile = new File(new File("."), "BTWLog.txt");
 +
 +	private static FileHandler m_LogFileHandler = null;
 +
@@ -37,6 +39,8 @@
 +	private static ArrayList<String> ackCheckFails = new ArrayList<String>();
 +	
 +	public static Map<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> addonWorldDataMap;
++	
++	private static ArrayList<FCAddOn> loadOrder = new ArrayList();
 +
 +	public static void AddMod(FCAddOn mod)
 +	{
@@ -51,7 +55,9 @@
 +
 +			LogMessage("...Add-On Handler Initializing...");
 +			
-+			addonWorldDataMap = FCAddOnHandler.initWorldDataForAddon();
++			//buildLoadOrder();
++			
++			addonWorldDataMap = initWorldDataForAddon();
 +
 +			PreInitializeMods();
 +			
@@ -75,6 +81,50 @@
 +			LogMessage("...Add-On Handler Initialization Complete...");
 +		}
 +	}
++	/*
++	private static void buildLoadOrder() {
++		buildDependencies();
++	}
++	
++	private static void addModToLoadOrder(FCAddOn mod, Set<FCAddOn> modsInProgress) {
++		if (modsInProgress.contains(mod)) {
++			throw new ExceptionInInitializerError("Dependency cycle detected when loading addons");
++		}
++		
++		modsInProgress.add(mod);
++		
++		for (FCAddOn dependency : mod.dependents) {
++			if (!dependency.hasBeenInitialized) {
++				addModToLoadOrder(dependency, modsInProgress);
++			}
++		}
++		
++		loadOrder.add(mod);
++		
++		modsInProgress.remove(mod);
++	}
++	
++	private static void buildDependencies() {
++		for (FCAddOn mod : m_ModList) {
++			for (FCAddOn modForCheck : m_ModList) {
++				DependencyType dependencyType = mod.getDependencyForAddon(modForCheck);
++				
++				switch (dependencyType) {
++				case INCOMPATIBLE:
++					throw new ExceptionInInitializerError("Cannot load incompatible mods: " + mod.getName() + ", " + modForCheck.getName());
++				case LOAD_BEFORE:
++					mod.dependents.add(modForCheck);
++					break;
++				case LOAD_AFTER:
++					modForCheck.dependents.add(mod);
++					break;
++				default:
++					break;
++				}
++			}
++		}
++	}
++	*/
 +
 +	public static void InitializeLogger()
 +	{
@@ -149,28 +199,24 @@
 +		}
 +	}
 +
-+	public static void OnLanguageLoaded(StringTranslate translator)
-+	{
++	public static void OnLanguageLoaded(StringTranslate translator) {
 +		// only call on language loaded after mods have been initialized to prevent funkiness due to static instance variable of 
 +		// StringTranslate creating ambiguous initialization order.
 +
-+		if (m_bModsInitialized)
-+		{
++		if (m_bModsInitialized) {
 +			Iterator modIterator = m_ModList.iterator();
 +
-+			while (modIterator.hasNext())
-+			{
++			while (modIterator.hasNext()) {
 +				FCAddOn mod = (FCAddOn)modIterator.next();
 +
 +				mod.OnLanguageLoaded(translator);
 +
-+				String sPrefix = mod.GetLanguageFilePrefix();
++				String prefix = mod.GetLanguageFilePrefix();
 +
-+				if (sPrefix != null)
-+				{
-+					LogMessage("...Add-On Handler Loading Custom Language File With Prefix: " + sPrefix + "..." );
++				if (prefix != null) {
++					LogMessage("...Add-On Handler Loading Custom Language File With Prefix: " + prefix + "..." );
 +
-+					translator.LoadAddonLanguageExtension(sPrefix);
++					translator.LoadAddonLanguageExtension(prefix);
 +				}
 +			}	    	
 +		}		
@@ -266,19 +312,19 @@
 +		}
 +	}
 +	
-+	public FCAddOnUtilsWorldData getWorldDataForMod(Class<? extends FCAddOn> mod) {
++	public static FCAddOnUtilsWorldData getWorldDataForMod(Class<? extends FCAddOn> mod) {
 +		if (FCAddOnHandler.addonWorldDataMap.containsKey(mod))
 +			return FCAddOnHandler.addonWorldDataMap.get(mod);
 +		else
 +			return null;
 +	}
 +
-+	public void setWorldDataForMod(Class<? extends FCAddOn> mod, FCAddOnUtilsWorldData data) {
++	public static void setWorldDataForMod(Class<? extends FCAddOn> mod, FCAddOnUtilsWorldData data) {
 +		FCAddOnHandler.addonWorldDataMap.put(mod, data);
 +	}
 +	
-+	public boolean isModInstalled(String name) {
-+		for (FCAddOn mod : this.m_ModList) {
++	public static boolean isModInstalled(String name) {
++		for (FCAddOn mod : m_ModList) {
 +			if (mod.getName().equals(name)) {
 +				return true;
 +			}
@@ -287,14 +333,21 @@
 +		return false;
 +	}
 +	
-+	public FCAddOn getModByName(String name) {
-+		for (FCAddOn mod : this.m_ModList) {
++	public static FCAddOn getModByName(String name) {
++		for (FCAddOn mod : m_ModList) {
 +			if (mod.getName().equals(name)) {
 +				return mod;
 +			}
 +		}
 +		
 +		return null;
++	}
++	
++	public static enum DependencyType {
++		LOAD_BEFORE,
++		LOAD_AFTER,
++		INCOMPATIBLE,
++		NO_DEPENDENCY
 +	}
 +
 +	//----------- Client Side Functionality -----------//

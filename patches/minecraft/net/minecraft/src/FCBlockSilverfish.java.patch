@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockSilverfish.java
-@@ -0,0 +1,111 @@
+@@ -0,0 +1,234 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -10,7 +10,11 @@
 +
 +public class FCBlockSilverfish extends BlockSilverfish
 +{
-+	private static final int m_iHatchFrequency = 1200;
++
++	private static final int growFrequency = 2;
++	private static final int reproduceFrequency = 10;
++	
++
 +    protected final Block referenceBlock;
 +    protected final int referenceBlockMetadata;
 +    
@@ -33,54 +37,136 @@
 +        SetChiselsEffectiveOn();
 +    	
 +        setTickRandomly( true );
-+        
-+        setUnlocalizedName( "monsterStoneEgg" );
 +    }
-+    
-+	@Override
-+    public void RandomUpdateTick( World world, int i, int j, int k, Random rand )
++
++    @Override
++    public void updateTick(World world, int x, int y, int z, Random rand) 
 +    {
-+		if ( world.provider.dimensionId == 1 )
-+		{
-+			if ( rand.nextInt( m_iHatchFrequency ) == 0 )
-+			{
-+				// block destroy FX
-+				
-+				int iMetadata = world.getBlockMetadata( i, j, k );
-+				
-+		        world.playAuxSFX( FCBetterThanWolves.m_iBlockDestroyRespectParticleSettingsAuxFXID, i, j, k, blockID + ( iMetadata << 12 ) );
-+		        
-+				world.setBlockWithNotify( i, j, k, 0 );
-+				
-+				int iNumSilverfish = 1;
-+				
-+				if ( rand.nextInt( 2 ) == 0 )
-+				{
-+					iNumSilverfish++;
-+				}
-+				
-+				for ( int iTempCount = 0; iTempCount < iNumSilverfish; iTempCount++ )
-+				{
-+		            EntitySilverfish silverfish = (EntitySilverfish) EntityList.createEntityOfType(EntitySilverfish.class, world);
-+		            
-+		            silverfish.setLocationAndAngles( (double)i + 0.5D, (double)j, (double)k + 0.5D, 0.0F, 0.0F);
-+		            
-+		            world.spawnEntityInWorld( silverfish );
-+				}
-+				
-+				FCUtilsItem.DropSingleItemAsIfBlockHarvested( world, i, j, k, Block.gravel.blockID, 0 );
-+				
-+				FCUtilsItem.DropSingleItemAsIfBlockHarvested( world, i, j, k, Item.clay.itemID, 0 );				
-+			}
-+		}
++
++    	if ( world.provider.dimensionId == 1 )
++    	{
++
++    		int metadata = world.getBlockMetadata( x, y, z );
++    		if (metadata<6)
++    		{
++    			if( rand.nextInt(growFrequency)==0)
++    			{
++    				metadata++; 
++    				world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
++    			}
++    		}
++
++    		else
++    		{
++    			int fishInside = 1 +(metadata % 2);
++    			for (int cycle=0; cycle<fishInside; cycle++)
++    			{
++    				if ( rand.nextInt( reproduceFrequency) == 0 )
++    				{
++    					//create fish 
++    					EntitySilverfish silverfish = (EntitySilverfish) EntityList.createEntityOfType(EntitySilverfish.class, world);
++
++    					//set target
++    					int offset = rand.nextInt(6);
++    					int targetX = x + Facing.offsetsXForSide[offset];
++    					int targetY = y + Facing.offsetsYForSide[offset];
++    					int targetZ = z + Facing.offsetsZForSide[offset];
++
++    					//define target
++    					int neighborblockid = world.getBlockId(targetX, targetY, targetZ);
++    					int neighborblockmetadata = world.getBlockMetadata(targetX, targetY, targetZ);
++
++    					//if can spawn a fish there
++    					if ( neighborblockid == 0 || Block.blocksList[neighborblockid].IsAirBlock() ||Block.blocksList[neighborblockid].IsGroundCover())
++    					{
++    						silverfish.setLocationAndAngles( (double)targetX + 0.5D, (double)targetY, (double)targetZ + 0.5D, 0.0F, 0.0F);
++    						world.spawnEntityInWorld( silverfish );	
++    						fishInside--;
++    					}
++
++    					// if can infest block
++    					else if (Block.blocksList[neighborblockid].isBlockInfestable(silverfish, neighborblockmetadata))
++    					{
++    						Block.blocksList[neighborblockid].onInfested(world, silverfish,targetX, targetY, targetZ, neighborblockmetadata);
++    						fishInside--;
++    					}
++
++    					//handle block eruption
++    					if (metadata>13 || fishInside>1)
++    					{
++    						// block destroy FX
++    						world.playAuxSFX( FCBetterThanWolves.m_iBlockDestroyRespectParticleSettingsAuxFXID, x, y, z, blockID + ( metadata << 12 ) );
++    						world.setBlockWithNotify( x, y, z, 0 );
++
++    						//spawn clogging fish
++    						if (fishInside>0)
++    						{
++    							silverfish.setLocationAndAngles( (double)x + 0.5D, (double)y, (double)z + 0.5D, 0.0F, 0.0F);
++
++    							world.spawnEntityInWorld( silverfish );
++    						}
++
++    						//spawn additional for eruption
++    						int numsilverfish = 1;
++
++    						if ( metadata%2 == 1 )
++    						{
++    							numsilverfish++;
++    						}
++
++    						for ( int tempCount = 0; tempCount < numsilverfish; tempCount++ )
++    						{
++    							EntitySilverfish eruptionSilverfish = (EntitySilverfish) EntityList.createEntityOfType(EntitySilverfish.class, world);
++
++    							eruptionSilverfish.setLocationAndAngles( (double)x + 0.5D, (double)y, (double)z + 0.5D, 0.0F, 0.0F);
++
++    							world.spawnEntityInWorld( eruptionSilverfish );
++    						}
++    						dropBlockAsItemWithChance(world, x, y, z, metadata, 1, 0);
++
++    						break;
++    					}
++    					int progress = 2;
++    					if(metadata%2 == 1 )
++    					{
++    						progress = 1;
++    					}
++    					else if (fishInside>0)
++    					{
++    						progress = 3;
++    					}
++    					world.setBlockMetadataWithNotify(x, y, z, metadata+progress, 3);
++
++    				}	
++    			}
++    		}
++    	}
 +    }
-+    
++
 +    @Override
 +    protected ItemStack createStackedBlock( int iMetadata )
 +    {
 +        return new ItemStack( referenceBlock, 1, referenceBlockMetadata );
 +    }
-+    
++    @Override
++    public void dropBlockAsItemWithChance( World world, int x, int y, int z, int iMetadata, float fChance, int iFortuneModifier )
++    {
++		for (int rubbleCount = 0; rubbleCount <8; rubbleCount++)
++		{
++			// for each 2 metadata receive one clay ball instead of gravel
++			if (rubbleCount*2 <= iMetadata) 
++			{
++				FCUtilsItem.DropSingleItemAsIfBlockHarvested( world, x, y, z, Item.clay.itemID, 0 );
++			}
++
++			else 
++			{
++				FCUtilsItem.DropSingleItemAsIfBlockHarvested( world, x, y, z, FCBetterThanWolves.fcItemPileGravel.itemID, 0 );
++			}
++		}
++		//one standard gravel pile
++		FCUtilsItem.DropSingleItemAsIfBlockHarvested( world, x, y, z, FCBetterThanWolves.fcItemPileGravel.itemID, 0 );
++    }
 +    @Override
 +	public boolean isBlockInfestedBy(EntityLiving entity)
 +	{
@@ -88,7 +174,19 @@
 +	}
 +	
 +	//----------- Client Side Functionality -----------//
-+	
++    public Icon crackIcons[];
++    
++	@Override
++    public void registerIcons( IconRegister register )
++    {
++
++        crackIcons = new Icon[7];
++
++        for ( int iTempIndex = 0; iTempIndex < 7; iTempIndex++ )
++        {
++        	crackIcons[iTempIndex] = register.registerIcon( "fcOverlayStoneRough_" + ( iTempIndex + 1 ) );
++        }
++    }	
 +    @Override
 +    public Icon getIcon( int iSide, int iMetadata )
 +    {
@@ -111,4 +209,29 @@
 +    {
 +		par3List.add(new ItemStack(par1, 1, 0));
 +    }
++
++    @Override
++    public void RenderBlockSecondPass( RenderBlocks renderBlocks, int i, int j, int k, boolean bFirstPassResult )
++    {
++    	if ( bFirstPassResult )
++    	{
++	    	IBlockAccess blockAccess = renderBlocks.blockAccess;
++	    	//metadata-2 to stop cracks showing in first stages
++	    	int progress = blockAccess.getBlockMetadata( i, j, k )-2;
++	    	
++	    	
++	    	if ( progress > 0 )
++	    	{
++	    		
++	    		int texindex = Math.floorDiv(progress, 2);
++    			Icon overlayTexture = crackIcons[texindex];
++    			
++            	if ( overlayTexture != null )
++            	{
++            		RenderBlockWithTexture( renderBlocks, i, j, k, overlayTexture );
++            	}
++	    	}
++    	}
++    }    
++
 +}

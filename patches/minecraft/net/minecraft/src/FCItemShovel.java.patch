@@ -32,13 +32,13 @@
 +    }
 +    
 +    @Override
-+    protected float GetVisualVerticalOffsetAsBlock()
++	public float GetVisualVerticalOffsetAsBlock()
 +    {
 +    	return 0.70F;
 +    }    
 +    
 +    @Override
-+    protected float GetVisualRollOffsetAsBlock()
++	public float GetVisualRollOffsetAsBlock()
 +    {
 +    	return -15F;
 +    }

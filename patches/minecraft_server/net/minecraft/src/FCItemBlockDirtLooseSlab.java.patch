@@ -1,56 +1,48 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCItemBlockDirtLooseSlab.java
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,44 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
-+public class FCItemBlockDirtLooseSlab extends FCItemBlockSlab
-+{
-+    public FCItemBlockDirtLooseSlab( int iItemID )
-+    {
-+        super( iItemID );        
++public class FCItemBlockDirtLooseSlab extends FCItemBlockSlab {
++    public FCItemBlockDirtLooseSlab(int itemID) {
++        super(itemID);
 +    }
 +    
 +    @Override
-+    public boolean canCombineWithBlock( World world, int i, int j, int k, int iItemDamage )
-+    {
-+        int iBlockID = world.getBlockId( i, j, k );
++    public boolean canCombineWithBlock(World world, int x, int y, int z, int itemDamage) {
++        int blockID = world.getBlockId(x, y, z);
 +        
-+        if ( iBlockID == FCBetterThanWolves.fcBlockDirtSlab.blockID )
-+        {
-+            int iMetadata = world.getBlockMetadata( i, j, k );
-+            int iSubtype = FCBetterThanWolves.fcBlockDirtSlab.GetSubtype( iMetadata );
++        if (blockID == FCBetterThanWolves.fcBlockDirtSlab.blockID) {
++            int metadata = world.getBlockMetadata(x, y, z);
++            int subtype = FCBetterThanWolves.fcBlockDirtSlab.GetSubtype(metadata);
 +            
-+            if ( iSubtype != FCBlockDirtSlab.m_iSubtypePackedEarth )
-+            {
-+            	if ( !FCBetterThanWolves.fcBlockDirtSlab.GetIsUpsideDown( iMetadata ) )
-+            	{
++            if (subtype != FCBlockDirtSlab.m_iSubtypePackedEarth) {
++            	if (!FCBetterThanWolves.fcBlockDirtSlab.GetIsUpsideDown(metadata)) {
 +            		return true;
 +            	}
 +            }
 +            
 +            return false;
 +        }
-+        else if ( iBlockID == FCBetterThanWolves.fcBlockMyceliumSlab.blockID )
-+        {
++        else if (blockID == FCBetterThanWolves.fcBlockMyceliumSlab.blockID || blockID == FCBetterThanWolves.fcBlockGrassSlab.blockID) {
 +    		return true;
 +        }
 +        
-+    	return super.canCombineWithBlock( world, i, j, k, iItemDamage );
-+    }    
++    	return super.canCombineWithBlock(world, x, y, z, itemDamage);
++    }
 +
 +    @Override
-+    public boolean convertToFullBlock( World world, int i, int j, int k )
-+    {
++    public boolean convertToFullBlock(World world, int x, int y, int z) {
 +    	// force target to convert to loose dirt, to handle stuff like combining with grass slabs
++    	int newBlockID = ((FCBlockSlab) Block.blocksList[getBlockID()]).GetCombinedBlockID(0);
 +    	
-+    	int iNewBlockID = ((FCBlockSlab)Block.blocksList[getBlockID()]).GetCombinedBlockID( 0 );
-+    	
-+    	return world.setBlockWithNotify( i, j, k, iNewBlockID );
++    	return world.setBlockWithNotify(x, y, z, newBlockID);
 +    }
 +    
 +    //------------- Class Specific Methods ------------//
 +    
 +	//----------- Client Side Functionality -----------//
 +} 
+\ No newline at end of file

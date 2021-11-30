@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockBucket.java
-@@ -0,0 +1,317 @@
+@@ -0,0 +1,326 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -53,6 +53,15 @@
 +		
 +		return iMetadata;
 +    }
++	
++	@Override
++	public void onBlockPlacedBy( World world, int i, int j, int k, EntityLiving entityLiving, ItemStack stack )
++	{
++		//always let player place bucket straight, as any sane person would. :P
++		SetFacing( world, i, j, k, 1 );
++	}
++	
++
 +		
 +	@Override
 +    public int idDropped( int iMetadata, Random rand, int iFortuneMod )

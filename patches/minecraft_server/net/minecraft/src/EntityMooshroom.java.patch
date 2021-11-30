@@ -114,7 +114,7 @@
 +    {
 +    	if ( worldObj.provider.dimensionId != 1 && rand.nextInt( 1000 ) == 0 )
 +    	{
-+    		FCBlockMycelium.CheckForMyceliumSpreadToRandomBlockAround( worldObj,
++    		FCBlockMycelium.checkForMyceliumSpreadFromLocation( worldObj,
 +    			MathHelper.floor_double( posX ), (int)posY - 1, 
 +    			MathHelper.floor_double( posZ ) );
 +    	}

@@ -41,7 +41,7 @@
 +    	int iBlockAboveMaxNaturalLight = world.GetBlockNaturalLightValueMaximum( i, j + 1, k );
 +    	int iBlockAboveCurrentNaturalLight = iBlockAboveMaxNaturalLight - world.skylightSubtracted;
 +    	
-+        if ( iBlockAboveCurrentNaturalLight >= FCBlockGrass.m_iGrassSpreadFromLightLevel && world.provider.dimensionId != 1 )
++        if ( iBlockAboveCurrentNaturalLight >= FCBlockGrass.SPREAD_LIGHT_LEVEL && world.provider.dimensionId != 1 )
 +        {
 +        	int iMetadata = world.getBlockMetadata( i, j, k );
 +        	
@@ -65,7 +65,7 @@
 +                    	{
 +                        	int iTargetBlockMaxNaturalLight = world.GetBlockNaturalLightValueMaximum( iTargetI, iTargetJ + 1, iTargetK );
 +                        	
-+                        	if ( iTargetBlockMaxNaturalLight >= FCBlockGrass.m_iGrassSpreadToLightLevel )
++                        	if ( iTargetBlockMaxNaturalLight >= FCBlockGrass.SPREAD_LIGHT_LEVEL )
 +                        	{                        	
 +                        		world.setBlockAndMetadataWithNotify( iTargetI, iTargetJ + 1, iTargetK, Block.tallGrass.blockID, 1 );
 +                        	}
@@ -100,15 +100,15 @@
 +    public boolean CanBeGrazedOn( IBlockAccess blockAccess, int i, int j, int k, 
 +    	EntityAnimal animal )
 +    {
-+		return blockAccess.getBlockMetadata( i, j, k ) == 1 || animal.CanGrazeOnRoughVegetation();
++		return blockAccess.getBlockMetadata( i, j, k ) != 0 || animal.CanGrazeOnRoughVegetation();
 +    }
 +
 +    @Override
 +    public int GetHerbivoreItemFoodValue( int iItemDamage )
 +    {
-+    	if ( iItemDamage == 1 )
++    	if ( iItemDamage == 1 || iItemDamage == 2)
 +    	{
-+    		return EntityAnimal.m_iBaseGrazeFoodValue;
++    		return Item.m_iBaseHerbivoreItemFoodValue / 4;
 +    	}
 +    	
 +    	return super.GetHerbivoreItemFoodValue( iItemDamage );

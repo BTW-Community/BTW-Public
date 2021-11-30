@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCUtilsWorld.java
-@@ -0,0 +1,824 @@
+@@ -0,0 +1,825 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -394,10 +394,11 @@
 +		return -1;
 +	}
 +	
-+	static public boolean IsValidLightLevelForMobSpawning( World world, int i, int j, int k )
-+	{
-+        return world.provider.dimensionId == -1 || ( world.getBlockLightValue( i, j, k ) <= 7 && 
-+			world.getLightBrightness( i, j, k ) <= 0.5F );
++	static public boolean IsValidLightLevelForMobSpawning(World world, int x, int y, int z) {
++        return world.provider.dimensionId == -1 || 
++        		(world.GetBlockNaturalLightValue(x, y, z) <= 7 &&
++        		world.getBlockLightValueNoSky(x, y, z) == 0 &&
++        		world.getLightBrightness(x, y, z) <= 0.5F);
 +	}
 +	
 +	static public boolean CanMobsSpawnHere( World world, int i, int j, int k )

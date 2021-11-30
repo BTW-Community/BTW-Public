@@ -35,7 +35,7 @@
      {
          addMapping(par0Class, par1Str, par2);
          entityEggs.put(Integer.valueOf(par2), new EntityEggInfo(par2, par3, par4));
-@@ -58,9 +68,14 @@
+@@ -58,9 +68,16 @@
  
              if (var3 != null)
              {
@@ -43,6 +43,8 @@
 +            		var2 = FCEntityVillager.createVillager(par1World);
 +            	}
 +            	else {
++            		var3 = getRegisteredReplacement(var3);
++
                  var2 = (Entity)var3.getConstructor(new Class[] {World.class}).newInstance(new Object[] {par1World});
              }
          }
@@ -50,7 +52,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -101,9 +116,19 @@
+@@ -101,9 +118,21 @@
  
              if (var3 != null)
              {
@@ -63,6 +65,8 @@
 +            		return null;
 +            	}
 +            	else {
++            		var3 = getRegisteredReplacement(var3);
++
                  var2 = (Entity)var3.getConstructor(new Class[] {World.class}).newInstance(new Object[] {par1World});
              }
          }
@@ -70,7 +74,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -115,6 +140,9 @@
+@@ -115,6 +144,9 @@
          }
          else
          {
@@ -80,7 +84,7 @@
              par1World.getWorldLogAgent().func_98236_b("Skipping Entity with id " + par0NBTTagCompound.getString("id"));
          }
  
-@@ -134,9 +162,14 @@
+@@ -134,9 +166,16 @@
  
              if (var3 != null)
              {
@@ -88,6 +92,8 @@
 +            		var2 = FCEntityVillager.createVillager(par1World);
 +            	}
 +            	else {
++            		var3 = getRegisteredReplacement(var3);
++
                  var2 = (Entity)var3.getConstructor(new Class[] {World.class}).newInstance(new Object[] {par1World});
              }
          }
@@ -95,7 +101,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -144,6 +177,9 @@
+@@ -144,6 +183,9 @@
  
          if (var2 == null)
          {
@@ -105,7 +111,7 @@
              par1World.getWorldLogAgent().func_98236_b("Skipping Entity with id " + par0);
          }
  
-@@ -240,5 +276,181 @@
+@@ -240,5 +282,181 @@
          addMapping(EntityIronGolem.class, "VillagerGolem", 99);
          addMapping(EntityVillager.class, "Villager", 120, 5651507, 12422002);
          addMapping(EntityEnderCrystal.class, "EnderCrystal", 200);
@@ -281,7 +287,7 @@
 +    	return entity;
 +    }
 +    
-+    private static Class<? extends Entity> getRegisteredReplacement(Class<? extends Entity> entityClass) {
++    public static Class<? extends Entity> getRegisteredReplacement(Class<? extends Entity> entityClass) {
 +    	int id = (Integer) classToIDMapping.get(entityClass);
 +    	
 +    	return (Class<? extends Entity>) IDtoClassMapping.get(id);

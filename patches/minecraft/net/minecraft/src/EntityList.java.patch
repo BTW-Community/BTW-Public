@@ -44,7 +44,7 @@
          addMapping(par0Class, par1Str, par2);
          entityEggs.put(Integer.valueOf(par2), new EntityEggInfo(par2, par3, par4));
      }
-@@ -58,9 +74,14 @@
+@@ -58,9 +74,16 @@
  
              if (var3 != null)
              {
@@ -52,6 +52,8 @@
 +					var2 = FCEntityVillager.createVillager(par1World);
 +				}
 +				else {
++					var3 = getRegisteredReplacement(var3);
++					
                  var2 = (Entity)var3.getConstructor(new Class[] {World.class}).newInstance(new Object[] {par1World});
              }
          }
@@ -59,7 +61,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -101,9 +122,19 @@
+@@ -101,9 +124,21 @@
  
              if (var3 != null)
              {
@@ -72,6 +74,8 @@
 +					return null;
 +				}
 +				else {
++					var3 = getRegisteredReplacement(var3);
++					
                  var2 = (Entity)var3.getConstructor(new Class[] {World.class}).newInstance(new Object[] {par1World});
              }
          }
@@ -79,7 +83,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -115,7 +146,10 @@
+@@ -115,7 +150,10 @@
          }
          else
          {
@@ -90,7 +94,7 @@
          }
  
          return var2;
-@@ -134,9 +168,14 @@
+@@ -134,9 +172,16 @@
  
              if (var3 != null)
              {
@@ -98,6 +102,8 @@
 +					var2 = FCEntityVillager.createVillager(par1World);
 +				}
 +				else {
++					var3 = getRegisteredReplacement(var3);
++					
                  var2 = (Entity)var3.getConstructor(new Class[] {World.class}).newInstance(new Object[] {par1World});
              }
          }
@@ -105,7 +111,7 @@
          catch (Exception var4)
          {
              var4.printStackTrace();
-@@ -144,7 +183,10 @@
+@@ -144,7 +189,10 @@
  
          if (var2 == null)
          {
@@ -116,7 +122,7 @@
          }
  
          return var2;
-@@ -240,5 +282,219 @@
+@@ -240,5 +288,219 @@
          addMapping(EntityIronGolem.class, "VillagerGolem", 99);
          addMapping(EntityVillager.class, "Villager", 120, 5651507, 12422002);
          addMapping(EntityEnderCrystal.class, "EnderCrystal", 200);
@@ -330,7 +336,7 @@
 +		return entity;
 +	}
 +
-+	private static Class<? extends Entity> getRegisteredReplacement(Class<? extends Entity> entityClass) {
++	public static Class<? extends Entity> getRegisteredReplacement(Class<? extends Entity> entityClass) {
 +		int id = (Integer) classToIDMapping.get(entityClass);
 +
 +		return (Class<? extends Entity>) IDtoClassMapping.get(id);

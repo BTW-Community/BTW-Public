@@ -493,7 +493,7 @@
 +	        {
 +	            if ( isBurning() )
 +	            {
-+	                dropItem( FCBetterThanWolves.fcItemMeatBurned.itemID, 1 );
++	                dropItem( FCBetterThanWolves.fcItemMuttonCooked.itemID, 1 );
 +	            }
 +	            else
 +	            {

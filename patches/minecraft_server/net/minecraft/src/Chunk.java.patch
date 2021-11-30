@@ -98,7 +98,7 @@
                      {
                          this.worldObj.updateAllLightTypes(var5, var8, var6 + 1);
                      }
-@@ -1290,4 +1322,56 @@
+@@ -1290,4 +1322,70 @@
              }
          }
      }
@@ -152,6 +152,20 @@
 +
 +            return iLightValue;
 +        }
-+    }    
++    }
++    
++    /**
++     * Gets the amount of light on a block ignoring sunlight
++     */
++    public int getBlockLightValueNoSky(int x, int y, int z) {
++        ExtendedBlockStorage blockStorage = this.storageArrays[y >> 4];
++
++        if (blockStorage == null) {
++            return 0;
++        }
++        else {
++            return blockStorage.getExtBlocklightValue(x, y & 15, z);
++        }
++    }
 +    // END FCMOD
 +}

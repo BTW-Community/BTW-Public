@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBiomeGenHills.java
-@@ -0,0 +1,88 @@
+@@ -0,0 +1,97 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -11,82 +11,91 @@
 +{
 +	private static final int m_iNumSilverfishClustersPerChunk = 7;
 +	private static final int m_iNumSilverfishBlocksPerCluster = 8;
-+	
-+    protected WorldGenerator m_generatorSilverfish;
-+    protected WorldGenerator m_generatorSilverfishSecondStrata;
-+    protected WorldGenerator m_generatorSilverfishThirdStrata;
 +
-+    protected FCBiomeGenHills( int iBiomeID )
-+    {
-+        super( iBiomeID );
-+        
-+        m_generatorSilverfish = new WorldGenMinable( FCBetterThanWolves.fcBlockSilverfishStone.blockID, 
-+        	m_iNumSilverfishBlocksPerCluster );
-+        m_generatorSilverfishSecondStrata = new WorldGenMinable( FCBetterThanWolves.fcBlockSilverfishStoneSecondStrata.blockID, 
-+            	m_iNumSilverfishBlocksPerCluster );
-+        m_generatorSilverfishThirdStrata = new WorldGenMinable( FCBetterThanWolves.fcBlockSilverfishStoneThirdStrata.blockID, 
-+            	m_iNumSilverfishBlocksPerCluster );
-+    }
++	protected WorldGenerator m_generatorSilverfish;
++	protected WorldGenerator m_generatorSilverfishSecondStrata;
++	protected WorldGenerator m_generatorSilverfishThirdStrata;
 +
-+    public void decorate( World world, Random rand, int iChunkX, int iChunkZ )
-+    {
-+        super.decorate( world, rand, iChunkX, iChunkZ );
-+        
-+        AddEmeralds( world, rand, iChunkX, iChunkZ );
++	public boolean hasSilverfishBeenInit = false;
 +
-+        AddSilverfishBlocks( world, rand, iChunkX, iChunkZ );        
-+    }
-+    
-+    public void AddEmeralds( World world, Random rand, int iChunkX, int iChunkZ )
-+    {
-+        int iNumEmeralds = 3 + rand.nextInt( 6 );
++	protected FCBiomeGenHills( int iBiomeID )
++	{
++		super( iBiomeID );
++	}
 +
-+        for ( int iTempCount = 0; iTempCount < iNumEmeralds; iTempCount++ )
-+        {
-+            int iTempI = iChunkX + rand.nextInt( 16 );
-+            int iTempJ = rand.nextInt( 28 ) + 4;
-+            int iTempK = iChunkZ + rand.nextInt( 16 );
-+            
-+            if ( world.getBlockId( iTempI, iTempJ, iTempK ) == Block.stone.blockID )
-+            {
-+            	int iMetadata = 0;
-+            	
-+        		if ( iTempJ <= 48 + world.rand.nextInt( 2 ) )
-+        		{
-+        			int iStrataLevel = 1;
-+        			
-+        			if ( iTempJ <= 24 + world.rand.nextInt( 2 ) )
-+        			{
-+        				iStrataLevel = 2;                                				
-+        			}
-+        			
-+    				iMetadata = Block.oreEmerald.GetMetadataConversionForStrataLevel( 
-+    					iStrataLevel, 0 );
-+        		}
-+        		
-+                world.setBlock( iTempI, iTempJ, iTempK, Block.oreEmerald.blockID, iMetadata, 2 );
-+            }
-+        }
-+    }
-+    
-+    public void AddSilverfishBlocks( World world, Random rand, int iChunkX, int iChunkZ )
-+    {
-+        for ( int iTempCount = 0; iTempCount < m_iNumSilverfishClustersPerChunk; iTempCount++ )
-+        {
-+            int iTempI = iChunkX + rand.nextInt( 16 );
-+            int iTempJ = rand.nextInt( 64 );
-+            int iTempK = iChunkZ + rand.nextInt( 16 );
-+            
-+    		if ( iTempJ <= 48 + world.rand.nextInt( 2 ) )
-+    		{
-+    			if ( iTempJ <= 24 + world.rand.nextInt( 2 ) )
-+    			{
-+    	            m_generatorSilverfishThirdStrata.generate( world, rand, iTempI, iTempJ, iTempK );
-+    			}
-+                m_generatorSilverfishSecondStrata.generate( world, rand, iTempI, iTempJ, iTempK );
-+    		}          
-+            m_generatorSilverfish.generate( world, rand, iTempI, iTempJ, iTempK );
-+        }
-+    }
++	public void decorate( World world, Random rand, int iChunkX, int iChunkZ )
++	{
++		super.decorate( world, rand, iChunkX, iChunkZ );
++
++		if (!hasSilverfishBeenInit)
++			initSilverfish();
++		
++		AddEmeralds( world, rand, iChunkX, iChunkZ );
++
++		AddSilverfishBlocks( world, rand, iChunkX, iChunkZ );        
++	}
++
++	public void AddEmeralds( World world, Random rand, int iChunkX, int iChunkZ )
++	{
++		int iNumEmeralds = 3 + rand.nextInt( 6 );
++
++		for ( int iTempCount = 0; iTempCount < iNumEmeralds; iTempCount++ )
++		{
++			int iTempI = iChunkX + rand.nextInt( 16 );
++			int iTempJ = rand.nextInt( 28 ) + 4;
++			int iTempK = iChunkZ + rand.nextInt( 16 );
++
++			if ( world.getBlockId( iTempI, iTempJ, iTempK ) == Block.stone.blockID )
++			{
++				int iMetadata = 0;
++
++				if ( iTempJ <= 48 + world.rand.nextInt( 2 ) )
++				{
++					int iStrataLevel = 1;
++
++					if ( iTempJ <= 24 + world.rand.nextInt( 2 ) )
++					{
++						iStrataLevel = 2;                                				
++					}
++
++					iMetadata = Block.oreEmerald.GetMetadataConversionForStrataLevel( 
++							iStrataLevel, 0 );
++				}
++
++				world.setBlock( iTempI, iTempJ, iTempK, Block.oreEmerald.blockID, iMetadata, 2 );
++			}
++		}
++	}
++
++	public void AddSilverfishBlocks( World world, Random rand, int iChunkX, int iChunkZ )
++	{
++		for ( int iTempCount = 0; iTempCount < m_iNumSilverfishClustersPerChunk; iTempCount++ )
++		{
++			int iTempI = iChunkX + rand.nextInt( 16 );
++			int iTempJ = rand.nextInt( 64 );
++			int iTempK = iChunkZ + rand.nextInt( 16 );
++
++			if ( iTempJ <= 48 + world.rand.nextInt( 2 ) )
++			{
++				if ( iTempJ <= 24 + world.rand.nextInt( 2 ) )
++				{
++					m_generatorSilverfishThirdStrata.generate( world, rand, iTempI, iTempJ, iTempK );
++				}
++				m_generatorSilverfishSecondStrata.generate( world, rand, iTempI, iTempJ, iTempK );
++			}          
++			m_generatorSilverfish.generate( world, rand, iTempI, iTempJ, iTempK );
++		}
++	}
++
++	public void initSilverfish() {
++		m_generatorSilverfish = new WorldGenMinable( FCBetterThanWolves.fcBlockSilverfishStone.blockID, 
++				m_iNumSilverfishBlocksPerCluster );
++		m_generatorSilverfishSecondStrata = new WorldGenMinable( FCBetterThanWolves.fcBlockSilverfishStoneSecondStrata.blockID, 
++				m_iNumSilverfishBlocksPerCluster );
++		m_generatorSilverfishThirdStrata = new WorldGenMinable( FCBetterThanWolves.fcBlockSilverfishStoneThirdStrata.blockID, 
++				m_iNumSilverfishBlocksPerCluster );
++		
++		this.hasSilverfishBeenInit = true;
++	}
 +}
 \ No newline at end of file
