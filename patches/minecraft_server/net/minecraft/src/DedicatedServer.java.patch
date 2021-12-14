@@ -1,0 +1,11 @@
+--- a/minecraft_server/net/minecraft/src/DedicatedServer.java
++++ b/minecraft_server/net/minecraft/src/DedicatedServer.java
+@@ -38,6 +38,8 @@
+         var1.start();
+         this.getLogAgent().func_98233_a("Starting minecraft server version 1.5.2");
+ 
++        FCAddOnHandler.InitializeMods(); 
++        
+         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
+         {
+             this.getLogAgent().func_98236_b("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");

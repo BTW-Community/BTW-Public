@@ -1,3 +1,16 @@
+## Version 1.3.1 ##
+Thanks to the following people who contributed to this release!
+- Hiracho
+
+/--General--/
+- Fixed an issue where mod initialization in multiplayer would still cause crashes on launching the server.
+
+/--Gameplay--/
+- Added the ability to sprint by pressing alt use (defaulted to ctrl) while moving.
+- Added the ability to place several orientable blocks with the opposite rotation by holding alt use while placing.
+- Changed sprinting to not cancel when hitting blocks as long as movement input is still activated.
+- Fixed an issue where pressing alt use while moving in multiplayer would disconnect the client.
+
 ## Version 1.3.0 ##
 Thanks to the following people who contributed to this release!
 - Dawnraider
