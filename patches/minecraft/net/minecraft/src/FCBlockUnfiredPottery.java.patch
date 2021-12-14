@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockUnfiredPottery.java
-@@ -0,0 +1,990 @@
+@@ -0,0 +1,888 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -91,6 +91,8 @@
 +        setStepSound( FCBetterThanWolves.fcStepSoundSquish );
 +        
 +        setUnlocalizedName( "fcBlockUnfiredPottery" );
++        
++        this.setCreativeTab(CreativeTabs.tabDecorations);
 +    }
 +    
 +	@Override
@@ -405,108 +407,6 @@
 +	}
 +
 +	@Override
-+	public void OnRotatedOnTurntable( World world, int i, int j, int k )
-+	{
-+		int iMetadata = world.getBlockMetadata( i, j, k );
-+		
-+		if ( iMetadata < m_iNumSpunPotteryTypes )
-+		{
-+			world.playAuxSFX( FCBetterThanWolves.m_iBlockDestroyRespectParticleSettingsAuxFXID, i, j, k, blockID );
-+		}
-+	}	
-+	
-+	@Override
-+	public int RotateOnTurntable( World world, int i, int j, int k, boolean bReverse, int iCraftingCounter )
-+	{
-+		iCraftingCounter = super.RotateOnTurntable( world, i, j, k, bReverse, iCraftingCounter );
-+		
-+		iCraftingCounter = TurntableCraftingRotation( world, i, j, k, bReverse, iCraftingCounter );
-+		
-+		return iCraftingCounter;
-+	}
-+	
-+	@Override
-+	public int GetRotationsToCraftOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		return m_iRotationsOnTurntableToChangState;
-+	}
-+	
-+	@Override
-+	public int GetNewBlockIDCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+    	int iMetaData = blockAccess.getBlockMetadata( i, j, k );
-+    	
-+    	if ( iMetaData < m_iNumSpunPotteryTypes - 1 )
-+    	{
-+    		return blockID;
-+    	}
-+    	else
-+    	{
-+    		return 0;
-+    	}    	
-+	}
-+	
-+	@Override
-+	public int GetNewMetadataCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+    	int iMetaData = blockAccess.getBlockMetadata( i, j, k );
-+    	
-+    	if ( iMetaData < m_iNumSpunPotteryTypes - 1 )
-+    	{
-+    		return iMetaData + 1;
-+    	}
-+    	else
-+    	{
-+    		return 0;
-+    	}    	
-+	}
-+	
-+	@Override
-+	public int GetItemIDCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		int iMetadata = blockAccess.getBlockMetadata( i, j, k );
-+		
-+		if ( iMetadata == m_iSubtypeNetherBrick || iMetadata == m_iSubtypeNetherBrickIAligned )
-+		{
-+			return FCBetterThanWolves.fcItemNetherSludge.itemID;
-+		}
-+		else if ( iMetadata == m_iSubtypeUncookedCake )
-+		{
-+			return FCBetterThanWolves.fcItemPastryUncookedCake.itemID;
-+		}
-+		else if ( iMetadata == m_iSubtypeUncookedCookies || iMetadata == m_iSubtypeUncookedCookiesIAligned )
-+		{
-+			return FCBetterThanWolves.fcItemPastryUncookedCookies.itemID;
-+		}
-+		else if ( iMetadata == m_iSubtypeUncookedPumpkinPie )
-+		{
-+			return FCBetterThanWolves.fcItemPastryUncookedPumpkinPie.itemID;
-+		}
-+		else if ( iMetadata == m_iSubtypeUncookedBread || iMetadata == m_iSubtypeUncookedBreadIAligned )
-+		{
-+			return FCBetterThanWolves.fcItemBreadDough.itemID;
-+		}
-+		
-+		return Item.clay.itemID;
-+	}
-+	
-+	@Override
-+	public int GetItemCountCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+    	int iMetaData = blockAccess.getBlockMetadata( i, j, k );
-+    	
-+		if ( iMetaData == m_iSubtypeCrucible ||
-+			iMetaData == m_iSubtypePlanter ||
-+			iMetaData == m_iSubtypeVase ||
-+			iMetaData == m_iSubtypeUrn )
-+		{
-+			return 2;
-+		}
-+		
-+		return 1;
-+	}
-+
-+	@Override
 +    public boolean CanBePistonShoveled( World world, int i, int j, int k )
 +    {
 +    	return true;
@@ -594,14 +494,12 @@
 +        list.add( new ItemStack( iBlockID, 1, m_iSubtypePlanter ) );
 +        list.add( new ItemStack( iBlockID, 1, m_iSubtypeVase ) );
 +        list.add( new ItemStack( iBlockID, 1, m_iSubtypeUrn ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeMould ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeClayBrick ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeNetherBrick ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeUncookedCake ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeUncookedCookies ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeUncookedPumpkinPie ) );
-+        list.add( new ItemStack( iBlockID, 1, m_iSubtypeUncookedBread ) );
 +    }
++	
++	@Override
++	public int idPicked(World world, int x, int y, int z) {
++		return this.idDropped(world.getBlockMetadata(x, y, z), world.rand, 0);
++	}
 +	
 +    @Override
 +    public boolean RenderBlock( RenderBlocks renderBlocks, int i, int j, int k )

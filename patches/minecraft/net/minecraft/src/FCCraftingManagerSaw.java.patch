@@ -12,14 +12,14 @@
 +	
 +	private FCCraftingManagerSaw() {}
 +	
-+	public void addRecipe(ItemStack[] output, Block block, int metadata) {
-+		FCCraftingManagerSawRecipe recipe = new FCCraftingManagerSawRecipe(output, block, metadata);
++	public void addRecipe(ItemStack[] output, Block block, int[] metadatas) {
++		FCCraftingManagerSawRecipe recipe = new FCCraftingManagerSawRecipe(output, block, metadatas);
 +		
 +		recipes.add(recipe);
 +	}
 +	
-+	public boolean removeRecipe(ItemStack[] output, Block block, int metadata) {
-+		FCCraftingManagerSawRecipe recipeToRemove = new FCCraftingManagerSawRecipe(output, block, metadata);
++	public boolean removeRecipe(ItemStack[] output, Block block, int[] metadatas) {
++		FCCraftingManagerSawRecipe recipeToRemove = new FCCraftingManagerSawRecipe(output, block, metadatas);
 +		
 +		for (FCCraftingManagerSawRecipe recipe : recipes) {
 +			if (recipe.matchesRecipe(recipeToRemove)) {
@@ -51,3 +51,4 @@
 +		return null;
 +	}
 +}
+\ No newline at end of file

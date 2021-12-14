@@ -1,271 +1,218 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCTileEntityTurntable.java
-@@ -0,0 +1,270 @@
+@@ -0,0 +1,217 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
 +import java.util.List;
 +
-+public class FCTileEntityTurntable extends TileEntity
-+{
-+	private final int m_iMaxHeightOfBlocksRotated = 2;
++public class FCTileEntityTurntable extends TileEntity {
++	private final int maxHeightOfBlocksRotated = 2;
 +	
-+	private int m_iRotationTickCount;
++	private int rotationTickCount;
 +	public int m_iCraftingRotationCount;
 +	
-+    private static int m_iTicksToRotate[];
++    private static int ticksToRotate[];
 +    
-+	private int m_iSwitchOverride; // legacy support for old data value
++	private int switchOverride; // legacy support for old data value
 +	
-+    static 
-+    {
-+    	m_iTicksToRotate = (new int[] 
-+        { 
++    static {
++    	ticksToRotate = (new int[] {
 +			10, 
 +			20, 40, 80, 200, 600,
 +			1200, 2400, 6000, 12000, 24000
 +        });
 +    }
 +    
-+    public FCTileEntityTurntable()
-+    {
-+    	m_iRotationTickCount = 0;
++    public FCTileEntityTurntable() {
++    	rotationTickCount = 0;
 +    	m_iCraftingRotationCount = 0;
 +    	
-+    	m_iSwitchOverride = -1;
++    	switchOverride = -1;
 +    }
 +    
 +    @Override
-+    public void readFromNBT( NBTTagCompound nbttagcompound )
-+    {
++    public void readFromNBT(NBTTagCompound nbttagcompound) {
 +        super.readFromNBT(nbttagcompound);
 +        
-+    	m_iRotationTickCount = nbttagcompound.getInteger( "m_iRotationCount" ); // legacy name
++    	rotationTickCount = nbttagcompound.getInteger("m_iRotationCount"); // legacy name
 +    	
-+        if ( nbttagcompound.hasKey( "m_iSwitchSetting" ) )
-+        {
++        if (nbttagcompound.hasKey("m_iSwitchSetting")) {
 +        	// legacy data format support
-+        	
-+        	m_iSwitchOverride = nbttagcompound.getInteger( "m_iSwitchSetting" );
++        	switchOverride = nbttagcompound.getInteger("m_iSwitchSetting");
 +	    	
-+	    	if ( m_iSwitchOverride > 3 )
-+	    	{
-+	    		m_iSwitchOverride = 3;
++	    	if (switchOverride > 3) {
++	    		switchOverride = 3;
 +	    	}
 +        }
 +    	
-+        if( nbttagcompound.hasKey( "m_iPotteryRotationCount" ) ) // legacy name
-+        {
-+        	m_iCraftingRotationCount = nbttagcompound.getInteger( "m_iPotteryRotationCount" ); // legacy name
++        if(nbttagcompound.hasKey("m_iPotteryRotationCount")) { // legacy name
++        	m_iCraftingRotationCount = nbttagcompound.getInteger("m_iPotteryRotationCount"); // legacy name
 +        }
-+    	
 +    }
 +    
 +    @Override
-+    public void writeToNBT( NBTTagCompound nbttagcompound )
-+    {
++    public void writeToNBT(NBTTagCompound nbttagcompound) {
 +        super.writeToNBT(nbttagcompound);
 +        
-+        nbttagcompound.setInteger( "m_iRotationCount", m_iRotationTickCount ); // legacy name        
-+        nbttagcompound.setInteger( "m_iPotteryRotationCount", m_iCraftingRotationCount ); // legacy name   
++        nbttagcompound.setInteger("m_iRotationCount", rotationTickCount); // legacy name        
++        nbttagcompound.setInteger("m_iPotteryRotationCount", m_iCraftingRotationCount); // legacy name   
 +    }
 +        
 +    @Override
-+    public void updateEntity()
-+    {
++    public void updateEntity() {
 +    	// Remove the following block for the server
-+    	if ( worldObj.isRemote )
-+    	{
-+        	if ( ( (FCBlockTurntable)FCBetterThanWolves.fcTurntable ).
-+    			IsBlockMechanicalOn( worldObj, xCoord, yCoord, zCoord ) )
++    	if (worldObj.isRemote) {
++        	if (((FCBlockTurntable) FCBetterThanWolves.fcTurntable).IsBlockMechanicalOn(worldObj, xCoord, yCoord, zCoord))
 +        	{
-+        		m_iRotationTickCount++;
++        		rotationTickCount++;
 +        		
-+        		if ( m_iRotationTickCount >= GetTicksToRotate() )
-+        		{
-+                    worldObj.playSound( (double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D, 
-+                		"random.click", 0.05F, 1.0F );
-+                        
++        		if (rotationTickCount >= GetTicksToRotate()) {
++                    worldObj.playSound((double)xCoord + 0.5D, (double)yCoord + 0.5D, (double)zCoord + 0.5D, "random.click", 0.05F, 1.0F);
 +        			
-+            		m_iRotationTickCount = 0;    	
++            		rotationTickCount = 0;    	
 +        		}
 +        	}
-+        	else
-+        	{
-+        		m_iRotationTickCount = 0;    	
++        	else {
++        		rotationTickCount = 0;    	
 +    		}
 +        	
 +    		return;
 +    	}
 +    	
-+    	if ( m_iSwitchOverride >= 0 )
-+    	{
++    	if (switchOverride >= 0) {
 +    		// support for legacy data format
-+    		
-+    		((FCBlockTurntable)FCBetterThanWolves.fcTurntable ).SetSwitchSetting( worldObj, xCoord, yCoord, zCoord, m_iSwitchOverride );
++    		((FCBlockTurntable)FCBetterThanWolves.fcTurntable).SetSwitchSetting(worldObj, xCoord, yCoord, zCoord, switchOverride);
 +				
-+			m_iSwitchOverride = -1;
++			switchOverride = -1;
 +    	}
 +    	
-+        byte byte0 = 9; // standard block update range + 1 to take into account stuff that may be attached
++        byte updateOffset = 9; // standard block update range + 1 to take into account stuff that may be attached
 +
-+        if ( !worldObj.checkChunksExist( xCoord - byte0, yCoord - byte0, zCoord - byte0, xCoord + byte0, yCoord + byte0, zCoord + byte0 ) )
++        if (!worldObj.checkChunksExist(xCoord - updateOffset, yCoord - updateOffset, zCoord - updateOffset, 
++        		xCoord + updateOffset, yCoord + updateOffset, zCoord + updateOffset))
 +        {
 +        	return;
 +    	}
 +
-+    	if ( ( (FCBlockTurntable)FCBetterThanWolves.fcTurntable ).
-+			IsBlockMechanicalOn( worldObj, xCoord, yCoord, zCoord ) )
++    	if (((FCBlockTurntable)FCBetterThanWolves.fcTurntable).
++			IsBlockMechanicalOn(worldObj, xCoord, yCoord, zCoord))
 +    	{
-+    		m_iRotationTickCount++;
++    		rotationTickCount++;
 +    		
-+    		if ( m_iRotationTickCount >= GetTicksToRotate() )
-+    		{
++    		if (rotationTickCount >= GetTicksToRotate()) {
 +    			RotateTurntable();
-+    			
-+        		m_iRotationTickCount = 0;    	
++        		rotationTickCount = 0;    	
 +    		}
 +    	}
-+    	else
-+    	{
-+    		m_iRotationTickCount = 0;    	
++    	else {
++    		rotationTickCount = 0;    	
 +		}
 +    }
 +    
 +	//------------- Class Specific Methods ------------//
 +    
-+    private int GetTicksToRotate()
-+    {
-+    	return m_iTicksToRotate[( (FCBlockTurntable)FCBetterThanWolves.fcTurntable ).GetSwitchSetting( worldObj, xCoord, yCoord, zCoord )];
++    private int GetTicksToRotate() {
++    	return ticksToRotate[((FCBlockTurntable)FCBetterThanWolves.fcTurntable).GetSwitchSetting(worldObj, xCoord, yCoord, zCoord)];
 +    }
 +    
-+    private void RotateTurntable()
-+    {        
-+    	boolean bReverseDirection = ( (FCBlockTurntable)FCBetterThanWolves.fcTurntable ).
-+			IsBlockRedstoneOn( worldObj, xCoord, yCoord, zCoord );
++    private void RotateTurntable() {        
++    	boolean reverseDirection = ((FCBlockTurntable) FCBetterThanWolves.fcTurntable).IsBlockRedstoneOn(worldObj, xCoord, yCoord, zCoord);
 +    	
-+    	int iTempCraftingCounter = m_iCraftingRotationCount;
++    	int craftingCounter = m_iCraftingRotationCount;
 +    	
-+    	for ( int iTempJ = yCoord + 1; iTempJ <= yCoord + m_iMaxHeightOfBlocksRotated; iTempJ++ )
-+    	{
-+        	Block targetBlock = Block.blocksList[worldObj.getBlockId( xCoord, iTempJ, zCoord )];
++    	for (int j = yCoord + 1; j <= yCoord + maxHeightOfBlocksRotated; j++) {
++        	Block targetBlock = Block.blocksList[worldObj.getBlockId(xCoord, j, zCoord)];
 +
-+        	if ( targetBlock != null && targetBlock.CanRotateOnTurntable( worldObj, xCoord, iTempJ, zCoord ) )
-+        	{
++        	if (targetBlock != null && targetBlock.CanRotateOnTurntable(worldObj, xCoord, j, zCoord)) {
 +	    		// have to store the transmission capacity as rotation may affect it (like with crafter blocks)
++	    		boolean canTransmitHorizontally = targetBlock.CanTransmitRotationHorizontallyOnTurntable(worldObj, xCoord, j, zCoord);
 +	    		
-+	    		boolean bCanTransmitHorizontally = targetBlock.CanTransmitRotationHorizontallyOnTurntable( worldObj, 
-+	    			xCoord, iTempJ, zCoord );
++	    		boolean canTransmitVertically = targetBlock.CanTransmitRotationVerticallyOnTurntable(worldObj, xCoord, j, zCoord);
 +	    		
-+	    		boolean bCanTransmitVertically = targetBlock.CanTransmitRotationVerticallyOnTurntable( worldObj, 
-+	    			xCoord, iTempJ, zCoord );
-+	    		
-+	    		iTempCraftingCounter = targetBlock.RotateOnTurntable( worldObj, 
-+	    			xCoord, iTempJ, zCoord, bReverseDirection, iTempCraftingCounter );
++	    		craftingCounter = targetBlock.RotateOnTurntable(worldObj, xCoord, j, zCoord, reverseDirection, craftingCounter);
 +				
-+		    	if ( bCanTransmitHorizontally )
-+		    	{
-+			    	RotateBlocksAttachedToBlock( xCoord, iTempJ, zCoord, bReverseDirection );
++		    	if (canTransmitHorizontally) {
++			    	RotateBlocksAttachedToBlock(xCoord, j, zCoord, reverseDirection);
 +		    	}
 +		    	
-+		    	if ( !bCanTransmitVertically )
-+		    	{
++		    	if (!canTransmitVertically){
 +		    		break;
 +		    	}
 +        	}
-+        	else
-+        	{
++        	else {
 +        		break;
 +        	}
 +    	}
 +    	
-+    	if ( iTempCraftingCounter > m_iCraftingRotationCount )
-+    	{
-+    		m_iCraftingRotationCount = iTempCraftingCounter;
++    	if (craftingCounter > m_iCraftingRotationCount) {
++    		m_iCraftingRotationCount = craftingCounter;
 +    	}
-+    	else
-+    	{
++    	else {
 +    		m_iCraftingRotationCount = 0;
 +    	}
 +    	
 +    	// notify the neighbours so Buddy can pick up on this change
 +    	
-+    	worldObj.notifyBlocksOfNeighborChange( 
-+			xCoord, yCoord, zCoord, FCBetterThanWolves.fcTurntable.blockID );
++    	worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, FCBetterThanWolves.fcTurntable.blockID);
 +    }   
 +    
-+	private void RotateBlocksAttachedToBlock( int i, int j, int k, boolean bReverseDirection )
-+	{
++	private void RotateBlocksAttachedToBlock(int x, int y, int z, boolean reverseDirection) {
 +		int newBlockIDs[] = new int[4];
 +		int newMetadataArray[] = new int[4];
 +		
-+		for ( int iTempIndex = 0; iTempIndex < 4; iTempIndex++ )
-+		{
-+			newBlockIDs[iTempIndex] = 0;
-+			newMetadataArray[iTempIndex] = 0;
++		for (int i = 0; i < 4; i++) {
++			newBlockIDs[i] = 0;
++			newMetadataArray[i] = 0;
 +		}
 +		
-+		for ( int iTempFacing = 2; iTempFacing <=5; iTempFacing++ )
-+		{
-+			FCUtilsBlockPos tempPos = new FCUtilsBlockPos( i, j, k );
++		for (int i = 2; i <=5; i++) {
++			FCUtilsBlockPos pos = new FCUtilsBlockPos(x, y, z, i);
 +			
-+			tempPos.AddFacingAsOffset( iTempFacing );
++			int blockID = worldObj.getBlockId(pos.i, pos.j, pos.k);
++			Block block = Block.blocksList[blockID];
 +			
-+			int iTempBlockID = worldObj.getBlockId( tempPos.i, tempPos.j, tempPos.k );
-+			
-+			Block tempBlock = Block.blocksList[iTempBlockID];
-+			
-+			if ( tempBlock != null )
-+			{
-+				int iOppositeFacing = Block.GetOppositeFacing( iTempFacing );
++			if (block != null) {
++				int oppositeFacing = Block.GetOppositeFacing(i);
 +				
-+				if ( tempBlock.CanRotateAroundBlockOnTurntableToFacing( worldObj, tempPos.i, tempPos.j, tempPos.k, iOppositeFacing ) )
-+				{
-+					if ( tempBlock.OnRotatedAroundBlockOnTurntableToFacing( worldObj, tempPos.i, tempPos.j, tempPos.k, iOppositeFacing  ) )
-+					{
-+						int iDestFacing = Block.RotateFacingAroundJ( iTempFacing, bReverseDirection );
++				if (block.CanRotateAroundBlockOnTurntableToFacing(worldObj, pos.i, pos.j, pos.k, oppositeFacing)) {
++					if (block.OnRotatedAroundBlockOnTurntableToFacing(worldObj, pos.i, pos.j, pos.k, oppositeFacing )) {
++						int destinationFacing = Block.RotateFacingAroundJ(i, reverseDirection);
 +						
-+						newBlockIDs[iDestFacing - 2] = iTempBlockID;
++						newBlockIDs[destinationFacing - 2] = blockID;
 +						
-+						newMetadataArray[iDestFacing - 2] = tempBlock.GetNewMetadataRotatedAroundBlockOnTurntableToFacing( 
-+							worldObj, tempPos.i, tempPos.j, tempPos.k, 
-+							iOppositeFacing, Block.GetOppositeFacing( iDestFacing ) );
++						newMetadataArray[destinationFacing - 2] = block.GetNewMetadataRotatedAroundBlockOnTurntableToFacing(
++							worldObj, pos.i, pos.j, pos.k, 
++							oppositeFacing, Block.GetOppositeFacing(destinationFacing));
 +						
-+						worldObj.setBlockWithNotify( tempPos.i, tempPos.j, tempPos.k, 0 );
++						worldObj.setBlockWithNotify(pos.i, pos.j, pos.k, 0);
 +					}
 +				}
 +			}
 +		}
 +		
-+		for ( int iTempIndex = 0; iTempIndex < 4; iTempIndex++ )
-+		{
-+			int iTempBlockID = newBlockIDs[iTempIndex];
++		for (int i = 0; i < 4; i++) {
++			int blockID = newBlockIDs[i];
 +			
-+			if ( iTempBlockID != 0 )
-+			{
-+				int iTempFacing = iTempIndex + 2;
-+				int iTempMetaData = newMetadataArray[iTempIndex];
++			if (blockID != 0) {
++				int facing = i + 2;
++				int metadata = newMetadataArray[i];
 +				
-+				FCUtilsBlockPos tempPos = new FCUtilsBlockPos( i, j, k );				
-+				tempPos.AddFacingAsOffset( iTempFacing );
++				FCUtilsBlockPos pos = new FCUtilsBlockPos(x, y, z);				
++				pos.AddFacingAsOffset(facing);
 +				
-+				if ( FCUtilsWorld.IsReplaceableBlock( worldObj, tempPos.i, tempPos.j, tempPos.k ) )
-+				{
-+					worldObj.setBlockAndMetadataWithNotify( tempPos.i, tempPos.j, tempPos.k, iTempBlockID, iTempMetaData );
++				if (FCUtilsWorld.IsReplaceableBlock(worldObj, pos.i, pos.j, pos.k)) {
++					worldObj.setBlockAndMetadataWithNotify(pos.i, pos.j, pos.k, blockID, metadata);
 +				}
-+				else
-+				{
++				else {
 +					// target block is occupied.  Eject rotated block as item at old location
++					Block block = Block.blocksList[blockID];
 +					
-+					Block tempBlock = Block.blocksList[iTempBlockID];
++					int oldFacing = Block.RotateFacingAroundJ(facing, !reverseDirection);
++					FCUtilsBlockPos oldPos = new FCUtilsBlockPos(x, y, z, oldFacing);
 +					
-+					int iOldFacing = Block.RotateFacingAroundJ( iTempFacing, !bReverseDirection );
-+					FCUtilsBlockPos oldPos = new FCUtilsBlockPos( i, j, k );
-+					
-+					oldPos.AddFacingAsOffset( iOldFacing );
-+					
-+					tempBlock.dropBlockAsItem( worldObj, oldPos.i, oldPos.j, oldPos.k, iTempBlockID, 0 );
++					block.dropBlockAsItem(worldObj, oldPos.i, oldPos.j, oldPos.k, blockID, 0);
 +				}
 +			}
 +		}

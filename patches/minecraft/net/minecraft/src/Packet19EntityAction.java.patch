@@ -1,5 +1,14 @@
 --- a/minecraft/net/minecraft/src/Packet19EntityAction.java
 +++ b/minecraft/net/minecraft/src/Packet19EntityAction.java
+@@ -26,7 +26,7 @@
+     public void readPacketData(DataInputStream par1DataInputStream) throws IOException
+     {
+         this.entityId = par1DataInputStream.readInt();
+-        this.state = par1DataInputStream.readByte();
++        this.state = par1DataInputStream.readInt();
+     }
+ 
+     /**
 @@ -35,7 +35,7 @@
      public void writePacketData(DataOutputStream par1DataOutputStream) throws IOException
      {
