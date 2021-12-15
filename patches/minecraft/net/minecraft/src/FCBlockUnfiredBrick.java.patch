@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockUnfiredBrick.java
-@@ -0,0 +1,314 @@
+@@ -0,0 +1,319 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -256,8 +256,13 @@
 +        		i + ( 0.5F + m_fBrickHalfWidth ), j + m_fBrickHeight, k + ( 0.5F + m_fBrickHalfLength ) );	    	
 +        }    	
 +    }
-+    
-+	//----------- Client Side Functionality -----------//
++	
++	//------ Client Only Functionality ------//
++	
++	@Override
++	public int idPicked(World world, int x, int y, int z) {
++		return FCBetterThanWolves.fcItemBrickUnfired.itemID;
++	}
 +	
 +    private Icon[] m_cookIcons;
 +
