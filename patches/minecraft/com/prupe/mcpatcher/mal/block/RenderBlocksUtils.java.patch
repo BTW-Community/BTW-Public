@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/com/prupe/mcpatcher/mal/block/RenderBlocksUtils.java
-@@ -0,0 +1,230 @@
+@@ -0,0 +1,233 @@
 +package com.prupe.mcpatcher.mal.block;
 +
 +import com.prupe.mcpatcher.Config;
@@ -20,10 +20,10 @@
 +public class RenderBlocksUtils {
 +	public static boolean enableBetterGrass = false;
 +
-+	private static final Block grassBlock = BlockAPI.getFixedBlock("minecraft:grass");
-+	private static final Block snowBlock = BlockAPI.getFixedBlock("minecraft:snow_layer");
-+	private static final Block craftedSnowBlock = BlockAPI.getFixedBlock("minecraft:snow");
-+	private static final Block fcDirtSlab = FCBetterThanWolves.fcBlockDirtSlab;
++	public static Block grassBlock = BlockAPI.getFixedBlock("minecraft:grass");
++	public static Block snowBlock = BlockAPI.getFixedBlock("minecraft:snow_layer");
++	public static Block craftedSnowBlock = BlockAPI.getFixedBlock("minecraft:snow");
++	public static Block fcDirtSlab = FCBetterThanWolves.fcBlockDirtSlab;
 +
 +	private static final int COLOR = 0;
 +	private static final int NONCOLOR = 1;
@@ -44,6 +44,7 @@
 +			boolean haveOverrideTexture, float r, float g, float b) {
 +		if (haveOverrideTexture || !RenderPassAPI.instance.useColorMultiplierThisPass(block)) {
 +			colorMultiplierType[0] = COLOR;
++			colorMultiplierType[1] = COLOR;
 +			colorMultiplierType[2] = COLOR;
 +			colorMultiplierType[3] = COLOR;
 +			colorMultiplierType[4] = COLOR;
@@ -64,6 +65,7 @@
 +				colorMultiplierType[5] = NONCOLOR;
 +			} else {
 +				colorMultiplierType[0] = COLOR;
++				colorMultiplierType[1] = COLOR;
 +				colorMultiplierType[2] = COLOR_AND_NONCOLOR;
 +				colorMultiplierType[3] = COLOR_AND_NONCOLOR;
 +				colorMultiplierType[4] = COLOR_AND_NONCOLOR;
@@ -71,6 +73,7 @@
 +			}
 +		} else {
 +			colorMultiplierType[0] = COLOR;
++			colorMultiplierType[1] = COLOR;
 +			colorMultiplierType[2] = COLOR;
 +			colorMultiplierType[3] = COLOR;
 +			colorMultiplierType[4] = COLOR;

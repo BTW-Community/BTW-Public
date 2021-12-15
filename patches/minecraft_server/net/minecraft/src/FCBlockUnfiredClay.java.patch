@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockUnfiredClay.java
-@@ -0,0 +1,112 @@
+@@ -0,0 +1,78 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -67,40 +67,6 @@
 +	public boolean CanTransmitRotationVerticallyOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
 +	{
 +		return false;
-+	}
-+	
-+	@Override
-+	public void OnRotatedOnTurntable( World world, int i, int j, int k )
-+	{
-+		world.playAuxSFX( FCBetterThanWolves.m_iBlockDestroyRespectParticleSettingsAuxFXID, i, j, k, blockID );
-+	}	
-+	
-+	@Override
-+	public int RotateOnTurntable( World world, int i, int j, int k, boolean bReverse, int iCraftingCounter )
-+	{
-+		iCraftingCounter = super.RotateOnTurntable( world, i, j, k, bReverse, iCraftingCounter );
-+		
-+		iCraftingCounter = TurntableCraftingRotation( world, i, j, k, bReverse, iCraftingCounter );
-+		
-+		return iCraftingCounter;
-+	}
-+	
-+	@Override
-+	public int GetRotationsToCraftOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		return FCBlockUnfiredPottery.m_iRotationsOnTurntableToChangState;
-+	}
-+	
-+	@Override
-+	public int GetNewBlockIDCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		return FCBetterThanWolves.fcUnfiredPottery.blockID;
-+	}
-+	
-+	@Override
-+	public int GetNewMetadataCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		return FCBlockUnfiredPottery.m_iSubtypeCrucible;
 +	}
 +	
 +	@Override

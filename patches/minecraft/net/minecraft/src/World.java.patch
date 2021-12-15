@@ -1243,7 +1243,7 @@
 +
 +	public void NotifyNearbyAnimalsOfPlayerBlockAddOrRemove( EntityPlayer player, Block block, int i, int j, int k )
 +	{
-+		if ( !isRemote && block.blockMaterial.blocksMovement() && !player.capabilities.isCreativeMode )
++		if ( !isRemote && block.startlesAnimalsWhenPlaced(this, i, j, k) && !player.capabilities.isCreativeMode )
 +		{
 +			double dXBlock = (double)i + 0.5D;
 +			double dYBlock = (double)j + 0.5D;

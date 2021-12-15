@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockCampfire.java
-@@ -0,0 +1,1084 @@
+@@ -0,0 +1,1088 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -57,7 +57,9 @@
 +        SetBuoyant();
 +    	SetFurnaceBurnTime( 4 * FCEnumFurnaceBurnTime.SHAFT.m_iBurnTime );  	
 +        
-+        setStepSound( soundWoodFootstep );        
++        setStepSound( soundWoodFootstep );
++        
++        setAlwaysStartlesAnimals();
 +        
 +        setUnlocalizedName( "fcBlockCampfire" );
 +        
@@ -148,6 +150,8 @@
 +		int iFacing = FCUtilsMisc.ConvertOrientationToFlatBlockFacingReversed( entityLiving );
 +		
 +		SetIAligned( world, i, j, k, IsFacingIAligned( iFacing ) );
++		
++		world.NotifyNearbyAnimalsOfPlayerBlockAddOrRemove((EntityPlayer) entityLiving, this, i, j, k);
 +	}
 +	
 +	@Override

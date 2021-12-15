@@ -801,7 +801,7 @@
                  if (var0 > 0 && blocksList[var0].getRenderType() == 10)
                  {
                      var1 = true;
-@@ -1364,10 +1429,2360 @@
+@@ -1364,10 +1429,2345 @@
                  }
  
                  useNeighborBrightness[var0] = var1;
@@ -1595,25 +1595,9 @@
 +
 +	//------------- Saw related functionality ------------//
 +
-+	public boolean DoesBlockBreakSaw( World world, int i, int j, int k )
-+	{
-+		if ( blockMaterial.isSolid() )
-+		{
-+			if ( blockMaterial != Material.wood && 
-+					blockMaterial != Material.cactus && 
-+					blockMaterial != Material.pumpkin &&
-+					blockMaterial != Material.leaves &&
-+					blockMaterial != Material.plants &&
-+					blockMaterial != Material.vine &&
-+					blockMaterial != Material.snow &&
-+					blockMaterial != Material.craftedSnow &&
-+					blockMaterial != FCBetterThanWolves.fcMaterialLog &&
-+					blockMaterial != FCBetterThanWolves.fcMaterialPlanks &&
-+					blockMaterial != FCBetterThanWolves.fcMaterialAsh
-+					)
-+			{
-+				return true;
-+			}
++	public boolean DoesBlockBreakSaw(World world, int x, int y, int z) {
++		if (blockMaterial.isSolid() && blockMaterial.breaksSaw()) {
++			return true;
 +		}
 +
 +		return false;
@@ -2383,89 +2367,77 @@
 +	 * Returns the new crafting counter after rotation.  It is unmodified if no crafting has taken place, 
 +	 * incremented or reset on completion if it has.
 +	 */
-+	public int RotateOnTurntable( World world, int i, int j, int k, boolean bReverse, int iCraftingCounter )
-+	{
-+		OnRotatedOnTurntable( world, i, j, k );
++	public int RotateOnTurntable(World world, int x, int y, int z, boolean reverse, int craftingCounter) {
++		OnRotatedOnTurntable(world, x, y, z);
 +
-+		if ( !RotateAroundJAxis( world, i, j, k, bReverse ) )
-+		{
++		if (!RotateAroundJAxis(world, x, y, z, reverse)) {
 +			// notify the surrounding blocks of a change if no facing change actually takes place, so that buddy can pick up on it
 +			// this is because solid blocks still "rotate" even if their facing doesn't change
-+
-+			world.notifyBlocksOfNeighborChange( i, j, k, blockID );	    	
++			world.notifyBlocksOfNeighborChange( x, y, z, blockID );
++		}
++		
++		int metadata = world.getBlockMetadata(x, y, z);
++		
++		FCCraftingManagerTurntableRecipe recipe = FCCraftingManagerTurntable.instance.getRecipe(this, metadata);
++		
++		if (recipe != null) {
++			craftingCounter = this.TurntableCraftingRotation(world, x, y, z, reverse, craftingCounter);
 +		}
 +
-+		return iCraftingCounter;
++		return craftingCounter;
 +	}
 +
 +	/*
 +	 * Intended to play block specific FX and such
 +	 */
-+	protected void OnRotatedOnTurntable( World world, int i, int j, int k )
-+	{
-+	}
++	protected void OnRotatedOnTurntable(World world, int x, int y, int z) {}
 +
-+	protected int TurntableCraftingRotation( World world, int i, int j, int k, boolean bReverse, int iCraftingCounter )
-+	{
-+		iCraftingCounter++;
++	protected int TurntableCraftingRotation(World world, int x, int y, int z, boolean reverse, int craftingCounter) {
++		craftingCounter++;
++		
++		int metadata = world.getBlockMetadata(x, y, z);
++		
++		FCCraftingManagerTurntableRecipe recipe = FCCraftingManagerTurntable.instance.getRecipe(this, metadata);
 +
-+		if ( iCraftingCounter >= GetRotationsToCraftOnTurntable( world, i, j, k ) )
-+		{
-+			OnCraftedOnTurntable( world, i, j, k );
-+
-+			int iNewBlockID = GetNewBlockIDCraftedOnTurntable( world, i, j, k );
-+			int iNewBlockMetadata = GetNewMetadataCraftedOnTurntable( world, i, j, k );
-+			int iItemIDDropped = GetItemIDCraftedOnTurntable( world, i, j, k );
-+			int iItemCountDropped = GetItemCountCraftedOnTurntable( world, i, j, k );
-+			int iItemDamageDropped = GetItemDamageCraftedOnTurntable( world, i, j, k );
-+
-+			for ( int tempCount = 0; tempCount < iItemCountDropped; tempCount++ )
-+			{
-+				FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j + 1, k, iItemIDDropped, iItemDamageDropped );			
++		if (recipe != null) {
++			if (craftingCounter >= recipe.getRotationsToCraft()) {
++				this.onCraftedOnTurntable(world, x, y, z);
++	
++				Block output = recipe.getOutputBlock();
++				int outputBlockID;
++				
++				if (output != null) {
++					outputBlockID = output.blockID;
++				}
++				else {
++					outputBlockID = 0;
++				}
++				
++				world.setBlockAndMetadataWithNotify(x, y, z, outputBlockID, recipe.getOutputMetadata());
++				
++				recipe.playCompletionEffect(world, x, y, z);
++				
++				if (recipe.getItemsEjected() != null) {
++					for (ItemStack stack : recipe.getItemsEjected()) {
++						for (int i = 0; i < stack.stackSize; i++) {
++							FCUtilsItem.EjectSingleItemWithRandomOffset(world, x, y, z, stack.itemID, stack.getItemDamage());
++						}
++					}
++				}
++				
++				craftingCounter = 0;
 +			}
-+
-+			world.setBlockAndMetadataWithNotify( i, j, k, iNewBlockID, iNewBlockMetadata );			
-+
-+			iCraftingCounter = 0;
++			else {
++				recipe.playEffect(world, x, y, z);
++			}
 +		}
 +
-+		return iCraftingCounter;
++		return craftingCounter;
 +	}
 +
-+	public int GetRotationsToCraftOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		return 1;
-+	}
-+
-+	public void OnCraftedOnTurntable( World world, int i, int j, int k )
-+	{
-+		world.playAuxSFX( FCBetterThanWolves.m_iBlockDestroyRespectParticleSettingsAuxFXID, 
-+				i, j, k, world.getBlockId( i, j, k ) + ( world.getBlockMetadata( i, j, k ) << 12 ) );        
-+	}
-+
-+	public int GetNewBlockIDCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		return 0;
-+	}
-+
-+	public int GetNewMetadataCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		return 0;
-+	}
-+
-+	public int GetItemIDCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		return Item.clay.itemID;
-+	}
-+
-+	public int GetItemCountCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		return 1;
-+	}
-+
-+	public int GetItemDamageCraftedOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
-+		return 0;
++	public void onCraftedOnTurntable(World world, int x, int y, int z) {
++		world.playAuxSFX(FCBetterThanWolves.m_iBlockDestroyRespectParticleSettingsAuxFXID, 
++				x, y, z, world.getBlockId(x, y, z) + (world.getBlockMetadata(x, y, z) << 12));
 +	}
 +
 +	/**
@@ -2748,6 +2720,19 @@
 +		m_iPigItemFoodValue = iFoodValue;
 +	}
 +
++	//------ Misc Animal Functionality ------//
++	
++	private boolean alwaysStartlesAnimals;
++
++	public Block setAlwaysStartlesAnimals() {
++		this.alwaysStartlesAnimals = true;
++		return this;
++	}
++	
++	public boolean startlesAnimalsWhenPlaced(World world, int x, int y, int z) {
++		return this.alwaysStartlesAnimals || this.blockMaterial.blocksMovement();
++	}
++	
 +	//----------- Plant Growth Functionality ----------//
 +
 +	public boolean CanDomesticatedCropsGrowOnBlock( World world, int i, int j, int k )

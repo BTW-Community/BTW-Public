@@ -1,17 +1,21 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,7045 @@
+@@ -0,0 +1,7184 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
++import java.util.ArrayList;
++import java.util.Arrays;
++
++import net.minecraft.src.FCCraftingManagerTurntableRecipe.TurntableEffect;
 +import net.minecraft.src.FCEntityVillager.TradeConditional;
 +import net.minecraft.src.FCEntityVillager.TradeEffect;
 +import net.minecraft.src.FCEntityVillager.WeightedMerchantRecipeEntry;
 +
 +public abstract class FCRecipes
 +{
-+	private static final int m_iIgnoreMetadata = FCUtilsInventory.m_iIgnoreMetadata;
++	private static final int ignoreMetadata = FCUtilsInventory.m_iIgnoreMetadata;
 +	
 +	public static void AddAllModRecipes()
 +	{
@@ -34,6 +38,8 @@
 +		addSawRecipes();
 +		addPistonPackingRecipes();
 +		addHopperFilteringRecipes();
++		addLogChoppingRecipes();
++		addTurntableRecipes();
 +		AddTuningForkRecipes();
 +		AddSubBlockRecipes();
 +		
@@ -170,51 +176,75 @@
 +    //Kiln recipes
 +    //Cook time multiplier is a byte just so that the method signatures are all different
 +    public static void addKilnRecipe(ItemStack outputStack, Block block) {
-+    	addKilnRecipe(outputStack, block, m_iIgnoreMetadata, (byte) 1);
++    	addKilnRecipe(outputStack, block, ignoreMetadata, (byte) 1);
 +    }
 +    
 +    public static void addKilnRecipe(ItemStack outputStack, Block block, int metadata) {
 +    	addKilnRecipe(outputStack, block, metadata, (byte) 1);
 +    }
-+    
-+    public static void addKilnRecipe(ItemStack outputStack, Block block, byte cookTimeMultiplier) {
-+    	addKilnRecipe(outputStack, block, m_iIgnoreMetadata, cookTimeMultiplier);
++
++    public static void addKilnRecipe(ItemStack outputStack, Block block, int[] metadatas) {
++    	addKilnRecipe(outputStack, block, metadatas, (byte) 1);
 +    }
 +    
++    public static void addKilnRecipe(ItemStack outputStack, Block block, byte cookTimeMultiplier) {
++    	addKilnRecipe(outputStack, block, ignoreMetadata, cookTimeMultiplier);
++    }
++
 +    public static void addKilnRecipe(ItemStack outputStack, Block block, int metadata, byte cookTimeMultiplier) {
-+    	addKilnRecipe(new ItemStack[] {outputStack}, block, metadata, cookTimeMultiplier);
++    	addKilnRecipe(outputStack, block, new int[] {metadata}, cookTimeMultiplier);
++    }
++    
++    public static void addKilnRecipe(ItemStack outputStack, Block block, int[] metadatas, byte cookTimeMultiplier) {
++    	addKilnRecipe(new ItemStack[] {outputStack}, block, metadatas, cookTimeMultiplier);
 +    }
 +    
 +    public static void addKilnRecipe(ItemStack[] outputStacks, Block block) {
-+    	addKilnRecipe(outputStacks, block, m_iIgnoreMetadata, (byte) 1);
++    	addKilnRecipe(outputStacks, block, ignoreMetadata, (byte) 1);
 +    }
 +    
 +    public static void addKilnRecipe(ItemStack[] outputStacks, Block block, int metadata) {
-+    	addKilnRecipe(outputStacks, block, metadata, (byte) 1);
++    	addKilnRecipe(outputStacks, block, new int[] {metadata}, (byte) 1);
++    }
++
++    public static void addKilnRecipe(ItemStack[] outputStacks, Block block, int[] metadatas) {
++    	addKilnRecipe(outputStacks, block, metadatas, (byte) 1);
 +    }
 +    
 +    public static void addKilnRecipe(ItemStack[] outputStacks, Block block, byte cookTimeMultiplier) {
-+    	addKilnRecipe(outputStacks, block, m_iIgnoreMetadata, cookTimeMultiplier);
++    	addKilnRecipe(outputStacks, block, ignoreMetadata, cookTimeMultiplier);
++    }
++
++    public static void addKilnRecipe(ItemStack[] outputStacks, Block block, int metadata, byte cookTimeMultiplier) {
++    	addKilnRecipe(outputStacks, block, new int[] {metadata}, cookTimeMultiplier);
 +    }
 +    
-+    public static void addKilnRecipe(ItemStack[] outputStacks, Block block, int metadata, byte cookTimeMultiplier) {
-+    	FCCraftingManagerKiln.instance.addRecipe(outputStacks, block, metadata, cookTimeMultiplier);
++    public static void addKilnRecipe(ItemStack[] outputStacks, Block block, int[] metadatas, byte cookTimeMultiplier) {
++    	FCCraftingManagerKiln.instance.addRecipe(outputStacks, block, metadatas, cookTimeMultiplier);
 +    }
 +    
 +    //Saw recipes
 +    public static void addSawRecipe(ItemStack outputStack, Block block) {
-+    	addSawRecipe(outputStack, block, m_iIgnoreMetadata);
++    	addSawRecipe(outputStack, block, ignoreMetadata);
 +    }
 +    
 +    public static void addSawRecipe(ItemStack outputStack, Block block, int metadata) {
-+    	addSawRecipe(new ItemStack[] {outputStack}, block, metadata);
++    	addSawRecipe(new ItemStack[] {outputStack}, block, new int[] {metadata});
++    }
++    
++    public static void addSawRecipe(ItemStack outputStack, Block block, int[] metadatas) {
++    	addSawRecipe(new ItemStack[] {outputStack}, block, metadatas);
 +    }
 +    
 +    public static void addSawRecipe(ItemStack[] outputStacks, Block block) {
-+    	addSawRecipe(outputStacks, block, m_iIgnoreMetadata);
++    	addSawRecipe(outputStacks, block, ignoreMetadata);
 +    }
 +    
 +    public static void addSawRecipe(ItemStack[] outputStacks, Block block, int metadata) {
++    	addSawRecipe(outputStacks, block, new int[] {metadata});
++    }
++    
++    public static void addSawRecipe(ItemStack[] outputStacks, Block block, int[] metadata) {
 +    	FCCraftingManagerSaw.instance.addRecipe(outputStacks, block, metadata);
 +    }
 +    
@@ -272,6 +302,48 @@
 +    	FCCraftingManagerHopperFilter.instance.addSoulRecipe(filteredOutput, input);
 +    }
 +    
++    public static void addLogChoppingRecipe(ItemStack output, ItemStack[] secondaryOutputs, ItemStack input) {
++    	CraftingManager.getInstance().getRecipeList().add(new FCCraftingRecipeLogChopping(output, secondaryOutputs, input));
++    }
++    
++    public static void addLogChoppingRecipe(ItemStack output, ItemStack[] secondaryOutputs, 
++    		ItemStack outputLowQuality, ItemStack[] secondaryOutputsLowQuality, ItemStack input)
++    {
++    	CraftingManager.getInstance().getRecipeList().add(new FCCraftingRecipeLogChopping(output, secondaryOutputs, outputLowQuality, secondaryOutputsLowQuality, input));
++    }
++    
++    public static FCCraftingManagerTurntableRecipe addTurntableRecipe(Block output, Block block, int rotationsToCraft) {
++    	return addTurntableRecipe(output, 0, null, block, new int[] {ignoreMetadata}, rotationsToCraft);
++    }
++    
++    public static FCCraftingManagerTurntableRecipe addTurntableRecipe(Block output, int outputMetadata, Block block, int rotationsToCraft) {
++    	return addTurntableRecipe(output, outputMetadata, null, block, new int[] {ignoreMetadata}, rotationsToCraft);
++    }
++    
++    public static FCCraftingManagerTurntableRecipe addTurntableRecipe(Block output, int outputMetadata, Block block, int metadata, int rotationsToCraft) {
++    	return addTurntableRecipe(output, outputMetadata, null, block, new int[] {metadata}, rotationsToCraft);
++    }
++    
++    public static FCCraftingManagerTurntableRecipe addTurntableRecipe(Block output, int outputMetadata, Block block, int[] metadatas, int rotationsToCraft) {
++    	return addTurntableRecipe(output, outputMetadata, null, block, metadatas, rotationsToCraft);
++    }
++    
++    public static FCCraftingManagerTurntableRecipe addTurntableRecipe(Block output, ItemStack[] itemsEjected, Block block, int rotationsToCraft) {
++    	return addTurntableRecipe(output, 0, itemsEjected, block, new int[] {ignoreMetadata}, rotationsToCraft);
++    }
++    
++    public static FCCraftingManagerTurntableRecipe addTurntableRecipe(Block output, int outputMetadata, ItemStack[] itemsEjected, Block block, int rotationsToCraft) {
++    	return addTurntableRecipe(output, outputMetadata, itemsEjected, block, new int[] {ignoreMetadata}, rotationsToCraft);
++    }
++    
++    public static FCCraftingManagerTurntableRecipe addTurntableRecipe(Block output, int outputMetadata, ItemStack[] itemsEjected, Block block, int metadata, int rotationsToCraft) {
++    	return addTurntableRecipe(output, outputMetadata, itemsEjected, block, new int[] {metadata}, rotationsToCraft);
++    }
++    
++    public static FCCraftingManagerTurntableRecipe addTurntableRecipe(Block output, int outputMetadata, ItemStack[] itemsEjected, Block block, int[] metadatas, int rotationsToCraft) {
++    	return FCCraftingManagerTurntable.instance.addRecipe(output, outputMetadata, itemsEjected, block, metadatas, rotationsToCraft);
++    }
++    
 +	private static void AddClusteredRecipes()
 +	{
 +		// trying a different way of organizing here, trying to keep things simple for new blocks added
@@ -280,7 +352,7 @@
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockRottenFleshSlab, 6 ), new Object[] {
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcBlockRottenFlesh
++    		'#', FCBetterThanWolves.fcBlockRottenFlesh
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockRottenFlesh ), new Object[] {	    		
@@ -300,7 +372,7 @@
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockBoneSlab, 6 ), new Object[] {
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, FCBlockAestheticOpaque.m_iSubtypeBone )
++    		'#', new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, FCBlockAestheticOpaque.m_iSubtypeBone )
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, FCBlockAestheticOpaque.m_iSubtypeBone ), new Object[] {	    		
@@ -321,7 +393,7 @@
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCreeperOystersSlab, 6 ), new Object[] {
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcBlockCreeperOysters
++    		'#', FCBetterThanWolves.fcBlockCreeperOysters
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockCreeperOysters ), new Object[] {	    		
@@ -343,7 +415,7 @@
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), Block.stone 
++    		'#', Block.stone 
 +		} );		
 +		
 +		// blood wood stairs and slabs
@@ -352,7 +424,7 @@
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( Block.planks, 1, 4 )
++    		'#', new ItemStack( Block.planks, 1, 4 )
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWoodBloodStairs, 1 ), new Object[] {
@@ -407,7 +479,7 @@
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemChiselIron ), new Object[] {
 +    		"XX", 
 +    		"XX", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemNuggetIron
++    		'X', FCBetterThanWolves.fcItemNuggetIron
 +		} );
 +		
 +		AddRecipe(new ItemStack(FCBetterThanWolves.fcItemChiselDiamond), new Object[] {
@@ -428,20 +500,20 @@
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemClubWood ), new Object[] {
 +    		"X", 
 +    		"X", 
-+    		Character.valueOf( 'X' ), Item.stick
++    		'X', Item.stick
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemClubBone ), new Object[] {
 +    		"X", 
 +    		"X", 
-+    		Character.valueOf( 'X' ), Item.bone
++    		'X', Item.bone
 +		} );
 +		
 +		// fire starters
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemFireStarterSticks ), new Object[] {
 +    		"XX", 
-+    		Character.valueOf( 'X' ), Item.stick
++    		'X', Item.stick
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemFireStarterBow ), new Object[] {	    		
@@ -459,17 +531,17 @@
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCampfireUnlit ), new Object[] {
 +    		"XX", 
 +    		"XX", 
-+    		Character.valueOf( 'X' ), Item.stick
++    		'X', Item.stick
 +		} );
 +		
 +		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( Item.stick ), new ItemStack(Item.silk), new Object[] {	    		
-+    		new ItemStack( Item.bow, 1, m_iIgnoreMetadata )
++    		new ItemStack( Item.bow, 1, ignoreMetadata )
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockFurnaceBrickIdle ), new Object[] {
 +    		"XX", 
 +    		"XX", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcBlockBrickLooseSlab
++    		'X', FCBetterThanWolves.fcBlockBrickLooseSlab
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( Item.coal ), new Object[] {
@@ -553,17 +625,17 @@
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemDiamondPlate, 1 ), new Object[] {
 +    		"#X#",
 +    		" Y ",
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStrap, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemIngotDiamond,
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemPadding
++    		'#', FCBetterThanWolves.fcItemStrap, 
++    		'X', FCBetterThanWolves.fcItemIngotDiamond,
++    		'Y', FCBetterThanWolves.fcItemPadding
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorPlate, 1 ), new Object[] {
 +			"#X#",
 +    		" Y ",
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStrap, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemSteel,
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemPadding
++    		'#', FCBetterThanWolves.fcItemStrap, 
++    		'X', FCBetterThanWolves.fcItemSteel,
++    		'Y', FCBetterThanWolves.fcItemPadding
 +		} );
 +	}
 +	
@@ -638,37 +710,37 @@
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcItemStone ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemStone ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseStairs, 8 ), new Object[] {
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseStairs, 4 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseStairs, 2 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose ), new Object[] {
 +    		"X", 
 +    		"X", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcBlockCobblestoneLooseSlab
++    		'X', FCBetterThanWolves.fcBlockCobblestoneLooseSlab
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab, 4 ), new Object[] {
 +    		"XX", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcBlockCobblestoneLoose
++    		'X', FCBetterThanWolves.fcBlockCobblestoneLoose
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 8 ), new Object[] {
@@ -712,37 +784,37 @@
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( Item.brick ) 
++    		'#', new ItemStack( Item.brick ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockBrickLooseStairs, 8 ), new Object[] {
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockBrickLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockBrickLoose ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockBrickLooseStairs, 4 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockBrickLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockBrickLoose ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockBrickLooseStairs, 2 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockBrickLooseSlab ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockBrickLooseSlab ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockBrickLoose ), new Object[] {
 +    		"X", 
 +    		"X", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcBlockBrickLooseSlab
++    		'X', FCBetterThanWolves.fcBlockBrickLooseSlab
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockBrickLooseSlab, 4 ), new Object[] {
 +    		"XX", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcBlockBrickLoose
++    		'X', FCBetterThanWolves.fcBlockBrickLoose
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( Item.brick, 8 ), new Object[] {
@@ -776,43 +848,43 @@
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcItemStoneBrick ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemStoneBrick ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseStairs, 8 ), new Object[] {
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseStairs ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcItemStoneBrick ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemStoneBrick ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseStairs, 4 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseStairs, 2 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose ), new Object[] {
 +    		"X", 
 +    		"X", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcBlockStoneBrickLooseSlab
++    		'X', FCBetterThanWolves.fcBlockStoneBrickLooseSlab
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab, 4 ), new Object[] {
 +    		"XX", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcBlockStoneBrickLoose
++    		'X', FCBetterThanWolves.fcBlockStoneBrickLoose
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), new Object[] {
@@ -830,7 +902,7 @@
 +		// stone splitting with chisel
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 2 ), new Object[] {	    		
-+    		new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, m_iIgnoreMetadata ),
++    		new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, ignoreMetadata ),
 +    		new ItemStack( FCBetterThanWolves.fcItemStoneBrick )
 +		} );
 +		
@@ -838,12 +910,12 @@
 +			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), 
 +			new ItemStack(FCBetterThanWolves.fcItemPileGravel), 
 +			new Object[] {	    		
-+					new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, m_iIgnoreMetadata ),
++					new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, ignoreMetadata ),
 +					new ItemStack( Block.stone )
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 2 ), new Object[] {	    		
-+    		new ItemStack( FCBetterThanWolves.fcItemChiselDiamond, 1, m_iIgnoreMetadata ),
++    		new ItemStack( FCBetterThanWolves.fcItemChiselDiamond, 1, ignoreMetadata ),
 +    		new ItemStack( FCBetterThanWolves.fcItemStoneBrick )
 +		} );
 +		
@@ -851,7 +923,7 @@
 +			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), 
 +			new ItemStack(FCBetterThanWolves.fcItemPileGravel), 
 +			new Object[] {	    		
-+					new ItemStack( FCBetterThanWolves.fcItemChiselDiamond, 1, m_iIgnoreMetadata ),
++					new ItemStack( FCBetterThanWolves.fcItemChiselDiamond, 1, ignoreMetadata ),
 +					new ItemStack( Block.stone )
 +		} );
 +	}
@@ -884,37 +956,37 @@
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcItemNetherBrick ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemNetherBrick ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLooseStairs, 8 ), new Object[] {
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLoose ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLooseStairs, 4 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLoose ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLooseStairs, 2 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLooseSlab ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLooseSlab ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLoose ), new Object[] {
 +    		"X", 
 +    		"X", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcBlockNetherBrickLooseSlab
++    		'X', FCBetterThanWolves.fcBlockNetherBrickLooseSlab
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockNetherBrickLooseSlab, 4 ), new Object[] {
 +    		"XX", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcBlockNetherBrickLoose
++    		'X', FCBetterThanWolves.fcBlockNetherBrickLoose
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemNetherBrick, 8 ), new Object[] {
@@ -942,7 +1014,7 @@
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockTorchFiniteUnlit ), new Object[] {
 +			"#",
 +			"X",
-+            Character.valueOf('#'), new ItemStack( Item.coal, 1, m_iIgnoreMetadata ), 
++            Character.valueOf('#'), new ItemStack( Item.coal, 1, ignoreMetadata ), 
 +            Character.valueOf('X'), Item.stick 
 +		} );
 +		
@@ -957,13 +1029,13 @@
 +			FCItemWickerWeaving.m_iWickerWeavingMaxDamage - 1 ), new Object[] {
 +    		"##", 
 +    		"##", 
-+    		Character.valueOf( '#' ), Item.reed 
++    		'#', Item.reed 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockBasketWicker ), new Object[] {
 +    		"##", 
 +    		"##", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemWickerPiece 
++    		'#', FCBetterThanWolves.fcItemWickerPiece 
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemWickerPiece, 4 ), new Object[] {	    		
@@ -974,8 +1046,8 @@
 +    		"###", 
 +    		"#P#", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemWickerPiece, 
-+    		Character.valueOf( 'P' ), Block.planks 
++    		'#', FCBetterThanWolves.fcItemWickerPiece, 
++    		'P', Block.planks 
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockWickerPane ), new Object[] {	    		
@@ -986,17 +1058,17 @@
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWicker ), new Object[] {
 +    		"##", 
 +    		"##", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcBlockWickerPane
++    		'#', FCBetterThanWolves.fcBlockWickerPane
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWickerSlab ), new Object[] {
 +    		"##", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcBlockWickerPane
++    		'#', FCBetterThanWolves.fcBlockWickerPane
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWickerSlab, 4 ), new Object[] {
 +    		"##", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcBlockWicker
++    		'#', FCBetterThanWolves.fcBlockWicker
 +		} );
 +
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockWickerPane, 4 ), new Object[] {	    		
@@ -1111,40 +1183,40 @@
 +		
 +		AddShapedRecipeWithCustomClass( FCRecipesArmorWool.class, new ItemStack( FCBetterThanWolves.fcItemArmorWoolHelm ), new Object[] {
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcItemWoolKnit, 1, m_iIgnoreMetadata ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemWoolKnit, 1, ignoreMetadata ) 
 +		} );
 +		
 +		AddShapedRecipeWithCustomClass( FCRecipesArmorWool.class, new ItemStack( FCBetterThanWolves.fcItemArmorWoolChest ), new Object[] {
 +    		"##", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcItemWoolKnit, 1, m_iIgnoreMetadata ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemWoolKnit, 1, ignoreMetadata ) 
 +		} );
 +		
 +		AddShapedRecipeWithCustomClass( FCRecipesArmorWool.class, new ItemStack( FCBetterThanWolves.fcItemArmorWoolLeggings ), new Object[] {
 +    		"##", 
 +    		"# ", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcItemWoolKnit, 1, m_iIgnoreMetadata ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemWoolKnit, 1, ignoreMetadata ) 
 +		} );
 +		
 +		AddShapedRecipeWithCustomClass( FCRecipesArmorWool.class, new ItemStack( FCBetterThanWolves.fcItemArmorWoolLeggings ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcItemWoolKnit, 1, m_iIgnoreMetadata ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemWoolKnit, 1, ignoreMetadata ) 
 +		} );
 +		
 +		AddShapedRecipeWithCustomClass( FCRecipesWoolBlock.class, new ItemStack( Block.cloth ), new Object[] {
 +    		" # ", 
 +    		"#W#", 
 +    		" # ", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcItemWool, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'W' ), new ItemStack( FCBetterThanWolves.fcBlockWicker ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemWool, 1, ignoreMetadata ), 
++    		'W', new ItemStack( FCBetterThanWolves.fcBlockWicker ) 
 +		} );
 +		
 +		for ( int iTempColor = 0; iTempColor < 16; iTempColor++ )
 +		{
 +			AddRecipe( new ItemStack( FCBetterThanWolves.fcWoolSlab, 6, iTempColor ), new Object[] {
 +	    		"###", 
-+	    		Character.valueOf( '#' ), new ItemStack( Block.cloth, 1, iTempColor )
++	    		'#', new ItemStack( Block.cloth, 1, iTempColor )
 +			} );
 +			
 +			AddShapelessRecipe( new ItemStack( Block.cloth, 1, iTempColor ), new Object[] {
@@ -1159,19 +1231,19 @@
 +		// wood items to saw dust as backup method of burning in campfire & brick furnace
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemSawDust, 2 ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcItemFireStarterSticks, 1, m_iIgnoreMetadata ) 
++			new ItemStack( FCBetterThanWolves.fcItemFireStarterSticks, 1, ignoreMetadata ) 
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemSawDust, 2 ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcItemFireStarterBow, 1, m_iIgnoreMetadata ) 
++			new ItemStack( FCBetterThanWolves.fcItemFireStarterBow, 1, ignoreMetadata ) 
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemSawDust, 2 ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcItemKnittingNeedles, 1, m_iIgnoreMetadata ) 
++			new ItemStack( FCBetterThanWolves.fcItemKnittingNeedles, 1, ignoreMetadata ) 
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemSawDust, 4 ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcItemKnitting, 1, m_iIgnoreMetadata ) 
++			new ItemStack( FCBetterThanWolves.fcItemKnitting, 1, ignoreMetadata ) 
 +		} );
 +	}
 +	
@@ -1208,22 +1280,22 @@
 +    		"S#S", 
 +    		"###", 
 +    		"S#S", 
-+    		Character.valueOf( '#' ), new ItemStack( Item.stick ),
-+    		Character.valueOf( 'S' ), new ItemStack( Item.silk )
++    		'#', new ItemStack( Item.stick ),
++    		'S', new ItemStack( Item.silk )
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockGrate, 1 ), new Object[] {
 +    		"S#S", 
 +    		"###", 
 +    		"S#S", 
-+    		Character.valueOf( '#' ), new ItemStack( Item.stick ),
-+    		Character.valueOf( 'S' ), new ItemStack( FCBetterThanWolves.fcItemHempFibers )
++    		'#', new ItemStack( Item.stick ),
++    		'S', new ItemStack( FCBetterThanWolves.fcItemHempFibers )
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockSlats, 1 ), new Object[] {
 +    		"##", 
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata ) 
 +		} );		
 +		
 +		// conversion of deprecated items
@@ -1368,7 +1440,7 @@
 +	{
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockDirtLooseSlab, 4 ), new Object[] {
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockDirtLoose )
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockDirtLoose )
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockDirtLooseSlab, 1 ), new Object[] {
@@ -1396,12 +1468,12 @@
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockDirtSlab, 4 ), new Object[] {
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( Block.dirt )
++    		'#', new ItemStack( Block.dirt )
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockDirtSlab, 4, FCBlockDirtSlab.m_iSubtypePackedEarth ), new Object[] {
 +    		"EE", 
-+    		Character.valueOf( 'E' ), new ItemStack( FCBetterThanWolves.fcBlockAestheticOpaqueEarth, 1, FCBlockAestheticOpaqueEarth.m_iSubtypePackedEarth )
++    		'E', new ItemStack( FCBetterThanWolves.fcBlockAestheticOpaqueEarth, 1, FCBlockAestheticOpaqueEarth.m_iSubtypePackedEarth )
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( Block.dirt ), new Object[] {	    		
@@ -1469,7 +1541,7 @@
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockSlabSandAndGravel, 4, FCBlockSlabSandAndGravel.m_iSubtypeGravel ), new Object[] {
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( Block.gravel )
++    		'#', new ItemStack( Block.gravel )
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( Block.gravel ), new Object[] {	    		
@@ -1508,7 +1580,7 @@
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockSlabSandAndGravel, 4, FCBlockSlabSandAndGravel.m_iSubtypeSand ), new Object[] {
 +    		"##", 
-+    		Character.valueOf( '#' ), new ItemStack( Block.sand )
++    		'#', new ItemStack( Block.sand )
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( Block.sand ), new Object[] {	    		
@@ -1521,97 +1593,97 @@
 +	{
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockAxle ), new Object[] {
 +    		"#X#", 
-+    		Character.valueOf( '#' ), Block.planks, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemRope 
++    		'#', Block.planks, 
++    		'X', FCBetterThanWolves.fcItemRope 
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockAxle ), new Object[] {
 +    		"#X#", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemRope 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata ), 
++    		'X', FCBetterThanWolves.fcItemRope 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockGearBox ), new Object[] {
 +    		"#X#", 
 +    		"XYX", 
 +    		"#X#", 
-+    		Character.valueOf( '#' ), Block.planks, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear, 
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcBlockAxle
++    		'#', Block.planks, 
++    		'X', FCBetterThanWolves.fcItemGear, 
++    		'Y', FCBetterThanWolves.fcBlockAxle
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockGearBox ), new Object[] {
 +    		"#X#", 
 +    		"XYX", 
 +    		"#X#", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear, 
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcBlockAxle
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++    		'X', FCBetterThanWolves.fcItemGear, 
++    		'Y', FCBetterThanWolves.fcBlockAxle
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockRedstoneClutch ), new Object[] {
 +    		"#X#", 
 +    		"XYX", 
 +    		"#X#", 
-+    		Character.valueOf( '#' ), Block.planks, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear, 
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemRedstoneLatch
++    		'#', Block.planks, 
++    		'X', FCBetterThanWolves.fcItemGear, 
++    		'Y', FCBetterThanWolves.fcItemRedstoneLatch
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockRedstoneClutch ), new Object[] {
 +    		"#X#", 
 +    		"XYX", 
 +    		"#X#", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear, 
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemRedstoneLatch
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++    		'X', FCBetterThanWolves.fcItemGear, 
++    		'Y', FCBetterThanWolves.fcItemRedstoneLatch
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcHandCrank ), new Object[] {
 +    		"  Y", 
 +    		" Y ", 
 +    		"#X#", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStoneBrick, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear, 
-+    		Character.valueOf( 'Y' ), Item.stick 
++    		'#', FCBetterThanWolves.fcItemStoneBrick, 
++    		'X', FCBetterThanWolves.fcItemGear, 
++    		'Y', Item.stick 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcMillStone ), new Object[] {
 +    		"YYY", 
 +    		"YYY", 
 +    		"YXY", 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear, 
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemStoneBrick 
++    		'X', FCBetterThanWolves.fcItemGear, 
++    		'Y', FCBetterThanWolves.fcItemStoneBrick 
 +		} );		
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcTurntable ), new Object[] {
 +    		"###", 
 +    		"ZXZ", 
 +    		"ZYZ", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), Item.pocketSundial, 
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemGear,
-+    		Character.valueOf( 'Z' ), FCBetterThanWolves.fcItemStoneBrick
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++    		'X', Item.pocketSundial, 
++    		'Y', FCBetterThanWolves.fcItemGear,
++    		'Z', FCBetterThanWolves.fcItemStoneBrick
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBellows ), new Object[] {
 +    		"###", 
 +    		"XXX", 
 +    		"YZY", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemTannedLeather, 
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemGear,
-+    		Character.valueOf( 'Z' ), FCBetterThanWolves.fcItemBelt
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++    		'X', FCBetterThanWolves.fcItemTannedLeather, 
++    		'Y', FCBetterThanWolves.fcItemGear,
++    		'Z', FCBetterThanWolves.fcItemBelt
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBellows ), new Object[] {
 +    		"###", 
 +    		"XXX", 
 +    		"YZY", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemTannedLeatherCut, 
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemGear,
-+    		Character.valueOf( 'Z' ), FCBetterThanWolves.fcItemBelt
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++    		'X', FCBetterThanWolves.fcItemTannedLeatherCut, 
++    		'Y', FCBetterThanWolves.fcItemGear,
++    		'Z', FCBetterThanWolves.fcItemBelt
 +		} );
 +	}
 +	
@@ -1630,7 +1702,7 @@
 +    		"###", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemChunkIronOre
++    		'#', FCBetterThanWolves.fcItemChunkIronOre
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemChunkIronOre, 9 ), new Object[] {
@@ -1650,7 +1722,7 @@
 +    		"###", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemChunkGoldOre
++    		'#', FCBetterThanWolves.fcItemChunkGoldOre
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemChunkGoldOre, 9 ), new Object[] {
@@ -1707,7 +1779,7 @@
 +    		"###", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemDung
++    		'#', FCBetterThanWolves.fcItemDung
 +		} );		
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, 
@@ -1715,7 +1787,7 @@
 +	    		"###", 
 +	    		"###", 
 +	    		"###", 
-+	    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemConcentratedHellfire
++	    		'#', FCBetterThanWolves.fcItemConcentratedHellfire
 +			} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, 
@@ -1723,7 +1795,7 @@
 +	    		"###", 
 +	    		"###", 
 +	    		"###", 
-+	    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemPadding
++	    		'#', FCBetterThanWolves.fcItemPadding
 +			} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, 
@@ -1731,7 +1803,7 @@
 +	    		"###", 
 +	    		"###", 
 +	    		"###", 
-+	    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSoap
++	    		'#', FCBetterThanWolves.fcItemSoap
 +			} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, 
@@ -1739,7 +1811,7 @@
 +	    		"###", 
 +	    		"###", 
 +	    		"###", 
-+	    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemRope
++	    		'#', FCBetterThanWolves.fcItemRope
 +			} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, 
@@ -1747,7 +1819,7 @@
 +	    		"###", 
 +	    		"###", 
 +	    		"###", 
-+	    		Character.valueOf( '#' ), Item.flint
++	    		'#', Item.flint
 +			} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, 
@@ -1755,21 +1827,21 @@
 +    		"###", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), Item.enderPearl
++    		'#', Item.enderPearl
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockMiningCharge, 3 ), new Object[] {
 +    		"XYX", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemDynamite, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemRope,
-+    		Character.valueOf( 'Y' ), Item.slimeBall
++    		'#', FCBetterThanWolves.fcItemDynamite, 
++    		'X', FCBetterThanWolves.fcItemRope,
++    		'Y', Item.slimeBall
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAestheticVegetation, 1, FCBlockAestheticVegetation.m_iSubtypeVineTrap ), new Object[] {
 +	    		"###", 
-+	    		Character.valueOf( '#' ), Block.vine
++	    		'#', Block.vine
 +			} );
 +
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcAnvil, 1 ), new Object[] {	    		
@@ -1782,75 +1854,75 @@
 +        	" # ", 
 +        	"#X#", 
 +        	" Y ", 
-+        	Character.valueOf( '#' ), Block.thinGlass, 
-+        	Character.valueOf( 'X' ), FCBetterThanWolves.fcItemFilament, 
-+        	Character.valueOf( 'Y' ), Item.redstone 
++        	'#', Block.thinGlass, 
++        	'X', FCBetterThanWolves.fcItemFilament, 
++        	'Y', Item.redstone 
 +        } );
 +        
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBBQ ), new Object[] {
 +    		"XXX", 
 +    		"#Z#", 
 +    		"#Y#", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStoneBrick, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemConcentratedHellfire, 
-+    		Character.valueOf( 'Y' ), Item.redstone, 
-+    		Character.valueOf( 'Z' ), FCBetterThanWolves.fcItemElement
++    		'#', FCBetterThanWolves.fcItemStoneBrick, 
++    		'X', FCBetterThanWolves.fcItemConcentratedHellfire, 
++    		'Y', Item.redstone, 
++    		'Z', FCBetterThanWolves.fcItemElement
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcHopper ), new Object[] {
 +    		"# #", 
 +    		"XYX", 
 +    		" Z ", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear, 
-+    		Character.valueOf( 'Y' ), Block.pressurePlatePlanks,
-+    		Character.valueOf( 'Z' ), new ItemStack( FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, m_iIgnoreMetadata )
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++    		'X', FCBetterThanWolves.fcItemGear, 
++    		'Y', Block.pressurePlatePlanks,
++    		'Z', new ItemStack( FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, ignoreMetadata )
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcSaw ), new Object[] {
 +    		"YYY", 
 +    		"XZX", 
 +    		"#X#", 
-+    		Character.valueOf( '#' ), Block.planks, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear, 
-+    		Character.valueOf( 'Y' ), Item.ingotIron,
-+    		Character.valueOf( 'Z' ), FCBetterThanWolves.fcItemBelt
++    		'#', Block.planks, 
++    		'X', FCBetterThanWolves.fcItemGear, 
++    		'Y', Item.ingotIron,
++    		'Z', FCBetterThanWolves.fcItemBelt
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcSaw ), new Object[] {
 +    		"YYY", 
 +    		"XZX", 
 +    		"#X#", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear, 
-+    		Character.valueOf( 'Y' ), Item.ingotIron,
-+    		Character.valueOf( 'Z' ), FCBetterThanWolves.fcItemBelt
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++    		'X', FCBetterThanWolves.fcItemGear, 
++    		'Y', Item.ingotIron,
++    		'Z', FCBetterThanWolves.fcItemBelt
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcPlatform ), new Object[] {
 +    		"#X#", 
 +    		" # ", 
 +    		"#X#", 
-+    		Character.valueOf( '#' ), Block.planks, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcBlockWickerPane 
++    		'#', Block.planks, 
++    		'X', FCBetterThanWolves.fcBlockWickerPane 
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcPlatform ), new Object[] {
 +    		"X#X", 
 +    		" X ", 
 +    		"X#X", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcBlockWickerPane, 
-+    		Character.valueOf( 'X' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata )
++    		'#', FCBetterThanWolves.fcBlockWickerPane, 
++    		'X', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata )
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcPulley ), new Object[] {
 +    		"#Y#", 
 +    		"XZX", 
 +    		"#Y#", 
-+    		Character.valueOf( '#' ), Block.planks,
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear,
-+            Character.valueOf( 'Y' ), Item.ingotIron, 
-+    		Character.valueOf( 'Z' ), FCBetterThanWolves.fcItemRedstoneLatch
++    		'#', Block.planks,
++    		'X', FCBetterThanWolves.fcItemGear,
++            'Y', Item.ingotIron, 
++    		'Z', FCBetterThanWolves.fcItemRedstoneLatch
 +		} );		
 +		
 +		
@@ -1858,19 +1930,19 @@
 +    		"#Y#", 
 +    		"XZX", 
 +    		"#Y#", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ),
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGear,
-+            Character.valueOf( 'Y' ), Item.ingotIron, 
-+    		Character.valueOf( 'Z' ), FCBetterThanWolves.fcItemRedstoneLatch
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ),
++    		'X', FCBetterThanWolves.fcItemGear,
++            'Y', Item.ingotIron, 
++    		'Z', FCBetterThanWolves.fcItemRedstoneLatch
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcCauldron ), new Object[] {
 +    		"#Y#", 
 +    		"#X#", 
 +    		"###", 
-+    		Character.valueOf( '#' ), Item.ingotIron, 
-+    		Character.valueOf( 'X' ), Item.bucketWater, 
-+    		Character.valueOf( 'Y' ), Item.bone 
++    		'#', Item.ingotIron, 
++    		'X', Item.bucketWater, 
++    		'Y', Item.bone 
 +		} );
 +		
 +		AddRecipe( new ItemStack( Block.rail, 12 ), new Object[] {
@@ -1939,56 +2011,56 @@
 +    		"XGX", 
 +    		"WSW", 
 +    		"WgW", 
-+    		Character.valueOf( 'W' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'g' ), FCBetterThanWolves.fcItemGear,
-+    		Character.valueOf( 'S' ), FCBetterThanWolves.fcItemScrew,
-+    		Character.valueOf( 'G' ), FCBetterThanWolves.fcBlockGrate,
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGlue
++    		'W', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++    		'g', FCBetterThanWolves.fcItemGear,
++    		'S', FCBetterThanWolves.fcItemScrew,
++    		'G', FCBetterThanWolves.fcBlockGrate,
++    		'X', FCBetterThanWolves.fcItemGlue
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcLens ), new Object[] {
 +    		"GDG", 
 +    		"G G", 
 +    		"G#G", 
-+    		Character.valueOf( '#' ), Block.glass, 
-+    		Character.valueOf( 'G' ), Item.ingotGold, 
-+    		Character.valueOf( 'D' ), Item.diamond 
++    		'#', Block.glass, 
++    		'G', Item.ingotGold, 
++    		'D', Item.diamond 
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcLens ), new Object[] {
 +    		"G#G", 
 +    		"G G", 
 +    		"GDG", 
-+    		Character.valueOf( '#' ), Block.glass, 
-+    		Character.valueOf( 'G' ), Item.ingotGold, 
-+    		Character.valueOf( 'D' ), Item.diamond 
++    		'#', Block.glass, 
++    		'G', Item.ingotGold, 
++    		'D', Item.diamond 
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 2, FCBlockAestheticOpaque.m_iSubtypeBarrel ), new Object[] {
 +    		"###", 
 +    		"#X#", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGlue 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata ), 
++    		'X', FCBetterThanWolves.fcItemGlue 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWhiteStoneStairs, 6, 0 ), new Object[] {
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, FCBlockAestheticOpaque.m_iSubtypeWhiteStone ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, FCBlockAestheticOpaque.m_iSubtypeWhiteStone ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWhiteStoneStairs, 6, 8 ), new Object[] {
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, FCBlockAestheticOpaque.m_iSubtypeWhiteCobble ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, FCBlockAestheticOpaque.m_iSubtypeWhiteCobble ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAestheticNonOpaque, 6, FCBlockAestheticNonOpaque.m_iSubtypeWhiteCobbleSlab ), new Object[] {
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, FCBlockAestheticOpaque.m_iSubtypeWhiteCobble ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, FCBlockAestheticOpaque.m_iSubtypeWhiteCobble ) 
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( Item.skull.itemID, 1, 5 ), new Object[] {	    		
@@ -2001,23 +2073,23 @@
 +			"#  ", 
 +			"## ", 
 +			"###", 
-+			Character.valueOf( '#' ), Item.ingotIron 
++			'#', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockSpikeIron ), new Object[] {
 +    		"n", 
 +    		"n", 
 +    		"I", 
-+    		Character.valueOf( 'n' ), FCBetterThanWolves.fcItemNuggetIron, 
-+    		Character.valueOf( 'I' ), Item.ingotIron 
++    		'n', FCBetterThanWolves.fcItemNuggetIron, 
++    		'I', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockLightningRod ), new Object[] {
 +    		"n", 
 +    		"n", 
 +    		"I", 
-+    		Character.valueOf( 'n' ), Item.goldNugget, 
-+    		Character.valueOf( 'I' ), Item.ingotGold
++    		'n', Item.goldNugget, 
++    		'I', Item.ingotGold
 +		} );
 +	}
 +	
@@ -2027,43 +2099,43 @@
 +    		" X ", 
 +    		"X#X", 
 +    		" X ", 
-+    		Character.valueOf( '#' ), Block.planks, 
-+    		Character.valueOf( 'X' ), Item.stick 
++    		'#', Block.planks, 
++    		'X', Item.stick 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemRope, 1 ), new Object[] {
 +    		"##", 
 +    		"##", 
 +    		"##", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemHempFibers 
++    		'#', FCBetterThanWolves.fcItemHempFibers 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAnchor ), new Object[] {
 +    		" X ", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStoneBrick, 
-+    		Character.valueOf( 'X' ), Item.ingotIron 
++    		'#', FCBetterThanWolves.fcItemStoneBrick, 
++    		'X', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemWaterWheel ), new Object[] {
 +			"###",
 +    		"# #", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemWoodBlade
++    		'#', FCBetterThanWolves.fcItemWoodBlade
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new Object[] {
 +    		"###", 
 +    		"XXX", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemHempCloth, 
-+    		Character.valueOf( 'X' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata ) 
++    		'#', FCBetterThanWolves.fcItemHempCloth, 
++    		'X', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata ) 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new Object[] {
 +    		"###", 
 +    		"XXX", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemHempCloth, 
-+    		Character.valueOf( 'X' ), Block.planks 
++    		'#', FCBetterThanWolves.fcItemHempCloth, 
++    		'X', Block.planks 
 +		} );
 +		
 +		AddShapelessRecipeWithSecondaryOutputIndicator( new ItemStack( FCBetterThanWolves.fcItemWindMillBlade ), new ItemStack(FCBetterThanWolves.fcItemWindMillBlade , 3), new Object[] {
@@ -2078,14 +2150,14 @@
 +			" # ",
 +    		"# #", 
 +    		" # ", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemWindMillBlade 
++    		'#', FCBetterThanWolves.fcItemWindMillBlade 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemHempCloth, 1 ), new Object[] {
 +    		"###", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemHempFibers 
++    		'#', FCBetterThanWolves.fcItemHempFibers 
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemDung, 9 ), new Object[] {	    		
@@ -2127,34 +2199,34 @@
 +    		" # ", 
 +    		"# #", 
 +    		" # ", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStrap 
++    		'#', FCBetterThanWolves.fcItemStrap 
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemWoodBlade, 1 ), new Object[] {
 +    		"#  ", 
 +    		"#X#", 
 +    		"#  ", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGlue 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++    		'X', FCBetterThanWolves.fcItemGlue 
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemHaft, 1 ), new Object[] {
 +    		"Y", 
 +    		"X", 
 +    		"#", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemGlue, 
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemStrap, 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata ), 
++    		'X', FCBetterThanWolves.fcItemGlue, 
++    		'Y', FCBetterThanWolves.fcItemStrap, 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemCompositeBow, 1 ), new Object[] {
 +    		"X#Y", 
 +    		"ZX#", 
 +    		"X#Y", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), Item.bone, 
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemGlue, 
-+    		Character.valueOf( 'Z' ), Item.silk, 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata ), 
++    		'X', Item.bone, 
++    		'Y', FCBetterThanWolves.fcItemGlue, 
++    		'Z', Item.silk, 
 +		} );		
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemBroadheadArrow , 4 ), new Object[] {
@@ -2174,148 +2246,148 @@
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorGimpHelm ), new Object[] {
 +    		"###", 
 +    		"#I#", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeather, 
-+    		Character.valueOf( 'I' ), Item.ingotIron 
++    		'#', FCBetterThanWolves.fcItemTannedLeather, 
++    		'I', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorGimpChest ), new Object[] {
 +    		"# #", 
 +    		"I#I", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeather, 
-+    		Character.valueOf( 'I' ), Item.ingotIron 
++    		'#', FCBetterThanWolves.fcItemTannedLeather, 
++    		'I', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorGimpLeggings ), new Object[] {
 +    		"#I#", 
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeather, 
-+    		Character.valueOf( 'I' ), Item.ingotIron 
++    		'#', FCBetterThanWolves.fcItemTannedLeather, 
++    		'I', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorGimpBoots ), new Object[] {
 +    		"# #", 
 +    		"I I", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeather, 
-+    		Character.valueOf( 'I' ), Item.ingotIron 
++    		'#', FCBetterThanWolves.fcItemTannedLeather, 
++    		'I', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorGimpHelm ), new Object[] {
 +    		"###", 
 +    		"#I#", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeatherCut, 
-+    		Character.valueOf( 'I' ), Item.ingotIron 
++    		'#', FCBetterThanWolves.fcItemTannedLeatherCut, 
++    		'I', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorGimpChest ), new Object[] {
 +    		"# #", 
 +    		"I#I", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeatherCut, 
-+    		Character.valueOf( 'I' ), Item.ingotIron 
++    		'#', FCBetterThanWolves.fcItemTannedLeatherCut, 
++    		'I', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorGimpLeggings ), new Object[] {
 +    		"#I#", 
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeatherCut, 
-+    		Character.valueOf( 'I' ), Item.ingotIron 
++    		'#', FCBetterThanWolves.fcItemTannedLeatherCut, 
++    		'I', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorGimpBoots ), new Object[] {
 +    		"# #", 
 +    		"I I", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeatherCut, 
-+    		Character.valueOf( 'I' ), Item.ingotIron 
++    		'#', FCBetterThanWolves.fcItemTannedLeatherCut, 
++    		'I', Item.ingotIron 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemPadding ), new Object[] {
 +    		"C", 
 +    		"W", 
 +    		"C", 
-+    		Character.valueOf( 'C' ), FCBetterThanWolves.fcItemHempCloth, 
-+    		Character.valueOf( 'W' ), new ItemStack( FCBetterThanWolves.fcItemWool, 1, m_iIgnoreMetadata )
++    		'C', FCBetterThanWolves.fcItemHempCloth, 
++    		'W', new ItemStack( FCBetterThanWolves.fcItemWool, 1, ignoreMetadata )
 +        } );
 +        
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemDynamite, 2 ), new Object[] {
 +    		"PF", 
 +    		"PN", 
 +    		"PS", 
-+    		Character.valueOf( 'P' ), Item.paper, 
-+    		Character.valueOf( 'F' ), FCBetterThanWolves.fcItemFuse, 
-+    		Character.valueOf( 'N' ), FCBetterThanWolves.fcItemBlastingOil, 
-+    		Character.valueOf( 'S' ), FCBetterThanWolves.fcItemSawDust 
++    		'P', Item.paper, 
++    		'F', FCBetterThanWolves.fcItemFuse, 
++    		'N', FCBetterThanWolves.fcItemBlastingOil, 
++    		'S', FCBetterThanWolves.fcItemSawDust 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemDynamite, 2 ), new Object[] {
 +    		"PF", 
 +    		"PN", 
 +    		"PS", 
-+    		Character.valueOf( 'P' ), Item.paper, 
-+    		Character.valueOf( 'F' ), FCBetterThanWolves.fcItemFuse, 
-+    		Character.valueOf( 'N' ), FCBetterThanWolves.fcItemBlastingOil, 
-+    		Character.valueOf( 'S' ), FCBetterThanWolves.fcItemSoulDust 
++    		'P', Item.paper, 
++    		'F', FCBetterThanWolves.fcItemFuse, 
++    		'N', FCBetterThanWolves.fcItemBlastingOil, 
++    		'S', FCBetterThanWolves.fcItemSoulDust 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemBreedingHarness ), new Object[] {
 +    		"SLS", 
 +    		"LLL", 
 +    		"SLS", 
-+    		Character.valueOf( 'S' ), FCBetterThanWolves.fcItemStrap, 
-+    		Character.valueOf( 'L' ), FCBetterThanWolves.fcItemTannedLeather 
++    		'S', FCBetterThanWolves.fcItemStrap, 
++    		'L', FCBetterThanWolves.fcItemTannedLeather 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemBreedingHarness ), new Object[] {
 +    		"SLS", 
 +    		"LLL", 
 +    		"SLS", 
-+    		Character.valueOf( 'S' ), FCBetterThanWolves.fcItemStrap, 
-+    		Character.valueOf( 'L' ), FCBetterThanWolves.fcItemTannedLeatherCut 
++    		'S', FCBetterThanWolves.fcItemStrap, 
++    		'L', FCBetterThanWolves.fcItemTannedLeatherCut 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemCandle, 2, 15 ), new Object[] {
 +    		"H", 
 +    		"T", 
 +    		"T", 
-+    		Character.valueOf( 'H' ), FCBetterThanWolves.fcItemHempFibers, 
-+    		Character.valueOf( 'T' ), FCBetterThanWolves.fcItemTallow 
++    		'H', FCBetterThanWolves.fcItemHempFibers, 
++    		'T', FCBetterThanWolves.fcItemTallow 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemScrew ), new Object[] {
 +    		"## ", 
 +    		" ##", 
 +    		"## ", 
-+    		Character.valueOf( '#' ), new ItemStack( Item.ingotIron )
++    		'#', new ItemStack( Item.ingotIron )
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemOcularOfEnder, 1, 0 ), new Object[] {
 +    		"ggg", 
 +    		"gEg", 
 +    		"ggg", 
-+    		Character.valueOf( 'g' ), Item.goldNugget, 
-+    		Character.valueOf( 'E' ), Item.enderPearl 
++    		'g', Item.goldNugget, 
++    		'E', Item.enderPearl 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemEnderSpectacles ), new Object[] {
 +    		"OSO", 
-+    		Character.valueOf( 'S' ), FCBetterThanWolves.fcItemStrap,
-+    		Character.valueOf( 'O' ), FCBetterThanWolves.fcItemOcularOfEnder    		
++    		'S', FCBetterThanWolves.fcItemStrap,
++    		'O', FCBetterThanWolves.fcItemOcularOfEnder    		
 +		} );
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemStake, 2 ), new Object[] {	    		
 +    		"S", 
 +    		"M", 
-+    		Character.valueOf( 'M' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata ),
-+    		Character.valueOf( 'S' ), new ItemStack( Item.silk )
++    		'M', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata ),
++    		'S', new ItemStack( Item.silk )
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemWindMillVertical ), new Object[] {
 +			"SSS",
 +    		"S S", 
 +    		"SSS", 
-+    		Character.valueOf( 'S' ), FCBetterThanWolves.fcItemWindMillBlade 
++    		'S', FCBetterThanWolves.fcItemWindMillBlade 
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemTastySandwich, 2 ), new Object[] {	    		
@@ -2445,99 +2517,99 @@
 +		AddRecipe( new ItemStack( Item.helmetChain ), new Object[] {
 +    		"###", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemMail 
++    		'#', FCBetterThanWolves.fcItemMail 
 +		} );
 +		
 +		AddRecipe( new ItemStack( Item.plateChain ), new Object[] {
 +    		"# #", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemMail
++    		'#', FCBetterThanWolves.fcItemMail
 +		} );
 +		
 +		AddRecipe( new ItemStack( Item.legsChain ), new Object[] {
 +    		"###", 
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemMail 
++    		'#', FCBetterThanWolves.fcItemMail 
 +		} );
 +		
 +		AddRecipe( new ItemStack( Item.bootsChain ), new Object[] {
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemMail 
++    		'#', FCBetterThanWolves.fcItemMail 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorPaddedHelm ), new Object[] {
 +    		"###", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemPadding 
++    		'#', FCBetterThanWolves.fcItemPadding 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorPaddedChest ), new Object[] {
 +    		"# #", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemPadding
++    		'#', FCBetterThanWolves.fcItemPadding
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorPaddedLeggings ), new Object[] {
 +    		"###", 
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemPadding 
++    		'#', FCBetterThanWolves.fcItemPadding 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorTannedHelm ), new Object[] {
 +    		"###", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeather 
++    		'#', FCBetterThanWolves.fcItemTannedLeather 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorTannedChest ), new Object[] {
 +    		"# #", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeather 
++    		'#', FCBetterThanWolves.fcItemTannedLeather 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorTannedLeggings ), new Object[] {
 +    		"###", 
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeather 
++    		'#', FCBetterThanWolves.fcItemTannedLeather 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorTannedBoots ), new Object[] {
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeather 
++    		'#', FCBetterThanWolves.fcItemTannedLeather 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorTannedHelm ), new Object[] {
 +    		"###", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeatherCut 
++    		'#', FCBetterThanWolves.fcItemTannedLeatherCut 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorTannedChest ), new Object[] {
 +    		"# #", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeatherCut 
++    		'#', FCBetterThanWolves.fcItemTannedLeatherCut 
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorTannedLeggings ), new Object[] {
 +    		"###", 
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeatherCut
++    		'#', FCBetterThanWolves.fcItemTannedLeatherCut
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemArmorTannedBoots ), new Object[] {
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemTannedLeatherCut
++    		'#', FCBetterThanWolves.fcItemTannedLeatherCut
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemIngotDiamond ), new Object[] {	    		
@@ -2547,22 +2619,22 @@
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemLeatherCut, 2 ), new Object[] {	    		
-+    		new ItemStack( Item.shears, 1, m_iIgnoreMetadata ),
++    		new ItemStack( Item.shears, 1, ignoreMetadata ),
 +    		new ItemStack( Item.leather )
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemTannedLeatherCut, 2 ), new Object[] {	    		
-+    		new ItemStack( Item.shears, 1, m_iIgnoreMetadata ),
++    		new ItemStack( Item.shears, 1, ignoreMetadata ),
 +    		new ItemStack( FCBetterThanWolves.fcItemTannedLeather )
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemScouredLeatherCut, 2 ), new Object[] {	    		
-+    		new ItemStack( Item.shears, 1, m_iIgnoreMetadata ),
++    		new ItemStack( Item.shears, 1, ignoreMetadata ),
 +    		new ItemStack( FCBetterThanWolves.fcItemScouredLeather )
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStrap, 4 ), new Object[] {	    		
-+    		new ItemStack( Item.shears, 1, m_iIgnoreMetadata ),
++    		new ItemStack( Item.shears, 1, ignoreMetadata ),
 +    		new ItemStack( FCBetterThanWolves.fcItemTannedLeatherCut )
 +		} );
 +
@@ -2610,15 +2682,15 @@
 +    		"ggg", 
 +    		"gDg", 
 +    		"ggg", 
-+    		Character.valueOf( 'D' ), FCBetterThanWolves.fcItemDung,
-+    		Character.valueOf( 'g' ), Item.goldNugget,
++    		'D', FCBetterThanWolves.fcItemDung,
++    		'g', Item.goldNugget,
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemRedstoneLatch ), new Object[] {
 +    		"ggg", 
 +    		" r ", 
-+    		Character.valueOf( 'g' ), Item.goldNugget,
-+    		Character.valueOf( 'r' ), Item.redstone
++    		'g', Item.goldNugget,
++    		'r', Item.redstone
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemBucketMilkChocolate ), new Object[] {	    		
@@ -2636,9 +2708,9 @@
 +    		"###", 
 +    		"GGG", 
 +    		" R ", 
-+    		Character.valueOf( '#' ), new ItemStack( Item.dyePowder, 1, 4 ), 
-+    		Character.valueOf( 'G' ), Item.goldNugget, 
-+    		Character.valueOf( 'R' ), Item.redstone 
++    		'#', new ItemStack( Item.dyePowder, 1, 4 ), 
++    		'G', Item.goldNugget, 
++    		'R', Item.redstone 
 +		} );
 +		
 +		AddRecipe(new ItemStack(Item.comparator), new Object[] {
@@ -2726,7 +2798,7 @@
 +            "#I#", 
 +            "XYX",
 +            "XZX",
-+            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
++            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
 +            Character.valueOf('I'), Item.ingotIron,
 +            Character.valueOf('X'), FCBetterThanWolves.fcItemStoneBrick,
 +            Character.valueOf('Y'), FCBetterThanWolves.fcItemSoulUrn,
@@ -2735,8 +2807,8 @@
 +		
 +		AddRecipe( new ItemStack( Block.fenceGate, 1 ), new Object[] {
 +            "#X#", 
-+            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata ), 
-+            Character.valueOf('X'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata )
++            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata ), 
++            Character.valueOf('X'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata )
 +		} );
 +		
 +		AddRecipe( new ItemStack( Block.stairsWoodOak, 1 ), new Object[] {
@@ -2802,15 +2874,15 @@
 +		AddRecipe( new ItemStack( Item.sign, 3 ), new Object[] {
 +            "#", 
 +            "X", 
-+            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+            Character.valueOf('X'), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata )
++            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++            Character.valueOf('X'), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata )
 +		} );
 +		
 +		AddRecipe( new ItemStack( Item.doorWood, 1 ), new Object[] {
 +            "##", 
 +            "##", 
 +            "##", 
-+            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata )
++            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata )
 +		} );
 +		
 +		AddRecipe( new ItemStack( Block.trapdoor, 1 ), new Object[] {
@@ -2824,28 +2896,28 @@
 +			"WW#", 
 +			"WW#", 
 +			Character.valueOf('#'), Item.stick, 
-+            Character.valueOf('W'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata )
++            Character.valueOf('W'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata )
 +		} );
 +		
 +		AddRecipe( new ItemStack( Item.boat, 1 ), new Object[] {
 +            "# #", 
 +            "###", 
-+            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata )
++            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata )
 +		} );
 +        
 +		AddRecipe( new ItemStack( Block.bookShelf ), new Object[] {
 +    		"###", 
 +    		"XXX", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
-+    		Character.valueOf( 'X' ), Item.book
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
++    		'X', Item.book
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockChest ), new Object[] {
 +            "###", 
 +            "# #", 
 +            "###", 
-+    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ) 
 +        } );
 +		
 +		AddRecipe( new ItemStack( Item.minecartCrate, 1 ), new Object[] {
@@ -2866,21 +2938,21 @@
 +    		"CBC", 
 +    		"SES", 
 +    		"SSS", 
-+    		Character.valueOf( 'S' ), FCBetterThanWolves.fcItemSteel,
-+    		Character.valueOf( 'C' ), new ItemStack( FCBetterThanWolves.fcItemCandle, 1, 0 ),
-+    		Character.valueOf( 'E' ), Block.enchantmentTable,
-+    		Character.valueOf( 'B' ), Item.bone
++    		'S', FCBetterThanWolves.fcItemSteel,
++    		'C', new ItemStack( FCBetterThanWolves.fcItemCandle, 1, 0 ),
++    		'E', Block.enchantmentTable,
++    		'B', Item.bone
 +		} );
 +		
 +        AddShapelessRecipe( new ItemStack( Item.stick ), new Object[] {
-+        	new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata ) 
++        	new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata ) 
 +        } );
 +        
 +		AddRecipe( new ItemStack( Block.jukebox, 1 ), new Object[] {
 +			"###", 
 +			"#X#", 
 +			"###", 
-+			'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ),
++			'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ),
 +			'X', Item.diamond
 +        });
 +		
@@ -2888,7 +2960,7 @@
 +			"###", 
 +			"#X#", 
 +			"###", 
-+			'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ),
++			'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ),
 +			'X', FCBetterThanWolves.fcItemRedstoneLatch
 +		} );
 +		
@@ -2921,13 +2993,13 @@
 +    		"#  #", 
 +    		"#  #", 
 +    		"####", 
-+    		Character.valueOf( '#' ), Block.stoneBrick
++    		'#', Block.stoneBrick
 +		} );
 +		
 +		AddRecipe( new ItemStack( Item.bowlEmpty, 6 ), new Object[] {
 +            "# #", 
 +            " # ", 
-+            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
++            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
 +		} );
 +		
 +		AddRecipe( new ItemStack( Item.compass, 1 ), new Object[] {
@@ -2970,27 +3042,27 @@
 +		AddRecipe( new ItemStack( Item.helmetLeather ), new Object[] {
 +    		"###", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemLeatherCut 
++    		'#', FCBetterThanWolves.fcItemLeatherCut 
 +		} );
 +		
 +		AddRecipe( new ItemStack( Item.plateLeather ), new Object[] {
 +    		"# #", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemLeatherCut 
++    		'#', FCBetterThanWolves.fcItemLeatherCut 
 +		} );
 +		
 +		AddRecipe( new ItemStack( Item.legsLeather ), new Object[] {
 +    		"###", 
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemLeatherCut 
++    		'#', FCBetterThanWolves.fcItemLeatherCut 
 +		} );
 +		
 +		AddRecipe( new ItemStack( Item.bootsLeather ), new Object[] {
 +    		"# #", 
 +    		"# #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemLeatherCut 
++    		'#', FCBetterThanWolves.fcItemLeatherCut 
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( Item.writableBook, 1 ), new Object[] {
@@ -3015,7 +3087,7 @@
 +			"mmm", 
 +			"mlm", 
 +			"mmm", 
-+			'm', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata ),
++			'm', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata ),
 +			'l', FCBetterThanWolves.fcItemLeatherCut
 +		} );		
 +        
@@ -3099,7 +3171,7 @@
 +		AddRecipe( new ItemStack( Block.woodenButton, 1 ), new Object[] {
 +        	"#", 
 +        	"r",
-+    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, m_iIgnoreMetadata ),
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, ignoreMetadata ),
 +			'r', Item.redstone 
 +    	} );
 +        
@@ -3113,7 +3185,7 @@
 +		AddRecipe( new ItemStack( Block.pressurePlatePlanks, 1 ), new Object[] {
 +        	"#", 
 +        	"r",
-+    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, m_iIgnoreMetadata ), 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
 +			'r', Item.redstone 
 +    	} );
 +		
@@ -3144,7 +3216,7 @@
 +		
 +		AddShapelessRecipe( new ItemStack( Block.pumpkinLantern, 1 ), new Object[] {
 +			new ItemStack( Block.pumpkin ), 
-+			new ItemStack( FCBetterThanWolves.fcItemCandle, 1, m_iIgnoreMetadata ) 
++			new ItemStack( FCBetterThanWolves.fcItemCandle, 1, ignoreMetadata ) 
 +		} );		
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockUnfiredClay, 1 ), new Object[] {
@@ -3181,7 +3253,7 @@
 +		} );
 +		
 +		AddShapelessRecipe( new ItemStack( Item.stick, 2 ), new Object[] { 
-+            new ItemStack( Block.planks, 1, m_iIgnoreMetadata )
++            new ItemStack( Block.planks, 1, ignoreMetadata )
 +        } );		
 +		
 +		AddRecipe( new ItemStack( Item.bed, 1 ), new Object[] {
@@ -3371,7 +3443,7 @@
 +		
 +		FurnaceRecipes.smelting().addSmelting( FCBetterThanWolves.fcItemNetherSludge.itemID, new ItemStack( FCBetterThanWolves.fcItemNetherBrick ), 0, 2 );
 +		
-+		FurnaceRecipes.smelting().addSmelting( Item.clay.itemID, new ItemStack( Item.brick ), 0, 2 );
++		FurnaceRecipes.smelting().addSmelting( FCBetterThanWolves.fcItemBrickUnfired.itemID, new ItemStack( Item.brick ), 0, 2 );
 +		
 +		FurnaceRecipes.smelting().addSmelting( FCBetterThanWolves.fcItemChunkIronOre.itemID, new ItemStack( FCBetterThanWolves.fcItemNuggetIron ), 0, 3 );
 +		
@@ -3398,8 +3470,8 @@
 +    		"#", 
 +    		"#", 
 +    		"X", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemHaft 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemHaft 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemRefinedShovel, 1 ), new Object[] {
@@ -3407,8 +3479,8 @@
 +    		"X", 
 +    		"X", 
 +    		"X", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemHaft 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemHaft 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemRefinedPickAxe, 1 ), new Object[] {
@@ -3416,8 +3488,8 @@
 +    		" X ", 
 +    		" X ", 
 +    		" X ", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemHaft 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemHaft 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemMattock, 1 ), new Object[] {
@@ -3425,8 +3497,8 @@
 +    		"# X ", 
 +    		"  X ", 
 +    		"  X ", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemHaft 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemHaft 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemRefinedHoe, 1 ), new Object[] {
@@ -3434,8 +3506,8 @@
 +    		" X", 
 +    		" X", 
 +    		" X", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemHaft 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemHaft 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemBattleAxe, 1 ), new Object[] {
@@ -3443,8 +3515,8 @@
 +    		"#X#", 
 +    		" X ", 
 +    		" X ", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemHaft 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemHaft 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemRefinedAxe, 1 ), new Object[] {
@@ -3452,8 +3524,8 @@
 +    		"#X", 
 +    		" X", 
 +    		" X", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemHaft 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemHaft 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemPlateHelm, 1 ), new Object[] {
@@ -3461,8 +3533,8 @@
 +    		"#  #", 
 +    		"#  #", 
 +    		" XX ", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemArmorPlate 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemArmorPlate 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemPlateBreastPlate, 1 ), new Object[] {
@@ -3470,8 +3542,8 @@
 +    		"####", 
 +    		"####", 
 +    		"####", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemArmorPlate 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemArmorPlate 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemPlateLeggings, 1 ), new Object[] {
@@ -3479,16 +3551,16 @@
 +    		"X##X", 
 +    		"X  X", 
 +    		"X  X", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemArmorPlate 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemArmorPlate 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemPlateBoots, 1 ), new Object[] {
 +    		" ## ", 
 +    		" ## ", 
 +    		"#XX#", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemArmorPlate 
++    		'#', FCBetterThanWolves.fcItemSteel, 
++    		'X', FCBetterThanWolves.fcItemArmorPlate 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemBroadheadArrowhead, 2 ), new Object[] {
@@ -3496,7 +3568,7 @@
 +    		" # ", 
 +    		"###", 
 +    		" # ", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemNuggetSteel, 
++    		'#', FCBetterThanWolves.fcItemNuggetSteel, 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcBlockPressurePlateSoulforgedSteel, 2 ), new Object[] {
@@ -3511,10 +3583,10 @@
 +    		"XTTX", 
 +    		"#YY#", 
 +    		"#YY#", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStoneBrick, 
-+    		Character.valueOf( 'X' ), FCBetterThanWolves.fcItemPolishedLapis, 
-+    		Character.valueOf( 'Y' ), Item.redstone, 
-+    		Character.valueOf( 'T' ), Block.torchRedstoneActive 
++    		'#', FCBetterThanWolves.fcItemStoneBrick, 
++    		'X', FCBetterThanWolves.fcItemPolishedLapis, 
++    		'Y', Item.redstone, 
++    		'T', Block.torchRedstoneActive 
 +		} );
 +
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcBlockDispenser ), new Object[] {
@@ -3522,11 +3594,11 @@
 +    		"#ZZ#", 
 +    		"YTTY", 
 +    		"YXXY", 
-+    		Character.valueOf( '#' ), Block.cobblestoneMossy, 
-+    		Character.valueOf( 'X' ), Item.redstone,
-+    		Character.valueOf( 'Y' ), FCBetterThanWolves.fcItemStoneBrick, 
-+    		Character.valueOf( 'Z' ), FCBetterThanWolves.fcItemSoulUrn,
-+    		Character.valueOf( 'T' ), Block.torchRedstoneActive 
++    		'#', Block.cobblestoneMossy, 
++    		'X', Item.redstone,
++    		'Y', FCBetterThanWolves.fcItemStoneBrick, 
++    		'Z', FCBetterThanWolves.fcItemSoulUrn,
++    		'T', Block.torchRedstoneActive 
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcBuddyBlock, 1 ), new Object[] {
@@ -3534,9 +3606,9 @@
 +        	"XYY#", 
 +        	"#YYX", 
 +        	"#X##", 
-+        	Character.valueOf( '#' ), FCBetterThanWolves.fcItemStoneBrick, 
-+        	Character.valueOf( 'X' ), FCBetterThanWolves.fcItemPolishedLapis, 
-+    		Character.valueOf( 'Y' ), Block.torchRedstoneActive 
++        	'#', FCBetterThanWolves.fcItemStoneBrick, 
++        	'X', FCBetterThanWolves.fcItemPolishedLapis, 
++    		'Y', Block.torchRedstoneActive 
 +        } );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcSoulforgedSteelBlock, 1 ), new Object[] {
@@ -3544,7 +3616,7 @@
 +    		"####", 
 +    		"####", 
 +    		"####", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel
++    		'#', FCBetterThanWolves.fcItemSteel
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemTuningFork, 6 ), new Object[] {
@@ -3552,7 +3624,7 @@
 +    		"# #", 
 +    		" # ", 
 +    		" # ", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemSteel
++    		'#', FCBetterThanWolves.fcItemSteel
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemCanvas ), new Object[] {
@@ -3560,8 +3632,8 @@
 +    		"MFFM", 
 +    		"MFFM", 
 +    		"MMMM", 
-+    		Character.valueOf( 'F' ), FCBetterThanWolves.fcItemHempCloth, 
-+    		Character.valueOf( 'M' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, m_iIgnoreMetadata )
++    		'F', FCBetterThanWolves.fcItemHempCloth, 
++    		'M', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, ignoreMetadata )
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcAestheticOpaque, 1, 
@@ -3569,7 +3641,7 @@
 +    		"#  #", 
 +    		"#  #", 
 +    		"####", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemStoneBrick
++    		'#', FCBetterThanWolves.fcItemStoneBrick
 +		} );
 +
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemMail, 2 ), new Object[] {
@@ -3577,7 +3649,7 @@
 +    		" # #", 
 +    		"# # ", 
 +    		" # #", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemNuggetIron
++    		'#', FCBetterThanWolves.fcItemNuggetIron
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemMail, 2 ), new Object[] {
@@ -3585,7 +3657,7 @@
 +    		"# # ", 
 +    		" # #", 
 +    		"# # ", 
-+    		Character.valueOf( '#' ), FCBetterThanWolves.fcItemNuggetIron
++    		'#', FCBetterThanWolves.fcItemNuggetIron
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcBlockSoulforgeDormant ), new Object[] {
@@ -3593,7 +3665,7 @@
 +    		" #  ", 
 +    		" #  ", 
 +    		"####", 
-+    		Character.valueOf( '#' ), Item.ingotGold
++    		'#', Item.ingotGold
 +		} );		
 +	}
 +	
@@ -3663,8 +3735,8 @@
 +        AddCauldronRecipe( 
 +    		new ItemStack( FCBetterThanWolves.fcItemNetherSludge, 8 ), 
 +			new ItemStack[] {
-+    			new ItemStack( FCBetterThanWolves.fcItemPotash, 1, m_iIgnoreMetadata ), 
-+    			new ItemStack( FCBetterThanWolves.fcItemHellfireDust, 8, m_iIgnoreMetadata ) 
++    			new ItemStack( FCBetterThanWolves.fcItemPotash, 1, ignoreMetadata ), 
++    			new ItemStack( FCBetterThanWolves.fcItemHellfireDust, 8, ignoreMetadata ) 
 +        } );
 +
 +    	AddCauldronRecipe( 
@@ -3843,21 +3915,21 @@
 +    	FCCraftingManagerCauldron.getInstance().AddRecipe( 
 +    		new ItemStack( Block.cloth, 8, 0 ), 
 +			new ItemStack[] {
-+    			new ItemStack( FCBetterThanWolves.fcItemPotash, 1, m_iIgnoreMetadata ), 
++    			new ItemStack( FCBetterThanWolves.fcItemPotash, 1, ignoreMetadata ), 
 +    			new ItemStack( Block.cloth, 8, 0  ),
 +    		}, true );    	
 +            
 +    	FCCraftingManagerCauldron.getInstance().AddRecipe( 
 +    		new ItemStack( FCBetterThanWolves.fcWoolSlab, 16, 0 ), 
 +			new ItemStack[] {
-+    			new ItemStack( FCBetterThanWolves.fcItemPotash, 1, m_iIgnoreMetadata ), 
++    			new ItemStack( FCBetterThanWolves.fcItemPotash, 1, ignoreMetadata ), 
 +    			new ItemStack( FCBetterThanWolves.fcWoolSlab, 16, 0 ),
 +    		}, true );
 +    	
 +    	FCCraftingManagerCauldron.getInstance().AddRecipe( 
 +    		new ItemStack( FCBetterThanWolves.fcItemWool, 32, 15 ), 
 +			new ItemStack[] {
-+    			new ItemStack( FCBetterThanWolves.fcItemPotash, 1, m_iIgnoreMetadata ), 
++    			new ItemStack( FCBetterThanWolves.fcItemPotash, 1, ignoreMetadata ), 
 +    			new ItemStack( FCBetterThanWolves.fcItemWool, 32, 15 ),
 +    		}, true );
 +
@@ -4067,25 +4139,25 @@
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.helmetLeather, 1, m_iIgnoreMetadata ) 
++				new ItemStack( Item.helmetLeather, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 4 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.plateLeather, 1, m_iIgnoreMetadata ) 
++				new ItemStack( Item.plateLeather, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 3 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.legsLeather, 1, m_iIgnoreMetadata ) 
++				new ItemStack( Item.legsLeather, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.bootsLeather, 1, m_iIgnoreMetadata ) 
++				new ItemStack( Item.bootsLeather, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
@@ -4097,79 +4169,79 @@
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemArmorGimpHelm, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemArmorGimpHelm, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 3 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemArmorGimpChest, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemArmorGimpChest, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 3 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemArmorGimpLeggings, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemArmorGimpLeggings, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 1 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemArmorGimpBoots, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemArmorGimpBoots, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 3 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemBreedingHarness, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemBreedingHarness, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 1 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.book, 2, m_iIgnoreMetadata ) 
++				new ItemStack( Item.book, 2, ignoreMetadata ) 
 +		} );
 +    
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 1 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.writableBook, 2, m_iIgnoreMetadata ) 
++				new ItemStack( Item.writableBook, 2, ignoreMetadata ) 
 +		} );
 +    
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 1 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.writtenBook, 2, m_iIgnoreMetadata ) 
++				new ItemStack( Item.writtenBook, 2, ignoreMetadata ) 
 +		} );
 +    
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 1 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.enchantedBook, 2, m_iIgnoreMetadata ) 
++				new ItemStack( Item.enchantedBook, 2, ignoreMetadata ) 
 +		} );
 +    
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemArmorTannedHelm, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemArmorTannedHelm, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 4 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemArmorTannedChest, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemArmorTannedChest, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 3 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemArmorTannedLeggings, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemArmorTannedLeggings, 1, ignoreMetadata ) 
 +		} );
 +        
 +        AddStokedCauldronRecipe(
 +			new ItemStack( FCBetterThanWolves.fcItemGlue, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemArmorTannedBoots, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemArmorTannedBoots, 1, ignoreMetadata ) 
 +		} );
 +        
 +        // tallow recipes
@@ -4239,37 +4311,37 @@
 +        AddStokedCauldronRecipe(
 +				new ItemStack( FCBetterThanWolves.fcItemPotash, 1 ), 
 +				new ItemStack[] {
-+					new ItemStack( Block.wood, 1, m_iIgnoreMetadata ) 
++					new ItemStack( Block.wood, 1, ignoreMetadata ) 
 +			} );
 +        
 +        AddStokedCauldronRecipe(
 +				new ItemStack( FCBetterThanWolves.fcItemPotash, 1 ), 
 +				new ItemStack[] {
-+					new ItemStack( FCBetterThanWolves.fcBloodWood, 1, m_iIgnoreMetadata ) 
++					new ItemStack( FCBetterThanWolves.fcBloodWood, 1, ignoreMetadata ) 
 +			} );
 +        
 +        AddStokedCauldronRecipe(
 +				new ItemStack( FCBetterThanWolves.fcItemPotash, 1 ), 
 +				new ItemStack[] {
-+					new ItemStack( Block.planks, 6, m_iIgnoreMetadata ) 
++					new ItemStack( Block.planks, 6, ignoreMetadata ) 
 +			} );
 +        
 +        AddStokedCauldronRecipe(
 +				new ItemStack( FCBetterThanWolves.fcItemPotash, 1 ), 
 +				new ItemStack[] {
-+					new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 12, m_iIgnoreMetadata ),
++					new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 12, ignoreMetadata ),
 +			} );
 +
 +        AddStokedCauldronRecipe(
 +				new ItemStack( FCBetterThanWolves.fcItemPotash, 1 ), 
 +				new ItemStack[] {
-+					new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 24, m_iIgnoreMetadata ),
++					new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 24, ignoreMetadata ),
 +			} );
 +
 +        AddStokedCauldronRecipe(
 +				new ItemStack( FCBetterThanWolves.fcItemPotash, 1 ), 
 +				new ItemStack[] {
-+					new ItemStack( FCBetterThanWolves.fcBlockWoodCornerItemStubID, 48, m_iIgnoreMetadata ),
++					new ItemStack( FCBetterThanWolves.fcBlockWoodCornerItemStubID, 48, ignoreMetadata ),
 +			} );
 +
 +        AddStokedCauldronRecipe(
@@ -4281,7 +4353,7 @@
 +        AddStokedCauldronRecipe(
 +				new ItemStack( FCBetterThanWolves.fcItemPotash, 1 ), 
 +				new ItemStack[] {
-+					new ItemStack( FCBetterThanWolves.fcItemBark, 64, m_iIgnoreMetadata )
++					new ItemStack( FCBetterThanWolves.fcItemBark, 64, ignoreMetadata )
 +			} );
 +        
 +        AddStokedCauldronRecipe(
@@ -4305,7 +4377,7 @@
 +				new ItemStack( Item.stick, 2 )
 +			},
 +			new ItemStack[] {
-+				new ItemStack( Item.bow, 1, m_iIgnoreMetadata ) 
++				new ItemStack( Item.bow, 1, ignoreMetadata ) 
 +			} 
 +		);
 +        
@@ -4316,7 +4388,7 @@
 +				new ItemStack( Item.bone, 1 )    	    		 
 +			},
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemCompositeBow, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemCompositeBow, 1, ignoreMetadata ) 
 +			} 
 +		);
 +        
@@ -4327,7 +4399,7 @@
 +				new ItemStack( Item.feather, 1 )
 +			},
 +			new ItemStack[] {
-+				new ItemStack( Item.arrow, 1, m_iIgnoreMetadata ) 
++				new ItemStack( Item.arrow, 1, ignoreMetadata ) 
 +			} 
 +		);
 +                
@@ -4336,7 +4408,7 @@
 +				new ItemStack( Item.flint, 1 )
 +			},
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemRottenArrow, 1, m_iIgnoreMetadata ) 
++				new ItemStack( FCBetterThanWolves.fcItemRottenArrow, 1, ignoreMetadata ) 
 +			} 
 +		);
 +            
@@ -4369,63 +4441,63 @@
 +			//new ItemStack( Item.ingotGold, 3 ), 
 +			new ItemStack( Item.ingotGold, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.pickaxeGold, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.pickaxeGold, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotGold, 2 ), 
 +			new ItemStack( Item.goldNugget, 12 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.axeGold, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.axeGold, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotGold, 2 ), 
 +			new ItemStack( Item.goldNugget, 12 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.swordGold, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.swordGold, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotGold, 2 ), 
 +			new ItemStack( Item.goldNugget, 6 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.hoeGold, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.hoeGold, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotGold, 1 ), 
 +			new ItemStack( Item.goldNugget, 6 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.shovelGold, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.shovelGold, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotGold, 5 ), 
 +			new ItemStack( Item.goldNugget, 30 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.helmetGold, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.helmetGold, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotGold, 8 ), 
 +			new ItemStack( Item.goldNugget, 48 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.plateGold, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.plateGold, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotGold, 7 ), 
 +			new ItemStack( Item.goldNugget, 42 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.legsGold, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.legsGold, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotGold, 4 ), 
 +			new ItemStack( Item.goldNugget, 24 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.bootsGold, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.bootsGold, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
@@ -4462,7 +4534,7 @@
 +			//new ItemStack( Item.goldNugget, 16 ), 
 +			new ItemStack( Item.goldNugget, 11 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemEnderSpectacles, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemEnderSpectacles, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
@@ -4555,91 +4627,91 @@
 +			//new ItemStack( Item.ingotIron, 3 ), 
 +			new ItemStack( Item.ingotIron, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.pickaxeIron, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.pickaxeIron, 1, ignoreMetadata )
 +		} );
 +				
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 2 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 12 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.axeIron, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.axeIron, 1, ignoreMetadata )
 +		} );
 +				
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 2 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 12 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.swordIron, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.swordIron, 1, ignoreMetadata )
 +		} );
 +					
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 2 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 6 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.hoeIron, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.hoeIron, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 1 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 6 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.shovelIron, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.shovelIron, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 5 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 30 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.helmetIron, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.helmetIron, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 8 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 48 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.plateIron, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.plateIron, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 7 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 42 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.legsIron, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.legsIron, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( Item.ingotIron, 4 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 24 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.bootsIron, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.bootsIron, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 20 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 13 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.helmetChain, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.helmetChain, 1, ignoreMetadata )
 +		} );
 +			
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 32 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 21 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.plateChain, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.plateChain, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 28 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 19 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.legsChain, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.legsChain, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			//new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 16 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 11 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.bootsChain, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.bootsChain, 1, ignoreMetadata )
 +		} );
 +			
 +		AddStokedCrucibleRecipe( 
@@ -4671,7 +4743,7 @@
 +			//new ItemStack( Item.ingotIron, 2 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 12 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.shears, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.shears, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
@@ -4826,7 +4898,7 @@
 +			//new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 4 ), 
 +			new ItemStack( FCBetterThanWolves.fcItemNuggetIron, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, ignoreMetadata )
 +		} );
 +			
 +		AddStokedCrucibleRecipe( 
@@ -4861,67 +4933,67 @@
 +		AddStokedCrucibleRecipe(
 +			new ItemStack(FCBetterThanWolves.fcItemIngotDiamond, 1), 
 +			new ItemStack[] {
-+				new ItemStack(FCBetterThanWolves.fcItemChiselDiamond, 1, m_iIgnoreMetadata)
++				new ItemStack(FCBetterThanWolves.fcItemChiselDiamond, 1, ignoreMetadata)
 +		});
 +		
 +		AddStokedCrucibleRecipe(
 +			new ItemStack(FCBetterThanWolves.fcItemIngotDiamond, 2), 
 +			new ItemStack[] {
-+				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, m_iIgnoreMetadata)
++				new ItemStack(FCBetterThanWolves.fcItemShearsDiamond, 1, ignoreMetadata)
 +		});
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 3 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.pickaxeDiamond, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.pickaxeDiamond, 1, ignoreMetadata )
 +			} );
 +				
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.axeDiamond, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.axeDiamond, 1, ignoreMetadata )
 +			} );
 +				
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.swordDiamond, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.swordDiamond, 1, ignoreMetadata )
 +			} );
 +					
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 1 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.hoeDiamond, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.hoeDiamond, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 1 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.shovelDiamond, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.shovelDiamond, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 6 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.helmetDiamond, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.helmetDiamond, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 8 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.plateDiamond, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.plateDiamond, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 7 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.legsDiamond, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.legsDiamond, 1, ignoreMetadata )
 +			} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemIngotDiamond, 4 ), 
 +			new ItemStack[] {
-+				new ItemStack( Item.bootsDiamond, 1, m_iIgnoreMetadata )
++				new ItemStack( Item.bootsDiamond, 1, ignoreMetadata )
 +			} );
 +		
 +    	// steel items
@@ -4929,43 +5001,43 @@
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 5 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemBattleAxe, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemBattleAxe, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemRefinedAxe, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemRefinedAxe, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 3 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemRefinedPickAxe, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemRefinedPickAxe, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 4 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemMattock, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemMattock, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 3 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemRefinedSword, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemRefinedSword, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 2 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemRefinedHoe, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemRefinedHoe, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 1 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemRefinedShovel, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemRefinedShovel, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
@@ -4977,25 +5049,25 @@
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 10 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemPlateHelm, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemPlateHelm, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 14 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemPlateBreastPlate, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemPlateBreastPlate, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 12 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemPlateLeggings, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemPlateLeggings, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 8 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemPlateBoots, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemPlateBoots, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
@@ -5026,7 +5098,7 @@
 +		AddStokedCrucibleRecipe( 
 +			new ItemStack( FCBetterThanWolves.fcItemSteel, 1 ), 
 +			new ItemStack[] {
-+				new ItemStack( FCBetterThanWolves.fcItemTuningFork, 1, m_iIgnoreMetadata )
++				new ItemStack( FCBetterThanWolves.fcItemTuningFork, 1, ignoreMetadata )
 +		} );
 +		
 +		AddStokedCrucibleRecipe( 
@@ -5148,7 +5220,7 @@
 +		
 +		AddMillStoneRecipe( new ItemStack( FCBetterThanWolves.fcItemWolfRaw, 1, 0 ), new ItemStack( FCBetterThanWolves.fcCompanionCube, 1, 1 ) );
 +		
-+		AddMillStoneRecipe( new ItemStack( FCBetterThanWolves.fcItemCoalDust, 2 ), new ItemStack( Item.coal, 1, m_iIgnoreMetadata )  );
++		AddMillStoneRecipe( new ItemStack( FCBetterThanWolves.fcItemCoalDust, 2 ), new ItemStack( Item.coal, 1, ignoreMetadata )  );
 +		
 +		// bone meal		
 +		
@@ -5226,17 +5298,13 @@
 +		//		cookTimeMultiplierClay);
 +		
 +		addKilnRecipe(new ItemStack(Item.brick),
-+				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeClayBrick,
-+				cookTimeMultiplierClay);
-+		addKilnRecipe(new ItemStack(Item.brick),
-+				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeClayBrickIAligned,
++				FCBetterThanWolves.fcUnfiredPottery,
++				new int[] {FCBlockUnfiredPottery.m_iSubtypeClayBrick, FCBlockUnfiredPottery.m_iSubtypeClayBrickIAligned},
 +				cookTimeMultiplierClay);
 +		
 +		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcItemNetherBrick),
-+				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeNetherBrick,
-+				cookTimeMultiplierClay);
-+		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcItemNetherBrick),
-+				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeNetherBrickIAligned,
++				FCBetterThanWolves.fcUnfiredPottery,
++				new int[] {FCBlockUnfiredPottery.m_iSubtypeNetherBrick, FCBlockUnfiredPottery.m_iSubtypeNetherBrickIAligned},
 +				cookTimeMultiplierClay);
 +		
 +		//Baking
@@ -5247,14 +5315,10 @@
 +				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedPumpkinPie);
 +
 +		addKilnRecipe(new ItemStack(Item.bread),
-+				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedBread);
-+		addKilnRecipe(new ItemStack(Item.bread),
-+				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedBreadIAligned);
++				FCBetterThanWolves.fcUnfiredPottery, new int[] {FCBlockUnfiredPottery.m_iSubtypeUncookedBread, FCBlockUnfiredPottery.m_iSubtypeUncookedBreadIAligned});
 +
 +		addKilnRecipe(new ItemStack(Item.cookie, 8),
-+				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedCookies);
-+		addKilnRecipe(new ItemStack(Item.cookie, 8),
-+				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUncookedCookiesIAligned);
++				FCBetterThanWolves.fcUnfiredPottery, new int[] {FCBlockUnfiredPottery.m_iSubtypeUncookedCookies, FCBlockUnfiredPottery.m_iSubtypeUncookedCookiesIAligned});
 +		
 +		//Other
 +		addKilnRecipe(new ItemStack[] {
@@ -5267,35 +5331,33 @@
 +	
 +	private static void addSawRecipes() {
 +		//Logs
-+		for (int i = 0; i < 4; i++) {
-+			addSawRecipe(new ItemStack[] {
-+						new ItemStack(Block.planks, 4, 0),
-+						new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
-+						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 0)
-+					},
-+					Block.wood, i * 4);
-+			
-+			addSawRecipe(new ItemStack[] {
-+						new ItemStack(Block.planks, 4, 1),
-+						new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
-+						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 1)
-+					},
-+					Block.wood, i * 4 + 1);
-+			
-+			addSawRecipe(new ItemStack[] {
-+						new ItemStack(Block.planks, 4, 2),
-+						new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
-+						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 2)
-+					},
-+					Block.wood, i * 4 + 2);
-+			
-+			addSawRecipe(new ItemStack[] {
-+						new ItemStack(Block.planks, 4, 3),
-+						new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
-+						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 3)
-+					},
-+					Block.wood, i * 4 + 3);
-+		}
++		addSawRecipe(new ItemStack[] {
++					new ItemStack(Block.planks, 4, 0),
++					new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
++					new ItemStack(FCBetterThanWolves.fcItemBark, 1, 0)
++				},
++				Block.wood, new int[] {0, 4, 8});
++		
++		addSawRecipe(new ItemStack[] {
++					new ItemStack(Block.planks, 4, 1),
++					new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
++					new ItemStack(FCBetterThanWolves.fcItemBark, 1, 1)
++				},
++				Block.wood, new int[] {1, 5, 9});
++		
++		addSawRecipe(new ItemStack[] {
++					new ItemStack(Block.planks, 4, 2),
++					new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
++					new ItemStack(FCBetterThanWolves.fcItemBark, 1, 2)
++				},
++				Block.wood, new int[] {2, 6, 10});
++		
++		addSawRecipe(new ItemStack[] {
++					new ItemStack(Block.planks, 4, 3),
++					new ItemStack(FCBetterThanWolves.fcItemSawDust, 2),
++					new ItemStack(FCBetterThanWolves.fcItemBark, 1, 3)
++				},
++				Block.wood, new int[] {3, 7, 11});
 +
 +		addSawRecipe(new ItemStack[] {
 +					new ItemStack(Block.planks, 4, 4),
@@ -5348,29 +5410,19 @@
 +		
 +		//Wood slabs
 +		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 0), 
-+				Block.woodSingleSlab, 0);
-+		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 0), 
-+				Block.woodSingleSlab, 8);
++				Block.woodSingleSlab, new int[] {0, 8});
 +
 +		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 1), 
-+				Block.woodSingleSlab, 1);
-+		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 1), 
-+				Block.woodSingleSlab, 9);
++				Block.woodSingleSlab, new int[] {1, 9});
 +		
 +		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 2), 
-+				Block.woodSingleSlab, 2);
-+		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 2), 
-+				Block.woodSingleSlab, 10);
++				Block.woodSingleSlab, new int[] {2, 10});
 +		
 +		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 3), 
-+				Block.woodSingleSlab, 3);
-+		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 3), 
-+				Block.woodSingleSlab, 11);
++				Block.woodSingleSlab, new int[] {3, 11});
 +		
 +		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 4), 
-+				Block.woodSingleSlab, 4);
-+		addSawRecipe(new ItemStack(Item.itemsList[FCBetterThanWolves.fcBlockWoodMouldingItemStubID], 2, 4), 
-+				Block.woodSingleSlab, 12);
++				Block.woodSingleSlab, new int[] {4, 12});
 +		
 +		addSawRecipe(new ItemStack(Block.woodSingleSlab, 2, 0), 
 +				Block.woodDoubleSlab, 0);
@@ -5546,6 +5598,84 @@
 +				new ItemStack(Item.lightStoneDust));
 +	}
 +	
++	private static void addLogChoppingRecipes() {
++		for (int i = 0; i < 4; i++) {
++			addLogChoppingRecipe(new ItemStack(Block.planks, 4, i), 
++					new ItemStack[] {
++							new ItemStack(FCBetterThanWolves.fcItemBark, 1, i),
++							new ItemStack(FCBetterThanWolves.fcItemSawDust, 2, 0), 
++					}, 
++					new ItemStack(Item.stick, 2), 
++					new ItemStack[] {
++							new ItemStack(FCBetterThanWolves.fcItemBark, 1, i),
++							new ItemStack(FCBetterThanWolves.fcItemSawDust, 4, 0),
++					}, 
++					new ItemStack(Block.wood, 1, i));
++		}
++		
++		addLogChoppingRecipe(new ItemStack(Block.planks, 4, 4), 
++				new ItemStack[] {
++						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 4),
++						new ItemStack(FCBetterThanWolves.fcItemSawDust, 1, 0),
++						new ItemStack(FCBetterThanWolves.fcItemSoulDust, 1, 0), 
++				}, 
++				new ItemStack(Item.stick, 2), 
++				new ItemStack[] {
++						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 4),
++						new ItemStack(FCBetterThanWolves.fcItemSawDust, 3, 0),
++						new ItemStack(FCBetterThanWolves.fcItemSoulDust, 1, 0),
++				}, 
++				new ItemStack(FCBetterThanWolves.fcBloodWood, 1, 0));
++	}
++	
++	private static final int numRotationsPottery = 8;
++	
++	public static TurntableEffect potteryEffect = new TurntableEffect() {
++		@Override
++		public void playEffect(World world, int x, int y, int z) {
++			world.playAuxSFX(FCBetterThanWolves.m_iBlockDestroyRespectParticleSettingsAuxFXID, x, y, z, FCBetterThanWolves.fcBlockUnfiredClay.blockID);
++		}
++	};
++	
++	private static void addTurntableRecipes() {
++		addTurntableRecipe(FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeCrucible,
++				FCBetterThanWolves.fcBlockUnfiredClay, 
++				numRotationsPottery)
++			.setEffect(potteryEffect);
++		
++		addTurntableRecipe(FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypePlanter, 
++				new ItemStack[] {
++						new ItemStack(Item.clay, 2)
++				}, 
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeCrucible,
++				numRotationsPottery)
++			.setEffect(potteryEffect);
++		
++		addTurntableRecipe(FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeVase, 
++				new ItemStack[] {
++						new ItemStack(Item.clay, 2)
++				}, 
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypePlanter,
++				numRotationsPottery)
++			.setEffect(potteryEffect);
++		
++		addTurntableRecipe(FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUrn, 
++				new ItemStack[] {
++						new ItemStack(Item.clay, 2)
++				}, 
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeVase,
++				numRotationsPottery)
++			.setEffect(potteryEffect);
++		
++		addTurntableRecipe(null, 0,
++				new ItemStack[] {
++						new ItemStack(Item.clay, 3)
++				}, 
++				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUrn,
++				numRotationsPottery)
++			.setEffect(potteryEffect);
++	}
++	
 +	private static void AddTuningForkRecipes()
 +	{
 +		for ( int iTempDamage = 0; iTempDamage < 24; iTempDamage++ )
@@ -5590,7 +5720,7 @@
 +		AddSubBlockRecipesOfType( Block.brick, 0, 
 +			FCBetterThanWolves.fcBlockBrickSidingAndCorner, FCBetterThanWolves.fcBlockBrickMouldingAndDecorative, true );	
 +		
-+		AddSubBlockRecipesOfType( Block.sandStone, m_iIgnoreMetadata, 0, 
++		AddSubBlockRecipesOfType( Block.sandStone, ignoreMetadata, 0, 
 +			FCBetterThanWolves.fcBlockSandstoneSidingAndCorner, FCBetterThanWolves.fcBlockSandstoneMouldingAndDecorative, true );
 +		
 +		AddSubBlockRecipesOfType( Block.blockNetherQuartz, 0, 
@@ -5608,47 +5738,47 @@
 +		
 +		AddAnvilRecipe( new ItemStack( sidingAndCornerBlock, 8, 0 ), new Object[] {
 +    		"####", 
-+    		Character.valueOf( '#' ), new ItemStack( fullBlock, 1, iFullBlockInputMetadata )
++    		'#', new ItemStack( fullBlock, 1, iFullBlockInputMetadata )
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( mouldingBlock, 8, 0 ), new Object[] {
 +    		"####", 
-+    		Character.valueOf( '#' ), new ItemStack( sidingAndCornerBlock, 1, 0 )
++    		'#', new ItemStack( sidingAndCornerBlock, 1, 0 )
 +		} );
 +		
 +		AddAnvilRecipe( new ItemStack( sidingAndCornerBlock, 8, 1 ), new Object[] {
 +    		"####", 
-+    		Character.valueOf( '#' ), new ItemStack( mouldingBlock, 1, 0 )
++    		'#', new ItemStack( mouldingBlock, 1, 0 )
 +		} );
 +		
 +		AddRecipe( new ItemStack( mouldingBlock, 1, FCBlockMouldingAndDecorative.m_iSubtypeColumn ), new Object[] {
 +    		"M", 
 +    		"M", 
 +    		"M", 
-+    		Character.valueOf( 'M' ), new ItemStack( mouldingBlock, 1, 0 )
++    		'M', new ItemStack( mouldingBlock, 1, 0 )
 +		} );
 +		
 +		AddRecipe( new ItemStack( mouldingBlock, 6, FCBlockMouldingAndDecorative.m_iSubtypePedestalUp ), new Object[] {
 +    		" S ", 
 +    		"###", 
 +    		"###", 
-+    		Character.valueOf( '#' ), new ItemStack( fullBlock, 1, iFullBlockInputMetadata ), 
-+    		Character.valueOf( 'S' ), new ItemStack( sidingAndCornerBlock, 8, 0 )
++    		'#', new ItemStack( fullBlock, 1, iFullBlockInputMetadata ), 
++    		'S', new ItemStack( sidingAndCornerBlock, 8, 0 )
 +		} );
 +		
 +		AddRecipe( new ItemStack( mouldingBlock, 4, FCBlockMouldingAndDecorative.m_iSubtypeTable ), new Object[] {
 +    		"###", 
 +    		" X ", 
 +    		" X ", 
-+    		Character.valueOf( '#' ), new ItemStack( sidingAndCornerBlock, 1, 0 ), 
-+    		Character.valueOf( 'X' ), new ItemStack( mouldingBlock, 1, 0 )
++    		'#', new ItemStack( sidingAndCornerBlock, 1, 0 ), 
++    		'X', new ItemStack( mouldingBlock, 1, 0 )
 +		} );
 +		
 +		AddRecipe( new ItemStack( sidingAndCornerBlock, 4, FCBlockSidingAndCornerAndDecorative.m_iSubtypeBench ), new Object[] {
 +    		"###", 
 +    		" X ", 
-+    		Character.valueOf( '#' ), new ItemStack( sidingAndCornerBlock, 1, 0 ), 
-+    		Character.valueOf( 'X' ), new ItemStack( mouldingBlock, 1, 0 )
++    		'#', new ItemStack( sidingAndCornerBlock, 1, 0 ), 
++    		'X', new ItemStack( mouldingBlock, 1, 0 )
 +		} );
 +		
 +		if ( bIncludeFence )
@@ -5683,86 +5813,95 @@
 +		} );		
 +	}
 +	
-+	private static void addSubBlockRecipesToSaw(Block baseBlock, int baseMetadata, Block sidingAndCorner, Block moulding) {
-+		//Base
-+		addSawRecipe(new ItemStack(sidingAndCorner, 2, 0),
-+				baseBlock, baseMetadata);
++	private static int[] sidingMetas;
++	private static int[] mouldingMetas;
++	private static int[] cornerMetas;
++	
++	static {
++		//Builds the arrays containing every meta value for each primary subblock
++		ArrayList<Integer> sidingMetaList = new ArrayList();
++		ArrayList<Integer> mouldingMetaList = new ArrayList();
++		ArrayList<Integer> cornerMetaList = new ArrayList();
 +		
-+		//Siding
-+		//Shared block id with other types requires enumerating siding metadata
 +		for (int i = 0; i < 16; i++) {
 +			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
 +					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
 +					!((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
 +			{
-+				addSawRecipe(new ItemStack(moulding, 2, 0), 
-+						sidingAndCorner, i);
++				sidingMetaList.add(i);
 +			}
 +		}
 +		
-+		//Moulding
-+		//Shared block id with other types requires enumerating moulding metadata
 +		for (int i = 0; i < 16; i++) {
 +			if (!((FCBlockWoodMouldingAndDecorative) FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative).IsDecorative(i)) {
-+				addSawRecipe(new ItemStack(sidingAndCorner, 2, 1),
-+						moulding, i);
++				mouldingMetaList.add(i);
 +			}
 +		}
 +		
-+		//Corners
-+		//Shared block id with other types requires enumerating corner metadata
 +		for (int i = 0; i < 16; i++) {
 +			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
 +					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
 +					((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
 +			{
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 0),
-+						sidingAndCorner, i);
++				cornerMetaList.add(i);
 +			}
 +		}
++		
++		sidingMetas = new int[sidingMetaList.size()];
++		mouldingMetas = new int[mouldingMetaList.size()];
++		cornerMetas = new int[cornerMetaList.size()];
++		
++		for (int i = 0; i < sidingMetaList.size(); i++) {
++			sidingMetas[i] = sidingMetaList.get(i);
++		}
++		
++		for (int i = 0; i < mouldingMetaList.size(); i++) {
++			mouldingMetas[i] = mouldingMetaList.get(i);
++		}
++		
++		for (int i = 0; i < cornerMetaList.size(); i++) {
++			cornerMetas[i] = cornerMetaList.get(i);
++		}
++	}
++	
++	public static void addSubBlockRecipesToSaw(Block baseBlock, int baseMetadata, Block sidingAndCorner, Block moulding) {
++		//Base
++		addSawRecipe(new ItemStack(sidingAndCorner, 2, 0),
++				baseBlock, baseMetadata);
++		
++		//Siding
++		addSawRecipe(new ItemStack(moulding, 2, 0), 
++				sidingAndCorner, sidingMetas);
++		
++		//Moulding
++		addSawRecipe(new ItemStack(sidingAndCorner, 2, 1),
++				moulding, mouldingMetas);
++		
++		//Corners
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 0),
++				sidingAndCorner, cornerMetas);
 +		
 +		//Fence
 +		addSawRecipe(new ItemStack(sidingAndCorner, 1, 1),
 +				sidingAndCorner, FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence);
 +	}
 +	
-+	private static void addSubBlockRecipesToSaw(Block baseBlock, int baseMetadata, Block sidingAndCorner, Block moulding, int sidingItemID, int mouldingItemID, int cornerItemID, int itemMetadata) {
++	public static void addSubBlockRecipesToSaw(Block baseBlock, int baseMetadata, Block sidingAndCorner, Block moulding, int sidingItemID, int mouldingItemID, int cornerItemID, int itemMetadata) {
 +		//Base
 +		addSawRecipe(new ItemStack(sidingItemID, 2, itemMetadata),
 +				baseBlock, baseMetadata);
 +		
 +		//Siding
-+		//Shared block id with other types requires enumerating siding metadata
-+		for (int i = 0; i < 16; i++) {
-+			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
-+					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
-+					!((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
-+			{
-+				addSawRecipe(new ItemStack(mouldingItemID, 2, itemMetadata), 
-+						sidingAndCorner, i);
-+			}
-+		}
++		addSawRecipe(new ItemStack(mouldingItemID, 2, itemMetadata), 
++				sidingAndCorner, sidingMetas);
 +		
 +		//Moulding
-+		//Shared block id with other types requires enumerating moulding metadata
-+		for (int i = 0; i < 16; i++) {
-+			if (!((FCBlockWoodMouldingAndDecorative) FCBetterThanWolves.fcBlockWoodOakMouldingAndDecorative).IsDecorative(i)) {
-+				addSawRecipe(new ItemStack(cornerItemID, 2, itemMetadata),
-+						moulding, i);
-+			}
-+		}
++		addSawRecipe(new ItemStack(cornerItemID, 2, itemMetadata),
++				moulding, mouldingMetas);
 +		
 +		//Corners
-+		//Shared block id with other types requires enumerating corner metadata
-+		for (int i = 0; i < 16; i++) {
-+			if (i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeBench &&
-+					i != FCBlockWoodSidingAndCornerAndDecorative.m_iSubtypeFence &&
-+					((FCBlockSidingAndCorner) FCBetterThanWolves.fcBlockWoodOakSidingAndCorner).GetIsCorner(i))
-+			{
-+				addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, 0),
-+						sidingAndCorner, i);
-+			}
-+		}
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, itemMetadata),
++				sidingAndCorner, cornerMetas);
 +		
 +		//Fence
 +		addSawRecipe(new ItemStack(cornerItemID, 1, itemMetadata),
@@ -5780,8 +5919,8 @@
 +	    		" S ", 
 +	    		"###", 
 +	    		"###", 
-+	    		Character.valueOf( '#' ), new ItemStack( Block.planks, 1, iWoodType ), 
-+	    		Character.valueOf( 'S' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, iWoodType ) 
++	    		'#', new ItemStack( Block.planks, 1, iWoodType ), 
++	    		'S', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, iWoodType ) 
 +			} );
 +			
 +			AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingDecorativeItemStubID, 1, 
@@ -5789,7 +5928,7 @@
 +	    		"M", 
 +	    		"M", 
 +	    		"M", 
-+	    		Character.valueOf( 'M' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, iWoodType )
++	    		'M', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, iWoodType )
 +			} );
 +			
 +			AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingDecorativeItemStubID, 4, 
@@ -5797,16 +5936,16 @@
 +	    		"###", 
 +	    		" X ", 
 +	    		" X ", 
-+	    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, iWoodType ), 
-+	    		Character.valueOf( 'X' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, iWoodType )
++	    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, iWoodType ), 
++	    		'X', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, iWoodType )
 +			} );
 +			
 +			AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWoodSidingDecorativeItemStubID, 4, 
 +				FCItemBlockWoodSidingDecorativeStub.GetItemDamageForType( iWoodType, FCItemBlockWoodSidingDecorativeStub.m_iTypeBench ) ), new Object[] {
 +	    		"###", 
 +	    		" X ", 
-+	    		Character.valueOf( '#' ), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, iWoodType ), 
-+	    		Character.valueOf( 'X' ), new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, iWoodType )
++	    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, iWoodType ), 
++	    		'X', new ItemStack( FCBetterThanWolves.fcBlockWoodMouldingItemStubID, 1, iWoodType )
 +			} );
 +			
 +			if ( iWoodType == 0 )
@@ -5816,7 +5955,7 @@
 +				AddRecipe( new ItemStack( Block.fence, 6 ), new Object[] {
 +		            "###", 
 +		            "###", 
-+		    		Character.valueOf( '#' ), new ItemStack( Block.planks, 1, iWoodType ), 
++		    		'#', new ItemStack( Block.planks, 1, iWoodType ), 
 +				} );
 +				
 +				AddRecipe( new ItemStack( Block.fence, 2 ), new Object[] {
@@ -5830,7 +5969,7 @@
 +					FCItemBlockWoodSidingDecorativeStub.GetItemDamageForType( iWoodType, FCItemBlockWoodSidingDecorativeStub.m_iTypeFence ) ), new Object[] {
 +		            "###", 
 +		            "###", 
-+		    		Character.valueOf( '#' ), new ItemStack( Block.planks, 1, iWoodType ), 
++		    		'#', new ItemStack( Block.planks, 1, iWoodType ), 
 +				} );
 +				
 +				AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWoodSidingDecorativeItemStubID, 2, 
@@ -5938,7 +6077,7 @@
 +	private static void AddCustomRecipeClasses()
 +	{
 +		CraftingManager.getInstance().getRecipeList().add( new FCRecipesFishingRodBaiting() );
-+		CraftingManager.getInstance().getRecipeList().add( new FCRecipesLogChopping() );
++		//CraftingManager.getInstance().getRecipeList().add( new FCRecipesLogChopping() );
 +		CraftingManager.getInstance().getRecipeList().add( new FCRecipesKnitting() );
 +	}
 +	
@@ -7041,7 +7180,7 @@
 +		/*
 +		AddVanillaRecipe( new ItemStack( Block.glass, 60, 0 ), new Object[] {
 +			"#",
-+			Character.valueOf( '#' ), Block.dirt 
++			'#', Block.dirt 
 +		} );
 +		*/
 +    }	

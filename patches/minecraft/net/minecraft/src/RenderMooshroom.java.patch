@@ -30,7 +30,7 @@
 -            this.loadTexture("/terrain.png");
 +        	MobOverlay.finishMooshroom();
 +        }
-+        else
++        else if (!par1EntityMooshroom.getWearingBreedingHarness() && par1EntityMooshroom.IsFullyFed())
 +        {
 +            this.loadTexture(FakeResourceLocation.unwrap(MobOverlay.setupMooshroom(par1EntityMooshroom, FakeResourceLocation.wrap("/terrain.png"))));
              GL11.glEnable(GL11.GL_CULL_FACE);

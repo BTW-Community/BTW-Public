@@ -1,260 +1,217 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockTurntable.java
-@@ -0,0 +1,256 @@
+@@ -0,0 +1,213 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
 +import java.util.Random;
 +
-+public class FCBlockTurntable extends BlockContainer
-+	implements FCIBlockMechanical
-+{
++public class FCBlockTurntable extends BlockContainer implements FCIBlockMechanical {
 +	private static final int iTurntableTickRate = 10;
 +	
-+	protected FCBlockTurntable( int iBlockID )
-+	{
-+        super( iBlockID, Material.rock );
++	protected FCBlockTurntable(int blockID) {
++        super(blockID, Material.rock);
 +
-+        setHardness( 2F );
-+        setStepSound( soundStoneFootstep );
++        setHardness(2F);
++        setStepSound(soundStoneFootstep);
 +        
-+        setUnlocalizedName( "fcBlockTurntable" );
++        setUnlocalizedName("fcBlockTurntable");
 +        
-+        setCreativeTab( CreativeTabs.tabRedstone );
++        setCreativeTab(CreativeTabs.tabRedstone);
 +	}
 +	
 +	@Override
-+    public int tickRate( World world )
-+    {
++    public int tickRate(World world) {
 +    	return iTurntableTickRate;
 +    }
 +    
 +	@Override
-+    public TileEntity createNewTileEntity( World world )
-+    {
++    public TileEntity createNewTileEntity(World world) {
 +        return new FCTileEntityTurntable();
 +    }
 +
 +	@Override
-+    public void onBlockAdded( World world, int i, int j, int k )
-+    {
-+        super.onBlockAdded( world, i, j, k );
++    public void onBlockAdded(World world, int x, int y, int z) {
++        super.onBlockAdded(world, x, y, z);
 +        
-+    	world.scheduleBlockUpdate( i, j, k, blockID, tickRate( world ) );
++    	world.scheduleBlockUpdate(x, y, z, blockID, tickRate(world));
 +    }
 +
 +	@Override
-+    public void onNeighborBlockChange( World world, int i, int j, int k, int iBlockID )
-+    {
-+		if ( !world.IsUpdatePendingThisTickForBlock( i, j, k, blockID ) )
-+		{
-+			world.scheduleBlockUpdate( i, j, k, blockID, tickRate( world ) );
++    public void onNeighborBlockChange(World world, int x, int y, int z, int blockID) {
++		if (!world.IsUpdatePendingThisTickForBlock(x, y, z, this.blockID)) {
++			world.scheduleBlockUpdate(x, y, z, this.blockID, tickRate(world));
 +		}
 +    }
 +    
 +	@Override
-+    public void updateTick( World world, int i, int j, int k, Random random )
-+    {
-+    	boolean bReceivingMechanicalPower = IsInputtingMechanicalPower( world, i, j, k );
-+    	boolean bMechanicalOn = IsBlockMechanicalOn( world, i, j, k );
++    public void updateTick(World world, int x, int y, int z, Random random) {
++    	boolean receivingMechanicalPower = IsInputtingMechanicalPower(world, x, y, z);
++    	boolean isMechanicalOn = IsBlockMechanicalOn(world, x, y, z);
 +    	
-+    	if ( bMechanicalOn != bReceivingMechanicalPower )
-+    	{
-+	        EmitTurntableParticles( world, i, j, k, random );
++    	if (isMechanicalOn != receivingMechanicalPower) {
++	        EmitTurntableParticles(world, x, y, z, random);
 +	        
-+    		SetBlockMechanicalOn( world, i, j, k, bReceivingMechanicalPower );
++    		SetBlockMechanicalOn(world, x, y, z, receivingMechanicalPower);
 +    		
-+	        world.markBlockForUpdate( i, j, k );
++	        world.markBlockForUpdate(x, y, z);
 +    	}
 +    	
-+    	boolean bReceivingRedstonePower = world.isBlockGettingPowered(i, j, k);
-+    	boolean bRedstoneOn = IsBlockRedstoneOn( world, i, j, k );
++    	boolean receivingRedstonePower = world.isBlockGettingPowered(x, y, z);
++    	boolean isRedstoneOn = IsBlockRedstoneOn(world, x, y, z);
 +    	
-+    	if ( bRedstoneOn != bReceivingRedstonePower )
-+    	{
-+    		SetBlockRedstoneOn( world, i, j, k, bReceivingRedstonePower );    		
++    	if (isRedstoneOn != receivingRedstonePower) {
++    		SetBlockRedstoneOn(world, x, y, z, receivingRedstonePower);    		
 +    	}
 +    }
 +    
 +	@Override
-+    public boolean onBlockActivated( World world, int i, int j, int k, EntityPlayer player, int iFacing, float fXClick, float fYClick, float fZClick )
-+    {
++    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int facing, float hitX, float hitY, float hitZ) {
 +    	ItemStack playerEquippedItem = player.getCurrentEquippedItem();
 +    	
-+    	if ( playerEquippedItem != null )
-+    	{
++    	if (playerEquippedItem != null) {
 +    		return false;
 +    	}
 +    	
-+        if ( !world.isRemote )
-+        {
-+        	int iSwitchSetting = GetSwitchSetting( world, i, j, k );
++        if (!world.isRemote) {
++        	int switchSetting = GetSwitchSetting(world, x, y, z);
++        	switchSetting++;
 +        	
-+        	iSwitchSetting++;
-+        	
-+        	if ( iSwitchSetting > 3 )
-+        	{
-+        		iSwitchSetting = 0;
++        	if (switchSetting > 3) {
++        		switchSetting = 0;
 +        	}
 +        	
-+        	SetSwitchSetting( world, i, j, k, iSwitchSetting );
++        	SetSwitchSetting(world, x, y, z, switchSetting);
 +        
-+	        world.markBlockForUpdate( i, j, k );
-+	        
-+	        world.markBlockRangeForRenderUpdate( i, j, k, i, j, k );
++	        world.markBlockForUpdate(x, y, z);
++	        world.markBlockRangeForRenderUpdate(x, y, z, x, y, z);
 +
 +	        // click sound
-+	        
-+            world.playAuxSFX( 1001, i, j, k, 0 );
++            world.playAuxSFX(1001, x, y, z, 0);
 +        }
 +        
 +        return true;
 +    }
 +
 +	@Override
-+	public boolean CanRotateOnTurntable( IBlockAccess iBlockAccess, int i, int j, int k )
-+	{
++	public boolean CanRotateOnTurntable(IBlockAccess blockAccess, int x, int y, int z) {
 +		return false;
 +	}
 +	
 +	@Override
-+	public boolean CanTransmitRotationHorizontallyOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
++	public boolean CanTransmitRotationHorizontallyOnTurntable(IBlockAccess blockAccess, int x, int y, int z) {
 +		return false;
 +	}
 +	
 +	@Override
-+	public boolean CanTransmitRotationVerticallyOnTurntable( IBlockAccess blockAccess, int i, int j, int k )
-+	{
++	public boolean CanTransmitRotationVerticallyOnTurntable(IBlockAccess blockAccess, int x, int y, int z) {
 +		return false;
 +	}
 +	
 +    //------------- FCIBlockMechanical -------------//
 +    
 +	@Override
-+    public boolean CanOutputMechanicalPower()
-+    {
++    public boolean CanOutputMechanicalPower() {
 +    	return false;
 +    }
 +
 +	@Override
-+    public boolean CanInputMechanicalPower()
-+    {
++    public boolean CanInputMechanicalPower() {
 +    	return true;
 +    }
 +
 +	@Override
-+    public boolean IsInputtingMechanicalPower( World world, int i, int j, int k )
-+    {
++    public boolean IsInputtingMechanicalPower(World world, int x, int y, int z) {
 +    	// check for powered axles below
-+    	
-+    	return FCUtilsMechPower.IsBlockPoweredByAxleToSide( world, i, j, k, 0 );    	
++    	return FCUtilsMechPower.IsBlockPoweredByAxleToSide(world, x, y, z, 0);    	
 +    }    
 +
 +	@Override
-+    public boolean IsOutputtingMechanicalPower( World world, int i, int j, int k )
-+    {
++    public boolean IsOutputtingMechanicalPower(World world, int i, int j, int k) {
 +    	return false;
 +    }
 +    
 +	@Override
-+	public boolean CanInputAxlePowerToFacing( World world, int i, int j, int k, int iFacing )
-+	{
-+		return iFacing == 0;
++	public boolean CanInputAxlePowerToFacing(World world, int x, int y, int z, int facing) {
++		return facing == 0;
 +	}
 +	
 +	@Override
-+	public void Overpower( World world, int i, int j, int k )
-+	{
-+		BreakTurntable( world, i, j, k );
++	public void Overpower(World world, int x, int y, int z) {
++		breakTurntable(world, x, y, z);
 +	}
 +	
 +    //------------- Class Specific Methods ------------//
 +    
-+    public boolean IsBlockMechanicalOn( IBlockAccess iBlockAccess, int i, int j, int k )
++    public boolean IsBlockMechanicalOn(IBlockAccess blockAccess, int x, int y, int z)
 +    {
-+    	return ( iBlockAccess.getBlockMetadata( i, j, k ) & 1 ) > 0;    
++    	return (blockAccess.getBlockMetadata(x, y, z) & 1) > 0;    
 +	}
 +    
-+    public void SetBlockMechanicalOn( World world, int i, int j, int k, boolean bOn )
-+    {
-+    	int iMetaData = world.getBlockMetadata( i, j, k ) & (~1); // filter out old on state
++    public void SetBlockMechanicalOn(World world, int x, int y, int z, boolean isOn) {
++    	int metaData = world.getBlockMetadata(x, y, z) & (~1); // filter out old on state
 +    	
-+    	if ( bOn )
-+    	{
-+    		iMetaData |= 1;
++    	if (isOn) {
++    		metaData |= 1;
 +    	}
 +    	
-+        world.setBlockMetadataWithNotify( i, j, k, iMetaData );
++        world.setBlockMetadataWithNotify(x, y, z, metaData);
 +    }
 +    
-+    public boolean IsBlockRedstoneOn( IBlockAccess iBlockAccess, int i, int j, int k )
-+    {
-+    	return ( iBlockAccess.getBlockMetadata( i, j, k ) & 2 ) > 0;    
++    public boolean IsBlockRedstoneOn(IBlockAccess blockAccess, int x, int y, int z) {
++    	return (blockAccess.getBlockMetadata(x, y, z) & 2) > 0;    
 +	}
 +    
-+    public void SetBlockRedstoneOn( World world, int i, int j, int k, boolean bOn )
-+    {
-+    	int iMetaData = world.getBlockMetadata( i, j, k ) & (~2); // filter out old on state
++    public void SetBlockRedstoneOn(World world, int x, int y, int z, boolean isOn) {
++    	int metaData = world.getBlockMetadata(x, y, z) & (~2); // filter out old on state
 +    	
-+    	if ( bOn )
-+    	{
-+    		iMetaData |= 2;
++    	if (isOn) {
++    		metaData |= 2;
 +    	}
 +    	
-+        world.setBlockMetadataWithNotify( i, j, k, iMetaData );
++        world.setBlockMetadataWithNotify(x, y, z, metaData);
 +    }
 +    
-+    public int GetSwitchSetting( IBlockAccess iBlockAccess, int i, int j, int k )
-+    {    	
-+    	return ( iBlockAccess.getBlockMetadata( i, j, k ) & 12 ) >> 2;    
++    public int GetSwitchSetting(IBlockAccess iBlockAccess, int x, int y, int z) {
++    	return (iBlockAccess.getBlockMetadata(x, y, z) & 12) >> 2;    
 +    }
 +    
-+    public void SetSwitchSetting( World world, int i, int j, int k, int iSetting )
-+    {
-+    	if ( iSetting >= 4 || iSetting < 0 )
-+    	{
-+    		iSetting = 0;
++    public void SetSwitchSetting(World world, int x, int y, int z, int setting) {
++    	if (setting >= 4 || setting < 0) {
++    		setting = 0;
 +    	}
 +    	
-+    	int iMetadata = world.getBlockMetadata( i, j, k ) & (~12); // filter out old on state
++    	int metadata = world.getBlockMetadata(x, y, z) & (~12); // filter out old on state
 +    	
-+    	iMetadata |= ( iSetting << 2 );
++    	metadata |= (setting << 2);
 +    	
-+        world.setBlockMetadataWithNotify( i, j, k, iMetadata );
++        world.setBlockMetadataWithNotify(x, y, z, metadata);
 +    }
 +    
-+    void EmitTurntableParticles( World world, int i, int j, int k, Random random )
-+    {
-+        for ( int counter = 0; counter < 5; counter++ )
-+        {
-+            float smokeX = (float)i + random.nextFloat();
-+            float smokeY = (float)j + random.nextFloat() * 0.5F + 1.0F;
-+            float smokeZ = (float)k + random.nextFloat();
++    public void EmitTurntableParticles(World world, int x, int y, int z, Random random) {
++        for (int i = 0; i < 5; i++) {
++            float smokeX = (float) x + random.nextFloat();
++            float smokeY = (float) y + random.nextFloat() * 0.5F + 1.0F;
++            float smokeZ = (float) z + random.nextFloat();
 +            
-+            world.spawnParticle( "smoke", smokeX, smokeY, smokeZ, 0.0D, 0.0D, 0.0D );
++            world.spawnParticle("smoke", smokeX, smokeY, smokeZ, 0.0D, 0.0D, 0.0D);
 +        }
 +    }
 +    
-+	private void BreakTurntable( World world, int i, int j, int k )
-+	{
-+		FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, Item.redstone.itemID, 0 );
++	private void breakTurntable(World world, int x, int y, int z) {
++		FCUtilsItem.EjectSingleItemWithRandomOffset(world, x, y, z, Item.redstone.itemID, 0);
 +		
-+    	DropItemsIndividualy( world, i, j, k, FCBetterThanWolves.fcItemStone.itemID, 16, 0, 0.75F );
++    	DropItemsIndividualy(world, x, y, z, FCBetterThanWolves.fcItemStone.itemID, 16, 0, 0.75F);
 +		
 +		// drop wood siding
-+		
-+		for ( int iTemp = 0; iTemp < 2; iTemp++ )
-+		{
-+			FCUtilsItem.EjectSingleItemWithRandomOffset( world, i, j, k, FCBetterThanWolves.fcBlockWoodSidingItemStubID, 0 );			
++		for (int i = 0; i < 2; i++) {
++			FCUtilsItem.EjectSingleItemWithRandomOffset(world, x, y, z, FCBetterThanWolves.fcBlockWoodSidingItemStubID, 0);			
 +		}
 +		
-+        world.playAuxSFX( FCBetterThanWolves.m_iMechanicalDeviceExplodeAuxFXID, i, j, k, 0 );							        
++        world.playAuxSFX(FCBetterThanWolves.m_iMechanicalDeviceExplodeAuxFXID, x, y, z, 0);							        
 +        
-+		world.setBlockWithNotify( i, j, k, 0 );
-+	}
-+	
-+	//----------- Client Side Functionality -----------//
++		world.setBlockWithNotify(x, y, z, 0);
++	}  
 +}
 \ No newline at end of file
