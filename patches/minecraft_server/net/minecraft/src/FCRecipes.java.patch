@@ -5600,7 +5600,7 @@
 +	
 +	private static void addLogChoppingRecipes() {
 +		for (int i = 0; i < 4; i++) {
-+			addLogChoppingRecipe(new ItemStack(Block.planks, 4, i), 
++			addLogChoppingRecipe(new ItemStack(Block.planks, 2, i), 
 +					new ItemStack[] {
 +							new ItemStack(FCBetterThanWolves.fcItemBark, 1, i),
 +							new ItemStack(FCBetterThanWolves.fcItemSawDust, 2, 0), 
@@ -5613,7 +5613,7 @@
 +					new ItemStack(Block.wood, 1, i));
 +		}
 +		
-+		addLogChoppingRecipe(new ItemStack(Block.planks, 4, 4), 
++		addLogChoppingRecipe(new ItemStack(Block.planks, 2, 4), 
 +				new ItemStack[] {
 +						new ItemStack(FCBetterThanWolves.fcItemBark, 1, 4),
 +						new ItemStack(FCBetterThanWolves.fcItemSawDust, 1, 0),

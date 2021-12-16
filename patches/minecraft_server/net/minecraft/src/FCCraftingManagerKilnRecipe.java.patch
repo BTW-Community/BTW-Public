@@ -25,7 +25,7 @@
 +	public boolean matchesRecipe(FCCraftingManagerKilnRecipe recipe) {
 +		if (this.block == recipe.block && 
 +			(Arrays.equals(this.metadatas, recipe.metadatas) || 
-+				this.ignoreMetadata() && this.ignoreMetadata())) 
++				this.ignoreMetadata() && recipe.ignoreMetadata())) 
 +		{
 +			return output.equals(recipe.output);
 +		}
