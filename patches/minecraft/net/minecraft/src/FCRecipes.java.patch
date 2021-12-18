@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,7184 @@
+@@ -0,0 +1,7179 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -3441,7 +3441,7 @@
 +		
 +		// non-food (custom cook times)
 +		
-+		FurnaceRecipes.smelting().addSmelting( FCBetterThanWolves.fcItemNetherSludge.itemID, new ItemStack( FCBetterThanWolves.fcItemNetherBrick ), 0, 2 );
++		FurnaceRecipes.smelting().addSmelting( FCBetterThanWolves.fcItemNetherBrickUnfired.itemID, new ItemStack( FCBetterThanWolves.fcItemNetherBrick ), 0, 2 );
 +		
 +		FurnaceRecipes.smelting().addSmelting( FCBetterThanWolves.fcItemBrickUnfired.itemID, new ItemStack( Item.brick ), 0, 2 );
 +		
@@ -5296,11 +5296,6 @@
 +		//addKilnRecipe(new ItemStack(FCBetterThanWolves.fcItemMould),
 +		//		FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeMould,
 +		//		cookTimeMultiplierClay);
-+		
-+		addKilnRecipe(new ItemStack(Item.brick),
-+				FCBetterThanWolves.fcUnfiredPottery,
-+				new int[] {FCBlockUnfiredPottery.m_iSubtypeClayBrick, FCBlockUnfiredPottery.m_iSubtypeClayBrickIAligned},
-+				cookTimeMultiplierClay);
 +		
 +		addKilnRecipe(new ItemStack(FCBetterThanWolves.fcItemNetherBrick),
 +				FCBetterThanWolves.fcUnfiredPottery,

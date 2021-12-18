@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockStone.java
-@@ -0,0 +1,367 @@
+@@ -0,0 +1,373 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -339,6 +339,12 @@
 +        //list.add( new ItemStack( iBlockID, 1, 4 ) );
 +        //list.add( new ItemStack( iBlockID, 1, 5 ) );
 +        //list.add( new ItemStack( iBlockID, 1, 6 ) );
++    }
++
++	@Override
++    public int getDamageValue(World world, int x, int y, int z) {
++		// used only by pick block
++		return world.getBlockMetadata(x, y, z);
 +    }
 +    
 +	@Override

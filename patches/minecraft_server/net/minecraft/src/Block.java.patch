@@ -1515,7 +1515,7 @@
 +	//------------- Saw related functionality ------------//
 +
 +	public boolean DoesBlockBreakSaw(World world, int x, int y, int z) {
-+		if (blockMaterial.isSolid() && !blockMaterial.breaksSaw()) {
++		if (blockMaterial.isSolid() && blockMaterial.breaksSaw()) {
 +			return true;
 +		}
 +
