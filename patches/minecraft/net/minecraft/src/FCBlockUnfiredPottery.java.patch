@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockUnfiredPottery.java
-@@ -0,0 +1,888 @@
+@@ -0,0 +1,895 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -498,7 +498,14 @@
 +	
 +	@Override
 +	public int idPicked(World world, int x, int y, int z) {
-+		return this.idDropped(world.getBlockMetadata(x, y, z), world.rand, 0);
++		int metadata = world.getBlockMetadata(x, y, z);
++		
++		if (metadata == m_iSubtypeNetherBrick || metadata == m_iSubtypeNetherBrickIAligned) {
++			return FCBetterThanWolves.fcItemNetherBrickUnfired.itemID;
++		}
++		else {
++			return this.idDropped(metadata, world.rand, 0);
++		}
 +	}
 +	
 +    @Override

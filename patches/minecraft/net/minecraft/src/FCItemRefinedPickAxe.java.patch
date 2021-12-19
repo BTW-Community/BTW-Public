@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemRefinedPickAxe.java
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,63 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -31,8 +31,9 @@
 +    {
 +    	if (!entityplayer.isUsingSpecialKey())
 +    	{
-+        entityplayer.setItemInUse(itemstack, getMaxItemUseDuration(itemstack));
++    		entityplayer.setItemInUse(itemstack, getMaxItemUseDuration(itemstack));
 +    	}
++    	
 +        return itemstack;
 +    }
 +
