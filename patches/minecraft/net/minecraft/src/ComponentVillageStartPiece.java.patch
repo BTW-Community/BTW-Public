@@ -4,7 +4,7 @@
  
      /** Boolean that determines if the village is in a desert or not. */
      public final boolean inDesert;
-+    public static ArrayList<BiomeGenBase> desertBiomes = new ArrayList();
++    private static ArrayList<BiomeGenBase> desertBiomes = new ArrayList();
  
      /** World terrain type, 0 for normal, 1 for flap map */
      public final int terrainType;
@@ -22,11 +22,11 @@
          return this.worldChunkMngr;
      }
 +    
-+    public void addDesertBiome(BiomeGenBase biome) {
++    public static void addDesertBiome(BiomeGenBase biome) {
 +    	desertBiomes.add(biome);
  }
 +    
-+    public boolean isDesertBiome(BiomeGenBase biome) {
++    public static boolean isDesertBiome(BiomeGenBase biome) {
 +    	return desertBiomes.contains(biome);
 +    }
 +    
