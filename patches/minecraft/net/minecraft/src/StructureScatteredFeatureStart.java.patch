@@ -21,7 +21,7 @@
 +		jungleBiomeList.add(biome);
 +	}
 +	
-+	public static void addswampeBiome(BiomeGenBase biome) {
++	public static void addSwampBiome(BiomeGenBase biome) {
 +		swampBiomeList.add(biome);
 +	}
 +	

@@ -1,0 +1,13 @@
+--- a/minecraft/net/minecraft/src/EntityFireworkRocket.java
++++ b/minecraft/net/minecraft/src/EntityFireworkRocket.java
+@@ -30,6 +30,10 @@
+         return par1 < 4096.0D;
+     }
+ 
++    public EntityFireworkRocket(World par1World, double par2, double par4, double par6) {
++    	this(par1World, par2, par4, par6, null);
++    }
++    
+     public EntityFireworkRocket(World par1World, double par2, double par4, double par6, ItemStack par8ItemStack)
+     {
+         super(par1World);

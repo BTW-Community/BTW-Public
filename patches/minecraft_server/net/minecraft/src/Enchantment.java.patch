@@ -12,28 +12,27 @@
      }
  
      static
-@@ -219,4 +222,24 @@
+@@ -219,4 +222,23 @@
  
          field_92090_c = (Enchantment[])var0.toArray(new Enchantment[0]);
      }
 +    
 +    // FCMOD: Added New
-+    private boolean m_bCanBeAppliedByVanillaEnchanter = true;
++    private boolean canBeAppliedByVanillaEnchanter = true;
 +    
-+    static
-+    {
++    static {
 +        // remove the more powerful enchants from the vanilla enchanter
 +    	
-+        protection.m_bCanBeAppliedByVanillaEnchanter = false;
-+        silkTouch.m_bCanBeAppliedByVanillaEnchanter = false;
-+        fortune.m_bCanBeAppliedByVanillaEnchanter = false;
-+        sharpness.m_bCanBeAppliedByVanillaEnchanter = false;
-+        featherFalling.m_bCanBeAppliedByVanillaEnchanter = false;
++        protection.canBeAppliedByVanillaEnchanter = false;
++        silkTouch.canBeAppliedByVanillaEnchanter = false;
++        fortune.canBeAppliedByVanillaEnchanter = false;
++        sharpness.canBeAppliedByVanillaEnchanter = false;
++        featherFalling.canBeAppliedByVanillaEnchanter = false;
++        fireAspect.canBeAppliedByVanillaEnchanter = false;
  }
 +    
-+    public boolean CanBeAppliedByVanillaEnchanter()
-+    {
-+    	return m_bCanBeAppliedByVanillaEnchanter;
++    public boolean CanBeAppliedByVanillaEnchanter() {
++    	return canBeAppliedByVanillaEnchanter;
 +    }
 +    // END FCMOD
 +}

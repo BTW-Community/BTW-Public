@@ -1243,7 +1243,7 @@
 +
 +	public void NotifyNearbyAnimalsOfPlayerBlockAddOrRemove( EntityPlayer player, Block block, int i, int j, int k )
 +	{
-+		if ( !isRemote && block.blockMaterial.blocksMovement() && !player.capabilities.isCreativeMode )
++		if ( !isRemote && block.startlesAnimalsWhenPlaced(this, i, j, k) && !player.capabilities.isCreativeMode )
 +		{
 +			double dXBlock = (double)i + 0.5D;
 +			double dYBlock = (double)j + 0.5D;
@@ -1358,11 +1358,11 @@
 +                int blockID = this.getBlockId(x, y, z);
 +
 +                if (Block.useNeighborBrightness[blockID]) {
-+                    int neighbor1 = this.getBlockLightValue_do(x, y + 1, z, false);
-+                    int neighbor2 = this.getBlockLightValue_do(x + 1, y, z, false);
-+                    int neighbor3 = this.getBlockLightValue_do(x - 1, y, z, false);
-+                    int neighbor4 = this.getBlockLightValue_do(x, y, z + 1, false);
-+                    int neighbor5 = this.getBlockLightValue_do(x, y, z - 1, false);
++                    int neighbor1 = this.getBlockLightValueNoSky_do(x, y + 1, z, false);
++                    int neighbor2 = this.getBlockLightValueNoSky_do(x + 1, y, z, false);
++                    int neighbor3 = this.getBlockLightValueNoSky_do(x - 1, y, z, false);
++                    int neighbor4 = this.getBlockLightValueNoSky_do(x, y, z + 1, false);
++                    int neighbor5 = this.getBlockLightValueNoSky_do(x, y, z - 1, false);
 +
 +                    if (neighbor2 > neighbor1) {
 +                        neighbor1 = neighbor2;

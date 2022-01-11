@@ -44,7 +44,7 @@
      {
          return this.func_94900_c(par1EntityAgeable);
      }
-@@ -75,4 +85,86 @@
+@@ -75,4 +85,100 @@
      {
          return this.func_94900_c(par1EntityAgeable);
      }
@@ -122,10 +122,24 @@
 +    
 +	//----------- Client Side Functionality -----------//
 +    
-+    @Override
++	@Override
 +    public String getTexture()
 +    {
-+    	// override to prevent cow hunger textures being displayed
++    	if ( getWearingBreedingHarness() )
++    	{
++			return "/btwmodtex/fc_mr_redcow.png";
++    	}
++    	
++    	int iHungerLevel = GetHungerLevel();
++    	
++    	if ( iHungerLevel == 1 )
++    	{
++			return "/btwmodtex/fcMooshroomFamished.png";
++    	}
++    	else if ( iHungerLevel == 2 )
++    	{
++			return "/btwmodtex/fcMooshroomStarving.png";
++    	}
 +    	
 +        return texture;
 +    }

@@ -136,7 +136,7 @@
 +		addMapping(EntityEgg.class, "Egg", id--);
 +		addMapping(EntitySnowball.class, "Snowball", id--);
 +		addMapping(EntityFishHook.class, "FishHook", id--);
-+		addMapping(EntityDragonPart.class, "DragonPart",id--);
++		addMapping(EntityDragonPart.class, "DragonPart", id--);
 +
 +		// Client only
 +		addMapping(EntityClientPlayerMP.class, "ClientPlayerMP", id--);

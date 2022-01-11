@@ -12,16 +12,16 @@
 +	
 +	private FCCraftingManagerKiln() {}
 +	
-+	public void addRecipe(ItemStack[] output, Block block, int metadata, byte cookTimeMultiplier) {
-+		FCCraftingManagerKilnRecipe recipe = new FCCraftingManagerKilnRecipe(output, block, metadata, cookTimeMultiplier);
++	public void addRecipe(ItemStack[] output, Block block, int[] metadatas, byte cookTimeMultiplier) {
++		FCCraftingManagerKilnRecipe recipe = new FCCraftingManagerKilnRecipe(output, block, metadatas, cookTimeMultiplier);
 +		
 +		recipes.add(recipe);
 +		
 +		Block.hasKilnRecipe[block.blockID] = true;
 +	}
 +	
-+	public boolean removeRecipe(ItemStack[] output, Block block, int metadata, byte cookTimeMultiplier) {
-+		FCCraftingManagerKilnRecipe recipeToRemove = new FCCraftingManagerKilnRecipe(output, block, metadata, cookTimeMultiplier);
++	public boolean removeRecipe(ItemStack[] output, Block block, int[] metadatas, byte cookTimeMultiplier) {
++		FCCraftingManagerKilnRecipe recipeToRemove = new FCCraftingManagerKilnRecipe(output, block, metadatas, cookTimeMultiplier);
 +		
 +		for (FCCraftingManagerKilnRecipe recipe : recipes) {
 +			if (recipe.matchesRecipe(recipeToRemove)) {

@@ -1,3 +1,78 @@
+## Version 1.3.5 ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- yany
+
+/--Gameplay--/
+- Fixed an issue where moonlight was erroneously block mobs from spawning on slabs and other partial blocks.
+- Fixed an issue where scattered features (temples and witch huts) were not generating properly.
+
+## Version 1.3.4 ##
+/--Gameplay--/
+- Added the ability to block with the refined hoe since its right click functionality has been freed up.
+- Fixed an issue where smelting nether bricks in an oven still used nether sludge instead of unfired nether brick.
+- Fixed an issue where using fireworks would cause the game to crash.
+- Fixed an issue where saws in multiplayer were checking against material incorrectly.
+- Removed the recipe for the old unfired brick block in the kiln, since it is no longer obtainable, in order to help craftguide keep clutter down.
+
+/--Creative Mode--/
+- Fixed an issue where unfired nether bricks returned the wrong result when using pick block.
+- Fixed an issue where stone always returned its first strata variant when used with pick block.
+
+## Version 1.3.3 ##
+/--Gameplay--/
+- Fixed an issue where chopping logs with an axe produced 4 planks instead of 2.
+- Fixed an issue where several BTW materials would erroneously break the saw. I made sure all vanilla materials were updated to the new system but missed the BTW materials.
+
+/--Creative Mode--/
+- Fixed an issue where wet bricks returned the wrong result when using pick block.
+
+/--Addon API--/
+- Fixed an issue where saw and kiln recipes weren't properly checking for if they should ignore metadata.
+
+## Version 1.3.2 ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- Hiracho
+
+/--Gameplay--/
+- Added the ability to put a breeding harness on mooshrooms without them being converted into normal cows.
+- Changed fire aspect to no longer be available on the vanilla enchanter given that it is now significantly stronger than before, especially when exploring. It may now only be obtained through the infernal enchanter.
+- Changed mobs to no longer be able to spawn on wicker as a thematic extension of not being able to spawn on wood, and because hampers and baskets being spawnable was unintuitive.
+- Changed campfires to startle animals when placed to fix an exploit with setting animals on fire in the early game.
+- Fixed an issue where clay balls were still used to make bricks in an oven instead of wet bricks.
+- Fixed an issue where the tops of blocks would not have biome coloring applied when smooth lighting was turned off.
+- Fixed an issue where mooshrooms did not have textures for hungry or starving states, and changed them to only grow mushrooms on their backs when fully fed.
+- Fixed an issue where slimes in swamps did not respect the new lighting requirements for spawning.
+- Fixed an issue (again) where clients would disconnect from multiplayer when sneaking/pressing alt use/sprinting. Version control issues meant the code for this change did not actually make it into last release.
+
+/---Creative Mode---/
+- Fixed an issue where several blocks returned the block instead of item form when using pick block: iron and gold ore chunks, various pastries, unfired pottery.
+- Fixed an issue where unfired pottery was not present in the creative menu.
+
+/--Addon API--/
+- Added hooks to define whether a material breaks the saw or not.
+- Added the ability to define multiple valid input metadata values for a single saw or kiln recipe, instead of requiring a separate recipe for each metadata, and updated BTW recipes to use this system. This is primarily to help craftguide to display recipes properly.
+- Added static arrays to FCRecipes holding the metadata values for siding, moulding, and corners, to assist in defining in-world recipes such as those on the saw.
+- Added a warning when attempting to add a hopper filtering recipe with an input stack size greater than 1.
+- Added hooks to set a block to define whether a block should startle animals when placed or removed.
+- Added hooks to define log chopping recipes, and separated existing recipes into their own instances. The old FCRecipesLogChopping class has also been deprecated, and will be removed at a later date.
+- Changed turntable recipes to be handled by a crafting manager.
+- Fixed an issue where helper methods for adding subblock recipes to the saw were not public.
+
+## Version 1.3.1 ##
+Thanks to the following people who contributed to this release!
+- Hiracho
+
+/--General--/
+- Fixed an issue where mod initialization in multiplayer would still cause crashes on launching the server.
+
+/--Gameplay--/
+- Added the ability to sprint by pressing alt use (defaulted to ctrl) while moving.
+- Added the ability to place several orientable blocks with the opposite rotation by holding alt use while placing.
+- Changed sprinting to not cancel when hitting blocks as long as movement input is still activated.
+- Fixed an issue where pressing alt use while moving in multiplayer would disconnect the client.
+
 ## Version 1.3.0 ##
 Thanks to the following people who contributed to this release!
 - Dawnraider

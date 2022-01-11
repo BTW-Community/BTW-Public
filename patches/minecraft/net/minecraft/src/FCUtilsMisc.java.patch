@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCUtilsMisc.java
-@@ -0,0 +1,922 @@
+@@ -0,0 +1,931 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -21,22 +21,22 @@
 +		if ( pitch > 60.0F )
 +		{
 +			// looking down
-+			//if(GuiScreen.isSpecialKeyDown())
-+			//{
-+			//	return 0;
-+			//}
-+			//else
-+			return 1;			
++			if(entityLiving.isUsingSpecialKey()) {
++				return 0;
++			}
++			else {
++				return 1;	
++			}
 +		}
 +		else if ( pitch < -60.0F )
 +		{
 +			// looking up
-+			//if(GuiScreen.isSpecialKeyDown())
-+			//{
-+			//	return 1;
-+			//}
-+			//else
-+			return 0;
++			if(entityLiving.isUsingSpecialKey()) {
++				return 1;
++			}
++			else {
++				return 0;
++			}
 +		}
 +		else
 +		{
@@ -66,7 +66,11 @@
 +	    {
 +			iFacing = 4;			
 +	    }
-+	    
++
++		if(entityLiving.isUsingSpecialKey()) {
++			iFacing = Facing.oppositeSide[iFacing];
++		}
++      
 +		return iFacing;
 +    }
 +    
@@ -92,6 +96,11 @@
 +	    {
 +			iFacing = 5;			
 +	    }
++	    
++		if(entityLiving.isUsingSpecialKey()) {
++			iFacing = Facing.oppositeSide[iFacing];
++		}
++		
 +		return iFacing;
 +    }
 +    

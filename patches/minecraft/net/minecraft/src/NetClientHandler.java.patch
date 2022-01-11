@@ -59,7 +59,7 @@
          else if (par1Packet23VehicleSpawn.type == 76)
          {
 -            var8 = new EntityFireworkRocket(this.worldClient, var2, var4, var6, (ItemStack)null);
-+            var8 = EntityList.createEntityOfType(EntityFireworkRocket.class, this.worldClient, var2, var4, var6, (ItemStack)null);
++            var8 = EntityList.createEntityOfType(EntityFireworkRocket.class, this.worldClient, var2, var4, var6);
          }
          else if (par1Packet23VehicleSpawn.type == 63)
          {

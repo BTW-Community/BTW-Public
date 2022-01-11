@@ -22,7 +22,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.3.0";
++	public static final String fcVersionString = "1.3.4";
 +
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +
@@ -33,14 +33,14 @@
 +	public static final Material fcMaterialCement = (new FCMaterialCement(MapColor.stoneColor));
 +	public static final Material fcMaterialSoulforgedSteel = (new FCMaterialSoulforgedSteel(MapColor.ironColor));
 +	public static final Material fcMaterialNetherGrowth = (new FCMaterialNetherGrowth(MapColor.foliageColor)).SetMobsCantSpawnOn();    
-+	public static final Material fcMaterialCandle = (new MaterialLogic(MapColor.airColor)).setNoPushMobility();
++	public static final Material fcMaterialCandle = (new MaterialLogic(MapColor.airColor)).setNoPushMobility().setDoesNotBreakSaw();
 +	public static final Material fcMaterialMiscellaneous = new Material(MapColor.dirtColor); // used for aesthetic blocks to avoid tool dependancies
-+	public static final Material fcMaterialLog = (new Material(MapColor.woodColor)).setBurning().setRequiresTool().SetMobsCantSpawnOn();
-+	public static final Material fcMaterialPlanks = (new Material(MapColor.woodColor)).setBurning().setRequiresTool().SetMobsCantSpawnOn();
-+	public static final Material fcMaterialAsh = (new MaterialLogic(MapColor.stoneColor)).setReplaceable().setTranslucent().setRequiresTool().setNoPushMobility();
++	public static final Material fcMaterialLog = (new Material(MapColor.woodColor)).setBurning().setRequiresTool().SetMobsCantSpawnOn().setDoesNotBreakSaw();
++	public static final Material fcMaterialPlanks = (new Material(MapColor.woodColor)).setBurning().setRequiresTool().SetMobsCantSpawnOn().setDoesNotBreakSaw();
++	public static final Material fcMaterialAsh = (new MaterialLogic(MapColor.stoneColor)).setReplaceable().setTranslucent().setRequiresTool().setNoPushMobility().setDoesNotBreakSaw();
 +	public static final Material fcMaterialNaturalClay = (new Material(MapColor.clayColor)).setRequiresTool();
-+	public static final Material fcMaterialWicker = (new Material(MapColor.woodColor)).setBurning().setRequiresTool().SetAxesEfficientOn();
-+	public static final Material fcMaterialBasket = (new Material(MapColor.woodColor)).setNoPushMobility();
++	public static final Material fcMaterialWicker = (new Material(MapColor.woodColor)).setBurning().setRequiresTool().SetAxesEfficientOn().setDoesNotBreakSaw();
++	public static final Material fcMaterialBasket = (new Material(MapColor.woodColor)).setNoPushMobility().setDoesNotBreakSaw();
 +	public static final Material fcMaterialMilk = (new MaterialLogic(MapColor.snowColor)).setReplaceable().setTranslucent().setRequiresTool().setNoPushMobility();
 +	public static final Material fcMaterialNetherRock = (new Material(MapColor.stoneColor)).setRequiresTool().SetNetherMobsCanSpawnOn();
 +

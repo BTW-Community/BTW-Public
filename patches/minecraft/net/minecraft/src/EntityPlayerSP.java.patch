@@ -11,7 +11,16 @@
          }
  
          this.username = par3Session.username;
-@@ -180,7 +183,12 @@
+@@ -162,6 +165,8 @@
+             boolean var1 = this.movementInput.jump;
+             float var2 = 0.8F;
+             boolean var3 = this.movementInput.moveForward >= var2;
++            boolean wasHoldingSpecial = isUsingSpecialKey();
++            
+             this.movementInput.updatePlayerMoveState();
+ 
+             if (this.isUsingItem())
+@@ -180,8 +185,15 @@
              this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, this.boundingBox.minY + 0.5D, this.posZ - (double)this.width * 0.35D);
              this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, this.boundingBox.minY + 0.5D, this.posZ - (double)this.width * 0.35D);
              this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, this.boundingBox.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
@@ -21,10 +30,41 @@
 +            */
 +            boolean var4 = !HasStatusPenalty() || this.capabilities.allowFlying;
 +            // END FCMOD
++            boolean activatedSprint=false;
  
++
              if (this.onGround && !var3 && this.movementInput.moveForward >= var2 && !this.isSprinting() && var4 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness))
              {
-@@ -254,9 +262,22 @@
+                 if (this.sprintToggleTimer == 0)
+@@ -191,16 +203,26 @@
+                 else
+                 {
+                     this.setSprinting(true);
++                    activatedSprint=true;
+                     this.sprintToggleTimer = 0;
+                 }
+             }
+ 
++            if ( isUsingSpecialKey() && !wasHoldingSpecial && this.movementInput.moveForward >= var2 && !this.isSprinting() &&
++            		var4 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness))
++            {
++                this.setSprinting(true);
++                activatedSprint=true;
++                this.sprintToggleTimer = 0;
++            }
++            
+             if (this.isSneaking())
+             {
+                 this.sprintToggleTimer = 0;
+             }
+ 
+-            if (this.isSprinting() && (this.movementInput.moveForward < var2 || this.isCollidedHorizontally || !var4))
++            if (this.isSprinting() && (this.movementInput.moveForward < var2 || !var4 ||
++            		( isUsingSpecialKey() && !wasHoldingSpecial && !activatedSprint )))
+             {
+                 this.setSprinting(false);
+             }
+@@ -254,9 +276,22 @@
              var1 *= 1.1F;
          }
  
@@ -47,7 +87,7 @@
          {
              int var2 = this.getItemInUseDuration();
              float var3 = (float)var2 / 20.0F;
-@@ -278,7 +299,10 @@
+@@ -278,7 +313,10 @@
  
      public void updateCloak()
      {
@@ -59,7 +99,7 @@
      }
  
      /**
-@@ -320,7 +344,13 @@
+@@ -320,7 +358,13 @@
          {
              this.mc.displayGuiScreen(new GuiScreenBook(this, par1ItemStack, true));
          }
@@ -73,7 +113,7 @@
  
      /**
       * Displays the GUI for interacting with a chest inventory. Args: chestInventory
-@@ -345,7 +375,10 @@
+@@ -345,7 +389,10 @@
       */
      public void displayGUIWorkbench(int par1, int par2, int par3)
      {
@@ -85,7 +125,7 @@
      }
  
      public void displayGUIEnchantment(int par1, int par2, int par3, String par4Str)
-@@ -403,12 +436,12 @@
+@@ -403,12 +450,12 @@
       */
      public void onCriticalHit(Entity par1Entity)
      {
@@ -100,7 +140,7 @@
          this.mc.effectRenderer.addEffect(var2);
      }
  
-@@ -417,7 +450,7 @@
+@@ -417,7 +464,7 @@
       */
      public void onItemPickup(Entity par1Entity, int par2)
      {
@@ -109,7 +149,7 @@
      }
  
      /**
-@@ -428,6 +461,11 @@
+@@ -428,6 +475,11 @@
          return this.movementInput.sneak && !this.sleeping;
      }
  
@@ -121,7 +161,7 @@
      /**
       * Updates health locally.
       */
-@@ -617,4 +655,183 @@
+@@ -617,4 +669,183 @@
      {
          this.worldObj.playSound(this.posX, this.posY - (double)this.yOffset, this.posZ, par1Str, par2, par3, false);
      }
