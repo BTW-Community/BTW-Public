@@ -156,15 +156,13 @@ task decompile(type: Exec) {
         mkdir "$projectDir/src"
     }
     
-    doLast {
-        workingDir mcpDir
+    workingDir mcpDir
 
-        if (os == 'windows') {
-            commandLine 'cmd', '/c', 'runtime\\bin\\python\\python_mcp', 'runtime\\decompile.py', '--norecompile'
-        }
-        else {
-            commandLine 'python', 'runtime/decompile.py', '--norecompile'
-        }
+    if (os == 'windows') {
+        commandLine 'cmd', '/c', 'runtime\\bin\\python\\python_mcp', 'runtime\\decompile.py', '--norecompile'
+    }
+    else {
+        commandLine 'python', 'runtime/decompile.py', '--norecompile'
     }
 }
 
