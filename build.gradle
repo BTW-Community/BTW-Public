@@ -14,8 +14,8 @@ project.with {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-        vendor = JvmVendorSpec.ADOPTOPENJDK
+        languageVersion.set(JavaLanguageVersion.of(8))
+        vendor.set(JvmVendorSpec.matching("Temurin"))
     }
 }
 
@@ -142,23 +142,29 @@ task downloadJars {
 task decompile(type: Exec) {
     dependsOn unpackMCP, unpackNatives, downloadJars
 
-    onlyIf {
-        !file("$mcpDir/src").exists()
-    }
-
     outputs.dir("$mcpDir/bin")
     outputs.dir("$mcpDir/lib")
     outputs.dir("$mcpDir/logs")
     outputs.dir("$mcpDir/src")
     outputs.dir("$mcpDir/temp")
-
-    workingDir mcpDir
-
-    if (os == 'windows') {
-        commandLine 'cmd', '/c', 'runtime\\bin\\python\\python_mcp', 'runtime\\decompile.py', '--norecompile'
+    
+    doFirst {
+        mkdir "$mcpDir/src"
     }
-    else {
-        commandLine 'python', 'runtime/decompile.py', '--norecompile'
+    
+    doLast {
+        onlyIf {
+            !file("$mcpDir/src").exists()
+        }
+
+        workingDir mcpDir
+
+        if (os == 'windows') {
+            commandLine 'cmd', '/c', 'runtime\\bin\\python\\python_mcp', 'runtime\\decompile.py', '--norecompile'
+        }
+        else {
+            commandLine 'python', 'runtime/decompile.py', '--norecompile'
+        }
     }
 }
 
