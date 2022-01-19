@@ -12,12 +12,12 @@ project.with {
     description = 'Better than Wolves total conversion Minecraft mod'
 }
 
-/*java {
+java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(8)
-        vendor = JvmVendorSpec.ADOPTIUM
+        vendor = JvmVendorSpec.ADOPTOPENJDK
     }
-}*/
+}
 
 def mcpDir = "$projectDir/mcp"
 
