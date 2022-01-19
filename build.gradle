@@ -141,6 +141,10 @@ task downloadJars {
 
 task decompile(type: Exec) {
     dependsOn unpackMCP, unpackNatives, downloadJars
+    
+    onlyIf {
+        !file("$mcpDir/src").exists()
+    }
 
     outputs.dir("$mcpDir/bin")
     outputs.dir("$mcpDir/lib")
@@ -149,14 +153,10 @@ task decompile(type: Exec) {
     outputs.dir("$mcpDir/temp")
     
     doFirst {
-        mkdir "$mcpDir/src"
+        mkdir "$projectDir/src"
     }
     
     doLast {
-        onlyIf {
-            !file("$mcpDir/src").exists()
-        }
-
         workingDir mcpDir
 
         if (os == 'windows') {
