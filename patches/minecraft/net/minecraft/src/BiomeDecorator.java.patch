@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/BiomeDecorator.java
++++ b/minecraft/net/minecraft/src/BiomeDecorator.java
+@@ -376,6 +376,8 @@
+                 (new WorldGenLiquids(Block.lavaMoving.blockID)).generate(this.currentWorld, this.randomGenerator, var3, var4, var7);
+             }
+         }
++        
++        FCAddOnHandler.decorateWorld(this, this.currentWorld, this.randomGenerator, this.chunk_X, this.chunk_Z, this.biome);
+     }
+ 
+     /**

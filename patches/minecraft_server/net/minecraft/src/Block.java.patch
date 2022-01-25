@@ -720,7 +720,7 @@
                  if (var0 > 0 && blocksList[var0].getRenderType() == 10)
                  {
                      var1 = true;
-@@ -1204,10 +1266,2108 @@
+@@ -1204,10 +1266,2111 @@
                  }
  
                  useNeighborBrightness[var0] = var1;
@@ -1515,7 +1515,10 @@
 +	//------------- Saw related functionality ------------//
 +
 +	public boolean DoesBlockBreakSaw(World world, int x, int y, int z) {
-+		if (blockMaterial.isSolid() && blockMaterial.breaksSaw()) {
++		int metadata = world.getBlockMetadata(x, y, z);
++		FCCraftingManagerSawRecipe recipe = FCCraftingManagerSaw.instance.getRecipe(this, metadata);
++
++		if (blockMaterial.isSolid() && blockMaterial.breaksSaw() && recipe == null) {
 +			return true;
 +		}
 +

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCAddOnHandler.java
-@@ -0,0 +1,402 @@
+@@ -0,0 +1,411 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -13,6 +13,7 @@
 +import java.util.LinkedList;
 +import java.util.List;
 +import java.util.Map;
++import java.util.Random;
 +import java.util.Set;
 +import java.util.logging.FileHandler;
 +import java.util.logging.Level;
@@ -321,6 +322,14 @@
 +
 +	public static void setWorldDataForMod(Class<? extends FCAddOn> mod, FCAddOnUtilsWorldData data) {
 +		FCAddOnHandler.addonWorldDataMap.put(mod, data);
++	}
++	
++	public static void decorateWorld(BiomeDecorator decorator, World world, Random rand, int x, int y, BiomeGenBase biome) {
++		for (Object mod : FCAddOnHandler.m_ModList) {
++			FCAddOn addon = (FCAddOn) mod;
++			
++			addon.decorateWorld(decorator, world, rand, x, y, biome);
++		}
 +	}
 +	
 +	public static boolean isModInstalled(String name) {

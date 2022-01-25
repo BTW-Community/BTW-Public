@@ -1608,7 +1608,7 @@
 +    		"XYX", 
 +    		"#X#", 
 +    		'#', Block.planks, 
-+    		'X', FCBetterThanWolves.fcItemGear, 
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
 +    		'Y', FCBetterThanWolves.fcBlockAxle
 +		} );		
 +		
@@ -1617,7 +1617,7 @@
 +    		"XYX", 
 +    		"#X#", 
 +    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
-+    		'X', FCBetterThanWolves.fcItemGear, 
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
 +    		'Y', FCBetterThanWolves.fcBlockAxle
 +		} );		
 +		
@@ -1626,7 +1626,7 @@
 +    		"XYX", 
 +    		"#X#", 
 +    		'#', Block.planks, 
-+    		'X', FCBetterThanWolves.fcItemGear, 
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
 +    		'Y', FCBetterThanWolves.fcItemRedstoneLatch
 +		} );		
 +		
@@ -1635,7 +1635,7 @@
 +    		"XYX", 
 +    		"#X#", 
 +    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
-+    		'X', FCBetterThanWolves.fcItemGear, 
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
 +    		'Y', FCBetterThanWolves.fcItemRedstoneLatch
 +		} );		
 +		
@@ -1644,7 +1644,7 @@
 +    		" Y ", 
 +    		"#X#", 
 +    		'#', FCBetterThanWolves.fcItemStoneBrick, 
-+    		'X', FCBetterThanWolves.fcItemGear, 
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
 +    		'Y', Item.stick 
 +		} );
 +		
@@ -1652,7 +1652,7 @@
 +    		"YYY", 
 +    		"YYY", 
 +    		"YXY", 
-+    		'X', FCBetterThanWolves.fcItemGear, 
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
 +    		'Y', FCBetterThanWolves.fcItemStoneBrick 
 +		} );		
 +
@@ -1662,7 +1662,7 @@
 +    		"ZYZ", 
 +    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
 +    		'X', Item.pocketSundial, 
-+    		'Y', FCBetterThanWolves.fcItemGear,
++    		'Y', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata),
 +    		'Z', FCBetterThanWolves.fcItemStoneBrick
 +		} );
 +		
@@ -1672,7 +1672,7 @@
 +    		"YZY", 
 +    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
 +    		'X', FCBetterThanWolves.fcItemTannedLeather, 
-+    		'Y', FCBetterThanWolves.fcItemGear,
++    		'Y', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata),
 +    		'Z', FCBetterThanWolves.fcItemBelt
 +		} );		
 +		
@@ -1682,7 +1682,7 @@
 +    		"YZY", 
 +    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
 +    		'X', FCBetterThanWolves.fcItemTannedLeatherCut, 
-+    		'Y', FCBetterThanWolves.fcItemGear,
++    		'Y', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata),
 +    		'Z', FCBetterThanWolves.fcItemBelt
 +		} );
 +	}
@@ -1874,7 +1874,7 @@
 +    		"XYX", 
 +    		" Z ", 
 +    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
-+    		'X', FCBetterThanWolves.fcItemGear, 
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
 +    		'Y', Block.pressurePlatePlanks,
 +    		'Z', new ItemStack( FCBetterThanWolves.fcBlockWoodCornerItemStubID, 1, ignoreMetadata )
 +		} );
@@ -1884,7 +1884,7 @@
 +    		"XZX", 
 +    		"#X#", 
 +    		'#', Block.planks, 
-+    		'X', FCBetterThanWolves.fcItemGear, 
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
 +    		'Y', Item.ingotIron,
 +    		'Z', FCBetterThanWolves.fcItemBelt
 +		} );		
@@ -1894,7 +1894,7 @@
 +    		"XZX", 
 +    		"#X#", 
 +    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
-+    		'X', FCBetterThanWolves.fcItemGear, 
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
 +    		'Y', Item.ingotIron,
 +    		'Z', FCBetterThanWolves.fcItemBelt
 +		} );		
@@ -1920,7 +1920,7 @@
 +    		"XZX", 
 +    		"#Y#", 
 +    		'#', Block.planks,
-+    		'X', FCBetterThanWolves.fcItemGear,
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata),
 +            'Y', Item.ingotIron, 
 +    		'Z', FCBetterThanWolves.fcItemRedstoneLatch
 +		} );		
@@ -1931,7 +1931,7 @@
 +    		"XZX", 
 +    		"#Y#", 
 +    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ),
-+    		'X', FCBetterThanWolves.fcItemGear,
++    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata),
 +            'Y', Item.ingotIron, 
 +    		'Z', FCBetterThanWolves.fcItemRedstoneLatch
 +		} );		
@@ -2012,7 +2012,7 @@
 +    		"WSW", 
 +    		"WgW", 
 +    		'W', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
-+    		'g', FCBetterThanWolves.fcItemGear,
++    		'g', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata),
 +    		'S', FCBetterThanWolves.fcItemScrew,
 +    		'G', FCBetterThanWolves.fcBlockGrate,
 +    		'X', FCBetterThanWolves.fcItemGlue
@@ -5895,7 +5895,7 @@
 +				moulding, mouldingMetas);
 +		
 +		//Corners
-+		addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2, itemMetadata),
++		addSawRecipe(new ItemStack(FCBetterThanWolves.fcItemGear, 2),
 +				sidingAndCorner, cornerMetas);
 +		
 +		//Fence

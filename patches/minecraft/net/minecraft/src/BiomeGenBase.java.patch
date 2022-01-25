@@ -169,7 +169,7 @@
  
      /**
       * Checks to see if the rainfall level of the biome is extremely high
-@@ -352,4 +408,20 @@
+@@ -352,4 +408,24 @@
          double var3 = (double)MathHelper.clamp_float(this.getFloatRainfall(), 0.0F, 1.0F);
          return ColorizerFoliage.getFoliageColor(var1, var3);
      }
@@ -187,6 +187,10 @@
 +    
 +    public boolean canSlimesSpawnOnSurface() {
 +    	return false;
++    }
++    
++    public boolean canSnowAt(int x, int y, int z) {
++    	return this.temperature <= 0.15F;
 +    }
 +    // END FCMOD
 +}

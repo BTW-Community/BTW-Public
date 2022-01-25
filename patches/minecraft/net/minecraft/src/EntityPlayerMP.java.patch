@@ -360,7 +360,7 @@
 +    
 +    private void UpdateHealthAndHungerEffects()
 +    {
-+    	if ( !isDead && ( worldObj.getTotalWorldTime() + (long)entityId ) % 80L == 0L )
++    	if ( !isDead && ( worldObj.getTotalWorldTime() + (long)entityId ) % 80L == 0L && !this.capabilities.isCreativeMode )
 +    	{
 +    		if ( foodStats.getFoodLevel() <= 0 && foodStats.getSaturationLevel() <= 0F )
 +    		{
@@ -379,7 +379,7 @@
 +    {
 +    	if ( !isDead )
 +    	{
-+    		if ( IsInGloom() )
++    		if ( IsInGloom() && !this.capabilities.isCreativeMode )
 +    		{
 +    			m_iInGloomCounter++;
 +    			
@@ -436,7 +436,7 @@
 +        int iFat = (int)foodStats.getSaturationLevel();
 +    	int iFatLevel = 4;
 +        
-+        if ( iFat < 12 )
++        if ( iFat < 12 || this.capabilities.isCreativeMode)
 +        {
 +        	iFatLevel = 0;
 +        }
@@ -462,7 +462,7 @@
 +        int iHunger = foodStats.getFoodLevel();
 +        int iPenaltyLevel = 5;
 +        
-+        if ( iHunger > 24 )
++        if ( iHunger > 24 || this.capabilities.isCreativeMode )
 +        {
 +        	iPenaltyLevel = 0;
 +        }
@@ -492,7 +492,7 @@
 +		int iHealth = getHealth();
 +        int iPenaltyLevel = 5;
 +        
-+        if ( iHealth > 10 )
++        if ( iHealth > 10 || this.capabilities.isCreativeMode )
 +        {
 +        	iPenaltyLevel = 0;
 +        }
