@@ -448,24 +448,47 @@
  
          if (this.ambientTickCountdown > 0)
          {
-@@ -2819,10 +2973,16 @@
-         {
-             if (par2 >= 0 && par2 < 256 && this.getSavedLightValue(EnumSkyBlock.Block, par1, par2, par3) < 10)
-             {
-+                // FCMOD: Code change
-+                /*
-                 int var6 = this.getBlockId(par1, par2 - 1, par3);
-                 int var7 = this.getBlockId(par1, par2, par3);
+@@ -2806,31 +2960,22 @@
+     /**
+      * Tests whether or not snow can be placed at a given location
+      */
+-    public boolean canSnowAt(int par1, int par2, int par3)
+-    {
+-        BiomeGenBase var4 = this.getBiomeGenForCoords(par1, par3);
+-        float var5 = var4.getFloatTemperature();
++    public boolean canSnowAt(int x, int y, int z) {
++        BiomeGenBase biome = this.getBiomeGenForCoords(x, z);
  
-                 if (var7 == 0 && Block.snow.canPlaceBlockAt(this, par1, par2, par3) && var6 != 0 && var6 != Block.ice.blockID && Block.blocksList[var6].blockMaterial.blocksMovement())
-+                */
-+                if ( FCBlockSnowCover.CanSnowCoverReplaceBlock( this, par1, par2, par3 ) && 
-+                	Block.snow.canPlaceBlockAt( this, par1, par2, par3 ) )
-+            	// END FCMOD
-                 {
+-        if (var5 > 0.15F)
+-        {
+-            return false;
+-        }
+-        else
+-        {
+-            if (par2 >= 0 && par2 < 256 && this.getSavedLightValue(EnumSkyBlock.Block, par1, par2, par3) < 10)
+-            {
+-                int var6 = this.getBlockId(par1, par2 - 1, par3);
+-                int var7 = this.getBlockId(par1, par2, par3);
+-
+-                if (var7 == 0 && Block.snow.canPlaceBlockAt(this, par1, par2, par3) && var6 != 0 && var6 != Block.ice.blockID && Block.blocksList[var6].blockMaterial.blocksMovement())
+-                {
++        if (biome.canSnowAt(x, y, z)) {
++            if (y >= 0 && y < 256 && this.getSavedLightValue(EnumSkyBlock.Block, x, y, z) < 10) {
++                if (FCBlockSnowCover.CanSnowCoverReplaceBlock(this, x, y, z) && Block.snow.canPlaceBlockAt(this, x, y, z)) {
                      return true;
                  }
-@@ -2851,10 +3011,10 @@
+             }
+ 
+             return false;
+         }
++        else {
++            return false;
+     }
++    }
+ 
+     public void updateAllLightTypes(int par1, int par2, int par3)
+     {
+@@ -2851,10 +2996,10 @@
          else
          {
              int var5 = this.getBlockId(par1, par2, par3);
@@ -478,7 +501,7 @@
              {
                  var7 = 1;
              }
-@@ -2913,8 +3073,8 @@
+@@ -2913,8 +3058,8 @@
              int var13;
              int var14;
              int var15;
@@ -488,7 +511,7 @@
  
              if (var8 > var7)
              {
-@@ -3053,10 +3213,18 @@
+@@ -3053,10 +3198,18 @@
      public List getEntitiesWithinAABBExcludingEntity(Entity par1Entity, AxisAlignedBB par2AxisAlignedBB, IEntitySelector par3IEntitySelector)
      {
          ArrayList var4 = new ArrayList();
@@ -507,7 +530,7 @@
  
          for (int var9 = var5; var9 <= var6; ++var9)
          {
-@@ -3082,10 +3250,18 @@
+@@ -3082,10 +3235,18 @@
  
      public List selectEntitiesWithinAABB(Class par1Class, AxisAlignedBB par2AxisAlignedBB, IEntitySelector par3IEntitySelector)
      {
@@ -526,7 +549,7 @@
          ArrayList var8 = new ArrayList();
  
          for (int var9 = var4; var9 <= var5; ++var9)
-@@ -3146,6 +3322,8 @@
+@@ -3146,6 +3307,8 @@
      /**
       * Counts how many entities of an entity class exist in the world. Args: entityClass
       */
@@ -535,7 +558,7 @@
      public int countEntities(Class par1Class)
      {
          int var2 = 0;
-@@ -3162,6 +3340,8 @@
+@@ -3162,6 +3325,8 @@
  
          return var2;
      }
@@ -544,7 +567,7 @@
  
      /**
       * adds entities to the loaded entities list, and loads thier skins.
-@@ -3205,7 +3385,14 @@
+@@ -3205,7 +3370,14 @@
          }
          else
          {
@@ -559,7 +582,7 @@
              {
                  var10 = null;
              }
-@@ -3332,6 +3519,22 @@
+@@ -3332,6 +3504,22 @@
      {
          if (this.isBlockNormalCube(par1, par2, par3))
          {
@@ -582,7 +605,7 @@
              return this.getBlockPowerInput(par1, par2, par3);
          }
          else
-@@ -3607,8 +3810,15 @@
+@@ -3607,8 +3795,15 @@
          return (double)this.getRainStrength(1.0F) > 0.2D;
      }
  
@@ -598,7 +621,7 @@
          if (!this.isRaining())
          {
              return false;
-@@ -3626,8 +3836,20 @@
+@@ -3626,8 +3821,20 @@
              BiomeGenBase var4 = this.getBiomeGenForCoords(par1, par3);
              return var4.getEnableSnow() ? false : var4.canSpawnLightningBolt();
          }
@@ -619,7 +642,7 @@
      /**
       * Checks to see if the biome rainfall values for a given x,y,z coordinate set are extremely high
       */
-@@ -3664,6 +3886,10 @@
+@@ -3664,6 +3871,10 @@
          return this.mapStorage.getUniqueDataId(par1Str);
      }
  
@@ -630,7 +653,7 @@
      public void func_82739_e(int par1, int par2, int par3, int par4, int par5)
      {
          for (int var6 = 0; var6 < this.worldAccesses.size(); ++var6)
-@@ -3841,4 +4067,1200 @@
+@@ -3841,4 +4052,1200 @@
      {
          return this.worldLogAgent;
      }

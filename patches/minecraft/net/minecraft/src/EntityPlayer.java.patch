@@ -465,7 +465,7 @@
          return this.capabilities.allowEdit ? true : (par5ItemStack != null ? par5ItemStack.func_82835_x() : false);
      }
  
-@@ -2183,4 +2374,1150 @@
+@@ -2183,4 +2374,1154 @@
      {
          return ScorePlayerTeam.func_96667_a(this.getTeam(), this.username);
      }
@@ -788,7 +788,7 @@
 +    {
 +		float fModifier = GetHealthAndExhaustionModifier();
 +		
-+		if ( GetGloomLevel() > 0 )
++		if (GetGloomLevel() > 0 && !this.capabilities.isCreativeMode)
 +		{
 +			fModifier *= 0.5F;
 +		}
@@ -860,6 +860,10 @@
 +	
 +	public int GetMaximumStatusPenaltyLevel()
 +	{
++		if (this.capabilities.isCreativeMode) {
++			return 0;
++		}
++		
 +		int iMaximumPenaltyLevel = GetHealthPenaltyLevel();
 +		int iHungerPenaltyLevel = GetHungerPenaltyLevel();
 +		

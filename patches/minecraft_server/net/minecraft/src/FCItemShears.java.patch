@@ -98,7 +98,7 @@
 +    }
 +    
 +    @Override
-+    public void OnDamagedInCrafting( EntityPlayer player )
++    public void OnUsedInCrafting(EntityPlayer player, ItemStack outputStack)
 +    {
 +		// note: the playSound function for player both plays the sound locally on the client, and plays it remotely on the server without it being sent again to the same player
 +    	
