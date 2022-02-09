@@ -324,7 +324,7 @@
 +		FCAddOnHandler.addonWorldDataMap.put(mod, data);
 +	}
 +	
-+	public static void decorateWorld(BiomeDecorator decorator, World world, Random rand, int x, int y, BiomeGenBase biome) {
++	public static void decorateWorld(FCIBiomeDecorator decorator, World world, Random rand, int x, int y, BiomeGenBase biome) {
 +		for (Object mod : FCAddOnHandler.m_ModList) {
 +			FCAddOn addon = (FCAddOn) mod;
 +			

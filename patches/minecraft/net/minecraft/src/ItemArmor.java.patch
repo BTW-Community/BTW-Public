@@ -1,6 +1,6 @@
 --- a/minecraft/net/minecraft/src/ItemArmor.java
 +++ b/minecraft/net/minecraft/src/ItemArmor.java
-@@ -1,5 +1,7 @@
+@@ -1,9 +1,11 @@
  package net.minecraft.src;
  
 +import com.prupe.mcpatcher.cc.ColorizeEntity;
@@ -8,6 +8,11 @@
  public class ItemArmor extends Item
  {
      /** Holds the 'base' maxDamage that each armorType have. */
+-    private static final int[] maxDamageArray = new int[] {11, 16, 15, 13};
++    private static final int[] maxDamageArray = new int[] {16, 16, 16, 16};
+     private static final String[] field_94606_cu = new String[] {"helmetCloth_overlay", "chestplateCloth_overlay", "leggingsCloth_overlay", "bootsCloth_overlay"};
+     public static final String[] field_94603_a = new String[] {"slot_empty_helmet", "slot_empty_chestplate", "slot_empty_leggings", "slot_empty_boots"};
+     private static final IBehaviorDispenseItem field_96605_cw = new BehaviorDispenseArmor();
 @@ -14,7 +16,12 @@
      public final int armorType;
  

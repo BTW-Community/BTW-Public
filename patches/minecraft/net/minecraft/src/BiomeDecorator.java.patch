@@ -1,6 +1,23 @@
 --- a/minecraft/net/minecraft/src/BiomeDecorator.java
 +++ b/minecraft/net/minecraft/src/BiomeDecorator.java
-@@ -376,6 +376,8 @@
+@@ -2,7 +2,7 @@
+ 
+ import java.util.Random;
+ 
+-public class BiomeDecorator
++public class BiomeDecorator implements FCIBiomeDecorator
+ {
+     /** The world the BiomeDecorator is currently decorating */
+     protected World currentWorld;
+@@ -169,6 +169,7 @@
+     /**
+      * Decorates the world. Calls code that was formerly (pre-1.8) in ChunkProviderGenerate.populate
+      */
++    @Override
+     public void decorate(World par1World, Random par2Random, int par3, int par4)
+     {
+         if (this.currentWorld != null)
+@@ -376,6 +377,8 @@
                  (new WorldGenLiquids(Block.lavaMoving.blockID)).generate(this.currentWorld, this.randomGenerator, var3, var4, var7);
              }
          }

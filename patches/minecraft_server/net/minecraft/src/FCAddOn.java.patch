@@ -130,7 +130,7 @@
 +	 * @param y
 +	 * @param biome The biome being decorated. Biomes during decoration are lower resolution, only being caluclated per chunk not per block
 +	 */
-+	public void decorateWorld(BiomeDecorator decorator, World world, Random rand, int x, int y, BiomeGenBase biome) {}
++	public void decorateWorld(FCIBiomeDecorator decorator, World world, Random rand, int x, int y, BiomeGenBase biome) {}
 +	
 +	//------ API Methods ------//
 +	/*

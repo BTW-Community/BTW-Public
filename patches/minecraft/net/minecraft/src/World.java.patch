@@ -474,7 +474,7 @@
 -
 -                if (var7 == 0 && Block.snow.canPlaceBlockAt(this, par1, par2, par3) && var6 != 0 && var6 != Block.ice.blockID && Block.blocksList[var6].blockMaterial.blocksMovement())
 -                {
-+        if (biome.canSnowAt(x, y, z)) {
++        if (biome.canSnowAt(this, x, y, z)) {
 +            if (y >= 0 && y < 256 && this.getSavedLightValue(EnumSkyBlock.Block, x, y, z) < 10) {
 +                if (FCBlockSnowCover.CanSnowCoverReplaceBlock(this, x, y, z) && Block.snow.canPlaceBlockAt(this, x, y, z)) {
                      return true;
@@ -1815,7 +1815,7 @@
 +        {
 +            BiomeGenBase biome = getBiomeGenForCoords( i, k );
 +            
-+            return biome.getEnableSnow();
++            return biome.canSnowAt(this, i, j, k);
 +        }
 +        
 +        return false;

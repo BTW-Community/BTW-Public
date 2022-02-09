@@ -1,5 +1,14 @@
 --- a/minecraft_server/net/minecraft/src/ItemArmor.java
 +++ b/minecraft_server/net/minecraft/src/ItemArmor.java
+@@ -3,7 +3,7 @@
+ public class ItemArmor extends Item
+ {
+     /** Holds the 'base' maxDamage that each armorType have. */
+-    private static final int[] maxDamageArray = new int[] {11, 16, 15, 13};
++    private static final int[] maxDamageArray = new int[] {16, 16, 16, 16};
+     private static final String[] field_94606_cu = new String[] {"helmetCloth_overlay", "chestplateCloth_overlay", "leggingsCloth_overlay", "bootsCloth_overlay"};
+     public static final String[] field_94603_a = new String[] {"slot_empty_helmet", "slot_empty_chestplate", "slot_empty_leggings", "slot_empty_boots"};
+     private static final IBehaviorDispenseItem field_96605_cw = new BehaviorDispenseArmor();
 @@ -14,7 +14,12 @@
      public final int armorType;
  

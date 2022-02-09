@@ -1,3 +1,16 @@
+## Version 1.3.7 ##
+/--General--/
+- Added a Simplified Chinese translation. Thanks to Peakstep for providing the translation!
+
+/--Gameplay--/
+- Changed the recipe for the screw. The recipe remains the same shape, using a column of three iron ingots in the center, while the outer ingots have been changed to nuggets. This should help make screw pump towers a little more accessible in the mid game, without completely devaluing their cost.
+- Changed vanilla armor types to have equal durability across armor slots to match mod armors.
+
+/--Addon API--/
+- Changed the type passed in to the world decorator hook from last release from BiomeDecorator to a new interface FCIBiomeDecorator, which BiomeDecorator implements.
+- Changed the hook for checking for valid snow placement to pass the current world as an argument.
+- Fixed an issue where some instances of the game checking for snow did not use the new hook.
+
 ## Version 1.3.6 ##
 /--Gameplay--/
 - Fixed an issue where sawing corners of wood types with metadata would create gears with metadata which wouldn't stack together or work in recipes. Additionally, recipes involving gears have been changed to ignore metadata so that existing bugged gears can be used.

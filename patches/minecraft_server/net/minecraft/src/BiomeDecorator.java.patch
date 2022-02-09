@@ -1,5 +1,14 @@
 --- a/minecraft_server/net/minecraft/src/BiomeDecorator.java
 +++ b/minecraft_server/net/minecraft/src/BiomeDecorator.java
+@@ -2,7 +2,7 @@
+ 
+ import java.util.Random;
+ 
+-public class BiomeDecorator
++public class BiomeDecorator implements FCIBiomeDecorator
+ {
+     /** The world the BiomeDecorator is currently decorating */
+     protected World currentWorld;
 @@ -376,6 +376,8 @@
                  (new WorldGenLiquids(Block.lavaMoving.blockID)).generate(this.currentWorld, this.randomGenerator, var3, var4, var7);
              }

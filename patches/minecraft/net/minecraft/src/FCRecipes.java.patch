@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,7179 @@
+@@ -0,0 +1,7180 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -2356,10 +2356,11 @@
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemScrew ), new Object[] {
-+    		"## ", 
-+    		" ##", 
-+    		"## ", 
-+    		'#', new ItemStack( Item.ingotIron )
++    		"n# ", 
++    		" #n", 
++    		"n# ", 
++    		'#', new ItemStack(Item.ingotIron),
++    		'n', new ItemStack(FCBetterThanWolves.fcItemNuggetIron)
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemOcularOfEnder, 1, 0 ), new Object[] {
