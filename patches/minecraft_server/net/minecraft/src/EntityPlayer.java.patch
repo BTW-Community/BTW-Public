@@ -437,14 +437,14 @@
 +    	// FCMOD: Code added to prevent the player from placing blocks while in mid air
 +    	if ( !capabilities.isCreativeMode && !onGround && !inWater && !isOnLadder() && ridingEntity == null && !handleLavaMovement() )
 +    	{
-+    		return false;
++    		return FCBetterThanWolves.allowPlaceWhileJumping;
 +    	}
 +    	// END FCMOD
 +    	
          return this.capabilities.allowEdit ? true : (par5ItemStack != null ? par5ItemStack.func_82835_x() : false);
      }
  
-@@ -2026,4 +2205,1112 @@
+@@ -2026,4 +2205,1118 @@
      {
          return ScorePlayerTeam.func_96667_a(this.getTeam(), this.username);
      }
@@ -790,7 +790,13 @@
 +	@Override
 +    protected float GetLadderVerticalMovementModifier()
 +    {
-+		return GetHealthAndExhaustionModifierWithSightlessModifier();
++		float modifier = GetHealthAndExhaustionModifierWithSightlessModifier(); 
++
++		if (this.isUsingItem()) {
++			modifier *= 0.5F;
++		}
++
++		return modifier;
 +    }    
 +    
 +	protected float GetJumpingHorizontalMovementModifier()        

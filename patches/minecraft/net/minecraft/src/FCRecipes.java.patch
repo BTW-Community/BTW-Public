@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,7180 @@
+@@ -0,0 +1,7179 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -4840,9 +4840,8 @@
 +				new ItemStack( FCBetterThanWolves.fcCauldron )
 +		} );
 +		
-+		AddStokedCrucibleRecipe( 
-+			//new ItemStack( Item.ingotIron, 6 ), 
-+			new ItemStack( Item.ingotIron, 4 ), 
++		AddStokedCrucibleRecipe(
++			new ItemStack(FCBetterThanWolves.fcItemNuggetIron, 20),
 +			new ItemStack[] {
 +				new ItemStack( FCBetterThanWolves.fcItemScrew )
 +		} );

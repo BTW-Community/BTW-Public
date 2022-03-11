@@ -1,4 +1,31 @@
+## Version 1.3.8 ##
+Thanks to the following people who contributed to this release!
+-Dawnraider
+-Sockthing
+-slzei
+
+/--General--/
+- Added a German translation. Thanks to Sockthing for providing the translation!
+- Added a Turkish translation. Thanks to slzei for providing the translation!
+- Fixed an issue where grass blocks rendered the grass overlay on top of dirt instead of on top of the base grass texture.
+
+/--Gameplay--/
+- Changed the player to go up ladders more slowly when using an item.
+- Changed the player's health to regenerate slightly faster to reduce the time wasted. This should make little difference in combat, but should reduce downtime by a small amount
+- Changed (reduced) the amount of food chickens get from eating items like seeds.
+- Removed the ability for pigs to eat sugar cane in the world, since they are unable to eat sugar cane items anyway, and since pigs eating sugar cane roots has a much bigger negative impact than before sugar cane was reworked.
+- Fixed an issue where blocks with different sounds based on metadata (like sand slabs) would not play their custom sounds on place or break.
+- Fixed an issue where the screw gave back too much iron when melted down in a crucible.
+
+/--Addon API--/
+- Added a hook for addons to disable HC bouncing without editing EntityPlayer.
+- Fixed an issue where rain particles would spawn during snow in biomes with only partial snow coverage.
+
 ## Version 1.3.7 ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- Peakstep
+
 /--General--/
 - Added a Simplified Chinese translation. Thanks to Peakstep for providing the translation!
 

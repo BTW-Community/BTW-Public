@@ -603,7 +603,7 @@
 +    
 +    public static final int m_iBaseHerbivoreItemFoodValue = ( EntityAnimal.m_iBaseGrazeFoodValue * 32 );
 +    public static final int m_iBasePigItemFoodValue = ( EntityAnimal.m_iBaseGrazeFoodValue * 32 );
-+    public static final int m_iBaseChickenItemFoodValue = ( EntityAnimal.m_iBaseGrazeFoodValue * 64 );
++    public static final int m_iBaseChickenItemFoodValue = ( EntityAnimal.m_iBaseGrazeFoodValue * 32 );
 +
 +    private int m_iHerbivoreFoodValue = 0;
 +    private int m_iBirdFoodValue = 0;

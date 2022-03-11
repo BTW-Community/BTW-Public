@@ -327,7 +327,7 @@
 +				}
 +			}
 +			else {
-+				return Block.dirt.getBlockTextureFromSide(side);
++				return Block.grass.getBlockTextureFromSide(side);
 +			}
 +		}
 +		else {

@@ -1,0 +1,279 @@
+--- a/minecraft/net/minecraft/src/ThreadDownloadResources.java
++++ b/minecraft/net/minecraft/src/ThreadDownloadResources.java
+@@ -1,21 +1,19 @@
+ package net.minecraft.src;
+ 
+-import java.io.DataInputStream;
+-import java.io.DataOutputStream;
+-import java.io.File;
+-import java.io.FileOutputStream;
+-import java.io.IOException;
+-import java.net.URL;
+-import javax.xml.parsers.DocumentBuilder;
+-import javax.xml.parsers.DocumentBuilderFactory;
++import argo.jdom.*;
++import argo.saj.InvalidSyntaxException;
+ import net.minecraft.client.Minecraft;
+-import org.w3c.dom.Document;
+-import org.w3c.dom.Element;
+-import org.w3c.dom.Node;
+-import org.w3c.dom.NodeList;
+ 
++import java.io.*;
++import java.net.HttpURLConnection;
++import java.net.URL;
++import java.util.Iterator;
++import java.util.List;
++
+ public class ThreadDownloadResources extends Thread
+ {
++    private static JdomParser parser = new JdomParser();
++
+     /** The folder to store the resources in. */
+     public File resourcesFolder;
+ 
+@@ -25,12 +23,12 @@
+     /** Set to true when Minecraft is closing down. */
+     private boolean closing = false;
+ 
+-    public ThreadDownloadResources(File par1File, Minecraft par2Minecraft)
++    public ThreadDownloadResources(File file, Minecraft mc)
+     {
+-        this.mc = par2Minecraft;
++        this.mc = mc;
+         this.setName("Resource download thread");
+         this.setDaemon(true);
+-        this.resourcesFolder = new File(par1File, "resources/");
++        this.resourcesFolder = new File(file, "resources/");
+ 
+         if (!this.resourcesFolder.exists() && !this.resourcesFolder.mkdirs())
+         {
+@@ -38,45 +36,81 @@
+         }
+     }
+ 
++    public JsonRootNode fetchJson(URL url) throws IOException {
++        HttpURLConnection connection = null;
++
++        connection = (HttpURLConnection) url.openConnection();
++        connection.setDoInput(true);
++        connection.setDoOutput(false);
++        connection.connect();
++
++        JsonRootNode json = null;
++
++        if (connection.getResponseCode() / 100 == 4) {
++            return null;
++        }
++
++        try {
++            json = ThreadDownloadResources.parser.parse(new InputStreamReader(connection.getInputStream()));
++        } catch (InvalidSyntaxException e) {
++            e.printStackTrace();
++        } finally {
++            connection.disconnect();
++        }
++
++        return json;
++    }
++
+     public void run()
+     {
+         try
+         {
+-            URL var1 = new URL("http://s3.amazonaws.com/MinecraftResources/");
+-            DocumentBuilderFactory var2 = DocumentBuilderFactory.newInstance();
+-            DocumentBuilder var3 = var2.newDocumentBuilder();
+-            Document var4 = var3.parse(var1.openStream());
+-            NodeList var5 = var4.getElementsByTagName("Contents");
++            URL versionManifestURL = new URL("https://launchermeta.mojang.com/mc/game/version_manifest.json");
++            URL versionURL = null;
++            URL assetIndexURL = null;
++            URL assetURL = new URL("http://resources.download.minecraft.net/");
+ 
+-            for (int var6 = 0; var6 < 2; ++var6)
+-            {
+-                for (int var7 = 0; var7 < var5.getLength(); ++var7)
+-                {
+-                    Node var8 = var5.item(var7);
++            JsonRootNode versionManifest = fetchJson(versionManifestURL);
+ 
+-                    if (var8.getNodeType() == 1)
+-                    {
+-                        Element var9 = (Element)var8;
+-                        String var10 = var9.getElementsByTagName("Key").item(0).getChildNodes().item(0).getNodeValue();
+-                        long var11 = Long.parseLong(var9.getElementsByTagName("Size").item(0).getChildNodes().item(0).getNodeValue());
++            List<JsonNode> versions = versionManifest.getArrayNode("versions");
+ 
+-                        if (var11 > 0L)
+-                        {
+-                            this.downloadAndInstallResource(var1, var10, var11, var6);
++            for(int index = 0; index < versions.size(); index++) {
++                JsonNode versionMeta = versions.get(index);
+ 
+-                            if (this.closing)
+-                            {
+-                                return;
++                if(versionMeta.getStringValue("id").equalsIgnoreCase("1.5.2")) {
++                    versionURL = new URL(versionMeta.getStringValue("url"));
+                             }
+                         }
++
++            JsonNode version = fetchJson(versionURL);
++
++            assetIndexURL = new URL(version.getStringValue("assetIndex", "url"));
++
++            JsonRootNode assetIndex = fetchJson(assetIndexURL);
++
++            JsonNode objects = (JsonNode) assetIndex.getFields().get(JsonNodeFactories.aJsonString("objects"));
++
++            Iterator<JsonStringNode> iterator = objects.getFields().keySet().iterator();
++
++            while(iterator.hasNext()) {
++                String path = iterator.next().getText();
++
++                String hash = objects.getStringValue(path, "hash");
++                long size = Integer.parseInt(objects.getNumberValue(path, "size"));
++
++                if (size > 0L) {
++                    this.downloadAndInstallResource(assetURL, path, hash, size);
++
++                    if (this.closing) {
++                        return;
+                     }
+                 }
+             }
+         }
+-        catch (Exception var13)
++        catch (Exception e)
+         {
+             this.loadResource(this.resourcesFolder, "");
+-            var13.printStackTrace();
++            e.printStackTrace();
+         }
+     }
+ 
+@@ -91,25 +125,25 @@
+     /**
+      * Loads a resource and passes it to Minecraft to install.
+      */
+-    private void loadResource(File par1File, String par2Str)
++    private void loadResource(File file, String path)
+     {
+-        File[] var3 = par1File.listFiles();
++        File[] files = file.listFiles();
+ 
+-        for (int var4 = 0; var4 < var3.length; ++var4)
++        for (int fileIndex = 0; fileIndex < files.length; ++fileIndex)
+         {
+-            if (var3[var4].isDirectory())
++            if (files[fileIndex].isDirectory())
+             {
+-                this.loadResource(var3[var4], par2Str + var3[var4].getName() + "/");
++                this.loadResource(files[fileIndex], path + files[fileIndex].getName() + "/");
+             }
+             else
+             {
+                 try
+                 {
+-                    this.mc.installResource(par2Str + var3[var4].getName(), var3[var4]);
++                    this.mc.installResource(path + files[fileIndex].getName(), files[fileIndex]);
+                 }
+-                catch (Exception var6)
++                catch (Exception e)
+                 {
+-                    this.mc.getLogAgent().logWarning("Failed to add " + par2Str + var3[var4].getName() + " in resources");
++                    this.mc.getLogAgent().logWarning("Failed to add " + path + files[fileIndex].getName() + " in resources");
+                 }
+             }
+         }
+@@ -118,69 +152,55 @@
+     /**
+      * Downloads the resource and saves it to disk then installs it.
+      */
+-    private void downloadAndInstallResource(URL par1URL, String par2Str, long par3, int par5)
++    private void downloadAndInstallResource(URL url, String path, String hash, long fileSize)
+     {
+         try
+         {
+-            int var6 = par2Str.indexOf("/");
+-            String var7 = par2Str.substring(0, var6);
++            File file = new File(this.resourcesFolder, path);
+ 
+-            if (var7.equalsIgnoreCase("sound3"))
++            if (!file.exists() || file.length() != fileSize)
+             {
+-                if (par5 != 0)
+-                {
+-                    return;
+-                }
+-            }
+-            else if (par5 != 1)
+-            {
+-                return;
+-            }
++                file.getParentFile().mkdirs();
++                String assetHash = hash.substring(0, 2) + "/" + hash;
++                this.downloadResource(new URL(url, assetHash), file);
+ 
+-            File var8 = new File(this.resourcesFolder, par2Str);
+-
+-            if (!var8.exists() || var8.length() != par3)
+-            {
+-                var8.getParentFile().mkdirs();
+-                String var9 = par2Str.replaceAll(" ", "%20");
+-                this.downloadResource(new URL(par1URL, var9), var8, par3);
+-
+                 if (this.closing)
+                 {
+                     return;
+                 }
+             }
+ 
+-            this.mc.installResource(par2Str, var8);
++            if(path.indexOf("/") >= 0) {
++                this.mc.installResource(path, file);
+         }
+-        catch (Exception var10)
++        }
++        catch (Exception e)
+         {
+-            var10.printStackTrace();
++            e.printStackTrace();
+         }
+     }
+ 
+     /**
+      * Downloads the resource and saves it to disk.
+      */
+-    private void downloadResource(URL par1URL, File par2File, long par3) throws IOException
++    private void downloadResource(URL url, File file) throws IOException
+     {
+-        byte[] var5 = new byte[4096];
+-        DataInputStream var6 = new DataInputStream(par1URL.openStream());
+-        DataOutputStream var7 = new DataOutputStream(new FileOutputStream(par2File));
+-        boolean var8 = false;
++        byte[] buffer = new byte[4096];
++        DataInputStream inputStream = new DataInputStream(url.openStream());
++        DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(file));
+ 
+         do
+         {
+-            int var9;
++            int data;
+ 
+-            if ((var9 = var6.read(var5)) < 0)
++            if ((data = inputStream.read(buffer)) < 0)
+             {
+-                var6.close();
+-                var7.close();
++                inputStream.close();
++                outputStream.close();
+                 return;
+             }
+ 
+-            var7.write(var5, 0, var9);
++            outputStream.write(buffer, 0, data);
+         }
+         while (!this.closing);
+     }

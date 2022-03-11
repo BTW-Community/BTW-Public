@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockReedBase.java
-@@ -0,0 +1,122 @@
+@@ -0,0 +1,117 @@
 +package net.minecraft.src;
 +
 +import java.util.Random;
@@ -106,11 +106,6 @@
 +	public boolean GetPreventsFluidFlow(World world, int x, int y, int z, Block fluidBlock) {
 +    	return false;
 +	}
-+    
-+    @Override
-+    public boolean CanBeGrazedOn(IBlockAccess blockAccess, int x, int y, int z, EntityAnimal animal) {
-+		return animal.CanGrazeOnRoughVegetation();
-+    }
 +    
 +    //------------- Class Specific Methods ------------//
 +    

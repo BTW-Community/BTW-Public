@@ -113,7 +113,20 @@
              if (this.sameToolAndBlock(par1, par2, par3))
              {
                  int var5 = this.mc.theWorld.getBlockId(par1, par2, par3);
-@@ -281,6 +337,12 @@
+@@ -245,9 +301,11 @@
+                 Block var6 = Block.blocksList[var5];
+                 this.curBlockDamageMP += var6.getPlayerRelativeBlockHardness(this.mc.thePlayer, this.mc.thePlayer.worldObj, par1, par2, par3);
+ 
++                StepSound stepSound = var6.GetStepSound(this.mc.thePlayer.worldObj, par1, par2, par3);
++
+                 if (this.stepSoundTickCounter % 4.0F == 0.0F && var6 != null)
+                 {
+-                    this.mc.sndManager.playSound(var6.stepSound.getStepSound(), (float)par1 + 0.5F, (float)par2 + 0.5F, (float)par3 + 0.5F, (var6.stepSound.getVolume() + 1.0F) / 8.0F, var6.stepSound.getPitch() * 0.5F);
++                    this.mc.sndManager.playSound(stepSound.getStepSound(), (float)par1 + 0.5F, (float)par2 + 0.5F, (float)par3 + 0.5F, (stepSound.getVolume() + 1.0F) / 8.0F, stepSound.getPitch() * 0.5F);
+                 }
+ 
+                 ++this.stepSoundTickCounter;
+@@ -281,6 +339,12 @@
  
      public void updateController()
      {
@@ -126,7 +139,7 @@
          this.syncCurrentPlayItem();
          this.mc.sndManager.playRandomMusicIfReady();
      }
-@@ -334,6 +396,8 @@
+@@ -334,6 +398,8 @@
              }
          }
  
@@ -135,7 +148,7 @@
          if (!var12 && par3ItemStack != null && par3ItemStack.getItem() instanceof ItemBlock)
          {
              ItemBlock var16 = (ItemBlock)par3ItemStack.getItem();
-@@ -343,6 +407,14 @@
+@@ -343,6 +409,14 @@
                  return false;
              }
          }
@@ -150,7 +163,7 @@
  
          this.netClientHandler.addToSendQueue(new Packet15Place(par4, par5, par6, par7, par1EntityPlayer.inventory.getCurrentItem(), var9, var10, var11));
  
-@@ -398,7 +470,7 @@
+@@ -398,7 +472,7 @@
  
      public EntityClientPlayerMP func_78754_a(World par1World)
      {
@@ -159,7 +172,7 @@
      }
  
      /**
-@@ -418,6 +490,7 @@
+@@ -418,6 +492,7 @@
          return par1EntityPlayer.interactWith(par2Entity);
      }
  
@@ -167,7 +180,7 @@
      public ItemStack windowClick(int par1, int par2, int par3, int par4, EntityPlayer par5EntityPlayer)
      {
          short var6 = par5EntityPlayer.openContainer.getNextTransactionID(par5EntityPlayer.inventory);
-@@ -489,4 +562,30 @@
+@@ -489,4 +564,30 @@
      {
          return this.currentGameType.isCreative();
      }
