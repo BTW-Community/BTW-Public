@@ -16,9 +16,14 @@ Better Than Wolves is trying to keep that old survival feel of versions past and
 
 ## 💜 A word of gratitude
 
-The Community Edition team would like to express its gratitude to all the people that have kept this community alive all these years, but in particular **FlowerChild** for making BTW, **Dawnraider** for spearheading the Community Edition effort, **Sargunster** for keeping the forums and wiki online all these years and **Sarudak** for moderating them, **Zhil** for organizing the extended community and all the following people that contributed time and effort to the Community Edition:
-- Dawnraider
-- Zhil
+The Community Edition team would like to express its gratitude to all the people that have kept this community alive all these years:
+- **FlowerChild**, for making BTW
+- **Dawnraider**, for spreadheading the Community Edition effort
+- **Sargunster**, for keeping the forums and wiki online all these years
+- **Sarudak**, for moderating the forums
+- **Zhil**, for organizing the extended community and creating many of the build tools for CE
+
+As well as a thanks the following people who have contributed time and effort to the community edition:
 - Hiracho
 - yany
 - IssaMe
@@ -27,7 +32,12 @@ The Community Edition team would like to express its gratitude to all the people
 - AnaRchX
 - Sockthing
 - cocona20xx
-- Quanteus
+
+Furthermore, thanks to the following people who have provided translations for BTW:
+- Quanteus: Russian
+- Peakstep: Simplified Chinese
+- Sockthing: German
+- slzei: Turkish
 
 ## 🐺 What is Better Than Wolves?
 
