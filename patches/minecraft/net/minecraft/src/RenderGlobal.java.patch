@@ -480,7 +480,7 @@
 +                    
 +                    StepSound stepSound = var40.GetStepSound(this.mc.thePlayer.worldObj, par3, par4, par5);
 +                    
-+                    this.mc.sndManager.playSound(stepSound.getBreakSound(), (float)par3 + 0.5F, (float)par4 + 0.5F, (float)par5 + 0.5F, (stepSound.getVolume() + 1.0F) / 2.0F, stepSound.getPitch() * 0.8F);
++                    this.mc.sndManager.playSound(stepSound.getBreakSound(), (float)par3 + 0.5F, (float)par4 + 0.5F, (float)par5 + 0.5F, (stepSound.getBreakVolume() + 1.0F) / 2.0F, stepSound.getBreakPitch() * 0.8F);
                  }
  
                  this.mc.effectRenderer.addBlockDestroyEffects(par3, par4, par5, par6 & 4095, par6 >> 12 & 255);

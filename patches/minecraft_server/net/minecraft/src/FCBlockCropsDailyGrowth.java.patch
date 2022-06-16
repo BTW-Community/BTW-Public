@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockCropsDailyGrowth.java
-@@ -0,0 +1,116 @@
+@@ -0,0 +1,103 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -21,42 +21,29 @@
 +    }
 +    
 +    @Override
-+    protected void AttemptToGrow( World world, int i, int j, int k, Random rand )
-+    {
-+        int iTimeOfDay = (int)( world.worldInfo.getWorldTime() % 24000L );
-+        
-+        if ( iTimeOfDay > 14000 && iTimeOfDay < 22000 )
-+        {
-+        	// night
++    protected void AttemptToGrow(World world, int x, int y, int z, Random rand) {
++        int timeOfDay = (int)(world.worldInfo.getWorldTime() % 24000L);
 +
-+        	if ( GetHasGrownToday( world, i, j, k ) )
-+        	{
-+        		SetHasGrownToday( world, i, j, k, false );
++        if (timeOfDay > 14000 && timeOfDay < 22000) {
++        	// night
++        	if (GetHasGrownToday(world, x, y, z)) {
++        		SetHasGrownToday(world, x, y, z, false);
 +        	}
 +        }
-+        else
-+        {    	
-+	    	if ( !GetHasGrownToday( world, i, j, k ) && 
-+	    		GetWeedsGrowthLevel( world, i, j, k ) == 0 &&  
-+	    		world.GetBlockNaturalLightValue( i, j + 1, k ) >= GetLightLevelForGrowth() )
-+		    {
-+		        Block blockBelow = Block.blocksList[world.getBlockId( i, j - 1, k )];
-+		        
-+		        if ( blockBelow != null && 
-+		        	blockBelow.IsBlockHydratedForPlantGrowthOn( world, i, j - 1, k ) )
-+		        {
-+		    		float fGrowthChance = GetBaseGrowthChance( world, i, j, k );
-+		    		
-+			    	if ( blockBelow.GetIsFertilizedForPlantGrowth( world, i, j - 1, k ) )
-+			    	{
-+			    		fGrowthChance *= 2F;
++        else {
++	    	if (!GetHasGrownToday(world, x, y, z) && GetWeedsGrowthLevel(world, x, y, z) == 0 && canGrowAtCurrentLightLevel(world, x, y, z)) {
++		        Block blockBelow = Block.blocksList[world.getBlockId(x, y - 1, z)];
++
++		        if (blockBelow != null && blockBelow.IsBlockHydratedForPlantGrowthOn(world, x, y - 1, z)) {
++		    		float growthChance = GetBaseGrowthChance(world, x, y, z);
++
++			    	if (blockBelow.GetIsFertilizedForPlantGrowth(world, x, y - 1, z)) {
++			    		growthChance *= 2F;
 +			    	}
-+			    	
-+		            if ( rand.nextFloat() <= fGrowthChance )
-+		            {
-+		            	IncrementGrowthLevel( world, i, j, k );
-+		            	
-+		            	UpdateFlagForGrownToday( world, i, j, k );
++
++		            if (rand.nextFloat() <= growthChance) {
++		            	IncrementGrowthLevel(world, x, y, z);
++		            	UpdateFlagForGrownToday(world, x, y, z);
 +		            }
 +		        }
 +		    }

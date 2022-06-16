@@ -50,9 +50,9 @@
 +	        			FCBetterThanWolves.fcRopeBlock.onPostBlockPlaced( world, i, tempj, k, iMetadata );
 +	        			
 +	                    world.playSoundEffect( (float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, 
-+                    		FCBetterThanWolves.fcRopeBlock.stepSound.getStepSound(), 
-+                    		(FCBetterThanWolves.fcRopeBlock.stepSound.getVolume() + 1.0F) / 2.0F, 
-+                    		FCBetterThanWolves.fcRopeBlock.stepSound.getPitch() * 0.8F);
++	                    		FCBetterThanWolves.fcRopeBlock.stepSound.getPlaceSound(), 
++	                    		(FCBetterThanWolves.fcRopeBlock.stepSound.getPlaceVolume() + 1.0F) / 2.0F, 
++	                    		FCBetterThanWolves.fcRopeBlock.stepSound.getPlacePitch() * 0.8F);
 +	
 +	                    itemStack.stackSize--;
 +	                    

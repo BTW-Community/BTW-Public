@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityChicken.java
-@@ -0,0 +1,367 @@
+@@ -0,0 +1,379 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -348,7 +348,19 @@
 +    {
 +    	return 28.7F / 2F;
 +    }
-+    
++   
++	@Override
++	public boolean onBlockDispenserConsume(FCBlockBlockDispenser blockDispenser, FCTileEntityBlockDispenser tileEntity) {
++		
++        worldObj.playAuxSFX( FCBetterThanWolves.m_iChickenHurtSoundAuxFXID,tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord, 0 );							        
++        
++		setDead();
++		
++		FCUtilsInventory.AddSingleItemToInventory( tileEntity, Item.egg.itemID, 0 );
++
++		return true;
++		
++	}
 +	//----------- Client Side Functionality -----------//    
 +	
 +	@Override

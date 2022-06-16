@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCTileEntityPulley.java
-@@ -0,0 +1,455 @@
+@@ -0,0 +1,457 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -336,11 +336,12 @@
 +                    
 +                    Block targetBlock = FCBetterThanWolves.fcRopeBlock;
 +                    
++                    // Intentionally uses step instead of place sound to be less intrusive in automated contraptions
 +    		        worldObj.playSoundEffect( 
 +    		        		(float)xCoord + 0.5F, (float)tempj + 0.5F, (float)zCoord + 0.5F, 
 +    		        		targetBlock.stepSound.getStepSound(), 
-+    		        		targetBlock.stepSound.getVolume() / 4.0F, 
-+    		        		targetBlock.stepSound.getPitch() * 0.8F);
++    		        		targetBlock.stepSound.getStepVolume() / 4.0F, 
++    		        		targetBlock.stepSound.getStepPitch() * 0.8F);
 +    		        
 +                    worldObj.setBlockWithNotify( xCoord, tempj, zCoord, 0 );
 +                    
@@ -379,11 +380,12 @@
 +                    {	
 +	                    Block targetBlock = FCBetterThanWolves.fcRopeBlock;
 +	                    
++	                    // Intentionally uses step instead of place sound to be less intrusive in automated contraptions
 +	    		        worldObj.playSoundEffect( 
 +	    		        		(float)xCoord + 0.5F, (float)tempj + 0.5F, (float)zCoord + 0.5F, 
 +	    		        		targetBlock.stepSound.getStepSound(), 
-+	    		        		targetBlock.stepSound.getVolume() / 4.0F, 
-+	    		        		targetBlock.stepSound.getPitch() * 0.8F);
++	    		        		targetBlock.stepSound.getStepVolume() / 4.0F, 
++	    		        		targetBlock.stepSound.getStepPitch() * 0.8F);
 +	    		        
 +	        			RemoveRopeFromInventory();
 +

@@ -1,11 +1,15 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCAddOnHandler.java
-@@ -0,0 +1,356 @@
+@@ -0,0 +1,413 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
-+import java.io.File;import java.nio.channels.ReadPendingException;
++import java.io.File;
++import java.net.MalformedURLException;
++import java.net.URL;
++import java.net.URLClassLoader;
++import java.nio.channels.ReadPendingException;
 +import java.util.ArrayList;
 +import java.util.HashMap;
 +import java.util.HashSet;
@@ -45,6 +49,57 @@
 +	{
 +		m_ModList.add(mod);
 +	}
++	
++	public static URL getResource(URL url) {
++		try {
++			if (url.getPath().endsWith(".jar") || url.getPath().endsWith("zip")) {
++				return new URL("jar:" + url + "!/");
++			}
++		} catch (MalformedURLException e) {
++			e.printStackTrace();
++		}
++		return url;
++	}
++	
++	public static ClassLoader getModLoader() {
++		final Class domain = FCAddOnHandler.class;
++		final ClassLoader classLoader = domain.getClassLoader();
++		try {
++			final File[] files = new File(m_LogFile.getParentFile().getCanonicalPath() + "/mods").listFiles();
++			final List<URL> urls = new ArrayList<URL>();
++			final URL baseURL = getResource(domain.getProtectionDomain().getCodeSource().getLocation());
++			urls.add(baseURL);
++			for (int i = 1; i <= files.length; i++) {
++				File file = files[i - 1];
++				if (file.isDirectory())
++					urls.add(file.toURI().toURL());
++				else if (file.getParent().endsWith(".jar"))
++					urls.add(new URL("jar:" + file.toURI().toURL() + "!/"));
++			}
++
++			return new URLClassLoader(urls.toArray(new URL[urls.size()]));
++		} catch (Exception e) {
++			e.printStackTrace();
++		}
++		return classLoader;
++	}
++
++	public static void loadAddOns() {
++		final ClassLoader classLoader = getModLoader();
++		try {
++			final String[] list = FCAddOnFinder.getClasses(classLoader);
++			for (final String className : list) {
++				final Class<?> classDescriptor = 
++						classLoader.loadClass(className);
++				if (FCAddOn.class.isAssignableFrom(classDescriptor)) {
++					Class<FCAddOn> addon = (Class<FCAddOn>) Class.forName(className, true, classLoader);
++					LogMessage("Found Add-on: " + addon.getSimpleName());
++				}
++			}
++		} catch (final Exception e) {
++			e.printStackTrace();
++		}
++	}
 +
 +	public static void InitializeMods()
 +	{
@@ -53,6 +108,8 @@
 +			InitializeLogger();
 +
 +			LogMessage("...Add-On Handler Initializing...");
++			
++			loadAddOns();
 +			
 +			//buildLoadOrder();
 +			

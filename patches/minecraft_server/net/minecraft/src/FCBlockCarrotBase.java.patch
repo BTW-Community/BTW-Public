@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockCarrotBase.java
-@@ -0,0 +1,30 @@
+@@ -0,0 +1,35 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -25,6 +25,11 @@
 +		}
 +    	
 +    	return null;
++    }
++    
++    @Override
++    protected boolean requiresNaturalLight() {
++    	return false;
 +    }
 +    
 +    //------------- Class Specific Methods ------------//

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,2775 @@
+@@ -0,0 +1,2779 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -22,7 +22,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.3.8";
++	public static final String fcVersionString = "1.3.9";
 +
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +
@@ -675,6 +675,8 @@
 +	public static boolean disableMillstoneNausea = false;
 +	public static boolean increaseGhastSpawns = false;
 +	public static boolean alwaysSpawnTogether = false;
++	public static boolean increaseLargeBiomeHCS = true;
++	
 +	//Config setting not exposed, but present to allow addons to use
 +	public static boolean allowPlaceWhileJumping = false;
 +
@@ -2132,6 +2134,7 @@
 +		this.registerProperty("DisableGearBoxPowerDrain", "False", "Set the following to true to stop gearboxes from shortening the length of mechanical power pulses through time.");
 +		this.registerProperty("DisableMillstoneNausea", "False", "Set the following to true to disable the nausea effect from the millstone");
 +		this.registerProperty("IncreaseGhastSpawns", "False", "Restores the increased ghast spawn rates from before v1.1.0.");
++		this.registerProperty("IncreaseLargeBiomeHCS", "True", "Whether to increase Hardcore Spawn related distances in large biomes world type.");
 +
 +		//Server only config
 +		this.registerProperty("EnableHardcorePlayerNames", "2", "***Server and LAN Settings (do not apply to singleplayer)***\n\n"
@@ -2596,6 +2599,7 @@
 +		fcDisableGearBoxPowerDrain = Boolean.parseBoolean(this.propertyValues.get("DisableGearBoxPowerDrain"));
 +		disableMillstoneNausea = Boolean.parseBoolean(this.propertyValues.get("DisableMillstoneNausea"));
 +		increaseGhastSpawns = Boolean.parseBoolean(this.propertyValues.get("IncreaseGhastSpawns"));
++		increaseLargeBiomeHCS = Boolean.parseBoolean(this.propertyValues.get("IncreaseLargeBiomeHCS"));
 +
 +		fcLocalHardcorePlayerNamesLevel = Integer.parseInt(this.propertyValues.get("EnableHardcorePlayerNames"));
 +		alwaysSpawnTogether = Boolean.parseBoolean(this.propertyValues.get("AlwaysSpawnTogether"));

@@ -87,7 +87,7 @@
 +		if ( anchorBlock != null )
 +		{		
 +			world.playSoundEffect( (float)i + 0.5F, (float)j - 0.5F, (float)k + 0.5F, anchorBlock.stepSound.getPlaceSound(), 
-+				anchorBlock.stepSound.getVolume() / 2.0F, anchorBlock.stepSound.getPitch() * 0.8F );
++					anchorBlock.stepSound.getPlaceVolume() / 2.0F, anchorBlock.stepSound.getStepPitch() * 0.8F );
 +			
 +			if ( !world.isRemote )
 +			{

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockWheatCrop.java
-@@ -0,0 +1,207 @@
+@@ -0,0 +1,212 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -111,6 +111,11 @@
 +    		blockBelow.NotifyOfFullStagePlantGrowthOn( world, i, j - 1, k, plantBlock );
 +    	}
 +	}
++    
++	@Override
++    protected int GetLightLevelForGrowth() {
++    	return 11;
++    }
 +	
 +    //------------- Class Specific Methods ------------//
 +    

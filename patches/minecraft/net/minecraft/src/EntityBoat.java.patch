@@ -117,7 +117,7 @@
                          {
                              this.worldObj.setBlockToAir(var27, var21, var19);
                          }
-@@ -547,4 +606,40 @@
+@@ -547,4 +606,51 @@
      {
          this.field_70279_a = par1;
      }
@@ -157,4 +157,15 @@
 +        }
 +    }    
 +    // END FCMOD
++    
++    @Override
++	public boolean onBlockDispenserConsume(FCBlockBlockDispenser blockDispenser, FCTileEntityBlockDispenser tileEentityDispenser) {
++		setDead();
++		
++		FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.boat.itemID, 0 );
++		
++        worldObj.playAuxSFX( 1001, (int)posX, (int)posY, (int)posZ, 0 ); // high pitch click							        
++    	
++		return true;
++	}
 +}

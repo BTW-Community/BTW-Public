@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntitySheep.java
-@@ -0,0 +1,637 @@
+@@ -0,0 +1,661 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -637,4 +637,28 @@
 +    {
 +		return GetGrazeHeadRotation( fPartialTick );
 +    }
++	
++	@Override
++	public boolean onBlockDispenserConsume(FCBlockBlockDispenser blockDispenser, FCTileEntityBlockDispenser tileEntity) {
++
++		if ( !getSheared() && !isChild() )
++		{
++			setSheared( true );
++			
++    		FCUtilsInventory.AddSingleItemToInventory( tileEntity, 
++    			FCBetterThanWolves.fcItemWool.itemID, 
++    			BlockCloth.getDyeFromBlock( getFleeceColor() ) );
++    		
++            attackEntityFrom( DamageSource.generic, 0 );
++            
++			for ( int tempCount = 0; tempCount < 2; tempCount++ )
++			{
++				blockDispenser.SpitOutItem( worldObj, tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord, new ItemStack( Item.silk ) );
++			}
++			
++            return true;
++		}
++		// sheep isn't shearable, check other entities
++		return false;
++	}
 +}

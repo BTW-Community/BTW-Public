@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockToolPlaced.java
-@@ -0,0 +1,322 @@
+@@ -0,0 +1,330 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -22,6 +22,14 @@
 +        
 +        setUnlocalizedName( "fcBlockToolPlaced" );
 +    }
++    
++	/**
++	 * Checks to see if its valid to put this block at the specified coordinates. Args: world, x, y, z
++	 */
++    @Override
++	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
++		return world.isAirBlock(x, y, z);
++	}
 +    
 +	@Override
 +    public TileEntity createNewTileEntity( World world )

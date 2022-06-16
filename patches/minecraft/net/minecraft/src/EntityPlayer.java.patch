@@ -747,15 +747,15 @@
 +	        
 +	        if ( blockAbove != null && blockAbove.IsGroundCover( ) )
 +	        {
-+	        	StepSound stepSound = blockAbove.stepSound;
++	        	StepSound stepSound = blockAbove.GetStepSound(this.worldObj, i, j, k);
 +	            
-+	            worldObj.playSoundAtEntity( this, stepSound.getStepSound(), stepSound.getVolume() * 0.3F, stepSound.getPitch() * 0.75F );
++	            worldObj.playSoundAtEntity( this, stepSound.getStepSound(), stepSound.getStepVolume() * 0.3F, stepSound.getStepPitch() * 0.75F );
 +	        }
 +	        else if ( !Block.blocksList[iBlockID].blockMaterial.isLiquid() )
 +	        {
 +		        StepSound stepSound = Block.blocksList[iBlockID].GetStepSound( worldObj, i, j, k );    	
 +
-+	            worldObj.playSoundAtEntity( this, stepSound.getStepSound(), stepSound.getVolume() * 0.3F, stepSound.getPitch() * 0.5F );
++	            worldObj.playSoundAtEntity( this, stepSound.getStepSound(), stepSound.getStepVolume() * 0.3F, stepSound.getStepPitch() * 0.5F );
 +	        }
 +		}
 +		else

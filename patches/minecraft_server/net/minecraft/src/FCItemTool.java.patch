@@ -226,8 +226,8 @@
 +    
 +    protected void PlayPlacementSound( ItemStack stack, Block blockStuckIn, World world, int i, int j, int k )
 +    {
-+        world.playSoundEffect( (float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, blockStuckIn.stepSound.getStepSound(), 
-+    		( blockStuckIn.stepSound.getVolume() + 1F) / 2F, blockStuckIn.stepSound.getPitch() * 0.8F );
++    	world.playSoundEffect( (float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, blockStuckIn.GetStepSound(world, i, j, k).getStepSound(), 
++        		( blockStuckIn.GetStepSound(world, i, j, k).getVolume() + 1F) / 2F, blockStuckIn.GetStepSound(world, i, j, k).getPitch() * 0.8F );
 +    }
 +    
 +    protected boolean GetCanBePlacedAsBlock()

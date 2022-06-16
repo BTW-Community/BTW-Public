@@ -1,20 +1,26 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCAddOnHandler.java
-@@ -0,0 +1,411 @@
+@@ -0,0 +1,523 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
-+import java.io.File;import java.nio.channels.ReadPendingException;
++import java.io.File;
++import java.io.IOException;
++import java.lang.reflect.Constructor;
++import java.net.MalformedURLException;
++import java.net.URISyntaxException;
++import java.net.URL;
++import java.net.URLClassLoader;
 +import java.util.ArrayList;
++import java.util.Collections;
++import java.util.Enumeration;
 +import java.util.HashMap;
-+import java.util.HashSet;
 +import java.util.Iterator;
 +import java.util.LinkedList;
 +import java.util.List;
 +import java.util.Map;
 +import java.util.Random;
-+import java.util.Set;
 +import java.util.logging.FileHandler;
 +import java.util.logging.Level;
 +import java.util.logging.Logger;
@@ -24,17 +30,25 @@
 +
 +public class FCAddOnHandler
 +{
-+	public static List<FCAddOn> m_ModList = new LinkedList();
++	public static Map<Class<? extends FCAddOn>, FCAddOn> m_ModList = new HashMap();
 +	public static boolean m_bModsInitialized = false;
 +
-+	public static final Logger m_Logger = Logger.getLogger("BetterThanWolves");
++	public static final Logger m_Logger;
++	
++	static {
++		m_Logger = Logger.getLogger("BetterThanWolves");
++		m_LogFile = new File(Minecraft.getMinecraftDir(), "BTWLog.txt");
++		m_LogFileHandler = null;
++
++		InitializeLogger();
++	}
 +
 +	// Client version
-+	private static final File m_LogFile = new File(Minecraft.getMinecraftDir(), "BTWLog.txt");    
++	private static final File m_LogFile;    
 +	// Server version
 +	//private static final File m_LogFile = new File(new File("."), "BTWLog.txt");
 +
-+	private static FileHandler m_LogFileHandler = null;
++	private static FileHandler m_LogFileHandler;
 +
 +	private static NetServerHandler netServerHandler;
 +	private static ArrayList<String> ackCheckFails = new ArrayList<String>();
@@ -42,19 +56,117 @@
 +	public static Map<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> addonWorldDataMap;
 +	
 +	private static ArrayList<FCAddOn> loadOrder = new ArrayList();
++	
++	private static Class<?> classDomain = FCAddOnHandler.class;
 +
 +	public static void AddMod(FCAddOn mod)
 +	{
-+		m_ModList.add(mod);
++		m_ModList.put(mod.getClass(), mod);
++	}
++	
++	public static URL getResource(URL url) {
++		try {
++			if (url.getPath().endsWith(".jar") || url.getPath().endsWith("zip")) {
++				return new URL("jar:" + url + "!/");
++			}
++		} catch (MalformedURLException e) {
++			e.printStackTrace();
++		}
++		return url;
++	}
++	
++	public static boolean isFabricEnvironment() {
++		return classDomain.getName().startsWith("net.fabricmc");
++	}
++	
++	public static void loadModClasses() {
++		if (isFabricEnvironment())
++			return;
++
++		final ClassLoader classLoader = classDomain.getClassLoader();
++		try {
++			final File[] files = new File(m_LogFile.getParentFile().getCanonicalPath() + "/mods").listFiles();
++			final List<URL> mods = new ArrayList<URL>();
++			for (final File file : files) {
++				if (file.isDirectory())
++					mods.add(file.toURI().toURL());
++				else {
++					if (file.getPath().endsWith(".jar") || file.getPath().endsWith(".zip"))
++						mods.add(getResource(file.toURI().toURL()));
++				}
++			}
++
++			List<String> classes = FCAddOnFinder.getClasses(Collections.enumeration(mods));
++			if (classes.size() > 0) {
++				loadClasses(classes, mods.toArray(new URL[mods.size()]));
++			}
++		} catch (Exception e) {
++			e.printStackTrace();
++		}
++	}
++	
++	public static void loadJarClasses() {
++		final URL baseURL = getResource(classDomain.getProtectionDomain().getCodeSource().getLocation());
++		LogMessage("Minecraft jar found: " + baseURL.toString());
++		
++		try {
++			List<String> classes = FCAddOnFinder.getClasses(Collections.enumeration(Collections.singleton(baseURL)));
++			loadClasses(classes, new URL[] { baseURL });
++		} catch (Exception e) {
++			e.printStackTrace();
++		}
++	}
++	
++	public static void loadClasses(List<String> classes, URL[] resources) {
++		ClassLoader loader = classDomain.getClassLoader();
++		
++		for (String name : classes) {
++			Class<?> current = null;
++			
++			try {
++				current = loader.loadClass(name);
++			} catch(Throwable e) {
++				try {
++					if (isFabricEnvironment())
++						continue;
++					loader = new URLClassLoader(resources);
++					current = loader.loadClass(name);
++				} catch (Throwable e2) {
++					e2.printStackTrace();
++					continue;
++				}
++			}
++			
++			try {
++				if (FCAddOn.class.isAssignableFrom(current)) {
++					Class<? extends FCAddOn> addonClass = (Class<? extends FCAddOn>) Class.forName(name, true, loader);
++					LogMessage("Found Add-on: " + addonClass.getSimpleName());
++					
++					if (!m_ModList.containsKey(addonClass)) {
++						Constructor<? extends FCAddOn> constructor = addonClass.getDeclaredConstructor();
++						constructor.setAccessible(true);
++						constructor.newInstance();
++					}
++				}
++			} catch(Throwable e) {}
++		}
++	}
++	
++	public static void loadAddOns() {
++		final ClassLoader knot = classDomain.getClassLoader();
++		LogMessage("Classloader: " + knot.getClass().getName());
++		
++		loadJarClasses();
++		loadModClasses();
 +	}
 +
 +	public static void InitializeMods()
-+	{
++	{	
 +		if (!m_bModsInitialized)
 +		{
-+			InitializeLogger();
-+
 +			LogMessage("...Add-On Handler Initializing...");
++			
++			loadAddOns();
 +			
 +			//buildLoadOrder();
 +			
@@ -64,7 +176,7 @@
 +			
 +			loadModConfigs();
 +
-+			Iterator modIterator = m_ModList.iterator();
++			Iterator modIterator = m_ModList.values().iterator();
 +
 +			while (modIterator.hasNext())
 +			{
@@ -178,7 +290,7 @@
 +
 +	public static void PreInitializeMods()
 +	{
-+		Iterator modIterator = m_ModList.iterator();
++		Iterator modIterator = m_ModList.values().iterator();
 +
 +		while (modIterator.hasNext())
 +		{
@@ -190,7 +302,7 @@
 +
 +	public static void PostInitializeMods()
 +	{
-+		Iterator modIterator = m_ModList.iterator();
++		Iterator modIterator = m_ModList.values().iterator();
 +
 +		while (modIterator.hasNext())
 +		{
@@ -205,7 +317,7 @@
 +		// StringTranslate creating ambiguous initialization order.
 +
 +		if (m_bModsInitialized) {
-+			Iterator modIterator = m_ModList.iterator();
++			Iterator modIterator = m_ModList.values().iterator();
 +
 +			while (modIterator.hasNext()) {
 +				FCAddOn mod = (FCAddOn)modIterator.next();
@@ -225,7 +337,7 @@
 +
 +	public static void ServerCustomPacketReceived(NetServerHandler handler, Packet250CustomPayload packet)
 +	{
-+		Iterator modIterator = m_ModList.iterator();
++		Iterator modIterator = m_ModList.values().iterator();
 +
 +		while (modIterator.hasNext())
 +		{
@@ -242,7 +354,7 @@
 +	public static void serverPlayerConnectionInitialized(NetServerHandler serverHandler, EntityPlayerMP playerMP) {
 +		netServerHandler = serverHandler;
 +
-+		for (Object mod : FCAddOnHandler.m_ModList) {
++		for (Object mod : FCAddOnHandler.m_ModList.values()) {
 +			((FCAddOn) mod).serverPlayerConnectionInitialized(serverHandler, playerMP);
 +			
 +			if (((FCAddOn) mod).shouldVersionCheck)
@@ -251,7 +363,7 @@
 +	}
 +
 +	public static boolean getAwaitingLoginAck() {
-+		for (Object mod : FCAddOnHandler.m_ModList) {
++		for (Object mod : FCAddOnHandler.m_ModList.values()) {
 +			if (((FCAddOn) mod).getAwaitingLoginAck()) {
 +				return true;
 +			}
@@ -261,13 +373,13 @@
 +	}
 +
 +	public static void incrementTicksSinceAckRequested() {
-+		for (Object mod : FCAddOnHandler.m_ModList) {
++		for (Object mod : FCAddOnHandler.m_ModList.values()) {
 +			((FCAddOn) mod).incrementTicksSinceAckRequested();
 +		}
 +	}
 +
 +	public static void handleAckCheck() {
-+		for (Object mod : FCAddOnHandler.m_ModList) {
++		for (Object mod : FCAddOnHandler.m_ModList.values()) {
 +			if (!((FCAddOn) mod).handleAckCheck()) {
 +				ackCheckFails.add(((FCAddOn) mod).getName());
 +			}
@@ -289,7 +401,7 @@
 +	public static Map<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> initWorldDataForAddon() {
 +		Map<Class<? extends FCAddOn>, FCAddOnUtilsWorldData> worldDataMap = new HashMap();
 +		
-+		for (Object mod : FCAddOnHandler.m_ModList) {
++		for (Object mod : FCAddOnHandler.m_ModList.values()) {
 +			FCAddOnUtilsWorldData worldData = ((FCAddOn) mod).createWorldData();
 +			
 +			if (worldData != null) {
@@ -301,7 +413,7 @@
 +	}
 +	
 +	public static void loadModConfigs() {
-+		for (Object mod : FCAddOnHandler.m_ModList) {
++		for (Object mod : FCAddOnHandler.m_ModList.values()) {
 +			FCAddOn addon = (FCAddOn) mod;
 +			
 +			Map<String, String> addonConfigProperties = addon.loadConfigProperties();
@@ -325,7 +437,7 @@
 +	}
 +	
 +	public static void decorateWorld(FCIBiomeDecorator decorator, World world, Random rand, int x, int y, BiomeGenBase biome) {
-+		for (Object mod : FCAddOnHandler.m_ModList) {
++		for (Object mod : FCAddOnHandler.m_ModList.values()) {
 +			FCAddOn addon = (FCAddOn) mod;
 +			
 +			addon.decorateWorld(decorator, world, rand, x, y, biome);
@@ -333,7 +445,7 @@
 +	}
 +	
 +	public static boolean isModInstalled(String name) {
-+		for (FCAddOn mod : m_ModList) {
++		for (FCAddOn mod : m_ModList.values()) {
 +			if (mod.getName().equals(name)) {
 +				return true;
 +			}
@@ -343,7 +455,7 @@
 +	}
 +	
 +	public static FCAddOn getModByName(String name) {
-+		for (FCAddOn mod : m_ModList) {
++		for (FCAddOn mod : m_ModList.values()) {
 +			if (mod.getName().equals(name)) {
 +				return mod;
 +			}
@@ -363,7 +475,7 @@
 +
 +	public static void ClientCustomPacketReceived(Minecraft mcInstance, Packet250CustomPayload packet)
 +	{
-+		Iterator modIterator = m_ModList.iterator();
++		Iterator modIterator = m_ModList.values().iterator();
 +
 +		while (modIterator.hasNext())
 +		{
@@ -380,7 +492,7 @@
 +
 +	public static void ClientPlayCustomAuxFX(Minecraft mcInstance, World world, EntityPlayer player, int iFXID, int i, int j, int k, int iFXSpecificData)
 +	{
-+		Iterator modIterator = m_ModList.iterator();
++		Iterator modIterator = m_ModList.values().iterator();
 +
 +		while (modIterator.hasNext())
 +		{
@@ -393,7 +505,7 @@
 +	}
 +
 +	public static boolean interceptCustomClientPacket(Minecraft mc, Packet250CustomPayload packet) {
-+		for (Object mod : FCAddOnHandler.m_ModList) {
++		for (Object mod : FCAddOnHandler.m_ModList.values()) {
 +			if (((FCAddOn) mod).interceptCustomClientPacket(mc, packet)) {
 +				return true;
 +			}
@@ -403,7 +515,7 @@
 +	}
 +
 +	public static EntityFX spawnCustomParticle(World world, String particleType, double x, double y, double z, double velX, double velY, double velZ) {
-+		for (Object mod : FCAddOnHandler.m_ModList) {
++		for (Object mod : FCAddOnHandler.m_ModList.values()) {
 +			EntityFX particle = ((FCAddOn) mod).spawnCustomParticle(world, particleType, x, y, z, velX, velY, velZ);
 +			if (particle != null)
 +				return particle;

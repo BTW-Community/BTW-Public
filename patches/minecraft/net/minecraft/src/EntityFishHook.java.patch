@@ -73,7 +73,7 @@
                  {
                      if (this.ticksCatchable > 0)
                      {
-@@ -348,14 +367,19 @@
+@@ -348,18 +367,23 @@
                      }
                      else
                      {
@@ -96,6 +96,11 @@
                          {
                              this.ticksCatchable = this.rand.nextInt(30) + 10;
                              this.motionY -= 0.20000000298023224D;
+-                            this.playSound("random.splash", 0.25F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
++                            this.playSound("random.splash", 0.5F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
+                             float var30 = (float)MathHelper.floor_double(this.boundingBox.minY);
+                             int var15;
+                             float var17;
 @@ -378,19 +402,26 @@
                                  var17 = (this.rand.nextFloat() * 2.0F - 1.0F) * this.width;
                                  this.worldObj.spawnParticle("splash", this.posX + (double)var31, (double)(var30 + 1.0F), this.posZ + (double)var17, this.motionX, this.motionY, this.motionZ);

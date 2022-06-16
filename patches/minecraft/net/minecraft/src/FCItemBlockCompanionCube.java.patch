@@ -128,8 +128,8 @@
 +
 +		        	companionCube.SpawnHearts( world, i, j, k );
 +		    		
-+	                world.playSoundEffect( (float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, companionCube.stepSound.getStepSound(), 
-+                		( companionCube.stepSound.getVolume() + 1.0F) / 2.0F, companionCube.stepSound.getPitch() * 0.8F);
++	                world.playSoundEffect( (float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, companionCube.stepSound.getPlaceSound(), 
++                		( companionCube.stepSound.getPlaceVolume() + 1.0F) / 2.0F, companionCube.stepSound.getPlacePitch() * 0.8F);
 +	            	
 +		        	int iTargetBlockID = FCBetterThanWolves.fcCompanionCube.blockID;
 +		        	int iTargetMetadata = 0; 

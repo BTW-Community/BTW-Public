@@ -186,7 +186,7 @@
          StepSound var5 = Block.blocksList[par4].stepSound;
  
          if (this.worldObj.getBlockId(par1, par2 + 1, par3) == Block.snow.blockID)
-@@ -917,6 +951,19 @@
+@@ -917,9 +951,22 @@
              var5 = Block.snow.stepSound;
              this.playSound(var5.getStepSound(), var5.getVolume() * 0.15F, var5.getPitch());
          }
@@ -198,14 +198,18 @@
 +        
 +        if ( blockAbove != null && blockAbove.IsGroundCover( ) )
 +        {
-+            var5 = blockAbove.stepSound;
-+            
-+            playSound( var5.getStepSound(), var5.getVolume() * 0.15F, var5.getPitch() );
++            var5 = blockAbove.GetStepSound(this.worldObj, par1, par2, par3);
++
++            playSound( var5.getStepSound(), var5.getStepVolume() * 0.15F, var5.getStepPitch() );
 +        }
 +    	// END FCMOD
          else if (!Block.blocksList[par4].blockMaterial.isLiquid())
          {
-             this.playSound(var5.getStepSound(), var5.getVolume() * 0.15F, var5.getPitch());
+-            this.playSound(var5.getStepSound(), var5.getVolume() * 0.15F, var5.getPitch());
++            this.playSound(var5.getStepSound(), var5.getStepVolume() * 0.15F, var5.getStepPitch());
+         }
+     }
+ 
 @@ -998,7 +1045,10 @@
       */
      public boolean isWet()
@@ -218,7 +222,21 @@
      }
  
      /**
-@@ -1373,6 +1423,12 @@
+@@ -1284,6 +1334,13 @@
+         this.isAirBorne = true;
+     }
+ 
++    public void setVelocity(double par1, double par3, double par5)
++    {
++        this.motionX = par1;
++        this.motionY = par3;
++        this.motionZ = par5;
++    }
++
+     /**
+      * Sets that this entity has been attacked.
+      */
+@@ -1373,6 +1430,12 @@
          try
          {
              par1NBTTagCompound.setTag("Pos", this.newDoubleNBTList(new double[] {this.posX, this.posY + (double)this.ySize, this.posZ}));
@@ -231,7 +249,7 @@
              par1NBTTagCompound.setTag("Motion", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
              par1NBTTagCompound.setTag("Rotation", this.newFloatNBTList(new float[] {this.rotationYaw, this.rotationPitch}));
              par1NBTTagCompound.setFloat("FallDistance", this.fallDistance);
-@@ -1408,6 +1464,8 @@
+@@ -1408,6 +1471,8 @@
      /**
       * Reads the entity from NBT (calls an abstract helper method to read specialized data)
       */
@@ -240,7 +258,7 @@
      public void readFromNBT(NBTTagCompound par1NBTTagCompound)
      {
          try
-@@ -1464,6 +1522,8 @@
+@@ -1464,6 +1529,8 @@
              throw new ReportedException(var3);
          }
      }
@@ -249,7 +267,7 @@
  
      /**
       * Returns the string that identifies this Entity's class
-@@ -1540,7 +1600,7 @@
+@@ -1540,7 +1607,7 @@
       */
      public EntityItem entityDropItem(ItemStack par1ItemStack, float par2)
      {
@@ -258,7 +276,7 @@
          var3.delayBeforeCanPickup = 10;
          this.worldObj.spawnEntityInWorld(var3);
          return var3;
-@@ -1730,6 +1790,7 @@
+@@ -1730,6 +1797,7 @@
  
      /**
       * Called when a player unounts an entity.
@@ -266,7 +284,7 @@
       */
      public void unmountEntity(Entity par1Entity)
      {
-@@ -1866,6 +1927,10 @@
+@@ -1866,6 +1934,10 @@
          this.setFlag(1, par1);
      }
  
@@ -277,7 +295,7 @@
      /**
       * Get if the Entity is sprinting.
       */
-@@ -2169,7 +2234,12 @@
+@@ -2169,7 +2241,12 @@
  
      public float func_82146_a(Explosion par1Explosion, World par2World, int par3, int par4, int par5, Block par6Block)
      {
@@ -290,7 +308,7 @@
      }
  
      public boolean func_96091_a(Explosion par1Explosion, World par2World, int par3, int par4, int par5, int par6, float par7)
-@@ -2217,4 +2287,709 @@
+@@ -2217,4 +2294,717 @@
      {
          return this.getEntityName();
      }
@@ -999,4 +1017,12 @@
 +    	}
 +    }
 +    // END FCMOD
++    
++    /**
++     * Called when block dispenser tries to eat this entity, return true if the Dispenser should stop looking for more stuff to consume
++     */
++	public boolean onBlockDispenserConsume(FCBlockBlockDispenser blockDispenser, FCTileEntityBlockDispenser tileEentityDispenser) {
++		return false;
++
++	}
 +}

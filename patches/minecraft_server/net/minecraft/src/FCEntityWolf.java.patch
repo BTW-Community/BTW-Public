@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCEntityWolf.java
-@@ -0,0 +1,1067 @@
+@@ -0,0 +1,1083 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -643,6 +643,22 @@
 +			return  var2.isSitting() ? false : this.isInLove() && par1EntityAnimal.isInLove();
 +		}
 +	}
++	
++	public boolean onBlockDispenserConsume(FCBlockBlockDispenser blockDispenser, FCTileEntityBlockDispenser tileEntity) {
++
++        worldObj.playAuxSFX( FCBetterThanWolves.m_iWolfHurtSoundAuxFXID, (int)posX, (int)posY, (int)posZ, 0 );	        	        
++        setDead();
++
++		FCUtilsInventory.AddSingleItemToInventory( tileEntity, FCBetterThanWolves.fcCompanionCube.blockID, 0 );
++
++		for ( int tempCount = 0; tempCount < 2; tempCount++ )
++		{
++			blockDispenser.SpitOutItem( worldObj, tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord, new ItemStack( Item.silk ) );
++		}
++
++		return true;
++	}
++	
 +	//------------- Class Specific Methods ------------//
 +
 +	public boolean IsEngangedInPossessionAttempt()    

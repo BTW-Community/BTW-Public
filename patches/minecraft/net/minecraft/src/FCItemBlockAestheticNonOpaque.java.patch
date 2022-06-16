@@ -234,8 +234,8 @@
 +		            {
 +		            	if ( convertToFullBlock( world, i, j, k ) )
 +		            	{		            		
-+			                world.playSoundEffect((float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, targetBlock.stepSound.getStepSound(), 
-+		                		( targetBlock.stepSound.getVolume() + 1.0F) / 2.0F, targetBlock.stepSound.getPitch() * 0.8F);
++			                world.playSoundEffect((float)i + 0.5F, (float)j + 0.5F, (float)k + 0.5F, targetBlock.GetStepSound(world, i, j, k).getPlaceSound(), 
++		                		( targetBlock.GetStepSound(world, i, j, k).getPlaceVolume() + 1.0F) / 2.0F, targetBlock.GetStepSound(world, i, j, k).getPlacePitch() * 0.8F);
 +			            	
 +			                itemStack.stackSize--;
 +			                

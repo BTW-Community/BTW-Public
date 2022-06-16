@@ -40,9 +40,9 @@
 +	                world.setBlockWithNotify( i, j + 1, k, m_iPlacedBlockID );
 +	                
 +	                world.playSoundEffect( i + 0.5D, j + 0.5D, k + 0.5D, 
-+	                	Block.soundGrassFootstep.getStepSound(), 
-+	                	( Block.soundGrassFootstep.getVolume() + 1F ) / 2F, 
-+	                	Block.soundGrassFootstep.getPitch() * 0.8F );
++	                	Block.soundGrassFootstep.getPlaceSound(), 
++	                	( Block.soundGrassFootstep.getPlaceVolume() + 1F ) / 2F, 
++	                	Block.soundGrassFootstep.getPlacePitch() * 0.8F );
 +	                
 +	                --itemStack.stackSize;
 +	                
@@ -67,9 +67,9 @@
 +            world.setBlockWithNotify( targetPos.i, targetPos.j, targetPos.k, m_iPlacedBlockID );
 +            
 +            world.playSoundEffect( targetPos.i + 0.5D, targetPos.j + 0.5D, targetPos.k + 0.5D, 
-+            	Block.soundGrassFootstep.getStepSound(), 
-+            	( Block.soundGrassFootstep.getVolume() + 1F ) / 2F, 
-+            	Block.soundGrassFootstep.getPitch() * 0.8F );
++            	Block.soundGrassFootstep.getPlaceSound(), 
++            	( Block.soundGrassFootstep.getPlaceVolume() + 1F ) / 2F, 
++            	Block.soundGrassFootstep.getPlacePitch() * 0.8F );
 +            
 +            return true;
 +        }

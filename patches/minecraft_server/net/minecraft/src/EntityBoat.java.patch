@@ -109,7 +109,7 @@
                          {
                              this.worldObj.setBlockToAir(var27, var21, var19);
                          }
-@@ -479,4 +537,40 @@
+@@ -479,4 +537,51 @@
      {
          return this.dataWatcher.getWatchableObjectInt(18);
      }
@@ -149,4 +149,15 @@
 +        }
 +    }
 +    // END FCMOD
++    
++    @Override
++	public boolean onBlockDispenserConsume(FCBlockBlockDispenser blockDispenser, FCTileEntityBlockDispenser tileEentityDispenser) {
++		setDead();
++
++		FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.boat.itemID, 0 );
++
++        worldObj.playAuxSFX( 1001, (int)posX, (int)posY, (int)posZ, 0 ); // high pitch click							        
++
++		return true;
++	}
 +}

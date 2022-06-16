@@ -122,7 +122,7 @@
                  if (this.stepSoundTickCounter % 4.0F == 0.0F && var6 != null)
                  {
 -                    this.mc.sndManager.playSound(var6.stepSound.getStepSound(), (float)par1 + 0.5F, (float)par2 + 0.5F, (float)par3 + 0.5F, (var6.stepSound.getVolume() + 1.0F) / 8.0F, var6.stepSound.getPitch() * 0.5F);
-+                    this.mc.sndManager.playSound(stepSound.getStepSound(), (float)par1 + 0.5F, (float)par2 + 0.5F, (float)par3 + 0.5F, (stepSound.getVolume() + 1.0F) / 8.0F, stepSound.getPitch() * 0.5F);
++                    this.mc.sndManager.playSound(stepSound.getStepSound(), (float)par1 + 0.5F, (float)par2 + 0.5F, (float)par3 + 0.5F, (stepSound.getStepVolume() + 1.0F) / 8.0F, stepSound.getStepPitch() * 0.5F);
                  }
  
                  ++this.stepSoundTickCounter;

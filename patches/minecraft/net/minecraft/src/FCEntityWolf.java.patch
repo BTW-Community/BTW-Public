@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCEntityWolf.java
-@@ -0,0 +1,1124 @@
+@@ -0,0 +1,1139 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -1123,6 +1123,21 @@
 +		}
 +
 +		return (float)Math.PI / 5F;
++	}
++	
++	public boolean onBlockDispenserConsume(FCBlockBlockDispenser blockDispenser, FCTileEntityBlockDispenser tileEntity) {
++		
++        worldObj.playAuxSFX( FCBetterThanWolves.m_iWolfHurtSoundAuxFXID, (int)posX, (int)posY, (int)posZ, 0 );	        	        
++        setDead();
++		
++		FCUtilsInventory.AddSingleItemToInventory( tileEntity, FCBetterThanWolves.fcCompanionCube.blockID, 0 );
++
++		for ( int tempCount = 0; tempCount < 2; tempCount++ )
++		{
++			blockDispenser.SpitOutItem( worldObj, tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord, new ItemStack( Item.silk ) );
++		}
++		
++		return true;
 +	}
 +}
 \ No newline at end of file

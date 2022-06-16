@@ -110,6 +110,15 @@
      public void playSound(String par1Str, float par2, float par3)
      {
          this.worldObj.playSoundToNearExcept(this, par1Str, par2, par3);
+@@ -439,7 +491,7 @@
+             --this.flyToggleTimer;
+         }
+ 
+-        if (this.worldObj.difficultySetting == 0 && this.getHealth() < this.getMaxHealth() && this.ticksExisted % 20 * 12 == 0)
++        if (this.worldObj.difficultySetting == 0 && this.getHealth() < this.getMaxHealth() && this.ticksExisted % 20 * 10 == 0)
+         {
+             this.heal(1);
+         }
 @@ -449,6 +501,9 @@
          super.onLivingUpdate();
          this.landMovementFactor = this.capabilities.getWalkSpeed();
@@ -717,15 +726,15 @@
 +	        
 +	        if ( blockAbove != null && blockAbove.IsGroundCover( ) )
 +	        {
-+	        	StepSound stepSound = blockAbove.stepSound;
-+	            
-+	            worldObj.playSoundAtEntity( this, stepSound.getStepSound(), stepSound.getVolume() * 0.3F, stepSound.getPitch() * 0.75F );
++	        	StepSound stepSound = blockAbove.GetStepSound(this.worldObj, i, j, k);
++
++	            worldObj.playSoundAtEntity( this, stepSound.getStepSound(), stepSound.getStepVolume() * 0.3F, stepSound.getStepPitch() * 0.75F );
 +	        }
 +	        else if ( !Block.blocksList[iBlockID].blockMaterial.isLiquid() )
 +	        {
 +		        StepSound stepSound = Block.blocksList[iBlockID].GetStepSound( worldObj, i, j, k );    	
 +
-+	            worldObj.playSoundAtEntity( this, stepSound.getStepSound(), stepSound.getVolume() * 0.3F, stepSound.getPitch() * 0.5F );
++	            worldObj.playSoundAtEntity( this, stepSound.getStepSound(), stepSound.getStepVolume() * 0.3F, stepSound.getStepPitch() * 0.5F );
 +	        }
 +		}
 +		else

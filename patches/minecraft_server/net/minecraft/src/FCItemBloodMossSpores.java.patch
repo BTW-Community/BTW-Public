@@ -75,8 +75,8 @@
 +			                }
 +			                
 +			                world.playSoundEffect((float)targetPos.i + 0.5F, (float)targetPos.j + 0.5F, 
-+			            		(float)targetPos.k + 0.5F, block.stepSound.getStepSound(), 
-+			            		(block.stepSound.getVolume() + 1.0F) / 2.0F, block.stepSound.getPitch() * 0.8F);
++			            		(float)targetPos.k + 0.5F, block.stepSound.getPlaceSound(), 
++			            		(block.stepSound.getPlaceVolume() + 1.0F) / 2.0F, block.stepSound.getPlacePitch() * 0.8F);
 +			                
 +	    		            AngerPigmen( world, player );
 +	    		            

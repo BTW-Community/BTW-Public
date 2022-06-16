@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockBlockDispenser.java
-@@ -0,0 +1,551 @@
+@@ -0,0 +1,452 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -260,134 +260,35 @@
 +		return false;
 +    }
 +    
-+    private boolean ConsumeEntityAtTargetLoc( World world, int i, int j, int k, int targeti, int targetj, int targetk )
-+    {    	
-+    	ValidateBlockDispenser( world, i, j, k );
-+    	
-+        List list = null;
-+        
-+        list = world.getEntitiesWithinAABB( Entity.class, 
-+        		AxisAlignedBB.getAABBPool().getAABB( (double)targeti, (double)targetj, (double)targetk, 
-+				(double)(targeti + 1), (double)(targetj + 1), (double)(targetk + 1) ) );
-+        
-+        if( list != null && list.size() > 0 )
-+        {            	
-+        	FCTileEntityBlockDispenser tileEentityDispenser = 
-+        		(FCTileEntityBlockDispenser)world.getBlockTileEntity( i, j, k );
++	private boolean ConsumeEntityAtTargetLoc(World world, int i, int j, int k, int targeti, int targetj, int targetk) {
++		
++		ValidateBlockDispenser(world, i, j, k);
 +
-+            for(int listIndex = 0; listIndex < list.size(); listIndex++)
-+            {
-+            	Entity targetEntity = (Entity)list.get( listIndex );
-+        
-+            	if ( !targetEntity.isDead )
-+            	{
-+	            	if ( targetEntity instanceof EntityMinecart )
-+	            	{
-+	            		EntityMinecart targetMinecart = (EntityMinecart)targetEntity;
-+	            		
-+	            		int minecartType = targetMinecart.getMinecartType();
++		List list = null;
 +
-+	            		// dismount any entities riding the minecart
-+	            		
-+	                    if( targetMinecart.riddenByEntity != null)
-+	                    {
-+	                    	targetMinecart.riddenByEntity.mountEntity( targetMinecart );
-+	                    }
-+	                    
-+	        			targetMinecart.setDead();
-+	        			
-+	            		switch ( minecartType )
-+	            		{            			
-+	            			case 1: // chest cart
-+	            				
-+	            				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.minecartCrate.itemID, 0 );
-+	            				
-+	            				break;
-+	            				
-+	            			case 2: // furnace
-+	        					
-+	            				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.minecartPowered.itemID, 0 );
-+	            				
-+	        					break;
-+	        					
-+	            			default: // 0 = empty cart, and this also covers the new minecart types (tnt, hopper & mob-spawner)
-+	            				
-+	            				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.minecartEmpty.itemID, 0 );
-+	            				
-+	            				break;	            				
-+	            		}
-+	            		
-+	        	        world.playAuxSFX( 1001, i, j, k, 0 ); // high pitch click							        
-+	            	
-+	            		return true;
-+	            	}
-+	            	else if ( targetEntity instanceof EntityBoat )
-+	            	{
-+	            		targetEntity.setDead();
-+	            		
-+	    				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.boat.itemID, 0 );
-+	    				
-+	        	        world.playAuxSFX( 1001, i, j, k, 0 ); // high pitch click							        
-+		            	
-+	            		return true;
-+	            	}
-+	            	else if ( targetEntity instanceof FCEntityWolf )
-+	            	{
-+	            		FCEntityWolf targetWolf = (FCEntityWolf)targetEntity;
-+	            		
-+	        	        world.playAuxSFX( FCBetterThanWolves.m_iWolfHurtSoundAuxFXID, i, j, k, 0 );	        	        
-+	                    
-+	            		targetEntity.setDead();
-+	            		
-+	            		FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, FCBetterThanWolves.fcCompanionCube.blockID, 0 );
-+	
-+	    				for ( int tempCount = 0; tempCount < 2; tempCount++ )
-+	    				{
-+	    					SpitOutItem( world, i, j, k, new ItemStack( Item.silk ) );
-+	    				}
-+	    				
-+	            		return true;
-+	            	}
-+	            	else if ( targetEntity instanceof FCEntityChicken )
-+	            	{
-+	            		FCEntityChicken targetChicken = (FCEntityChicken)targetEntity;
-+	            		
-+	        	        world.playAuxSFX( FCBetterThanWolves.m_iChickenHurtSoundAuxFXID, i, j, k, 0 );							        
-+	                    
-+	            		targetEntity.setDead();
-+	            		
-+	            		FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.egg.itemID, 0 );
-+	
-+	            		return true;
-+	            	}
-+	            	else if ( targetEntity instanceof FCEntitySheep )
-+	            	{
-+	            		FCEntitySheep targetSheep = (FCEntitySheep)targetEntity;
-+	            		
-+	            		if ( !targetSheep.getSheared() && !targetSheep.isChild() )
-+	            		{
-+	            			targetSheep.setSheared( true );
-+	            			
-+		            		FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, 
-+		            			FCBetterThanWolves.fcItemWool.itemID, 
-+		            			BlockCloth.getDyeFromBlock( targetSheep.getFleeceColor() ) );
-+		            		
-+		                    targetEntity.attackEntityFrom( DamageSource.generic, 0 );
-+		                    
-+		    				for ( int tempCount = 0; tempCount < 2; tempCount++ )
-+		    				{
-+		    					SpitOutItem( world, i, j, k, new ItemStack( Item.silk ) );
-+		    				}
-+		    				
-+		                    return true;
-+	            		}
-+	            	}
-+            	}
-+            }                
-+        }                
++		list = world.getEntitiesWithinAABB(Entity.class,
++				AxisAlignedBB.getAABBPool().getAABB((double) targeti, (double) targetj, (double) targetk,
++						(double) (targeti + 1), (double) (targetj + 1), (double) (targetk + 1)));
 +
-+    	return false;
-+    }
++		if (list != null && list.size() > 0) {
++			
++			FCTileEntityBlockDispenser tileEentityDispenser = (FCTileEntityBlockDispenser) world.getBlockTileEntity(i, j, k);
++
++			for (int listIndex = 0; listIndex < list.size(); listIndex++) {
++				
++				Entity targetEntity = (Entity) list.get(listIndex);
++
++				if (!targetEntity.isDead) {
++
++					if (targetEntity.onBlockDispenserConsume(this, tileEentityDispenser)) {
++						return true; // false means keep checking other entities, so no return
++					}
++				}
++			}
++		}
++
++		return false;
++	}
 +    
 +    private void ConsumeFacingBlock( World world, int i, int j, int k )
 +    {
@@ -537,7 +438,7 @@
 +    		dYHeading = offsetPos.j;
 +    	}
 +    	
-+    	EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, world, dXPos, dYPos, dZPos, itemstack );
++        EntityItem entityitem = (EntityItem) EntityList.createEntityOfType(EntityItem.class, world, dXPos, dYPos, dZPos, itemstack );
 +        
 +        double dRandVel = world.rand.nextDouble() * 0.1D + 0.2D;
 +        

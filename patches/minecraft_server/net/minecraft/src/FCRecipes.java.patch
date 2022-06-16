@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,7179 @@
+@@ -0,0 +1,7182 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -5634,6 +5634,9 @@
 +	
 +	private static void addTurntableRecipes() {
 +		addTurntableRecipe(FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeCrucible,
++				new ItemStack[] {
++						new ItemStack(Item.clay, 1)
++				}, 
 +				FCBetterThanWolves.fcBlockUnfiredClay, 
 +				numRotationsPottery)
 +			.setEffect(potteryEffect);
@@ -5664,7 +5667,7 @@
 +		
 +		addTurntableRecipe(null, 0,
 +				new ItemStack[] {
-+						new ItemStack(Item.clay, 3)
++						new ItemStack(Item.clay, 2)
 +				}, 
 +				FCBetterThanWolves.fcUnfiredPottery, FCBlockUnfiredPottery.m_iSubtypeUrn,
 +				numRotationsPottery)

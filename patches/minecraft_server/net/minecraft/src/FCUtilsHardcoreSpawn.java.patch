@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCUtilsHardcoreSpawn.java
-@@ -0,0 +1,423 @@
+@@ -0,0 +1,392 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -14,148 +14,132 @@
 +	//Timer set to 9 minutes so if you die once night falls you respawn in a new location
 +	public static final int m_iHardcoreSpawnTimeBetweenReassignments = 10800;
 +
-+	private static final double m_dRadiusBase = 2000D;
-+	private static final double m_dRadiusBaseExclusionDistance = 1000D;
-+	private static final double m_dRadiusBaseMultipleRespawn = 100D;
++	private static final double BASE_RADIUS = 2000D;
++	private static final double BASE_EXCLUSION_RADIUS = 1000D;
++	private static final double RAPID_RESPAWN_RADIUS = 100D;
 +
-+	private final static double m_dRadiusBaseVillageAbandoned = 2250D;
-+	private final static double m_dRadiusBaseVillagePartiallyAbandoned = 3000D;
++	private final static double ABANDONED_VILLAGE_RADIUS = 2250D;
++	private final static double PARTIALLY_ABADONED_VILLAGE_RADIUS = 3000D;
 +
-+	private final static double m_dRadiusBaseLootedTemple = 2250D;
++	private final static double LOOTED_TEMPLE_RADIUS = 2250D;
 +
-+	private static final double m_dLargeBiomesRadiusMultiplier = 4D;
++	private static final double LARGE_BIOMES_MULTIPLIER = 4D;
++	
++	private static final int SPAWN_ATTEMPT_COUNT = 20;
 +
 +	public static ArrayList<BiomeGenBase> blacklistedBiomes = new ArrayList();
-+	private static final int numberOfBiomeSpawnAttempts = 5;
 +	
 +	static {
 +		blacklistedBiomes.add(BiomeGenBase.jungle);
 +		blacklistedBiomes.add(BiomeGenBase.jungleHills);
 +		blacklistedBiomes.add(BiomeGenBase.ocean);
++		blacklistedBiomes.add(BiomeGenBase.frozenOcean);
 +	}
 +
 +	/** 
 +	 * player respawn maximum radius from original spawn
 +	 */
-+	public static double GetPlayerSpawnRadius()
-+	{
-+		return m_dRadiusBase * GetWorldTypeRadiusMultiplier() * GetGameProgressRadiusMultiplier();
++	public static double GetPlayerSpawnRadius() {
++		return BASE_RADIUS * GetWorldTypeRadiusMultiplier() * GetGameProgressRadiusMultiplier();
 +	}
 +
 +	/** 
 +	 * player respawn minimum radius from original spawn
 +	 */
-+	public static double GetPlayerSpawnExclusionRadius()
-+	{
-+		return m_dRadiusBaseExclusionDistance * GetWorldTypeRadiusMultiplier();
++	public static double GetPlayerSpawnExclusionRadius() {
++		return BASE_EXCLUSION_RADIUS * GetWorldTypeRadiusMultiplier();
 +	}
 +
 +	/** 
 +	 * specifies the radius in which a player will respawn, if returning to the same spawn point after multiple deaths
 +	 */	
-+	public static double GetPlayerMultipleRespawnRadius()
-+	{
-+		return m_dRadiusBaseMultipleRespawn;
++	public static double GetPlayerMultipleRespawnRadius() {
++		return RAPID_RESPAWN_RADIUS;
 +	}
 +
-+	public static double GetAbandonedVillageRadius()
-+	{
-+		return m_dRadiusBaseVillageAbandoned * GetWorldTypeRadiusMultiplier();
++	public static double GetAbandonedVillageRadius() {
++		return ABANDONED_VILLAGE_RADIUS * GetWorldTypeRadiusMultiplier();
 +	}
 +
-+	public static double GetPartiallyAbandonedVillageRadius()
-+	{
-+		return m_dRadiusBaseVillagePartiallyAbandoned * GetWorldTypeRadiusMultiplier();
++	public static double GetPartiallyAbandonedVillageRadius() {
++		return PARTIALLY_ABADONED_VILLAGE_RADIUS * GetWorldTypeRadiusMultiplier();
 +	}
 +
-+	public static double GetLootedTempleRadius()
-+	{
-+		return m_dRadiusBaseLootedTemple * GetWorldTypeRadiusMultiplier();
++	public static double GetLootedTempleRadius() {
++		return LOOTED_TEMPLE_RADIUS * GetWorldTypeRadiusMultiplier();
 +	}
 +
-+	public static double GetWorldTypeRadiusMultiplier()
-+	{
++	public static double GetWorldTypeRadiusMultiplier() {
 +		World overWorld = MinecraftServer.getServer().worldServers[0];
 +
-+		if ( overWorld != null && overWorld.worldInfo.getTerrainType() == WorldType.LARGE_BIOMES )
-+		{
-+			return m_dLargeBiomesRadiusMultiplier;
++		if (overWorld != null && overWorld.worldInfo.getTerrainType() == WorldType.LARGE_BIOMES) {
++			return LARGE_BIOMES_MULTIPLIER;
 +		}
 +
 +		return 1D;
 +	}
 +
-+	public static double GetGameProgressRadiusMultiplier()
-+	{
-+		if ( FCUtilsWorld.GameProgressHasEndDimensionBeenAccessedServerOnly() )
-+		{
++	public static double GetGameProgressRadiusMultiplier() {
++		if (FCUtilsWorld.GameProgressHasEndDimensionBeenAccessedServerOnly()) {
 +			return 2.5D;
 +		}
-+		else if ( FCUtilsWorld.GameProgressHasWitherBeenSummonedServerOnly() )
-+		{
++		else if (FCUtilsWorld.GameProgressHasWitherBeenSummonedServerOnly()) {
 +			return 2D;
 +		}
-+		else if ( FCUtilsWorld.GameProgressHasNetherBeenAccessedServerOnly() )
-+		{
++		else if (FCUtilsWorld.GameProgressHasNetherBeenAccessedServerOnly()) {
 +			return 1.5D;
 +		}
 +
 +		return 1D;
 +	}
 +
-+	public static void HandleHardcoreSpawn( MinecraftServer server, EntityPlayerMP oldPlayer, EntityPlayerMP newPlayer )
-+	{
-+		WorldServer newWorld = server.worldServerForDimension( newPlayer.dimension );
++	public static void HandleHardcoreSpawn(MinecraftServer server, EntityPlayerMP oldPlayer, EntityPlayerMP newPlayer) {
++		WorldServer newWorld = server.worldServerForDimension(newPlayer.dimension);
 +
-+		if ( oldPlayer.playerConqueredTheEnd )
-+		{
-+			ReturnPlayerToOriginalSpawn( newWorld, newPlayer );
-+
++		if (oldPlayer.playerConqueredTheEnd) {
++			ReturnPlayerToOriginalSpawn(newWorld, newPlayer);
 +			return;
 +		}
 +
-+		long lOverworldTime = FCUtilsWorld.GetOverworldTimeServerOnly();
-+		long lTimeOfLastPlayerSpawnAssignment = oldPlayer.m_lTimeOfLastSpawnAssignment;
-+		long lDeltaTimeSinceLastRespawnAssignment = lOverworldTime - lTimeOfLastPlayerSpawnAssignment; 
++		long overworldTime = FCUtilsWorld.GetOverworldTimeServerOnly();
++		long timeOfLastPlayerSpawnAssignment = oldPlayer.m_lTimeOfLastSpawnAssignment;
++		long deltaTimeSinceLastRespawnAssignment = overworldTime - timeOfLastPlayerSpawnAssignment; 
 +
-+		boolean bSoftRespawn = false;
++		boolean softRespawn = false;
 +
-+		if ( lTimeOfLastPlayerSpawnAssignment > 0 && lDeltaTimeSinceLastRespawnAssignment >= 0 &&  
-+				lDeltaTimeSinceLastRespawnAssignment < m_iHardcoreSpawnTimeBetweenReassignments )
++		if (timeOfLastPlayerSpawnAssignment > 0 &&
++				deltaTimeSinceLastRespawnAssignment >= 0 &&
++				deltaTimeSinceLastRespawnAssignment < m_iHardcoreSpawnTimeBetweenReassignments)
 +		{
 +			// multiple respawns in a short period of time results in different behavior
-+
-+			bSoftRespawn = true;
++			softRespawn = true;
 +
 +			newPlayer.health = 10; // start the player hurt
 +
-+			int iFoodLevel = oldPlayer.foodStats.getFoodLevel();
-+
-+			iFoodLevel -= 6; // knock off a 1 pip food penalty
-+
-+			if ( iFoodLevel < 24 )
-+			{
-+				iFoodLevel = 24;
++			int foodLevel = oldPlayer.foodStats.getFoodLevel();
++			foodLevel -= 6; // knock off a 1 pip food penalty
++			
++			// Limit food decrease so the player cannot spawn below peckish 
++			if (foodLevel < 24) {
++				foodLevel = 24;
 +			}
 +
-+			newPlayer.foodStats.setFoodLevel( iFoodLevel );            
++			newPlayer.foodStats.setFoodLevel(foodLevel);            
 +		}
 +
-+		if ( !FCUtilsWorld.GameProgressHasNetherBeenAccessedServerOnly() || FCBetterThanWolves.alwaysSpawnTogether )
-+		{
++		if (!FCUtilsWorld.GameProgressHasNetherBeenAccessedServerOnly() || FCBetterThanWolves.alwaysSpawnTogether) {
 +			// early game, players are tied to respawning together
-+
 +			FCSpawnLocation recentLocation = newWorld.GetSpawnLocationList().GetMostRecentSpawnLocation();
 +
-+			if ( recentLocation != null )
-+			{
-+				long lDeltaTime = lOverworldTime - recentLocation.m_lSpawnTime;
++			if (recentLocation != null) {
++				long lDeltaTime = overworldTime - recentLocation.m_lSpawnTime;
 +
-+				if ( lDeltaTime > 0 && lDeltaTime < FCUtilsHardcoreSpawn.m_iHardcoreSpawnTimeBetweenReassignments )
-+				{
-+					if ( AssignPlayerToOldSpawnPosWithVariance( newWorld, newPlayer,  
-+							new ChunkCoordinates( recentLocation.m_iIPos, recentLocation.m_iJPos, recentLocation.m_iKPos ), 
-+							recentLocation.m_lSpawnTime ) )
++				if (lDeltaTime > 0 && lDeltaTime < FCUtilsHardcoreSpawn.m_iHardcoreSpawnTimeBetweenReassignments) {
++					if (AssignPlayerToOldSpawnPosWithVariance(newWorld, newPlayer, new ChunkCoordinates(
++								recentLocation.m_iIPos,
++								recentLocation.m_iJPos,
++								recentLocation.m_iKPos),
++							recentLocation.m_lSpawnTime))
 +					{
 +						return;
 +					}
@@ -167,141 +151,136 @@
 +
 +		// if a day has passed since the last spawn assignment, assign a new one
 +
-+		if ( oldSpawnPos == null || !bSoftRespawn || 
-+				!AssignPlayerToOldSpawnPosWithVariance( newWorld, newPlayer, oldSpawnPos, lTimeOfLastPlayerSpawnAssignment ) )
-+		{
-+			if ( !AssignNewHardcoreSpawnLocation( newWorld, server, newPlayer ) )
-+			{
-+				ReturnPlayerToOriginalSpawn( newWorld, newPlayer );
-+
++		if (oldSpawnPos == null || !softRespawn || !AssignPlayerToOldSpawnPosWithVariance(newWorld, newPlayer, oldSpawnPos, timeOfLastPlayerSpawnAssignment)) {
++			if (!AssignNewHardcoreSpawnLocation(newWorld, server, newPlayer)) {
++				ReturnPlayerToOriginalSpawn(newWorld, newPlayer);
 +				return;
 +			}
 +		}
 +
 +		ChunkCoordinates newSpawnPos = newPlayer.m_HardcoreSpawnChunk;
 +
-+		if ( newSpawnPos != null )
-+		{
-+			newWorld.GetSpawnLocationList().AddPointIfNotAlreadyPresent( newSpawnPos.posX, newSpawnPos.posY, newSpawnPos.posZ, newPlayer.m_lTimeOfLastSpawnAssignment );
++		if (newSpawnPos != null) {
++			newWorld.GetSpawnLocationList().AddPointIfNotAlreadyPresent(
++					newSpawnPos.posX,
++					newSpawnPos.posY,
++					newSpawnPos.posZ,
++					newPlayer.m_lTimeOfLastSpawnAssignment);
 +		}
 +	}
 +
-+	public static boolean AssignNewHardcoreSpawnLocation( World world, MinecraftServer server, EntityPlayerMP player )
-+	{    	
-+		boolean bLocationFound = false;
++	public static boolean AssignNewHardcoreSpawnLocation(World world, MinecraftServer server, EntityPlayerMP player) {
++		boolean locationFound = false;
++		boolean blacklistedLocationFound = false;
 +
-+		double dSpawnRadius = FCUtilsHardcoreSpawn.GetPlayerSpawnRadius();
-+		double dSpawnExclusionRadius = FCUtilsHardcoreSpawn.GetPlayerSpawnExclusionRadius();
-+		double dSpawnDeltaRadius = dSpawnRadius - dSpawnExclusionRadius;
++		double spawnRadius = FCUtilsHardcoreSpawn.GetPlayerSpawnRadius();
++		double exclusionRadius = FCUtilsHardcoreSpawn.GetPlayerSpawnExclusionRadius();
++		double spawnDeltaRadius = spawnRadius - exclusionRadius;
 +
-+		double dExclusionRadiusSq = dSpawnExclusionRadius * dSpawnExclusionRadius;
-+		double dDeltaSquaredRadii = ( dSpawnRadius * dSpawnRadius ) - dExclusionRadiusSq; 
++		double exclusionRadiusSq = exclusionRadius * exclusionRadius;
++		double deltaSquaredRadii = (spawnRadius * spawnRadius) - exclusionRadiusSq; 
 +
-+		for ( int iAttemptCount = 0; iAttemptCount < 20; iAttemptCount++ )
-+		{
++		for (int attempts = 0; attempts < SPAWN_ATTEMPT_COUNT; attempts++) {
 +			// distance used formula: dist = sqrt(rnd()*(R2^2-R1^2)+R1^2) to obtain even distribution
 +			// The shape involved here (2D doughnut) is called an 'Annulus' 
-+			double dSpawnDistance = Math.sqrt( world.rand.nextDouble() * dDeltaSquaredRadii + dExclusionRadiusSq );
++			double spawnDistance = Math.sqrt(world.rand.nextDouble() * deltaSquaredRadii + exclusionRadiusSq);
 +
-+			double dSpawnYaw = world.rand.nextDouble() * Math.PI * 2D;
++			double spawnYaw = world.rand.nextDouble() * Math.PI * 2D;
 +
-+			double dXOffset = -Math.sin( dSpawnYaw ) * dSpawnDistance; 
-+			double dZOffset = Math.cos( dSpawnYaw ) * dSpawnDistance;
++			double xOffset = -Math.sin(spawnYaw) * spawnDistance; 
++			double zOffset = Math.cos(spawnYaw) * spawnDistance;
 +
-+			int newSpawnX = MathHelper.floor_double( dXOffset ) + world.worldInfo.getSpawnX();
-+			int newSpawnZ = MathHelper.floor_double( dZOffset ) + world.worldInfo.getSpawnZ();
++			int newSpawnX = MathHelper.floor_double(xOffset) + world.worldInfo.getSpawnX();
++			int newSpawnZ = MathHelper.floor_double(zOffset) + world.worldInfo.getSpawnZ();
 +
-+			int newSpawnY = world.getTopSolidOrLiquidBlock( newSpawnX, newSpawnZ );
++			int newSpawnY = world.getTopSolidOrLiquidBlock(newSpawnX, newSpawnZ);
 +			
 +			BiomeGenBase respawnBiome = world.getBiomeGenForCoords(newSpawnX, newSpawnZ);
 +			
-+			if (blacklistedBiomes.contains(respawnBiome)) {
-+				//TODO: needs more thought than a simple bail out for all cases
-+				//continue;
++			if (blacklistedLocationFound) {
++				continue;
 +			}
++			
++			boolean isBiomeBlacklisted = blacklistedBiomes.contains(respawnBiome);
 +
-+			if ( newSpawnY >= world.provider.getAverageGroundLevel() )
-+			{
-+				Material targetMaterial = world.getBlockMaterial( newSpawnX, newSpawnY, newSpawnZ );
++			if (newSpawnY >= world.provider.getAverageGroundLevel()) {
++				Material targetMaterial = world.getBlockMaterial(newSpawnX, newSpawnY, newSpawnZ);
 +
-+				if ( targetMaterial == null || !targetMaterial.isLiquid() )
-+				{	        	
-+					player.setLocationAndAngles( (double)newSpawnX + 0.5D, (double)newSpawnY + 1.5D, (double)newSpawnZ + 0.5D, world.rand.nextFloat() * 360F, 0.0F);
++				if (targetMaterial == null || !targetMaterial.isLiquid()) {
++					player.setLocationAndAngles((double)newSpawnX + 0.5D, (double)newSpawnY + 1.5D, (double)newSpawnZ + 0.5D, world.rand.nextFloat() * 360F, 0.0F);
 +
-+					BumpPlayerPosUpwardsUntilValidSpawnReached( player );		        	
++					BumpPlayerPosUpwardsUntilValidSpawnReached(player);		        	
 +
-+					long lOverworldTime = FCUtilsWorld.GetOverworldTimeServerOnly();	        		
++					long overworldTime = FCUtilsWorld.GetOverworldTimeServerOnly();	        		
 +
-+					if ( FCBetterThanWolves.IsSinglePlayerNonLan() || MinecraftServer.getServer().getCurrentPlayerCount() == 1 )
-+					{
++					if (FCBetterThanWolves.IsSinglePlayerNonLan() || MinecraftServer.getServer().getCurrentPlayerCount() == 1) {
 +						// set the time to the next morning if this is single player
++						overworldTime = ((overworldTime / 24000L) + 1) * 24000L;
 +
-+						lOverworldTime = ( ( lOverworldTime / 24000L ) + 1 ) * 24000L;
++						for (int i = 0; i < MinecraftServer.getServer().worldServers.length; ++i) {
++							WorldServer tempServer = MinecraftServer.getServer().worldServers[i];
 +
-+						for ( int iTempCount = 0; iTempCount < MinecraftServer.getServer().worldServers.length; ++iTempCount)
-+						{
-+							WorldServer tempServer = MinecraftServer.getServer().worldServers[iTempCount];
++							tempServer.setWorldTime(overworldTime);
 +
-+							tempServer.setWorldTime( lOverworldTime );
-+
-+							if ( tempServer.worldInfo.isThundering() )
-+							{
++							if (tempServer.worldInfo.isThundering()) {
 +								// remove any storms
++								tempServer.worldInfo.setThundering(false);
 +
-+								tempServer.worldInfo.setThundering( false );
-+
-+								server.getConfigurationManager().sendPacketToAllPlayers( new Packet70GameEvent( 8, 0 ) );
++								server.getConfigurationManager().sendPacketToAllPlayers(new Packet70GameEvent(8, 0));
 +							}
 +						}	        	        
 +					}
 +
-+					player.m_lTimeOfLastSpawnAssignment = lOverworldTime;
++					player.m_lTimeOfLastSpawnAssignment = overworldTime;
 +
-+					ChunkCoordinates newSpawnPos = new ChunkCoordinates( MathHelper.floor_double( player.posX ),
-+							MathHelper.floor_double( player.posY ), MathHelper.floor_double( player.posZ ) );
++					ChunkCoordinates newSpawnPos = new ChunkCoordinates(
++							MathHelper.floor_double(player.posX),
++							MathHelper.floor_double(player.posY),
++							MathHelper.floor_double(player.posZ));
 +
 +					player.m_HardcoreSpawnChunk = newSpawnPos;
 +
-+					bLocationFound = true;
-+
-+					break;
++					// Prefer biomes which are not blacklisted, but if no other biomes are found then spawn the player anyway
++					if (isBiomeBlacklisted) {
++						blacklistedLocationFound = true;
++					}
++					else {
++						locationFound = true;
++						break;
++					}
 +				}
 +			}
 +		}
 +
-+		return bLocationFound;
++		return locationFound || blacklistedLocationFound;
 +	}
 +
-+	private static boolean AssignPlayerToOldSpawnPosWithVariance( World world, EntityPlayerMP player, ChunkCoordinates spawnPos, long lTimeOfLastPlayerSpawnAssignment )
-+	{    	
-+		for ( int iAttemptCount = 0; iAttemptCount < 20; iAttemptCount++ )
-+		{
++	private static boolean AssignPlayerToOldSpawnPosWithVariance(World world, EntityPlayerMP player, ChunkCoordinates spawnPos, long timeOfLastPlayerSpawnAssignment) {
++		for (int i = 0; i < 20; i++) {
 +			// square root is used on distance to get an even distriubtion of points at any circumference,
 +			// with more points as you move further from the origin to compensate for increased circumference
 +
-+			double dSpawnDistance = Math.sqrt( world.rand.nextDouble() ) * GetPlayerMultipleRespawnRadius();
++			double spawnDistance = Math.sqrt(world.rand.nextDouble()) * GetPlayerMultipleRespawnRadius();
 +
-+			double dSpawnYaw = world.rand.nextDouble() * Math.PI * 2D;
++			double spawnYaw = world.rand.nextDouble() * Math.PI * 2D;
 +
-+			double dXOffset = -Math.sin( dSpawnYaw ) * dSpawnDistance; 
-+			double dZOffset = Math.cos( dSpawnYaw ) * dSpawnDistance;
++			double xOffset = -Math.sin(spawnYaw) * spawnDistance; 
++			double zOffset = Math.cos(spawnYaw) * spawnDistance;
 +
-+			int iNewSpawnI = MathHelper.floor_double( dXOffset ) + spawnPos.posX;
-+			int iNewSpawnK = MathHelper.floor_double( dZOffset ) + spawnPos.posZ;
++			int newSpawnX = MathHelper.floor_double(xOffset) + spawnPos.posX;
++			int newSpawnZ = MathHelper.floor_double(zOffset) + spawnPos.posZ;
 +
-+			int iNewSpawnJ = world.getTopSolidOrLiquidBlock( iNewSpawnI, iNewSpawnK );
++			int newSpawnY = world.getTopSolidOrLiquidBlock(newSpawnX, newSpawnZ);
 +
-+			if ( iNewSpawnJ >= world.provider.getAverageGroundLevel() )
-+			{
-+				Material targetMaterial = world.getBlockMaterial( iNewSpawnI, iNewSpawnJ, iNewSpawnK );
++			if (newSpawnY >= world.provider.getAverageGroundLevel()) {
++				Material targetMaterial = world.getBlockMaterial(newSpawnX, newSpawnY, newSpawnZ);
 +
-+				if ( targetMaterial == null || !targetMaterial.isLiquid() )
-+				{	        	
-+					player.setLocationAndAngles( (double)iNewSpawnI + 0.5D, (double)iNewSpawnJ + 1.5D, (double)iNewSpawnK + 0.5D, world.rand.nextFloat() * 360F, 0.0F);
++				if (targetMaterial == null || !targetMaterial.isLiquid()) {	        	
++					player.setLocationAndAngles(newSpawnX + 0.5D, newSpawnY + 1.5D, newSpawnZ + 0.5D, world.rand.nextFloat() * 360F, 0.0F);
 +
-+					BumpPlayerPosUpwardsUntilValidSpawnReached( player );		        	
++					BumpPlayerPosUpwardsUntilValidSpawnReached(player);		        	
 +
-+					player.m_lTimeOfLastSpawnAssignment = lTimeOfLastPlayerSpawnAssignment;
++					player.m_lTimeOfLastSpawnAssignment = timeOfLastPlayerSpawnAssignment;
 +
 +					player.m_HardcoreSpawnChunk = spawnPos;
 +
@@ -310,27 +289,27 @@
 +			}
 +		}
 +
-+		return AssignPlayerToOldSpawnPos( world, player, spawnPos, lTimeOfLastPlayerSpawnAssignment );
++		return AssignPlayerToOldSpawnPos(world, player, spawnPos, timeOfLastPlayerSpawnAssignment);
 +	}
 +
-+	private static boolean AssignPlayerToOldSpawnPos( World world, EntityPlayerMP player, ChunkCoordinates spawnPos, long lTimeOfLastPlayerSpawnAssignment )
-+	{
-+		int iSpawnI = MathHelper.floor_double( spawnPos.posX );
-+		int iSpawnK = MathHelper.floor_double( spawnPos.posZ );
-+		int iSpawnJ = world.getTopSolidOrLiquidBlock( iSpawnI, iSpawnK );
++	private static boolean AssignPlayerToOldSpawnPos(World world, EntityPlayerMP player, ChunkCoordinates spawnPos, long timeOfLastPlayerSpawnAssignment) {
++		int spawnX = MathHelper.floor_double(spawnPos.posX);
++		int spawnY = MathHelper.floor_double(spawnPos.posZ);
++		int spawnZ = world.getTopSolidOrLiquidBlock(spawnX, spawnY);
 +
-+		player.setLocationAndAngles( (double)iSpawnI + 0.5F, (double)iSpawnJ + 1.5F, (double)iSpawnK + 0.5F, world.rand.nextFloat() * 360F, 0.0F);
++		player.setLocationAndAngles(spawnX + 0.5F, spawnZ + 1.5F, spawnY + 0.5F, world.rand.nextFloat() * 360F, 0.0F);
 +
-+		Material targetMaterial = world.getBlockMaterial( iSpawnI, iSpawnJ + 1, iSpawnK );
++		Material targetMaterial = world.getBlockMaterial(spawnX, spawnZ + 1, spawnY);
 +
-+		if ( OffsetPlayerPositionUntilValidSpawn( world, player ) )
-+		{
-+			BumpPlayerPosUpwardsUntilValidSpawnReached( player );
++		if (OffsetPlayerPositionUntilValidSpawn(world, player)) {
++			BumpPlayerPosUpwardsUntilValidSpawnReached(player);
 +
-+			player.m_lTimeOfLastSpawnAssignment = lTimeOfLastPlayerSpawnAssignment;
++			player.m_lTimeOfLastSpawnAssignment = timeOfLastPlayerSpawnAssignment;
 +
-+			ChunkCoordinates newSpawnPos = new ChunkCoordinates( MathHelper.floor_double( player.posX ),
-+					MathHelper.floor_double( player.posY ), MathHelper.floor_double( player.posZ ) );
++			ChunkCoordinates newSpawnPos = new ChunkCoordinates(
++					MathHelper.floor_double(player.posX),
++					MathHelper.floor_double(player.posY),
++					MathHelper.floor_double(player.posZ));
 +
 +			player.m_HardcoreSpawnChunk = newSpawnPos;
 +
@@ -340,68 +319,59 @@
 +		return false;
 +	}
 +
-+	private static boolean OffsetPlayerPositionUntilValidSpawn( World world, EntityPlayerMP player )
-+	{
-+		int iSpawnI = MathHelper.floor_double( player.posX );
-+		int iSpawnK = MathHelper.floor_double( player.posZ );        
++	private static boolean OffsetPlayerPositionUntilValidSpawn(World world, EntityPlayerMP player) {
++		int spawnX = MathHelper.floor_double(player.posX);
++		int spawnZ = MathHelper.floor_double(player.posZ);        
 +
-+		for ( int iAttemptCount = 0; iAttemptCount < 20; iAttemptCount++ )
-+		{
-+			int iSpawnJ = world.getTopSolidOrLiquidBlock( iSpawnI, iSpawnK );
++		for (int i = 0; i < 20; i++) {
++			int spawnY = world.getTopSolidOrLiquidBlock(spawnX, spawnZ);
 +
-+			Material targetMaterial = world.getBlockMaterial( iSpawnI, iSpawnJ, iSpawnK );
++			Material targetMaterial = world.getBlockMaterial(spawnX, spawnY, spawnZ);
 +
-+			if ( targetMaterial == null || !targetMaterial.isLiquid() )
-+			{
-+				player.setLocationAndAngles( (double)iSpawnI + 0.5D, player.posY, (double)iSpawnK + 0.5D, player.rotationYaw, player.rotationPitch);
++			if (targetMaterial == null || !targetMaterial.isLiquid()) {
++				player.setLocationAndAngles((double)spawnX + 0.5D, player.posY, (double)spawnZ + 0.5D, player.rotationYaw, player.rotationPitch);
 +
 +				return true;
 +			}
 +
-+			iSpawnI += world.rand.nextInt( 11 ) - 5;
-+			iSpawnK += world.rand.nextInt( 11 ) - 5;
++			spawnX += world.rand.nextInt(11) - 5;
++			spawnZ += world.rand.nextInt(11) - 5;
 +		}
 +
 +		return false;
 +	}
 +
-+	private static void ReturnPlayerToOriginalSpawn( World world, EntityPlayerMP player )
-+	{
++	private static void ReturnPlayerToOriginalSpawn(World world, EntityPlayerMP player) {
 +		ChunkCoordinates spawnPos = world.getSpawnPoint();
 +
-+		int spawnI = spawnPos.posX;
-+		int spawnJ = spawnPos.posY;
-+		int spawnK = spawnPos.posZ;
++		int spawnX = spawnPos.posX;
++		int spawnY = spawnPos.posY;
++		int spawnZ = spawnPos.posZ;
 +
-+		if ( !world.provider.hasNoSky && world.getWorldInfo().getGameType() != EnumGameType.ADVENTURE )
-+		{
-+			spawnI += world.rand.nextInt(20) - 10;
-+			spawnJ = world.getTopSolidOrLiquidBlock( spawnI, spawnK );
-+			spawnK += world.rand.nextInt(20) - 10;
++		if (!world.provider.hasNoSky && world.getWorldInfo().getGameType() != EnumGameType.ADVENTURE) {
++			spawnX += world.rand.nextInt(20) - 10;
++			spawnY = world.getTopSolidOrLiquidBlock(spawnX, spawnZ);
++			spawnZ += world.rand.nextInt(20) - 10;
 +		}
 +
-+		player.setLocationAndAngles( (double)spawnI + 0.5D, (double)spawnJ + 1.5D, (double)spawnK + 0.5D, 0.0F, 0.0F );
++		player.setLocationAndAngles((double)spawnX + 0.5D, (double)spawnY + 1.5D, (double)spawnZ + 0.5D, 0.0F, 0.0F);
 +
-+		BumpPlayerPosUpwardsUntilValidSpawnReached( player );
++		BumpPlayerPosUpwardsUntilValidSpawnReached(player);
 +
 +		player.m_lTimeOfLastSpawnAssignment = 0;
 +
 +		player.m_HardcoreSpawnChunk = null;        
 +	}
 +
-+	private static void BumpPlayerPosUpwardsUntilValidSpawnReached( EntityPlayerMP player )
-+	{
-+		do
-+		{
-+			if ( player.posY <= 0.0D )
-+			{
++	private static void BumpPlayerPosUpwardsUntilValidSpawnReached(EntityPlayerMP player) {
++		do {
++			if (player.posY <= 0.0D) {
 +				break;
 +			}
 +
-+			player.setLocationAndAngles( player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
++			player.setLocationAndAngles(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
 +
-+			if ( player.worldObj.getCollidingBoundingBoxes( player, player.boundingBox).isEmpty())
-+			{
++			if (player.worldObj.getCollidingBoundingBoxes(player, player.boundingBox).isEmpty()) {
 +				break;
 +			}
 +
@@ -410,18 +380,17 @@
 +		while (true);
 +	}
 +
-+	public static boolean IsInLootedTempleRadius( World world, int iX, int iZ )
-+	{
-+		int iSpawnX = world.getWorldInfo().getSpawnX();
-+		int iSpawnZ = world.getWorldInfo().getSpawnZ();
++	public static boolean IsInLootedTempleRadius(World world, int x, int z) {
++		int spawnX = world.getWorldInfo().getSpawnX();
++		int spawnZ = world.getWorldInfo().getSpawnZ();
 +
-+		double dDeltaX = (double)( iSpawnX - iX );
-+		double dDeltaZ = (double)( iSpawnZ - iZ );
++		double deltaX = (double)(spawnX - x);
++		double deltaZ = (double)(spawnZ - z);
 +
-+		double dDistSqFromSpawn = dDeltaX * dDeltaX + dDeltaZ * dDeltaZ;    	
-+		double dLootedRadius = GetLootedTempleRadius();    	
++		double distSqFromSpawn = deltaX * deltaX + deltaZ * deltaZ;    	
++		double lootedRadius = GetLootedTempleRadius();    	
 +
-+		return dDistSqFromSpawn < dLootedRadius * dLootedRadius;
++		return distSqFromSpawn < lootedRadius * lootedRadius;
 +	}
 +}
 \ No newline at end of file

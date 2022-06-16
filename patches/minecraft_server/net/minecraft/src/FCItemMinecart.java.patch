@@ -1,9 +1,11 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCItemMinecart.java
-@@ -0,0 +1,35 @@
+@@ -0,0 +1,50 @@
 +// FCMOD
 +
 +package net.minecraft.src;
++
++import java.util.List;
 +
 +public class FCItemMinecart extends ItemMinecart
 +{
@@ -18,17 +20,30 @@
 +	{
 +        FCUtilsBlockPos offsetPos = new FCUtilsBlockPos( 0, 0, 0, iFacing );
 +        
-+        double dXPos = i + ( offsetPos.i * 1.35D ) + 0.5D;
++        double dXPos = i + ( offsetPos.i * 1D ) + 0.5D;
 +        double dYPos = j + offsetPos.j;
-+        double dZPos = k + ( offsetPos.k * 1.35D ) + 0.5D;
-+    	
++        double dZPos = k + ( offsetPos.k * 1D ) + 0.5D;
++
++        // check for already present minecarts
++		List list = world.getEntitiesWithinAABB(EntityMinecart.class,
++				AxisAlignedBB.getAABBPool().getAABB(dXPos, dYPos, dZPos, dXPos + 1, dYPos + 1, dZPos + 1));
++
++		if (list != null && list.size() > 0) {
++			// minecart was found, don't eject new minecart
++			return false;
++		}
++
 +        Entity entity = EntityMinecart.createMinecart( world, 
 +        	dXPos, dYPos, dZPos, ( (ItemMinecart)stack.getItem() ).minecartType );
-+        
++
++        // speed of minecart getting shot out: just 1 or -1 in the offset direction atm
++
 +        world.spawnEntityInWorld( entity );
-+        
++
++        entity.setVelocity((double) (offsetPos.i), (double) (offsetPos.j), (double) (offsetPos.k));
++
 +        world.playAuxSFX( 1000, i, j, k, 0 ); // normal pitch click							        
-+        
++
 +		return true;
 +	}
 +    

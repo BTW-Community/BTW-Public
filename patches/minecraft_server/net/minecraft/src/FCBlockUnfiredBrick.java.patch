@@ -132,7 +132,7 @@
 +	    	if ( collisionList != null && collisionList.size() > 0 )
 +	    	{			
 +		        world.playSoundEffect( (double)i + 0.5D, (double)j + 0.5D, (double)k + 0.5D, 
-+		        	stepSound.getStepSound(), ( stepSound.getVolume() + 1.0F ) / 2.0F, stepSound.getPitch() * 0.8F );
++		        		stepSound.getStepSound(), ( stepSound.getStepVolume() + 1.0F ) / 2.0F, stepSound.getStepPitch() * 0.8F );
 +		        
 +	            dropBlockAsItem( world, i, j, k, world.getBlockMetadata( i, j, k ), 0 );
 +	            

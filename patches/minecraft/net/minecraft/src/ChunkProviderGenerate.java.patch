@@ -128,8 +128,16 @@
          }
  
          int var12;
-@@ -543,6 +571,10 @@
+@@ -539,10 +567,18 @@
+                 {
+                     this.worldObj.setBlock(var12 + var4, var14, var13 + var5, Block.snow.blockID, 0, 2);
+                 }
++                else if (this.worldObj.canSnowAt(var12 + var4, var14 + 1, var13 + var5))
++                {
++                    this.worldObj.setBlock(var12 + var4, var14 + 1, var13 + var5, Block.snow.blockID, 0, 2);
+             }
          }
++        }
  
          BlockSand.fallInstantly = false;
 +
@@ -139,7 +147,7 @@
      }
  
      /**
-@@ -612,4 +644,67 @@
+@@ -612,4 +648,67 @@
              this.scatteredFeatureGenerator.generate(this, this.worldObj, par1, par2, (byte[])null);
          }
      }

@@ -214,7 +214,7 @@
 +    	StepSound stepSound = block.GetStepSound(world, i, j, k);
 +
 +        world.playSoundEffect( (double)i + 0.5D, (double)j + 0.5D, (double)k + 0.5D, stepSound.getPlaceSound(), 
-+        	( stepSound.getVolume() + 1F ) / 2F, stepSound.getPitch() * 0.8F );
++        		( stepSound.getPlaceVolume() + 1F ) / 2F, stepSound.getPlacePitch() * 0.8F );
 +    }
 +    
 +	public int GetTargetFacingPlacedByBlockDispenser( int iDispenserFacing )

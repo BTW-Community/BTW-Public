@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockCrops.java
-@@ -0,0 +1,303 @@
+@@ -0,0 +1,309 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -174,22 +174,16 @@
 +        return true;
 +    }
 +    
-+    protected void AttemptToGrow( World world, int i, int j, int k, Random rand )
-+    {
-+    	if ( GetWeedsGrowthLevel( world, i, j, k ) == 0 &&  
-+    		world.GetBlockNaturalLightValue( i, j + 1, k ) >= GetLightLevelForGrowth() )
-+	    {
-+	        Block blockBelow = Block.blocksList[world.getBlockId( i, j - 1, k )];
++    protected void AttemptToGrow(World world, int x, int y, int z, Random rand) {
++    	if (GetWeedsGrowthLevel(world, x, y, z) == 0 && canGrowAtCurrentLightLevel(world, x, y, z)) {
++	        Block blockBelow = Block.blocksList[world.getBlockId(x, y - 1, z)];
 +	        
-+	        if ( blockBelow != null && 
-+	        	blockBelow.IsBlockHydratedForPlantGrowthOn( world, i, j - 1, k ) )
-+	        {
-+	    		float fGrowthChance = GetBaseGrowthChance( world, i, j, k ) *
-+	    			blockBelow.GetPlantGrowthOnMultiplier( world, i, j - 1, k, this );
++	        if (blockBelow != null && blockBelow.IsBlockHydratedForPlantGrowthOn(world, x, y - 1, z)) {
++	    		float fGrowthChance = GetBaseGrowthChance(world, x, y, z) *
++	    			blockBelow.GetPlantGrowthOnMultiplier(world, x, y - 1, z, this);
 +	    		
-+	            if ( rand.nextFloat() <= fGrowthChance )
-+	            {
-+	            	IncrementGrowthLevel( world, i, j, k );
++	            if (rand.nextFloat() <= fGrowthChance) {
++	            	IncrementGrowthLevel(world, x, y, z);
 +	            }
 +	        }
 +	    }
@@ -261,9 +255,21 @@
 +    	return GetGrowthLevel( iMetadata ) >= 7;
 +    }
 +    
-+    protected int GetLightLevelForGrowth()
-+    {
-+    	return 11;
++    protected int GetLightLevelForGrowth() {
++    	return 9;
++    }
++    
++    protected boolean canGrowAtCurrentLightLevel(World world, int x, int y, int z) {
++    	if (this.requiresNaturalLight()) {
++    		return world.GetBlockNaturalLightValue(x, y, z) >= GetLightLevelForGrowth();
++    	}
++    	else {
++    		return world.getBlockLightValue(x, y, z) > GetLightLevelForGrowth();
++    	}
++    }
++    
++    protected boolean requiresNaturalLight() {
++    	return true;
 +    }
 +    
 +	//----------- Client Side Functionality -----------//

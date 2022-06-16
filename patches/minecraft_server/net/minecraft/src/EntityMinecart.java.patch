@@ -57,7 +57,7 @@
  
      public Vec3 func_70489_a(double par1, double par3, double par5)
      {
-@@ -1033,4 +1049,12 @@
+@@ -1033,4 +1049,40 @@
      {
          return this.entityName;
      }
@@ -68,5 +68,33 @@
 +    {
 +    	return !entity.IsItemEntity();
  }
++    
++    @Override
++	public boolean onBlockDispenserConsume(FCBlockBlockDispenser blockDispenser, FCTileEntityBlockDispenser tileEentityDispenser) {
++
++		int minecartType = getMinecartType();
++		// dismount any entities riding the minecart
++        if( riddenByEntity != null) {
++        	riddenByEntity.mountEntity( this );
++        }
++
++		setDead();	        			
++		switch ( minecartType ) {            			
++			case 1: // chest cart
++				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.minecartCrate.itemID, 0 );      				
++				break;
++
++			case 2: // furnace	        					
++				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.minecartPowered.itemID, 0 );	            				
++				break;
++
++			default: // 0 = empty cart, and this also covers the new minecart types (tnt, hopper & mob-spawner)	            				
++				FCUtilsInventory.AddSingleItemToInventory( tileEentityDispenser, Item.minecartEmpty.itemID, 0 );	            				
++				break;	            				
++		}
++
++        worldObj.playAuxSFX( 1001, (int)posX, (int)posY, (int)posZ, 0 ); // high pitch click	
++        return true;
++	}
 +    // END FCMOD
 +}

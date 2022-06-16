@@ -237,16 +237,19 @@
          if (!this.mc.gameSettings.fancyGraphics)
          {
              var1 /= 2.0F;
-@@ -1292,7 +1360,7 @@
+@@ -1292,7 +1360,10 @@
                  int var20 = var3.getBlockId(var17, var19 - 1, var18);
                  BiomeGenBase var21 = var3.getBiomeGenForCoords(var17, var18);
  
 -                if (var19 <= var5 + var7 && var19 >= var5 - var7 && var21.canSpawnLightningBolt() && var21.getFloatTemperature() >= 0.2F)
++                // FCMOD: Changed (client only) for clarity
++                //if (var19 <= var5 + var7 && var19 >= var5 - var7 && var21.canSpawnLightningBolt() && var21.getFloatTemperature() >= 0.2F)
 +                if ( var19 <= var5 + var7 && var19 >= var5 - var7 && var21.CanRainInBiome() && !var21.canSnowAt(var3, var17, var19, var18))
++            	// END FCMOD
                  {
                      float var22 = this.random.nextFloat();
                      float var23 = this.random.nextFloat();
-@@ -1301,7 +1369,7 @@
+@@ -1301,7 +1372,7 @@
                      {
                          if (Block.blocksList[var20].blockMaterial == Material.lava)
                          {
@@ -255,7 +258,7 @@
                          }
                          else
                          {
-@@ -1314,7 +1382,7 @@
+@@ -1314,7 +1385,7 @@
                                  var12 = (double)((float)var18 + var23);
                              }
  
@@ -264,7 +267,7 @@
                          }
                      }
                  }
-@@ -1326,11 +1394,21 @@
+@@ -1326,11 +1397,21 @@
  
                  if (var10 > var2.posY + 1.0D && var3.getPrecipitationHeight(MathHelper.floor_double(var2.posX), MathHelper.floor_double(var2.posZ)) > MathHelper.floor_double(var2.posY))
                  {
@@ -286,7 +289,7 @@
                  }
              }
          }
-@@ -1341,9 +1419,13 @@
+@@ -1341,9 +1422,13 @@
       */
      protected void renderRainSnow(float par1)
      {
@@ -302,7 +305,7 @@
          {
              this.enableLightmap((double)par1);
  
-@@ -1352,121 +1434,120 @@
+@@ -1352,121 +1437,120 @@
                  this.rainXCoords = new float[1024];
                  this.rainYCoords = new float[1024];
  
@@ -481,7 +484,7 @@
                              }
                              else
                              {
-@@ -1474,29 +1555,29 @@
+@@ -1474,29 +1558,29 @@
                                  {
                                      if (var18 >= 0)
                                      {
@@ -524,7 +527,7 @@
                              }
                          }
                      }
-@@ -1505,7 +1586,7 @@
+@@ -1505,7 +1589,7 @@
  
              if (var18 >= 0)
              {
@@ -533,7 +536,7 @@
              }
  
              GL11.glEnable(GL11.GL_CULL_FACE);
-@@ -1612,13 +1693,27 @@
+@@ -1612,13 +1696,27 @@
              this.fogColorRed = 0.02F;
              this.fogColorGreen = 0.02F;
              this.fogColorBlue = 0.2F;
@@ -561,7 +564,7 @@
  
          float var22 = this.fogColor2 + (this.fogColor1 - this.fogColor2) * par1;
          this.fogColorRed *= var22;
-@@ -1639,6 +1734,12 @@
+@@ -1639,6 +1737,12 @@
                  var14 = 0.0D;
              }
          }
@@ -574,7 +577,7 @@
  
          if (var14 < 1.0D)
          {
-@@ -1655,9 +1756,9 @@
+@@ -1655,9 +1759,9 @@
  
          float var23;
  
@@ -586,7 +589,7 @@
              this.fogColorRed = this.fogColorRed * (1.0F - var23) + this.fogColorRed * 0.7F * var23;
              this.fogColorGreen = this.fogColorGreen * (1.0F - var23) + this.fogColorGreen * 0.6F * var23;
              this.fogColorBlue = this.fogColorBlue * (1.0F - var23) + this.fogColorBlue * 0.6F * var23;
-@@ -1681,8 +1782,12 @@
+@@ -1681,8 +1785,12 @@
              }
  
              this.fogColorRed = this.fogColorRed * (1.0F - var23) + this.fogColorRed * var17 * var23;
@@ -599,7 +602,7 @@
          }
  
          if (this.mc.gameSettings.anaglyph)
-@@ -1762,8 +1867,32 @@
+@@ -1762,8 +1870,32 @@
                      GL11.glFogi(34138, 34139);
                  }
              }
@@ -632,7 +635,7 @@
                  float var8;
                  float var9;
                  float var10;
-@@ -1923,4 +2052,223 @@
+@@ -1923,4 +2055,223 @@
      {
          return par0EntityRenderer.mc;
      }
@@ -856,3 +859,4 @@
 +        return this.mc.thePlayer.isPotionActive(Potion.nightVision) ? this.getNightVisionBrightness(this.mc.thePlayer, var1) : 0.0F;
 +    }
 +}
+\ No newline at end of file
