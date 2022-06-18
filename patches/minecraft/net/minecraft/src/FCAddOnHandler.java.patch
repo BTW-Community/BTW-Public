@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCAddOnHandler.java
-@@ -0,0 +1,523 @@
+@@ -0,0 +1,529 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -12,11 +12,13 @@
 +import java.net.URISyntaxException;
 +import java.net.URL;
 +import java.net.URLClassLoader;
++import java.net.URLDecoder;
 +import java.util.ArrayList;
 +import java.util.Collections;
 +import java.util.Enumeration;
 +import java.util.HashMap;
 +import java.util.Iterator;
++import java.util.LinkedHashMap;
 +import java.util.LinkedList;
 +import java.util.List;
 +import java.util.Map;
@@ -30,7 +32,7 @@
 +
 +public class FCAddOnHandler
 +{
-+	public static Map<Class<? extends FCAddOn>, FCAddOn> m_ModList = new HashMap();
++	public static Map<Class<? extends FCAddOn>, FCAddOn> m_ModList = new LinkedHashMap();
 +	public static boolean m_bModsInitialized = false;
 +
 +	public static final Logger m_Logger;
@@ -87,12 +89,14 @@
 +		try {
 +			final File[] files = new File(m_LogFile.getParentFile().getCanonicalPath() + "/mods").listFiles();
 +			final List<URL> mods = new ArrayList<URL>();
-+			for (final File file : files) {
-+				if (file.isDirectory())
-+					mods.add(file.toURI().toURL());
-+				else {
-+					if (file.getPath().endsWith(".jar") || file.getPath().endsWith(".zip"))
-+						mods.add(getResource(file.toURI().toURL()));
++			if (files != null) {
++				for (final File file : files) {
++					if (file.isDirectory())
++						mods.add(file.toURI().toURL());
++					else {
++						if (file.getPath().endsWith(".jar") || file.getPath().endsWith(".zip"))
++							mods.add(getResource(file.toURI().toURL()));
++					}
 +				}
 +			}
 +
@@ -127,8 +131,10 @@
 +				current = loader.loadClass(name);
 +			} catch(Throwable e) {
 +				try {
-+					if (isFabricEnvironment())
++					if (isFabricEnvironment()) {
 +						continue;
++					}
++					
 +					loader = new URLClassLoader(resources);
 +					current = loader.loadClass(name);
 +				} catch (Throwable e2) {

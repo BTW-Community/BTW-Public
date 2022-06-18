@@ -1,14 +1,17 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCAddOnFinder.java
-@@ -0,0 +1,157 @@
+@@ -0,0 +1,187 @@
 +package net.minecraft.src;
 +
 +import java.io.File;
 +import java.io.FileInputStream;
 +import java.io.IOException;
++import java.io.UnsupportedEncodingException;
 +import java.net.MalformedURLException;
 +import java.net.URL;
 +import java.net.URLClassLoader;
++import java.net.URLDecoder;
++import java.nio.charset.StandardCharsets;
 +import java.util.ArrayList;
 +import java.util.Arrays;
 +import java.util.Collections;
@@ -20,69 +23,87 @@
 +
 +public class FCAddOnFinder {
 +	private static boolean debug = false;
-+	private static List<String> blacklist = Arrays.asList(new String[] { "net.minecraft.src.", "net.minecraft.client.",
-+			"net.minecraft.server.", "com.prupe.mcpatcher.", "argo.", "org.bouncycastle." });
++	private static List<String> blacklist = Arrays.asList(new String[] { "net.minecraft.*", "argo.*", "com.jcraft.*",
++			"com.prupe.mcpatcher.*", "paulscode.*", "org.bouncycastle.*" });
 +
-+	public static String[] getClasses(final ClassLoader classLoader) throws IOException {
-+		return getClasses(classLoader, "");
++	public static boolean isBlackListed(String name) {
++		for (String pkg : blacklist) {
++			pkg = pkg.replace("*", "");
++			if (name.startsWith(pkg))
++				return true;
++		}
++		return false;
 +	}
 +
-+	public static String[] getClasses(final ClassLoader classLoader, String packageName) throws IOException {
-+		assert classLoader != null;
-+		if (debug) {
-+			FCAddOnHandler.LogMessage("Class Loader class is " + classLoader.getClass().getName() + "\n"
-+					+ "Package name is " + classLoader.getClass().getName());
-+		}
-+		Enumeration<URL> resources;
-+		final String packagePath = packageName.replace('.', '/');
-+		final List<String> classes = new ArrayList<String>();
-+		if (classLoader instanceof URLClassLoader) {
-+			URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
-+			resources = Collections.enumeration(Arrays.asList(urlClassLoader.getURLs()));
-+		} else {
-+			resources = classLoader.getResources(packagePath);
-+		}
++	public static List<String> getClasses(final Enumeration<URL> resources) throws IOException {
++		assert resources != null;
++		final List<String> names = new ArrayList<String>();
++
 +		while (resources.hasMoreElements()) {
 +			final URL resource = resources.nextElement();
 +			final String proto = resource.getProtocol();
 +			if (debug) {
 +				FCAddOnHandler.LogMessage("RESOURCE: " + resource.getPath() + "\n" + "PROTO: " + proto);
 +			}
++
 +			if ("file".equals(proto)) {
-+				classes.addAll(findFileClasses(new File(resource.getFile()), packageName));
++				File file = new File(resource.getFile());
++				
++				if (file.isDirectory()) {
++					names.addAll(findFileClasses(file, ""));
++				} else {
++					names.addAll(findFileClasses(new File[] { file }, ""));
++				}
 +			} else if ("jar".equals(proto)) {
-+				classes.addAll(findJarClasses(resource));
++				names.addAll(findJarClasses(resource));
 +			} else {
 +				FCAddOnHandler.LogWarning("Protocol " + proto + " not supported");
 +				continue;
 +			}
 +		}
-+		return classes.toArray(new String[classes.size()]);
++
++		return names;
 +	}
 +
 +	private static List<String> findJarClasses(URL packageResource) {
 +		final List<String> classes = new ArrayList<String>();
++		
 +		try {
 +			if (debug) {
 +				FCAddOnHandler.LogMessage("Jar URL Path is " + packageResource.getPath());
 +			}
++			
 +			final URL fileUrl = new URL(packageResource.getPath());
 +			final String proto = fileUrl.getProtocol();
++			
 +			if ("file".equals(proto)) {
-+				final String filePath = fileUrl.getPath().substring(1); // skip leading /
++				String filePath = fileUrl.getPath().substring(1); // skip leading /
++				try {
++					filePath = URLDecoder.decode(filePath, StandardCharsets.UTF_8.name());
++				} catch (UnsupportedEncodingException e1) {
++					e1.printStackTrace();
++				}
++				
 +				int jarTagPos = filePath.indexOf(".jar!/");
-+				if (jarTagPos < 0)
++				
++				if (jarTagPos < 0) {
 +					jarTagPos = filePath.indexOf(".zip!/");
++				}
++				
 +				if (jarTagPos < 0) {
 +					FCAddOnHandler.LogWarning("Non-conformant jar file reference " + filePath + " !");
-+				} else {
++				}
++				else {
 +					final String packagePath = filePath.substring(jarTagPos + 6);
 +					final String jarFilename = filePath.substring(0, jarTagPos + 4);
++					
 +					if (debug) {
 +						FCAddOnHandler.LogMessage("Package " + packagePath);
 +						FCAddOnHandler.LogMessage("Jar file " + jarFilename);
 +					}
++					
 +					final String packagePrefix = packagePath.length() == 0 ? "" : packagePath + '/';
++					
 +					try {
 +						final JarInputStream jarFile = new JarInputStream(new FileInputStream(jarFilename));
 +						JarEntry jarEntry;
@@ -92,18 +113,18 @@
 +							if (jarEntry == null) {
 +								break;
 +							}
++							
 +							final String classPath = jarEntry.getName();
 +
 +							if (classPath.startsWith(packagePrefix) && classPath.endsWith(".class")) {
-+								final String className = classPath.substring(0, classPath.length() - 6).replace('/',
-+										'.');
++								final String className = classPath.substring(0, classPath.length() - 6).replace('/', '.');
 +
-+								if (className.indexOf(".") < 0)
++								if (className.indexOf(".") < 0) {
 +									continue jarLoop;
++								}
 +
-+								for (String prefix : blacklist) {
-+									if (className.startsWith(prefix))
-+										continue jarLoop;
++								if (isBlackListed(className)) {
++									continue jarLoop;
 +								}
 +
 +								if (debug) {
@@ -113,12 +134,14 @@
 +								classes.add(className);
 +							}
 +						}
++						
 +						jarFile.close();
 +					} catch (final Exception e) {
 +						e.printStackTrace();
 +					}
 +				}
-+			} else {
++			}
++			else {
 +				FCAddOnHandler.LogWarning("Nested protocol " + proto + " not supprted!");
 +			}
 +		} catch (final MalformedURLException e) {
@@ -128,26 +151,33 @@
 +	}
 +
 +	private static List<String> findFileClasses(File directory, String packageName) {
-+		final List<String> classes = new ArrayList<String>();
 +		if (!directory.exists()) {
 +			FCAddOnHandler.LogWarning("Directory " + directory.getAbsolutePath() + " does not exist.");
-+			return classes;
++			return new ArrayList<String>();
 +		}
 +		final File[] files = directory.listFiles();
++		
 +		if (debug) {
 +			FCAddOnHandler
 +					.LogMessage("Directory " + directory.getAbsolutePath() + " has " + files.length + " elements.");
 +		}
++		
++		return findFileClasses(files, packageName);
++	}
++		
++	private static List<String> findFileClasses(File[] files, String packageName) {
++		final List<String> classes = new ArrayList<String>();
++		
 +		if (packageName.length() > 0 && !packageName.endsWith("."))
 +			packageName = packageName + ".";
 +
-+		if (blacklist.indexOf(packageName) >= 0)
++		if (isBlackListed(packageName))
 +			return classes;
 +
 +		for (final File file : files) {
 +			if (file.isDirectory()) {
 +				assert !file.getName().contains(".");
-+				classes.addAll(findFileClasses(file, packageName + file.getName()));
++				classes.addAll(findFileClasses(file.listFiles(), packageName + file.getName()));
 +			} else if (file.getName().endsWith(".class")) {
 +				if (packageName.length() == 0)
 +					continue;
@@ -158,3 +188,4 @@
 +		return classes;
 +	}
 +}
+\ No newline at end of file
