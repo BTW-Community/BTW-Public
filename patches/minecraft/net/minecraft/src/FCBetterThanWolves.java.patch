@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,4407 @@
+@@ -0,0 +1,4411 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -25,7 +25,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.3.10";
++	public static final String fcVersionString = "1.3.10b";
 +
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +
@@ -3165,6 +3165,10 @@
 +			{
 +				String version = dataStream.readUTF();
 +
++				// Strips any letters from the version number
++				// as lettered versions are server-compatible
++				version = version.replaceAll("[a-zA-Z]", "");
++				
 +				if (version.equals(getVersion()))
 +				{
 +					mcInstance.thePlayer.addChatMessage("\247f" // white

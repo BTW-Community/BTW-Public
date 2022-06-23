@@ -1,3 +1,8 @@
+## Version 1.3.10b ##
+/--General--/
+- Changed server version checking to ignore lettered versions. This means that future versions with the same number and only differing in the ending letter will be treated as server compatible. Do note that this does not apply to 1.3.10. While 1.3.10 clients can connect to a 1.3.10b server without issue, they will still receive a warning when joining.
+- Fixed a crash in multiplayer on startup due to the log file being improperly initialized.
+
 ## Version 1.3.10 ##
 /--General--/
 - Fixed an issue where the game would load addons installed directly into the jar out of order (note that specifying load order for mods loaded from the mods folder is yet supported)

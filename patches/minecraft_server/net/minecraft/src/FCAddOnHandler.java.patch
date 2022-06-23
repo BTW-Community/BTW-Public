@@ -37,16 +37,16 @@
 +	
 +	static {
 +		m_Logger = Logger.getLogger("BetterThanWolves");
++		// client
 +		//m_LogFile = new File(Minecraft.getMinecraftDir(), "BTWLog.txt");
++		// server
++		m_LogFile = new File(new File("."), "BTWLog.txt");
 +		m_LogFileHandler = null;
 +
 +		InitializeLogger();
 +	}
 +
-+	// Client version
-+	//private static final File m_LogFile;    
-+	// Server version
-+	private static final File m_LogFile = new File(new File("."), "BTWLog.txt");
++	private static File m_LogFile;
 +
 +	private static FileHandler m_LogFileHandler;
 +
