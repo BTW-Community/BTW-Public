@@ -39,6 +39,9 @@ Furthermore, thanks to the following people who have provided translations for B
 - Sockthing: German
 - slzei: Turkish
 
+Code and/or assets have also been used from the following sources:
+- MCPatcher by Kahr: Public Domain
+
 ## 🐺 What is Better Than Wolves?
 
 Better Than Wolves is a "total conversion". This differs from most mods that you are probably used to in that it changes many of the rules of play to provide a richer experience, rather than just adding in new stuff. What makes it special however, is that it always attempts to do so in a way that retains the original spirit of the game, perhaps even more so than the newer official releases.
