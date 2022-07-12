@@ -9,3 +9,4 @@ The images in this folder represent the official branding for Better Than Wolves
 * High resolution version created by Sockthing
 * Banner image created by Tekei?
 * Community Edition hero banner created by Zhil
+* Pride logos adapted by Zhil
