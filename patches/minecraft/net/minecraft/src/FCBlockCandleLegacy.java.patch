@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockCandleLegacy.java
-@@ -0,0 +1,220 @@
+@@ -0,0 +1,225 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -19,7 +19,7 @@
 +	
 +    public FCBlockCandleLegacy( int iBlockID )
 +    {
-+        super( iBlockID, FCBetterThanWolves.fcMaterialCandle );
++        super( iBlockID, FCBetterThanWolves.fcMaterialCandleLegacy );
 +        
 +        setHardness( 0F );    	
 +    	SetPicksEffectiveOn( true );        
@@ -78,6 +78,11 @@
 +    {
 +    	return iMetadata;
 +    }
++	
++	@Override
++	public int quantityDropped(Random rand) {
++		return 4;
++	}
 +	
 +	@Override
 +    public void onNeighborBlockChange( World world, int i, int j, int k, int iNeighborBlockID )

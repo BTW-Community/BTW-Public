@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockStoneRough.java
-@@ -0,0 +1,305 @@
+@@ -0,0 +1,307 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -84,7 +84,7 @@
 +	        	        world.playAuxSFX( FCBetterThanWolves.m_iStoneRippedOffAuxFXID, i, j, k, 0 );							        
 +	        	        
 +	    	            FCUtilsItem.EjectStackFromBlockTowardsFacing( world, i, j, k, 
-+	    	            	new ItemStack( FCBetterThanWolves.fcItemStone, 1 ), iFromSide );
++	    	            	new ItemStack( FCBetterThanWolves.fcItemStone, 1, m_iStrataLevel ), iFromSide );
 +	        		}
 +	        		else if ( iMetadata <= 5 && IsUberItemConversionTool( stack, world, i, j, k ) )
 +    				{
@@ -135,6 +135,7 @@
 +        {
 +        	int iItemIDDropped = FCBetterThanWolves.fcItemStone.itemID;
 +        	int iNumDropped = 1;
++        	int metadataDropped = m_iStrataLevel;
 +        	
 +        	if ( iMetadata < 8 )
 +        	{
@@ -143,6 +144,7 @@
 +        	else
 +        	{
 +        		iItemIDDropped = FCBetterThanWolves.fcItemPileGravel.itemID;
++        		metadataDropped = 0;
 +        		
 +        		if ( iMetadata < 12 )
 +        		{
@@ -152,7 +154,7 @@
 +        	
 +	        for( int iTempCount = 0; iTempCount < iNumDropped; iTempCount++ )
 +	        {
-+                dropBlockAsItem_do( world, i, j, k, new ItemStack( iItemIDDropped, 1, damageDropped( iMetadata ) ) );
++                dropBlockAsItem_do( world, i, j, k, new ItemStack( iItemIDDropped, 1, metadataDropped ) );
 +	        }
 +        }
 +    }
@@ -291,7 +293,7 @@
 +    	{
 +    		int iNumStoneDropped = 4 - ( iMetadata / 2 );
 +	        
-+			DropItemsIndividualy( world, i, j, k, FCBetterThanWolves.fcItemStone.itemID, iNumStoneDropped, 0, fChanceOfItemDrop );
++			DropItemsIndividualy( world, i, j, k, FCBetterThanWolves.fcItemStone.itemID, iNumStoneDropped, m_iStrataLevel, fChanceOfItemDrop );
 +    	}
 +    	
 +    	int iNumGravelDropped = 1;

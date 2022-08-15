@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockRedstoneRepeater.java
-@@ -0,0 +1,181 @@
+@@ -0,0 +1,176 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -12,11 +12,6 @@
 +        super( iBlockID, bIsLit );
 +        
 +        setHardness( 0F );
-+        
-+        if ( bIsLit )
-+        {
-+        	setLightValue( 0.625F );
-+        }
 +        
 +        setStepSound( soundWoodFootstep );
 +        

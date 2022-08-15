@@ -129,7 +129,7 @@
      }
  
      /**
-@@ -140,4 +198,111 @@
+@@ -140,4 +198,125 @@
      {
          return this.foodSaturationLevel;
      }
@@ -203,9 +203,23 @@
 +        {
 +            ++foodTimer;
 +
-+            if ( foodTimer >= 600 ) // once every 30 seconds
++            if ( foodTimer >= 400 ) // once every 20 seconds
 +            {
-+                player.heal( 1 );
++            	if (player.sleeping) {
++            		Block block = Block.blocksList[player.worldObj.getBlockId((int) player.posX, (int) player.posY, (int) player.posZ)];
++
++            		if (block != null && block instanceof FCBlockBedBase) {
++            			FCBlockBedBase bed = (FCBlockBedBase) block;
++
++            			if (!bed.blocksHealing()) {
++            				player.heal(1);
++            			}
++            		}
++            	}
++            	else {
++            		player.heal(1);
++                }
++
 +                foodTimer = 0;
 +            }
 +        }

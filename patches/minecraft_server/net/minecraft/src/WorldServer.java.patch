@@ -51,20 +51,36 @@
          if (this.entityIdMap == null)
          {
              this.entityIdMap = new IntHashMap();
-@@ -91,6 +112,12 @@
+@@ -91,31 +112,25 @@
          {
              this.difficultySetting = 3;
          }
+-
+-        this.provider.worldChunkMgr.cleanupCache();
+-
+-        if (this.areAllPlayersAsleep())
 +        // FCMOD: Added to eliminate peaceful and easy difficulties
 +        else if ( difficultySetting < 2 )
-+        {
+         {
+-            boolean var1 = false;
+-
+-            if (this.spawnHostileMobs && this.difficultySetting >= 1)
+-            {
+-                ;
 +        	difficultySetting = 2;
-+        }
+             }
 +        // END FCMOD
  
-         this.provider.worldChunkMgr.cleanupCache();
+-            if (!var1)
+-            {
+-                long var2 = this.worldInfo.getWorldTime() + 24000L;
+-                this.worldInfo.setWorldTime(var2 - var2 % 24000L);
+-                this.wakeAllPlayers();
+-            }
+-        }
++        this.provider.worldChunkMgr.cleanupCache();
  
-@@ -115,7 +142,12 @@
+         this.theProfiler.startSection("mobSpawner");
  
          if (this.getGameRules().getGameRuleBooleanValue("doMobSpawning"))
          {
@@ -77,7 +93,7 @@
          }
  
          this.theProfiler.endStartSection("chunkSource");
-@@ -134,10 +166,15 @@
+@@ -134,10 +149,15 @@
          this.theProfiler.endStartSection("tickTiles");
          this.tickBlocksAndAmbiance();
          this.theProfiler.endStartSection("chunkMap");
@@ -95,7 +111,7 @@
          this.theProfiler.endStartSection("portalForcer");
          this.field_85177_Q.removeStalePortalLocations(this.getTotalWorldTime());
          this.theProfiler.endSection();
-@@ -234,7 +271,10 @@
+@@ -234,7 +254,10 @@
          super.tickBlocksAndAmbiance();
          int var1 = 0;
          int var2 = 0;
@@ -107,7 +123,7 @@
  
          while (var3.hasNext())
          {
-@@ -252,7 +292,10 @@
+@@ -252,7 +275,10 @@
              int var10;
              int var11;
  
@@ -119,7 +135,7 @@
              {
                  this.updateLCG = this.updateLCG * 3 + 1013904223;
                  var8 = this.updateLCG >> 2;
-@@ -260,11 +303,25 @@
+@@ -260,11 +286,25 @@
                  var10 = var6 + (var8 >> 8 & 15);
                  var11 = this.getPrecipitationHeight(var9, var10);
  
@@ -147,7 +163,7 @@
  
              this.theProfiler.endStartSection("iceandsnow");
              int var13;
-@@ -286,12 +343,21 @@
+@@ -286,12 +326,21 @@
                  {
                      this.setBlock(var9 + var5, var11, var10 + var6, Block.snow.blockID);
                  }
@@ -170,7 +186,7 @@
                      {
                          var13 = this.getBlockId(var9 + var5, var11 - 1, var10 + var6);
  
-@@ -309,25 +375,30 @@
+@@ -309,25 +358,30 @@
  
              for (var10 = 0; var10 < var9; ++var10)
              {
@@ -206,7 +222,7 @@
                          }
                      }
                  }
-@@ -335,6 +406,10 @@
+@@ -335,6 +389,10 @@
  
              this.theProfiler.endSection();
          }
@@ -217,7 +233,7 @@
      }
  
      /**
-@@ -357,13 +432,21 @@
+@@ -357,13 +415,21 @@
      public void func_82740_a(int par1, int par2, int par3, int par4, int par5, int par6)
      {
          NextTickListEntry var7 = new NextTickListEntry(par1, par2, par3, par4);
@@ -240,7 +256,7 @@
                  {
                      int var9 = this.getBlockId(var7.xCoord, var7.yCoord, var7.zCoord);
  
-@@ -379,7 +462,13 @@
+@@ -379,7 +445,13 @@
              par5 = 1;
          }
  
@@ -254,7 +270,7 @@
          {
              if (par4 > 0)
              {
-@@ -420,6 +509,8 @@
+@@ -420,6 +492,8 @@
       */
      public void updateEntities()
      {
@@ -263,7 +279,7 @@
          if (this.playerEntities.isEmpty())
          {
              if (this.updateEntityTick++ >= 1200)
-@@ -431,6 +522,8 @@
+@@ -431,6 +505,8 @@
          {
              this.resetUpdateEntityTick();
          }
@@ -272,7 +288,7 @@
  
          super.updateEntities();
      }
-@@ -486,9 +579,16 @@
+@@ -486,9 +562,16 @@
              {
                  var4 = (NextTickListEntry)var14.next();
                  var14.remove();
@@ -289,7 +305,7 @@
                  {
                      int var6 = this.getBlockId(var4.xCoord, var4.yCoord, var4.zCoord);
  
-@@ -518,10 +618,19 @@
+@@ -518,10 +601,19 @@
                          }
                      }
                  }
@@ -310,7 +326,7 @@
              }
  
              this.theProfiler.endSection();
-@@ -600,6 +709,21 @@
+@@ -600,6 +692,21 @@
  
          if (!(par1Entity.riddenByEntity instanceof EntityPlayer))
          {
@@ -332,7 +348,7 @@
              super.updateEntityWithOptionalForce(par1Entity, par2);
          }
      }
-@@ -622,6 +746,12 @@
+@@ -622,6 +729,12 @@
          return this.theChunkProviderServer;
      }
  
@@ -345,7 +361,7 @@
      /**
       * get a list of tileEntity's
       */
-@@ -730,7 +860,10 @@
+@@ -730,7 +843,10 @@
       */
      protected void createBonusChest()
      {
@@ -357,7 +373,7 @@
  
          for (int var2 = 0; var2 < 10; ++var2)
          {
-@@ -773,6 +906,10 @@
+@@ -773,6 +889,10 @@
              }
  
              this.chunkProvider.saveChunks(par1, par2IProgressUpdate);
@@ -368,7 +384,7 @@
          }
      }
  
-@@ -845,7 +982,19 @@
+@@ -845,7 +965,19 @@
      {
          if (super.addWeatherEffect(par1Entity))
          {
@@ -389,7 +405,7 @@
              return true;
          }
          else
-@@ -962,6 +1111,8 @@
+@@ -962,6 +1094,8 @@
      /**
       * Updates all weather states.
       */
@@ -398,7 +414,7 @@
      protected void updateWeather()
      {
          boolean var1 = this.isRaining();
-@@ -979,6 +1130,8 @@
+@@ -979,6 +1113,8 @@
              }
          }
      }
@@ -407,7 +423,7 @@
  
      /**
       * Gets the MinecraftServer.
-@@ -996,13 +1149,445 @@
+@@ -996,13 +1132,445 @@
          return this.theEntityTracker;
      }
  

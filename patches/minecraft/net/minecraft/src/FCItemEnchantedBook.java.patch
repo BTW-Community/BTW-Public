@@ -22,7 +22,7 @@
 +    {
 +        if ( world.isRemote )
 +        {
-+        	player.addChatMessage( "The language of this text is unfamiliar to you" );
++        	player.addChatMessage( this.getUnlocalizedName() + ".languageUnfamiliar" );
 +        }
 +        
 +    	return itemStack;

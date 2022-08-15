@@ -1,25 +1,49 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemStone.java
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,46 @@
 +//FCMOD
 +
 +package net.minecraft.src;
 +
-+public class FCItemStone extends Item
-+{
-+    public FCItemStone( int iItemID )
-+    {
-+        super( iItemID );
-+        
-+    	setUnlocalizedName( "fcItemStone" );
-+    	
-+    	SetFilterableProperties( Item.m_iFilterable_Small );
-+    	
-+    	setCreativeTab( CreativeTabs.tabMaterials );	    
-+    }
-+    
-+    //------------- Class Specific Methods ------------//
-+    
++import java.util.List;
++
++public class FCItemStone extends Item {
++
++	public FCItemStone( int iItemID ) {
++		super( iItemID );
++
++		setMaxDamage( 0 );
++		setHasSubtypes( true );
++		SetFilterableProperties( Item.m_iFilterable_Small );
++		setCreativeTab( CreativeTabs.tabMaterials );	    
++	}
++
++	//------------- Class Specific Methods ------------//
++
 +	//------------ Client Side Functionality ----------//
++
++	private Icon[] iconByMetadataArray = new Icon[3];
++	
++	@Override
++	public Icon getIconFromDamage(int metadata) {
++		int var2 = MathHelper.clamp_int(metadata, 0, 2);
++		
++		return this.iconByMetadataArray[var2];
++	}
++
++	@Override
++	public void registerIcons(IconRegister register) {
++		super.registerIcons(register);
++		
++		iconByMetadataArray[0] = itemIcon;		
++		iconByMetadataArray[1] = register.registerIcon( "fcItemStone_1" );
++		iconByMetadataArray[2] = register.registerIcon( "fcItemStone_2" );
++	}
++	
++	@Override
++	public void getSubItems(int par1, CreativeTabs tab, List list) {
++		list.add(new ItemStack(par1, 1, 0));
++		list.add(new ItemStack(par1, 1, 1));
++        list.add(new ItemStack(par1, 1, 2));
++	}
 +}
-+    

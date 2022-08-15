@@ -47,7 +47,7 @@
 +        		{
 +                    if( world.isRemote )
 +                    {
-+                    	player.addChatMessage( "Too few vertical Axles in column to place Wind Mill here" );
++                    	player.addChatMessage( this.getUnlocalizedName() + ".tooFewAxles" );
 +                    }
 +        		}
 +        		else
@@ -72,7 +72,7 @@
 +	        			{
 +	                        if( world.isRemote )
 +	                        {
-+	                        	player.addChatMessage( "Wind Mill placement is obstructed by something, or by you" );
++	                        	player.addChatMessage( "message.windMill.placementObstructed" );
 +	                        }
 +	        			}	        			
 +	        		}
@@ -80,7 +80,7 @@
 +	        		{
 +	                    if( world.isRemote )
 +	                    {
-+	                    	player.addChatMessage( "Not enough room to place Wind Mill (They are friggin HUGE!)" );
++	                    	player.addChatMessage( "message.windMill.notEnoughRoom" );
 +	                    }
 +	        		}
 +        		}

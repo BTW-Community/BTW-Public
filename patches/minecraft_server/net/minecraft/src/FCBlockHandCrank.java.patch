@@ -101,7 +101,7 @@
 +        	{
 +                if( world.isRemote )
 +                {
-+                	player.addChatMessage( "You're too exhausted for manual labor." );
++                	player.addChatMessage( this.getUnlocalizedName() + ".playerExhausted" );
 +                	
 +                	return false;
 +                }

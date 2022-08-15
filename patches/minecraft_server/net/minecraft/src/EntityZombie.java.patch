@@ -6,7 +6,24 @@
  package net.minecraft.src;
  
  import java.util.Calendar;
-@@ -344,7 +346,7 @@
+@@ -235,10 +237,14 @@
+     /**
+      * Returns the item ID for the item the mob drops on death.
+      */
+-    protected int getDropItemId()
+-    {
++	protected int getDropItemId() {
++		if (isVillager()) {
++			return FCBetterThanWolves.fcItemRawMysteryMeat.itemID;
++		}
++		else {
+         return Item.rottenFlesh.itemID;
+     }
++	}
+ 
+     /**
+      * Get this Entity's EnumCreatureAttribute
+@@ -344,7 +350,7 @@
                  return;
              }
  
@@ -15,7 +32,7 @@
              var2.func_82149_j(par1EntityLiving);
              this.worldObj.removeEntity(par1EntityLiving);
              var2.initCreature();
-@@ -445,7 +447,7 @@
+@@ -445,7 +451,7 @@
       */
      protected void convertToVillager()
      {

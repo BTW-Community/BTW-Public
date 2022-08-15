@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemSword.java
-@@ -0,0 +1,224 @@
+@@ -0,0 +1,222 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -161,10 +161,9 @@
 +    					{
 +    						((FCTileEntityToolPlaced)targetTileEntity).SetToolStack( stack );
 +
-+    						if ( !world.isRemote )
-+    						{
-+    							PlayPlacementSound( stack, blockStuckIn, world, placementPos.i, placementPos.j, placementPos.k );
-+    						}
++							if (!world.isRemote) {
++								PlayPlacementSound(stack, blockStuckIn, world, placementPos.i, placementPos.j, placementPos.k);
++							}
 +
 +    						stack.stackSize--;
 +
@@ -181,10 +180,9 @@
 +    
 +    //------------- Class Specific Methods ------------//
 +    
-+    protected boolean CanToolStickInBlock( ItemStack stack, Block block, World world, int i, int j, int k )
-+    {
-+        return block.AreShovelsEffectiveOn();
-+    }
++	protected boolean CanToolStickInBlock(ItemStack stack, Block block, World world, int i, int j, int k) {
++		return block.AreShovelsEffectiveOn() || block.canToolStickInBlockSpecialCase(world, i, j, k, this);
++	}
 +    
 +    protected void PlayPlacementSound( ItemStack stack, Block blockStuckIn, World world, int i, int j, int k )
 +    {

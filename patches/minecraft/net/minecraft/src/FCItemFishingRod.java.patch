@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemFishingRod.java
-@@ -0,0 +1,48 @@
+@@ -0,0 +1,62 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -47,5 +47,19 @@
 +		
 +		player.swingItem();
 +		return super.onItemRightClick(stack, world, player);
++	}
++	
++	//----------- Client Side Functionality -----------//
++    
++    public Icon GetCastIcon() {
++        return func_94597_g();
++    }
++    
++	@Override
++	public Icon getAnimationIcon(EntityPlayer player) {
++		if (player.getHeldItem().itemID == this.itemID && player.fishEntity != null) {
++			return GetCastIcon();
++		}
++		else return itemIcon;
 +	}
 +}

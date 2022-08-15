@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBetterThanWolves.java
-@@ -0,0 +1,2779 @@
+@@ -0,0 +1,2990 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -22,7 +22,7 @@
 +
 +public class FCBetterThanWolves extends FCAddOn
 +{
-+	public static final String fcVersionString = "1.3.10b";
++	public static final String fcVersionString = "1.4.0";
 +
 +	public static FCBetterThanWolves m_instance = new FCBetterThanWolves();
 +
@@ -32,8 +32,9 @@
 +
 +	public static final Material fcMaterialCement = (new FCMaterialCement(MapColor.stoneColor));
 +	public static final Material fcMaterialSoulforgedSteel = (new FCMaterialSoulforgedSteel(MapColor.ironColor));
-+	public static final Material fcMaterialNetherGrowth = (new FCMaterialNetherGrowth(MapColor.foliageColor)).SetMobsCantSpawnOn();    
-+	public static final Material fcMaterialCandle = (new MaterialLogic(MapColor.airColor)).setNoPushMobility().setDoesNotBreakSaw();
++	public static final Material fcMaterialNetherGrowth = (new FCMaterialNetherGrowth(MapColor.foliageColor)).SetMobsCantSpawnOn();
++	public static final Material fcMaterialCandle = (new MaterialLogic(MapColor.airColor)).setNoPushMobility().setDoesNotBreakSaw().setRequiresTool();
++	public static final Material fcMaterialCandleLegacy = (new MaterialLogic(MapColor.airColor)).setNoPushMobility().setDoesNotBreakSaw();
 +	public static final Material fcMaterialMiscellaneous = new Material(MapColor.dirtColor); // used for aesthetic blocks to avoid tool dependancies
 +	public static final Material fcMaterialLog = (new Material(MapColor.woodColor)).setBurning().setRequiresTool().SetMobsCantSpawnOn().setDoesNotBreakSaw();
 +	public static final Material fcMaterialPlanks = (new Material(MapColor.woodColor)).setBurning().setRequiresTool().SetMobsCantSpawnOn().setDoesNotBreakSaw();
@@ -43,7 +44,8 @@
 +	public static final Material fcMaterialBasket = (new Material(MapColor.woodColor)).setNoPushMobility().setDoesNotBreakSaw();
 +	public static final Material fcMaterialMilk = (new MaterialLogic(MapColor.snowColor)).setReplaceable().setTranslucent().setRequiresTool().setNoPushMobility();
 +	public static final Material fcMaterialNetherRock = (new Material(MapColor.stoneColor)).setRequiresTool().SetNetherMobsCanSpawnOn();
-+
++	public static final Material fcMaterialBlood = (new MaterialLiquid(MapColor.tntColor)).setNoPushMobility();
++	
 +	//New Blocks
 +
 +	public static Block fcBlockSlabSandAndGravel;
@@ -341,6 +343,51 @@
 +	public static FCBlockSilverfish fcBlockSilverfishStoneBricksChiseled;
 +	
 +	public static FCBlockGrassSlab fcBlockGrassSlab;
++	
++	public static Block fcBlockBedroll;
++
++	public static BlockHalfSlab fcBlockCobblestoneSlabSingle;
++	public static BlockHalfSlab fcBlockCobblestoneSlabDouble;
++	public static BlockHalfSlab fcBlockStoneBrickSlabSingle;
++	public static BlockHalfSlab fcBlockStoneBrickSlabDouble;
++	public static BlockHalfSlab fcBlockSmoothStoneSlabSingle;
++	public static BlockHalfSlab fcBlockSmoothStoneSlabDouble;
++
++	public static Block fcBlockCobblestoneStairsMidStrata;
++	public static Block fcBlockCobblestoneStairsDeepStrata;
++	public static Block fcBlockCobblestoneLooseStairsMidStrata;
++	public static Block fcBlockCobblestoneLooseStairsDeepStrata;
++
++	public static Block fcBlockStoneBrickStairsMidStrata;
++	public static Block fcBlockStoneBrickStairsDeepStrata;
++	public static Block fcBlockStoneBrickLooseStairsMidStrata;
++	public static Block fcBlockStoneBrickLooseStairsDeepStrata;
++
++	public static Block fcBlockSmoothstoneStairsMidStrata;
++	public static Block fcBlockSmoothstoneStairsDeepStrata;
++
++	public static Block fcBlockStoneBrickSidingAndCornerMidStrata;
++	public static Block fcBlockStoneBrickMouldingAndDecorativeMidStrata;
++	public static Block fcBlockStoneBrickSidingAndCornerDeepStrata;
++	public static Block fcBlockStoneBrickMouldingAndDecorativeDeepStrata;
++
++	public static Block fcBlockSmoothStoneSidingAndCornerMidStrata;
++	public static Block fcBlockSmoothStoneMouldingAndDecorativeMidStrata;
++	public static Block fcBlockSmoothStoneSidingAndCornerDeepStrata;
++	public static Block fcBlockSmoothStoneMouldingAndDecorativeDeepStrata;
++
++	public static FCBlockSilverfish fcBlockSilverfishCobblestoneMidStrata;
++	public static FCBlockSilverfish fcBlockSilverfishCobblestoneDeepStrata;
++
++	public static FCBlockSilverfish fcBlockSilverfishStoneBricksMidStrata;
++	public static FCBlockSilverfish fcBlockSilverfishStoneBricksMossyMidStrata;
++	public static FCBlockSilverfish fcBlockSilverfishStoneBricksCrackedMidStrata;
++	public static FCBlockSilverfish fcBlockSilverfishStoneBricksChiseledMidStrata;
++
++	public static FCBlockSilverfish fcBlockSilverfishStoneBricksDeepStrata;
++	public static FCBlockSilverfish fcBlockSilverfishStoneBricksMossyDeepStrata;
++	public static FCBlockSilverfish fcBlockSilverfishStoneBricksCrackedDeepStrata;
++	public static FCBlockSilverfish fcBlockSilverfishStoneBricksChiseledDeepStrata;
 +
 +	// New Items
 +
@@ -457,7 +504,7 @@
 +
 +	public static Item fcItemArcaneScroll;    
 +
-+	public static Item fcItemCandle;
++	public static Item fcItemCandleLegacy;
 +
 +	public static Item fcItemBloodMossSpores;
 +
@@ -641,7 +688,13 @@
 +	public static Item fcItemDiamondPlate;
 +
 +	public static Item fcItemMelonMashed;
++	
++	public static Item fcItemBedroll;
 +
++	public static Item fcItemCandle;
++
++	public static Item fcItemCorpseEye;
++	
 +	// legacy ID for MCPatcher grass slab support
 +
 +	private static int fcBlockDirtSlabID = 206;
@@ -1178,7 +1231,7 @@
 +	    fcBlockToolPlaced = new FCBlockToolPlaced(parseID("fcBlockToolPlacedID"));
 +	    
 +	    fcBlockBrickLooseStairs = new FCBlockBrickLooseStairs(parseID("fcBlockBrickLooseStairsID"));
-+	    fcBlockCobblestoneLooseStairs = new FCBlockCobblestoneLooseStairs(parseID("fcBlockCobblestoneLooseStairsID"));
++	    fcBlockCobblestoneLooseStairs = new FCBlockCobblestoneLooseStairs(parseID("fcBlockCobblestoneLooseStairsID"), 0);
 +	    
 +	    fcBlockLogSmouldering = new FCBlockLogSmouldering(parseID("fcBlockLogSmoulderingID"));
 +	    fcBlockWoodCinders = new FCBlockWoodCinders(parseID("fcBlockWoodCindersID"));
@@ -1221,7 +1274,7 @@
 +	    
 +	    fcBlockStoneBrickLoose = new FCBlockStoneBrickLoose(parseID("fcBlockStoneBrickLooseID"));
 +	    fcBlockStoneBrickLooseSlab = new FCBlockStoneBrickLooseSlab(parseID("fcBlockStoneBrickLooseSlabID"));
-+	    fcBlockStoneBrickLooseStairs = new FCBlockStoneBrickLooseStairs(parseID("fcBlockStoneBrickLooseStairsID"));
++	    fcBlockStoneBrickLooseStairs = new FCBlockStoneBrickLooseStairs(parseID("fcBlockStoneBrickLooseStairsID"), 0);
 +	    
 +	    fcBlockNetherBrickLoose = new FCBlockNetherBrickLoose(parseID("fcBlockNetherBrickLooseID"));
 +	    fcBlockNetherBrickLooseSlab = new FCBlockNetherBrickLooseSlab(parseID("fcBlockNetherBrickLooseSlabID"));
@@ -1258,14 +1311,14 @@
 +	    fcBlockCarrot = new FCBlockCarrot(parseID("fcBlockCarrotID"));
 +	    fcBlockCarrotFlowers = new FCBlockCarrotFlowers(parseID("fcBlockCarrotFlowersID"));
 +	    
-+	    //fcBlockCandlePlain = new FCBlockCandle(parseID("fcBlockCandlePlainID"), parseID("fcItemCandleID"), 16, "fcBlockCandle");
++	    fcBlockCandlePlain = new FCBlockCandle(parseID("fcBlockCandlePlainID"), 16, "fcBlockCandle");
 +	    
 +	    fcBlockCandlesColored = new Block[16];
 +	    
 +	    for (int i = 0; i < 16; i++) {
 +	    	String idProperty = "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i] + "ID";
 +	    	
-+	    	//fcBlockCandlesColored[i] = new FCBlockCandle(parseID(idProperty), parseID("fcItemCandleID"), i, "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i]);
++	    	fcBlockCandlesColored[i] = new FCBlockCandle(parseID(idProperty), i, "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i]);
 +	    }
 +    
 +		fcBlockSilverfishStone = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneID"), 
@@ -1294,6 +1347,94 @@
 +				.setUnlocalizedName("fcBlockSilverfishStoneChiseled");
 +		
 +		fcBlockGrassSlab = new FCBlockGrassSlab(parseID("fcBlockGrassSlabID"));
++		
++		fcBlockBedroll = new FCBlockBedroll(parseID("fcBlockBedrollID")).setHardness(0.1F).SetBuoyant().setUnlocalizedName("fcBlockBedroll").disableStats();
++
++		fcBlockCobblestoneSlabSingle = new FCBlockCobblestoneSlab(parseID("fcBlockCobblestoneSlabSingleID"), false);
++		fcBlockCobblestoneSlabDouble = new FCBlockCobblestoneSlab(parseID("fcBlockCobblestoneSlabDoubleID"), true);
++
++		fcBlockStoneBrickSlabSingle = new FCBlockStoneBrickSlab(parseID("fcBlockStoneBrickSlabSingleID"), false);
++		fcBlockStoneBrickSlabDouble = new FCBlockStoneBrickSlab(parseID("fcBlockStoneBrickSlabDoubleID"), true);
++
++		fcBlockSmoothStoneSlabSingle = new FCBlockSmoothStoneSlab(parseID("fcBlockSmoothStoneSlabSingleID"), false);
++		fcBlockSmoothStoneSlabDouble = new FCBlockSmoothStoneSlab(parseID("fcBlockSmoothStoneSlabDoubleID"), true);
++
++		fcBlockCobblestoneStairsMidStrata = new FCBlockStairsCobblestone(parseID("fcBlockCobblestoneStairsMidStrataID"), 1);
++		fcBlockCobblestoneStairsDeepStrata = new FCBlockStairsCobblestone(parseID("fcBlockCobblestoneStairsDeepStrataID"), 2);
++		fcBlockCobblestoneLooseStairsMidStrata = new FCBlockCobblestoneLooseStairs(parseID("fcBlockCobblestoneLooseStairsMidStrataID"), 1);
++		fcBlockCobblestoneLooseStairsDeepStrata = new FCBlockCobblestoneLooseStairs(parseID("fcBlockCobblestoneLooseStairsDeepStrataID"), 2);
++
++		fcBlockStoneBrickStairsMidStrata = new FCBlockStairsStoneBrick(parseID("fcBlockStoneBrickStairsMidStrataID"), 1);
++		fcBlockStoneBrickStairsDeepStrata = new FCBlockStairsStoneBrick(parseID("fcBlockStoneBrickStairsDeepStrataID"), 2);
++		fcBlockStoneBrickLooseStairsMidStrata = new FCBlockStoneBrickLooseStairs(parseID("fcBlockStoneBrickLooseStairsMidStrataID"), 1);
++		fcBlockStoneBrickLooseStairsDeepStrata = new FCBlockStoneBrickLooseStairs(parseID("fcBlockStoneBrickLooseStairsDeepStrataID"), 2);
++
++	    fcBlockSmoothstoneStairsMidStrata = (new FCBlockStairs(parseID("fcBlockSmoothstoneStairsMidStrataID"), Block.stone, 1))
++	    		.SetPicksEffectiveOn().setUnlocalizedName("fcBlockSmoothstoneStairs");
++	    fcBlockSmoothstoneStairsDeepStrata = (new FCBlockStairs(parseID("fcBlockSmoothstoneStairsDeepStrataID"), Block.stone, 2))
++	    		.SetPicksEffectiveOn().setUnlocalizedName("fcBlockSmoothstoneStairs");
++
++		fcBlockStoneBrickSidingAndCornerMidStrata = (new FCBlockSidingAndCornerAndDecorative(parseID("fcBlockStoneBrickSidingAndCornerMidStrataID"), 
++				Material.rock, "stonebricksmooth_1", 1.5F, 10F, 
++				Block.soundStoneFootstep, "fcStoneBrickSiding")).SetPicksEffectiveOn();
++
++		fcBlockStoneBrickMouldingAndDecorativeMidStrata = (new FCBlockMouldingAndDecorative(parseID("fcBlockStoneBrickMouldingMidStrataID"), 
++				Material.rock, "stonebricksmooth_1", "stonebricksmooth_1", fcBlockStoneBrickSidingAndCornerMidStrata.blockID,
++				1.5F, 10F, Block.soundStoneFootstep, "fcStoneBrickMoulding")).SetPicksEffectiveOn();
++
++		fcBlockStoneBrickSidingAndCornerDeepStrata = (new FCBlockSidingAndCornerAndDecorative(parseID("fcBlockStoneBrickSidingAndCornerDeepStrataID"), 
++				Material.rock, "stonebricksmooth_2", 1.5F, 10F, Block.soundStoneFootstep, "fcStoneBrickSiding")).SetPicksEffectiveOn();
++
++		fcBlockStoneBrickMouldingAndDecorativeDeepStrata = (new FCBlockMouldingAndDecorative(parseID("fcBlockStoneBrickMouldingDeepStrataID"), 
++				Material.rock, "stonebricksmooth_2", "stonebricksmooth_2", fcBlockStoneBrickSidingAndCornerDeepStrata.blockID,
++				1.5F, 10F, Block.soundStoneFootstep, "fcStoneBrickMoulding")).SetPicksEffectiveOn();
++
++		fcBlockSmoothStoneSidingAndCornerMidStrata = (new FCBlockSidingAndCornerAndDecorative(parseID("fcBlockSmoothStoneSidingAndCornerMidStrataID"), 
++				Material.rock, "fcBlockStone_1", 1.5F, 10F, Block.soundStoneFootstep, "fcStoneSiding")).SetPicksEffectiveOn();
++
++		fcBlockSmoothStoneMouldingAndDecorativeMidStrata = (new FCBlockMouldingAndDecorative(parseID("fcBlockSmoothStoneMouldingMidStrataID"), 
++				Material.rock, "fcBlockStone_1", "fcBlockColumnStone_side_1", fcBlockSmoothStoneSidingAndCornerMidStrata.blockID, 1.5F, 10F,
++				Block.soundStoneFootstep, "fcStoneMoulding")).SetPicksEffectiveOn();
++
++		fcBlockSmoothStoneSidingAndCornerDeepStrata = (new FCBlockSidingAndCornerAndDecorative(parseID("fcBlockSmoothStoneSidingAndCornerDeepStrataID"), 
++				Material.rock, "fcBlockStone_2", 1.5F, 10F, Block.soundStoneFootstep, "fcStoneSiding")).SetPicksEffectiveOn();
++
++		fcBlockSmoothStoneMouldingAndDecorativeDeepStrata = (new FCBlockMouldingAndDecorative(parseID("fcBlockSmoothStoneMouldingDeepStrataID"), 
++				Material.rock, "fcBlockStone_2", "fcBlockColumnStone_side_2", fcBlockSmoothStoneSidingAndCornerDeepStrata.blockID, 1.5F, 10F,
++				Block.soundStoneFootstep, "fcStoneMoulding")).SetPicksEffectiveOn();
++
++		fcBlockSilverfishCobblestoneMidStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishCobblestoneMidStrataID"), 
++				Block.cobblestone, 1)
++				.setUnlocalizedName("fcBlockSilverfishCobblestone");
++		fcBlockSilverfishCobblestoneDeepStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishCobblestoneDeepStrataID"), 
++				Block.cobblestone, 2)
++				.setUnlocalizedName("fcBlockSilverfishCobblestone");
++
++		fcBlockSilverfishStoneBricksMidStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksMidStrataID"), 
++				Block.stoneBrick, 4)
++				.setUnlocalizedName("fcBlockSilverfishStoneBrick");
++		fcBlockSilverfishStoneBricksMossyMidStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksMossyMidStrataID"), 
++				Block.stoneBrick, 5)
++				.setUnlocalizedName("fcBlockSilverfishStoneBrickMossy");
++		fcBlockSilverfishStoneBricksCrackedMidStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksCrackedMidStrataID"), 
++				Block.stoneBrick, 6)
++				.setUnlocalizedName("fcBlockSilverfishStoneCracked");
++		fcBlockSilverfishStoneBricksChiseledMidStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksChiseledMidStrataID"), 
++				Block.stoneBrick, 7)
++				.setUnlocalizedName("fcBlockSilverfishStoneChiseled");
++
++		fcBlockSilverfishStoneBricksDeepStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksDeepStrataID"), 
++				Block.stoneBrick, 8)
++				.setUnlocalizedName("fcBlockSilverfishStoneBrick");
++		fcBlockSilverfishStoneBricksMossyDeepStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksMossyDeepStrataID"), 
++				Block.stoneBrick, 9)
++				.setUnlocalizedName("fcBlockSilverfishStoneBrickMossy");
++		fcBlockSilverfishStoneBricksCrackedDeepStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksCrackedDeepStrataID"), 
++				Block.stoneBrick, 10)
++				.setUnlocalizedName("fcBlockSilverfishStoneCracked");
++		fcBlockSilverfishStoneBricksChiseledDeepStrata = (FCBlockSilverfish) new FCBlockSilverfish(parseID("fcBlockSilverfishStoneBricksChiseledDeepStrataID"), 
++				Block.stoneBrick, 11)
++				.setUnlocalizedName("fcBlockSilverfishStoneChiseled");
 +
 +	}
 +
@@ -1502,7 +1643,7 @@
 +
 +		fcItemArcaneScroll = new FCItemArcaneScroll(parseID("fcItemArcaneScrollID"));
 +
-+		fcItemCandle = new FCItemCandleLegacy(parseID("fcItemCandleID"));
++		fcItemCandleLegacy = new FCItemCandle(parseID("fcItemCandleID"));
 +
 +		fcItemBloodMossSpores = new FCItemBloodMossSpores(parseID("fcItemNetherGrowthSporesID"));
 +
@@ -1736,7 +1877,7 @@
 +
 +		fcItemChiselWood = new FCItemChiselWood(parseID("fcItemChiselWoodID"));
 +
-+		fcItemStone = new FCItemStone(parseID("fcItemStoneID"));
++		fcItemStone = (new FCItemStone(parseID("fcItemStoneID")).setUnlocalizedName("fcItemStone"));
 +
 +		fcItemChiselStone = new FCItemChiselStone(parseID("fcItemChiselStoneID"));
 +
@@ -1800,8 +1941,8 @@
 +
 +		fcItemCarvingBone = new FCItemCarvingBone(parseID("fcItemCarvingBoneID"));
 +
-+		fcItemStoneBrick = (new Item(parseID("fcItemBrickStoneID"))).
-+				setUnlocalizedName("fcItemBrickStone").setCreativeTab(CreativeTabs.tabMaterials);
++		fcItemStoneBrick = (new FCItemStoneBrick(parseID("fcItemBrickStoneID"))).
++				setUnlocalizedName("fcItemBrickStone");
 +
 +		fcItemWickerWeaving = new FCItemWickerWeaving(parseID("fcItemWickerWeavingID"));
 +
@@ -1833,7 +1974,12 @@
 +		fcItemCarrotSeeds = new FCItemSeeds(parseID("fcItemCarrotSeedsID"), fcBlockCarrot.blockID).SetAsBasicChickenFood().setUnlocalizedName("fcItemCarrotSeeds");
 +
 +		fcItemMelonMashed = new FCItemFoodHighRes(parseID("fcItemMelonMashedID"), 2, 0F, false, "fcItemMelonMashed").SetFilterableProperties(Item.m_iFilterable_Fine);
++		
++		fcItemBedroll = new FCItemBed(parseID("fcItemBedrollID"), fcBlockBedroll.blockID).SetBuoyant().SetIncineratedInCrucible().setMaxStackSize(1).setUnlocalizedName("fcItemBedroll");
 +
++		fcItemCandle = new FCItemCandle(parseID("fcItemCandleNewID"));
++
++		fcItemCorpseEye = new FCItemCorpseEye(parseID("fcItemCorpseEyeID"));
 +		// ***REMINDER***: Use IDs over 20K here
 +
 +		CreateAssociatedItemsForModBlocks();
@@ -1926,7 +2072,7 @@
 +
 +		Item.itemsList[fcBlockDirtLooseSlab.blockID] = new FCItemBlockDirtLooseSlab(fcBlockDirtLooseSlab.blockID - 256);
 +		Item.itemsList[fcBlockBrickLooseSlab.blockID] = new FCItemBlockSlab(fcBlockBrickLooseSlab.blockID - 256);
-+		Item.itemsList[fcBlockCobblestoneLooseSlab.blockID] = new FCItemBlockSlab(fcBlockCobblestoneLooseSlab.blockID - 256);
++		Item.itemsList[fcBlockCobblestoneLooseSlab.blockID] = new FCItemBlockSlabWithMetadata(fcBlockCobblestoneLooseSlab.blockID - 256);
 +
 +		Item.itemsList[fcBlockTorchFiniteUnlit.blockID] = new FCItemBlockTorchFiniteIdle(fcBlockTorchFiniteUnlit.blockID - 256);
 +		Item.itemsList[fcBlockTorchFiniteBurning.blockID] = new FCItemBlockTorchFiniteBurning(fcBlockTorchFiniteBurning.blockID - 256);
@@ -1945,6 +2091,29 @@
 +		Item.itemsList[fcBlockTorchNetherBurning.blockID] = (new FCItemBlockTorchBurning(fcBlockTorchNetherBurning.blockID - 256));
 +
 +		Item.itemsList[fcBlockWickerSlab.blockID] = new FCItemBlockSlab(fcBlockWickerSlab.blockID - 256);
++
++		Item.itemsList[fcBlockCobblestoneLoose.blockID] = new ItemBlockWithMetadata(fcBlockCobblestoneLoose.blockID - 256, fcBlockCobblestoneLoose).setUnlocalizedName("fcBlockCobblestoneLoose");
++		Item.itemsList[fcBlockStoneBrickLoose.blockID] = new ItemBlockWithMetadata(fcBlockStoneBrickLoose.blockID - 256, fcBlockStoneBrickLoose).setUnlocalizedName("fcBlockStoneBrickLoose");
++
++		Item.itemsList[fcBlockStoneBrickLooseSlab.blockID] = new FCItemBlockSlabWithMetadata(fcBlockStoneBrickLooseSlab.blockID - 256);
++
++		Item.itemsList[fcBlockCobblestoneSlabSingle.blockID] = (new ItemSlab(fcBlockCobblestoneSlabSingle.blockID - 256, fcBlockCobblestoneSlabSingle, fcBlockCobblestoneSlabDouble, false)).setUnlocalizedName("stoneSlab");
++		Item.itemsList[fcBlockCobblestoneSlabDouble.blockID] = (new ItemSlab(fcBlockCobblestoneSlabDouble.blockID - 256, fcBlockCobblestoneSlabSingle, fcBlockCobblestoneSlabDouble, true)).setUnlocalizedName("stoneSlab");
++		Item.itemsList[fcBlockStoneBrickSlabSingle.blockID] = (new ItemSlab(fcBlockStoneBrickSlabSingle.blockID - 256, fcBlockStoneBrickSlabSingle, fcBlockStoneBrickSlabDouble, false)).setUnlocalizedName("stoneSlab");
++		Item.itemsList[fcBlockStoneBrickSlabDouble.blockID] = (new ItemSlab(fcBlockStoneBrickSlabDouble.blockID - 256, fcBlockStoneBrickSlabSingle, fcBlockStoneBrickSlabDouble, true)).setUnlocalizedName("stoneSlab");
++		Item.itemsList[fcBlockSmoothStoneSlabSingle.blockID] = (new ItemSlab(fcBlockSmoothStoneSlabSingle.blockID - 256, fcBlockSmoothStoneSlabSingle, fcBlockSmoothStoneSlabDouble, false)).setUnlocalizedName("stoneSlab");
++		Item.itemsList[fcBlockSmoothStoneSlabDouble.blockID] = (new ItemSlab(fcBlockSmoothStoneSlabDouble.blockID - 256, fcBlockSmoothStoneSlabSingle, fcBlockSmoothStoneSlabDouble, true)).setUnlocalizedName("stoneSlab");
++
++		Item.itemsList[fcBlockStoneBrickSidingAndCornerMidStrata.blockID] = (new FCItemBlockSidingAndCorner(fcBlockStoneBrickSidingAndCornerMidStrata.blockID - 256));
++		Item.itemsList[fcBlockStoneBrickMouldingAndDecorativeMidStrata.blockID] = (new FCItemBlockMouldingAndDecorative(fcBlockStoneBrickMouldingAndDecorativeMidStrata.blockID - 256));
++		Item.itemsList[fcBlockStoneBrickSidingAndCornerDeepStrata.blockID] = (new FCItemBlockSidingAndCorner(fcBlockStoneBrickSidingAndCornerDeepStrata.blockID - 256));
++		Item.itemsList[fcBlockStoneBrickMouldingAndDecorativeDeepStrata.blockID] = (new FCItemBlockMouldingAndDecorative(fcBlockStoneBrickMouldingAndDecorativeDeepStrata.blockID - 256));
++
++		Item.itemsList[fcBlockSmoothStoneSidingAndCornerMidStrata.blockID] = (new FCItemBlockSidingAndCorner(fcBlockSmoothStoneSidingAndCornerMidStrata.blockID - 256));
++		Item.itemsList[fcBlockSmoothStoneMouldingAndDecorativeMidStrata.blockID] = (new FCItemBlockMouldingAndDecorative(fcBlockSmoothStoneMouldingAndDecorativeMidStrata.blockID - 256));
++		Item.itemsList[fcBlockSmoothStoneSidingAndCornerDeepStrata.blockID] = (new FCItemBlockSidingAndCorner(fcBlockSmoothStoneSidingAndCornerDeepStrata.blockID - 256));
++		Item.itemsList[fcBlockSmoothStoneMouldingAndDecorativeDeepStrata.blockID] = (new FCItemBlockMouldingAndDecorative(fcBlockSmoothStoneMouldingAndDecorativeDeepStrata.blockID - 256));
++
 +
 +		// vanilla block overrides
 +
@@ -1970,6 +2139,8 @@
 +		Item.itemsList[Block.anvil.blockID] = (new FCItemBlockDeadWeight(Block.anvil.blockID - 256)).setUnlocalizedName("anvil");
 +
 +		Item.itemsList[Block.torchWood.blockID] = (new FCItemBlockTorchLegacy(Block.torchWood.blockID - 256)).setUnlocalizedName("torch");
++
++		Item.itemsList[Block.cobblestoneMossy.blockID] = new ItemBlockWithMetadata(Block.cobblestoneMossy.blockID - 256, Block.cobblestoneMossy).setUnlocalizedName("stoneMoss");
 +
 +		// vanilla block stack size changes 
 +
@@ -2046,6 +2217,7 @@
 +		EntityList.AddMapping(FCEntitySoulSand.class, "fcEntitySoulSand", parseID("fcEntitySoulSandID"));
 +		EntityList.addMapping(FCEntityJungleSpider.class, "fcJungleSpider", parseID("fcEntityJungleSpiderID"), 0x1C311D, 0x1B1911);
 +		EntityList.AddMapping(FCEntityWitherPersistent.class, "fcWitherPersistent", parseID("fcWitherPersistentID"));
++		EntityList.AddMapping(FCEntityCorpseEye.class, "fcCorpseEye", parseID("fcEntityCorpseEyeID"));
 +
 +		//Uses legacy names from old API for compatibility
 +		EntityList.addMapping(FCEntityVillagerFarmer.class, "addonVillagerFarmer", 600, 5651507, 12422002);
@@ -2329,14 +2501,14 @@
 +		this.registerProperty("fcBlockCarrotID", "1095");
 +		this.registerProperty("fcBlockCarrotFlowersID", "1096");
 +		this.registerProperty("fcBlockCandlePlainID", "1097");
-+		/*
++		
 +		for (int i = 0; i < 16; i++) {
 +			int id = 1098 + i;
 +			String idProperty = "fcBlockCandle" + FCUtilsColor.colorOrderCapital[i] + "ID";
 +
 +			this.registerProperty(idProperty, Integer.toString(id));
 +		}
-+		*/
++		
 +		this.registerProperty("fcBlockSilverfishStoneID", "1114");
 +		this.registerProperty("fcBlockSilverfishStoneSecondStrataID", "1115");
 +		this.registerProperty("fcBlockSilverfishStoneThirdStrataID", "1116");
@@ -2346,7 +2518,41 @@
 +		this.registerProperty("fcBlockSilverfishStoneBricksCrackedID", "1120");
 +		this.registerProperty("fcBlockSilverfishStoneBricksChiseledID", "1121");
 +		this.registerProperty("fcBlockGrassSlabID", "1122");
-+
++		this.registerProperty("fcBlockCobblestoneSlabSingleID", "1123");
++		this.registerProperty("fcBlockCobblestoneSlabDoubleID", "1124");
++		this.registerProperty("fcBlockStoneBrickSlabSingleID", "1125");
++		this.registerProperty("fcBlockStoneBrickSlabDoubleID", "1126");
++		this.registerProperty("fcBlockSmoothStoneSlabSingleID", "1127");
++		this.registerProperty("fcBlockSmoothStoneSlabDoubleID", "1128");
++		this.registerProperty("fcBlockCobblestoneStairsMidStrataID", "1129");
++		this.registerProperty("fcBlockCobblestoneStairsDeepStrataID", "1130");
++		this.registerProperty("fcBlockCobblestoneLooseStairsMidStrataID", "1131");
++		this.registerProperty("fcBlockCobblestoneLooseStairsDeepStrataID", "1132");
++		this.registerProperty("fcBlockStoneBrickStairsMidStrataID", "1133");
++		this.registerProperty("fcBlockStoneBrickStairsDeepStrataID", "1134");
++		this.registerProperty("fcBlockStoneBrickLooseStairsMidStrataID", "1135");
++		this.registerProperty("fcBlockStoneBrickLooseStairsDeepStrataID", "1136");
++		this.registerProperty("fcBlockSmoothstoneStairsMidStrataID", "1137");
++		this.registerProperty("fcBlockSmoothstoneStairsDeepStrataID", "1138");
++		this.registerProperty("fcBlockStoneBrickSidingAndCornerMidStrataID", "1139");
++		this.registerProperty("fcBlockStoneBrickMouldingMidStrataID", "1140");
++		this.registerProperty("fcBlockSmoothStoneSidingAndCornerMidStrataID", "1141");
++		this.registerProperty("fcBlockSmoothStoneMouldingMidStrataID", "1142");
++		this.registerProperty("fcBlockStoneBrickSidingAndCornerDeepStrataID", "1143");
++		this.registerProperty("fcBlockStoneBrickMouldingDeepStrataID", "1144");
++		this.registerProperty("fcBlockSmoothStoneSidingAndCornerDeepStrataID", "1145");
++		this.registerProperty("fcBlockSmoothStoneMouldingDeepStrataID", "1146");
++		this.registerProperty("fcBlockSilverfishCobblestoneMidStrataID", "1147");
++		this.registerProperty("fcBlockSilverfishCobblestoneDeepStrataID", "1148");
++		this.registerProperty("fcBlockSilverfishStoneBricksMidStrataID", "1149");
++		this.registerProperty("fcBlockSilverfishStoneBricksMossyMidStrataID", "1150");
++		this.registerProperty("fcBlockSilverfishStoneBricksCrackedMidStrataID", "1151");
++		this.registerProperty("fcBlockSilverfishStoneBricksChiseledMidStrataID", "1152");
++		this.registerProperty("fcBlockSilverfishStoneBricksDeepStrataID", "1153");
++		this.registerProperty("fcBlockSilverfishStoneBricksMossyDeepStrataID", "1154");
++		this.registerProperty("fcBlockSilverfishStoneBricksCrackedDeepStrataID", "1155");
++		this.registerProperty("fcBlockSilverfishStoneBricksChiseledDeepStrataID", "1156");
++		this.registerProperty("fcBlockBedrollID", "1157");
 +
 +		//Item ids
 +		this.registerProperty("fcBucketCementID", "222", "***Item IDs***\n\n");
@@ -2541,6 +2747,10 @@
 +		this.registerProperty("fcItemCarrotSeedsID", "22342");
 +		this.registerProperty("fcItemDiamondPlateID", "22343");
 +		this.registerProperty("fcItemMelonMashedID", "22344");
++		this.registerProperty("fcItemBedrollID", "22345");
++		this.registerProperty("fcItemCandleNewID", "22346");
++		this.registerProperty("fcItemCorpseEyeID", "22347");
++		
 +		//Item IDs reused from deco
 +		this.registerProperty("fcItemNameTagID", "30005");
 +		this.registerProperty("fcItemShearsDiamondID", "30006");
@@ -2567,6 +2777,7 @@
 +		this.registerProperty("fcEntitySoulSandID", "239");
 +		this.registerProperty("fcEntityJungleSpiderID", "240");
 +		this.registerProperty("fcWitherPersistentID", "241");
++		this.registerProperty("fcEntityCorpseEyeID", "242");
 +
 +		//Container ids
 +		this.registerProperty("fcMillStoneContainerID", "222", "***Container IDs***\n\n");

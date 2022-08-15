@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockCarrotFlowers.java
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,29 @@
 +package net.minecraft.src;
 +
 +public class FCBlockCarrotFlowers extends FCBlockCarrotBase {
@@ -25,6 +25,8 @@
 +    public boolean RenderBlock(RenderBlocks renderer, int x, int y, int z) {
 +        renderer.setRenderBounds(GetBlockBoundsFromPoolBasedOnState(renderer.blockAccess, x, y, z));
 +        
++        FCBetterThanWolves.fcBlockWeeds.RenderWeeds( this, renderer, x, y, z );
++
 +    	return renderer.renderCrossedSquares(this, x, y, z);
 +    }
 +}

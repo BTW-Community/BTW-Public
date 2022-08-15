@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemTool.java
-@@ -0,0 +1,267 @@
+@@ -0,0 +1,266 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -219,10 +219,9 @@
 +    	return this;
 +    }
 +    
-+    protected boolean CanToolStickInBlock( ItemStack stack, Block block, World world, int i, int j, int k )
-+    {
-+		return IsEfficientVsBlock( stack, world, block, i, j, k );
-+    }
++	protected boolean CanToolStickInBlock(ItemStack stack, Block block, World world, int i, int j, int k) {
++		return IsEfficientVsBlock(stack, world, block, i, j, k) || block.canToolStickInBlockSpecialCase(world, i, j, k, this);
++	}
 +    
 +    protected void PlayPlacementSound( ItemStack stack, Block blockStuckIn, World world, int i, int j, int k )
 +    {

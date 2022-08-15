@@ -1,11 +1,48 @@
 --- a/minecraft/net/minecraft/src/EntityEnderEye.java
 +++ b/minecraft/net/minecraft/src/EntityEnderEye.java
-@@ -177,7 +177,7 @@
+@@ -15,6 +15,8 @@
+     private int despawnTimer;
+     private boolean shatterOrDrop;
  
-                 if (this.shatterOrDrop)
-                 {
++    private int itemDamage = 0;
++
+     public EntityEnderEye(World par1World)
+     {
+         super(par1World);
+@@ -67,7 +69,6 @@
+         }
+ 
+         this.despawnTimer = 0;
+-        this.shatterOrDrop = this.rand.nextInt(5) > 0;
+     }
+ 
+     /**
+@@ -175,9 +176,11 @@
+             {
+                 this.setDead();
+ 
+-                if (this.shatterOrDrop)
+-                {
 -                    this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.eyeOfEnder)));
-+                    this.worldObj.spawnEntityInWorld(EntityList.createEntityOfType(EntityItem.class, this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Item.eyeOfEnder)));
++				if (itemDamage < 4) {
++					ItemStack stack = new ItemStack(Item.eyeOfEnder);
++					stack.setItemDamage(++itemDamage);
++					
++					this.worldObj.spawnEntityInWorld(EntityList.createEntityOfType(EntityItem.class, this.worldObj, this.posX, this.posY, this.posZ, stack));
                  }
                  else
                  {
+@@ -222,4 +225,13 @@
+     {
+         return false;
+     }
++
++    public int getItemDamage() {
++		return itemDamage;
+ }
++
++	public void setItemDamage(int itemDamage) {
++		this.itemDamage = itemDamage;
++	}
++    
++}

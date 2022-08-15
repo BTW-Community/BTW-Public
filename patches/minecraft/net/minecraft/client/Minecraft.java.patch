@@ -199,3 +199,12 @@
          var18.init();
          Iterator var19 = var8.iterator();
  
+@@ -2612,4 +2643,8 @@
+     {
+         return this.field_94139_O;
+     }
++
++    public Timer getTimer() {
++		return timer;
+ }
++}

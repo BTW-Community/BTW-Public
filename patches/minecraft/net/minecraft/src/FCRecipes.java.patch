@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCRecipes.java
-@@ -0,0 +1,7182 @@
+@@ -0,0 +1,7363 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -415,8 +415,22 @@
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		'#', Block.stone 
++    		'#', new ItemStack( Block.stone, 1, 0) 
 +		} );		
++		
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockSmoothstoneStairsMidStrata, 6 ), new Object[] {
++	    		"#  ", 
++	    		"## ", 
++	    		"###", 
++	    		'#', new ItemStack( Block.stone, 1, 1) 
++			} );	
++		
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockSmoothstoneStairsDeepStrata, 6 ), new Object[] {
++	    		"#  ", 
++	    		"## ", 
++	    		"###", 
++	    		'#', new ItemStack( Block.stone, 1, 2) 
++			} );	
 +		
 +		// blood wood stairs and slabs
 +
@@ -472,8 +486,8 @@
 +    		new ItemStack( Item.stick )
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemChiselStone ), new Object[] {	    		
-+    		new ItemStack( FCBetterThanWolves.fcItemStone )
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemChiselStone), new Object[] {	    		
++    		new ItemStack( FCBetterThanWolves.fcItemStone, 1, ignoreMetadata  )
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemChiselIron ), new Object[] {
@@ -643,27 +657,27 @@
 +	{
 +		AddShapelessRecipe( new ItemStack( Item.shovelStone ), new Object[] {
 +        	Item.stick, 
-+        	FCBetterThanWolves.fcItemStone, 
++        	new ItemStack( FCBetterThanWolves.fcItemStone, 1, ignoreMetadata  ), 
 +        	Item.silk
 +    	} );
 +        
 +		AddShapelessRecipe( new ItemStack( Item.shovelStone ), new Object[] {
 +        	Item.stick, 
-+        	FCBetterThanWolves.fcItemStone, 
++        	new ItemStack( FCBetterThanWolves.fcItemStone, 1, ignoreMetadata  ), 
 +        	FCBetterThanWolves.fcItemHempFibers
 +    	} );
 +        
 +		AddShapelessRecipe( new ItemStack( Item.axeStone ), new Object[] {
 +        	Item.stick, 
-+        	FCBetterThanWolves.fcItemStone, 
-+        	FCBetterThanWolves.fcItemStone, 
++        	new ItemStack( FCBetterThanWolves.fcItemStone, 1, ignoreMetadata  ), 
++        	new ItemStack( FCBetterThanWolves.fcItemStone, 1, ignoreMetadata  ), 
 +        	Item.silk
 +    	} );
 +        
 +		AddShapelessRecipe( new ItemStack( Item.axeStone ), new Object[] {
 +        	Item.stick, 
-+        	FCBetterThanWolves.fcItemStone, 
-+        	FCBetterThanWolves.fcItemStone, 
++        	new ItemStack( FCBetterThanWolves.fcItemStone, 1, ignoreMetadata  ), 
++        	new ItemStack( FCBetterThanWolves.fcItemStone, 1, ignoreMetadata  ), 
 +        	FCBetterThanWolves.fcItemHempFibers
 +    	} );
 +        
@@ -672,7 +686,7 @@
 +        	" #S", 
 +        	" # ",         	
 +        	'#', Item.stick, 
-+        	'X', FCBetterThanWolves.fcItemStone, 
++        	'X', new ItemStack( FCBetterThanWolves.fcItemStone, 1, ignoreMetadata  ), 
 +        	'S', Item.silk
 +    	} );
 +        
@@ -681,79 +695,101 @@
 +        	" #S", 
 +        	" # ",         	
 +        	'#', Item.stick, 
-+        	'X', FCBetterThanWolves.fcItemStone, 
++        	'X', new ItemStack( FCBetterThanWolves.fcItemStone, 1, ignoreMetadata  ), 
 +        	'S', FCBetterThanWolves.fcItemHempFibers
 +    	} );
 +	}
 +	
-+	private static void AddLooseStoneRecipes()
-+	{
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcItemStone ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStone ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStone ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStone ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStone ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStone ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStone ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStone ) 
++	private static void AddLooseStoneRecipes() {
++
++		/** Strata info:
++		 * using separate blocks: stairs
++		 * using last 2 bits: full block and slab
++		 * using first 2 bits: itemstone
++		 * 
++		 */		
++
++		int altBitStrata = 0;
++		Block stairsType = FCBetterThanWolves.fcBlockCobblestoneLooseStairs;
++		
++		for( int strata = 0; strata < 3; strata++) {
++			
++			altBitStrata = strata << 2;
++			
++			if (strata == 1) {
++				stairsType = FCBetterThanWolves.fcBlockCobblestoneLooseStairsMidStrata;
++			}
++			else if (strata == 2) {
++				stairsType = FCBetterThanWolves.fcBlockCobblestoneLooseStairsDeepStrata;
++			}
++			
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose, 1, altBitStrata), new Object[] {
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ) 
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcItemStone ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStone ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStone ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStone ) 
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab, 1, altBitStrata ), new Object[] {
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ) 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseStairs ), new Object[] {
++		AddRecipe( new ItemStack( stairsType, 1 ), new Object[] {
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		'#', new ItemStack( FCBetterThanWolves.fcItemStone ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemStone, 1, strata ) 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseStairs, 8 ), new Object[] {
++		AddRecipe( new ItemStack( stairsType, 8 ), new Object[] {
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		'#', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose, 1, altBitStrata ) 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseStairs, 4 ), new Object[] {
++		AddRecipe( new ItemStack( stairsType, 4 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		'#', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose, 1, altBitStrata ) 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseStairs, 2 ), new Object[] {
++		AddRecipe( new ItemStack( stairsType, 2 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		'#', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab, 1, altBitStrata ) 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose ), new Object[] {
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose, 1, altBitStrata ), new Object[] {
 +    		"X", 
 +    		"X", 
-+    		'X', FCBetterThanWolves.fcBlockCobblestoneLooseSlab
++    		'X', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab, 4, altBitStrata )
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab, 4 ), new Object[] {
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab, 4, altBitStrata ), new Object[] {
 +    		"XX", 
-+    		'X', FCBetterThanWolves.fcBlockCobblestoneLoose
++    		'X', new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose, 1, altBitStrata )
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 8 ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose ) 
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 8, strata ), new Object[] {
++			new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLoose, 1, altBitStrata ) 
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 4 ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab ) 
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 4, strata ), new Object[] {
++			new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseSlab, 1,  altBitStrata ) 
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 6 ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcBlockCobblestoneLooseStairs ) 
-+		} );		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 6, strata ), new Object[] {
++			new ItemStack( stairsType, 1 ) 
++		} );	
++		}
 +	}
 +	
 +	private static void AddLooseBrickRecipes()
@@ -832,100 +868,123 @@
 +	
 +	private static void AddLooseStoneBrickRecipes()
 +	{
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcItemStoneBrick ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStoneBrick ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStoneBrick ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStoneBrick ) 
++		/** Strata info:
++		 * using separate blocks: stairs
++		 * using last 2 bits: full block and slab
++		 * using first 2 bits: itemstone
++		 * 
++		 */		
++
++		int altBitStrata = 0;
++		Block stairsType = FCBetterThanWolves.fcBlockStoneBrickLooseStairs;
++		
++		for( int strata = 0; strata < 3; strata++) {
++			
++			altBitStrata = strata << 2;
++			
++			if (strata == 1) {
++				stairsType = FCBetterThanWolves.fcBlockStoneBrickLooseStairsMidStrata;
++			}
++			else if (strata == 2) {
++				stairsType = FCBetterThanWolves.fcBlockStoneBrickLooseStairsDeepStrata;
++			}
++			
++		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose, 1, altBitStrata ), new Object[] {
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, strata ) 
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcItemStoneBrick ), 
-+			new ItemStack( FCBetterThanWolves.fcItemStoneBrick ), 
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab, 1, altBitStrata ), new Object[] {
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, strata ), 
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, strata ), 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseStairs, 2 ), new Object[] {
++		AddRecipe( new ItemStack( stairsType, 2 ), new Object[] {
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		'#', new ItemStack( FCBetterThanWolves.fcItemStoneBrick ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, strata ) 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseStairs, 8 ), new Object[] {
++		AddRecipe( new ItemStack( stairsType, 8 ), new Object[] {
 +    		"#  ", 
 +    		"## ", 
 +    		"###", 
-+    		'#', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose, 1, altBitStrata ) 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseStairs ), new Object[] {
++		AddRecipe( new ItemStack( stairsType ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		'#', new ItemStack( FCBetterThanWolves.fcItemStoneBrick ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, strata ) 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseStairs, 4 ), new Object[] {
++		AddRecipe( new ItemStack( stairsType, 4 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		'#', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose, 1, altBitStrata ) 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseStairs, 2 ), new Object[] {
++		AddRecipe( new ItemStack( stairsType, 2 ), new Object[] {
 +    		"# ", 
 +    		"##", 
-+    		'#', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab ) 
++    		'#', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab, 1, altBitStrata ) 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose ), new Object[] {
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose, 1, altBitStrata ), new Object[] {
 +    		"X", 
 +    		"X", 
-+    		'X', FCBetterThanWolves.fcBlockStoneBrickLooseSlab
++    		'X', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab, 1, altBitStrata )
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab, 4 ), new Object[] {
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab, 4, altBitStrata ), new Object[] {
 +    		"XX", 
-+    		'X', FCBetterThanWolves.fcBlockStoneBrickLoose
++    		'X', new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose, 1, altBitStrata )
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose ) 
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4, strata ), new Object[] {
++			new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLoose, 1, altBitStrata ) 
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 2 ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab ) 
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 2, strata ), new Object[] {
++			new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseSlab, 1, altBitStrata ) 
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 3 ), new Object[] {
-+			new ItemStack( FCBetterThanWolves.fcBlockStoneBrickLooseStairs ) 
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 3, strata ), new Object[] {
++			new ItemStack( stairsType ) 
 +		} );
 +
 +		// stone splitting with chisel
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 2 ), new Object[] {	    		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 2, strata ), new Object[] {	    		
 +    		new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, ignoreMetadata ),
-+    		new ItemStack( FCBetterThanWolves.fcItemStoneBrick )
++    		new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, strata )
 +		} );
 +		
 +		AddShapelessRecipeWithSecondaryOutputIndicator(
-+			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), 
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4, strata ), 
 +			new ItemStack(FCBetterThanWolves.fcItemPileGravel), 
 +			new Object[] {	    		
 +					new ItemStack( FCBetterThanWolves.fcItemChiselIron, 1, ignoreMetadata ),
-+					new ItemStack( Block.stone )
++					new ItemStack( Block.stone, 1, strata )
 +		} );
 +		
-+		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 2 ), new Object[] {	    		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemStone, 2, strata ), new Object[] {	    		
 +    		new ItemStack( FCBetterThanWolves.fcItemChiselDiamond, 1, ignoreMetadata ),
-+    		new ItemStack( FCBetterThanWolves.fcItemStoneBrick )
++    		new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, strata )
 +		} );
 +		
 +		AddShapelessRecipeWithSecondaryOutputIndicator(
-+			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4 ), 
++			new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 4, strata), 
 +			new ItemStack(FCBetterThanWolves.fcItemPileGravel), 
 +			new Object[] {	    		
 +					new ItemStack( FCBetterThanWolves.fcItemChiselDiamond, 1, ignoreMetadata ),
-+					new ItemStack( Block.stone )
++					new ItemStack( Block.stone, 1, strata )
 +		} );
++		}
 +	}
 +	
 +	private static void AddLooseNetherBrickRecipes()
@@ -1142,8 +1201,23 @@
 +			"#  ", 
 +			"## ", 
 +			"###", 
-+			'#', new ItemStack(Block.cobblestone)
++			'#', new ItemStack(Block.cobblestone, 1, 0)
 +		});
++		
++		AddRecipe(new ItemStack(FCBetterThanWolves.fcBlockCobblestoneStairsMidStrata, 6), new Object[] {
++				"#  ", 
++				"## ", 
++				"###", 
++				'#', new ItemStack(Block.cobblestone, 1, 1)
++			});
++		
++		AddRecipe(new ItemStack(FCBetterThanWolves.fcBlockCobblestoneStairsDeepStrata, 6), new Object[] {
++				"#  ", 
++				"## ", 
++				"###", 
++				'#', new ItemStack(Block.cobblestone, 1, 2)
++			});
++		
 +		
 +		AddRecipe(new ItemStack(Block.stairsNetherBrick, 6), new Object[] {
 +			"#  ", 
@@ -1170,8 +1244,22 @@
 +			"#  ", 
 +			"## ", 
 +			"###", 
-+			'#', new ItemStack(Block.stoneBrick)
++			'#', new ItemStack(Block.stoneBrick, 1, 0)
 +		});
++		
++		AddRecipe(new ItemStack(FCBetterThanWolves.fcBlockStoneBrickStairsDeepStrata, 6), new Object[] {
++				"#  ", 
++				"## ", 
++				"###", 
++				'#', new ItemStack(Block.stoneBrick, 1, 2)
++			});
++		
++		AddRecipe(new ItemStack(FCBetterThanWolves.fcBlockStoneBrickStairsDeepStrata, 6), new Object[] {
++				"#  ", 
++				"## ", 
++				"###", 
++				'#', new ItemStack(Block.stoneBrick, 1, 2)
++			});
 +	}
 +	
 +	private static void AddWoolAndKnittingRecipes()
@@ -1643,7 +1731,7 @@
 +    		"  Y", 
 +    		" Y ", 
 +    		"#X#", 
-+    		'#', FCBetterThanWolves.fcItemStoneBrick, 
++    		'#', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata), 
 +    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
 +    		'Y', Item.stick 
 +		} );
@@ -1653,7 +1741,7 @@
 +    		"YYY", 
 +    		"YXY", 
 +    		'X', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata), 
-+    		'Y', FCBetterThanWolves.fcItemStoneBrick 
++    		'Y', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata) 
 +		} );		
 +
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcTurntable ), new Object[] {
@@ -1663,7 +1751,7 @@
 +    		'#', new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
 +    		'X', Item.pocketSundial, 
 +    		'Y', new ItemStack(FCBetterThanWolves.fcItemGear, 1, ignoreMetadata),
-+    		'Z', FCBetterThanWolves.fcItemStoneBrick
++    		'Z', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata)
 +		} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBellows ), new Object[] {
@@ -1863,7 +1951,7 @@
 +    		"XXX", 
 +    		"#Z#", 
 +    		"#Y#", 
-+    		'#', FCBetterThanWolves.fcItemStoneBrick, 
++    		'#', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata), 
 +    		'X', FCBetterThanWolves.fcItemConcentratedHellfire, 
 +    		'Y', Item.redstone, 
 +    		'Z', FCBetterThanWolves.fcItemElement
@@ -2113,7 +2201,7 @@
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcAnchor ), new Object[] {
 +    		" X ", 
 +    		"###", 
-+    		'#', FCBetterThanWolves.fcItemStoneBrick, 
++    		'#', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata), 
 +    		'X', Item.ingotIron 
 +		} );
 +		
@@ -2347,13 +2435,16 @@
 +    		'L', FCBetterThanWolves.fcItemTannedLeatherCut 
 +		} );
 +		
-+		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemCandle, 2, 15 ), new Object[] {
++		AddRecipe(new ItemStack(FCBetterThanWolves.fcItemCandle, 4, 16), new Object[] {
 +    		"H", 
-+    		"T", 
 +    		"T", 
 +    		'H', FCBetterThanWolves.fcItemHempFibers, 
 +    		'T', FCBetterThanWolves.fcItemTallow 
-+		} );
++		});
++		
++		AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemCandle, 4, 16), new Object[] {
++    		new ItemStack(FCBetterThanWolves.fcItemCandleLegacy)
++		});
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcItemScrew ), new Object[] {
 +    		"n# ", 
@@ -2719,9 +2810,15 @@
 +    		"RER",
 +    		"SSS",
 +    		'E', FCBetterThanWolves.fcItemPolishedLapis,
-+    		'S', FCBetterThanWolves.fcItemStoneBrick,
++    		'S', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata),
 +    		'R', Block.torchRedstoneActive
 +		});
++		
++		AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemCorpseEye , 1 ), new Object[] {
++	    		new ItemStack( FCBetterThanWolves.fcItemSoulUrn ),
++	    		new ItemStack( Item.enderPearl ),
++	    		new ItemStack( FCBetterThanWolves.fcItemRawMysteryMeat )
++			} );
 +		
 +		// Recipe awaiting renaming functionality to be enabled
 +		//AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemNameTag), new Object[] {	    		
@@ -2738,14 +2835,8 @@
 +	private static void AddDyeRecipes()
 +	{
 +		// only to 14 to avoid white on white conversion
-+		
 +        for ( int i = 0; i < 15; i++ )
 +        {
-+            AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemCandle, 1, i ), new Object[] {
-+                new ItemStack( Item.dyePowder, 1, i ), 
-+                new ItemStack( FCBetterThanWolves.fcItemCandle, 1, 15 )
-+            } );
-+            
 +            AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemWool, 1, i ), new Object[] {
 +                new ItemStack( Item.dyePowder, 1, i ), 
 +                new ItemStack( FCBetterThanWolves.fcItemWool, 1, 15 )
@@ -2754,7 +2845,7 @@
 +        
 +        AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemCandle, 1, 3 ), new Object[] {
 +            new ItemStack( FCBetterThanWolves.fcItemDung ), 
-+            new ItemStack( FCBetterThanWolves.fcItemCandle, 1, 15 )
++            new ItemStack( FCBetterThanWolves.fcItemCandle, 1, 16 )
 +        } );
 +        
 +        AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcItemWool, 1, 3 ), new Object[] {
@@ -2764,6 +2855,11 @@
 +        
 +        for ( int i = 0; i < 15; i++ )
 +        {
++        	AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemCandle, 1, i), new Object[] {
++                    new ItemStack(Item.dyePowder, 1, i), 
++                    new ItemStack(FCBetterThanWolves.fcItemCandle, 1, 16)
++            });
++        	
 +            AddShapelessRecipe( new ItemStack( FCBetterThanWolves.fcVase, 1, BlockCloth.getBlockFromDye( i ) ), new Object[] {
 +                new ItemStack( Item.dyePowder, 1, i ), 
 +                new ItemStack( Item.itemsList[FCBetterThanWolves.fcVase.blockID], 1, 0 )
@@ -2801,7 +2897,7 @@
 +            "XZX",
 +            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata ), 
 +            Character.valueOf('I'), Item.ingotIron,
-+            Character.valueOf('X'), FCBetterThanWolves.fcItemStoneBrick,
++            Character.valueOf('X'), new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata),
 +            Character.valueOf('Y'), FCBetterThanWolves.fcItemSoulUrn,
 +            Character.valueOf('Z'), FCBetterThanWolves.fcItemRedstoneLatch
 +		} );
@@ -2841,6 +2937,18 @@
 +            "##", 
 +            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockStoneBrickMouldingAndDecorative ) 
 +		} );
++		
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickStairsMidStrata ), new Object[] {
++	            "# ", 
++	            "##", 
++	            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockStoneBrickMouldingAndDecorativeMidStrata ) 
++			} );
++		
++		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockStoneBrickStairsDeepStrata ), new Object[] {
++	            "# ", 
++	            "##", 
++	            Character.valueOf('#'), new ItemStack( FCBetterThanWolves.fcBlockStoneBrickMouldingAndDecorativeDeepStrata ) 
++			} );
 +		
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcBlockWhiteStoneStairs ), new Object[] {
 +            "# ", 
@@ -2933,7 +3041,7 @@
 +        	"III", 
 +        	'#', Block.torchRedstoneActive, 
 +        	'X', Item.pocketSundial, 
-+        	'I', FCBetterThanWolves.fcItemStoneBrick } );
++        	'I', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata) } );
 +        
 +		AddRecipe( new ItemStack( FCBetterThanWolves.fcInfernalEnchanter ), new Object[] {
 +    		"CBC", 
@@ -2989,13 +3097,15 @@
 +		
 +		// chiseled stone brick
 +		
-+		AddAnvilRecipe( new ItemStack( Block.stoneBrick, 12, 3 ), new Object[] {
-+    		"####", 
-+    		"#  #", 
-+    		"#  #", 
-+    		"####", 
-+    		'#', Block.stoneBrick
-+		} );
++		for (int strata = 0; strata < 3; strata++) {
++			AddAnvilRecipe( new ItemStack( Block.stoneBrick, 12, 3 + (strata << 2)), new Object[] {
++		    		"####", 
++		    		"#  #", 
++		    		"#  #", 
++		    		"####", 
++		    		'#', new ItemStack(Block.stoneBrick, 1, strata << 2)
++				} );	
++		}
 +		
 +		AddRecipe( new ItemStack( Item.bowlEmpty, 6 ), new Object[] {
 +            "# #", 
@@ -3157,7 +3267,7 @@
 +			"X", 
 +			"#", 
 +			"r",
-+			'#', FCBetterThanWolves.fcItemStoneBrick, 
++			'#', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata), 
 +			'X', Item.stick, 
 +			'r', Item.redstone 
 +		} );
@@ -3168,7 +3278,21 @@
 +    		'#', new ItemStack( Item.itemsList[FCBetterThanWolves.fcBlockSmoothStoneSidingAndCorner.blockID], 1, 1 ),
 +			'r', Item.redstone 
 +    	} );
-+        
++		
++		AddRecipe( new ItemStack( Block.stoneButton, 1 ), new Object[] {
++        	"#",
++        	"r",
++    		'#', new ItemStack( Item.itemsList[FCBetterThanWolves.fcBlockSmoothStoneSidingAndCornerMidStrata.blockID], 1, 1 ),
++			'r', Item.redstone 
++    	} );
++		
++		AddRecipe( new ItemStack( Block.stoneButton, 1 ), new Object[] {
++        	"#",
++        	"r",
++    		'#', new ItemStack( Item.itemsList[FCBetterThanWolves.fcBlockSmoothStoneSidingAndCornerDeepStrata.blockID], 1, 1 ),
++			'r', Item.redstone 
++    	} );
++		
 +		AddRecipe( new ItemStack( Block.woodenButton, 1 ), new Object[] {
 +        	"#", 
 +        	"r",
@@ -3182,7 +3306,21 @@
 +    		'#', new ItemStack( Item.itemsList[FCBetterThanWolves.fcBlockSmoothStoneSidingAndCorner.blockID], 1, 0 ),
 +			'r', Item.redstone 
 +    	} );
-+        
++		
++		AddRecipe( new ItemStack( Block.pressurePlateStone, 1 ), new Object[] {
++	        	"#", 
++	        	"r",
++	    		'#', new ItemStack( Item.itemsList[FCBetterThanWolves.fcBlockSmoothStoneSidingAndCornerMidStrata.blockID], 1, 0 ),
++				'r', Item.redstone 
++	    	} );
++		
++		AddRecipe( new ItemStack( Block.pressurePlateStone, 1 ), new Object[] {
++	        	"#", 
++	        	"r",
++	    		'#', new ItemStack( Item.itemsList[FCBetterThanWolves.fcBlockSmoothStoneSidingAndCornerDeepStrata.blockID], 1, 0 ),
++				'r', Item.redstone 
++	    	} );
++	        
 +		AddRecipe( new ItemStack( Block.pressurePlatePlanks, 1 ), new Object[] {
 +        	"#", 
 +        	"r",
@@ -3202,7 +3340,7 @@
 +			"###", 
 +			"#X#", 
 +			"#R#", 
-+			'#', FCBetterThanWolves.fcItemStoneBrick, 
++			'#', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata), 
 +			'X', Item.bow, 
 +			'R', FCBetterThanWolves.fcItemRedstoneLatch
 +		} );
@@ -3257,12 +3395,18 @@
 +            new ItemStack( Block.planks, 1, ignoreMetadata )
 +        } );		
 +		
-+		AddRecipe( new ItemStack( Item.bed, 1 ), new Object[] {
-+			"###", 
-+			"XXX", 
-+			'#', FCBetterThanWolves.fcItemPadding, 
-+			'X', Block.planks
-+		} );
++		AddRecipe(new ItemStack(Item.bed), new Object[] {
++			"###",
++			"XXX",
++			'#', FCBetterThanWolves.fcItemPadding,
++			'X', new ItemStack(FCBetterThanWolves.fcBlockWoodSidingItemStubID, 1, ignoreMetadata)
++		});
++		
++		AddShapelessRecipe(new ItemStack(FCBetterThanWolves.fcItemBedroll), new Object[] {
++				new ItemStack(FCBetterThanWolves.fcItemWoolKnit, 1, ignoreMetadata),
++				new ItemStack(FCBetterThanWolves.fcItemWoolKnit, 1, ignoreMetadata),
++				new ItemStack(Item.silk)
++		});
 +		
 +		// map creation and zooming
 +		
@@ -3318,6 +3462,7 @@
 +    		new ItemStack( FCBetterThanWolves.fcItemRope ) 
 +		} );
 +		
++		//Legacy support
 +		AddShapelessRecipe( new ItemStack( Block.cobblestone ), new Object[] {	    		
 +    		new ItemStack( Block.stoneSingleSlab, 1, 3 ), // metadata 3 is cobble slab
 +    		new ItemStack( Block.stoneSingleSlab, 1, 3 )
@@ -3328,6 +3473,7 @@
 +    		new ItemStack( Block.stoneSingleSlab, 1, 4 )
 +		} );
 +		
++		//Legacy support
 +		AddShapelessRecipe( new ItemStack( Block.stoneBrick ), new Object[] {	    		
 +    		new ItemStack( Block.stoneSingleSlab, 1, 5 ), // metadata 5 is stone brick slab
 +    		new ItemStack( Block.stoneSingleSlab, 1, 5 )
@@ -3337,6 +3483,17 @@
 +    		new ItemStack( Block.stoneSingleSlab, 1, 6 ), // metadata 6 is nether brick slab
 +    		new ItemStack( Block.stoneSingleSlab, 1, 6 )
 +		} );
++		
++		for (int strata = 0; strata < 3; strata++) {
++			AddShapelessRecipe(new ItemStack(Block.cobblestone, 1, strata), new Object[] {	    		
++		    		new ItemStack(FCBetterThanWolves.fcBlockCobblestoneSlabSingle, 1, strata),
++		    		new ItemStack(FCBetterThanWolves.fcBlockCobblestoneSlabSingle, 1, strata)
++				} );
++			AddShapelessRecipe(new ItemStack(Block.stoneBrick, 1, strata << 2), new Object[] {	    		
++		    		new ItemStack(FCBetterThanWolves.fcBlockStoneBrickSlabSingle, 1, strata),
++		    		new ItemStack(FCBetterThanWolves.fcBlockStoneBrickSlabSingle, 1, strata)
++				} );
++		}
 +		
 +		for ( int iTempWoodType = 0; iTempWoodType < 5; iTempWoodType++ )
 +		{
@@ -3584,7 +3741,7 @@
 +    		"XTTX", 
 +    		"#YY#", 
 +    		"#YY#", 
-+    		'#', FCBetterThanWolves.fcItemStoneBrick, 
++    		'#', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata), 
 +    		'X', FCBetterThanWolves.fcItemPolishedLapis, 
 +    		'Y', Item.redstone, 
 +    		'T', Block.torchRedstoneActive 
@@ -3595,9 +3752,9 @@
 +    		"#ZZ#", 
 +    		"YTTY", 
 +    		"YXXY", 
-+    		'#', Block.cobblestoneMossy, 
++    		'#', new ItemStack(Block.cobblestoneMossy, 1, ignoreMetadata), 
 +    		'X', Item.redstone,
-+    		'Y', FCBetterThanWolves.fcItemStoneBrick, 
++    		'Y', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata), 
 +    		'Z', FCBetterThanWolves.fcItemSoulUrn,
 +    		'T', Block.torchRedstoneActive 
 +		} );
@@ -3607,7 +3764,7 @@
 +        	"XYY#", 
 +        	"#YYX", 
 +        	"#X##", 
-+        	'#', FCBetterThanWolves.fcItemStoneBrick, 
++        	'#', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata), 
 +        	'X', FCBetterThanWolves.fcItemPolishedLapis, 
 +    		'Y', Block.torchRedstoneActive 
 +        } );
@@ -3642,7 +3799,7 @@
 +    		"#  #", 
 +    		"#  #", 
 +    		"####", 
-+    		'#', FCBetterThanWolves.fcItemStoneBrick
++    		'#', new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 1, ignoreMetadata)
 +		} );
 +
 +		AddAnvilRecipe( new ItemStack( FCBetterThanWolves.fcItemMail, 2 ), new Object[] {
@@ -5538,8 +5695,11 @@
 +		addPistonPackingRecipe(FCBetterThanWolves.fcAestheticOpaque, FCBlockAestheticOpaque.m_iSubtypeFlint,
 +				new ItemStack(Item.flint, 9));
 +
-+		addPistonPackingRecipe(FCBetterThanWolves.fcBlockCobblestoneLoose,
-+				new ItemStack(FCBetterThanWolves.fcItemStone, 8));
++		for (int strata = 0; strata < 3; strata++) {
++			addPistonPackingRecipe(FCBetterThanWolves.fcBlockCobblestoneLoose, strata << 2,
++					new ItemStack(FCBetterThanWolves.fcItemStone, 8, strata));
++		}
++		
 +		
 +		//Bricks
 +		addPistonPackingRecipe(FCBetterThanWolves.fcBlockBrickLoose,
@@ -5547,6 +5707,11 @@
 +
 +		addPistonPackingRecipe(FCBetterThanWolves.fcBlockNetherBrickLoose,
 +				new ItemStack(FCBetterThanWolves.fcItemNetherBrick, 8));
++		
++		for (int strata = 0; strata < 3; strata++) {
++			addPistonPackingRecipe(FCBetterThanWolves.fcBlockStoneBrickLoose, strata << 2,
++					new ItemStack(FCBetterThanWolves.fcItemStoneBrick, 4, strata));
++		}
 +		
 +		//Mob Drops
 +		addPistonPackingRecipe(FCBetterThanWolves.fcAestheticOpaque, FCBlockAestheticOpaque.m_iSubtypeBone,
@@ -5696,9 +5861,25 @@
 +			FCBetterThanWolves.fcBlockSmoothStoneSidingAndCorner, 
 +			FCBetterThanWolves.fcBlockSmoothStoneMouldingAndDecorative, true );
 +		
++		AddSubBlockRecipesOfType( Block.stone, 1, 
++				FCBetterThanWolves.fcBlockSmoothStoneSidingAndCornerMidStrata, 
++				FCBetterThanWolves.fcBlockSmoothStoneMouldingAndDecorativeMidStrata, true );
++		
++		AddSubBlockRecipesOfType( Block.stone, 2, 
++				FCBetterThanWolves.fcBlockSmoothStoneSidingAndCornerDeepStrata, 
++				FCBetterThanWolves.fcBlockSmoothStoneMouldingAndDecorativeDeepStrata, true );
++		
 +		AddSubBlockRecipesOfType( Block.stoneBrick, 0, 
 +			FCBetterThanWolves.fcBlockStoneBrickSidingAndCorner, 
 +			FCBetterThanWolves.fcBlockStoneBrickMouldingAndDecorative, true );
++		
++		AddSubBlockRecipesOfType( Block.stoneBrick, 4, 
++				FCBetterThanWolves.fcBlockStoneBrickSidingAndCornerMidStrata, 
++				FCBetterThanWolves.fcBlockStoneBrickMouldingAndDecorativeMidStrata, true );
++		
++		AddSubBlockRecipesOfType( Block.stoneBrick, 8, 
++				FCBetterThanWolves.fcBlockStoneBrickSidingAndCornerDeepStrata, 
++				FCBetterThanWolves.fcBlockStoneBrickMouldingAndDecorativeDeepStrata, true );
 +		
 +		AddSubBlockRecipesOfType( FCBetterThanWolves.fcAestheticOpaque, FCBlockAestheticOpaque.m_iSubtypeWhiteStone, 
 +			FCBetterThanWolves.fcBlockWhiteStoneSidingAndCorner, 

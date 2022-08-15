@@ -136,3 +136,14 @@
          if (this.myEntity instanceof EntityItem)
          {
              return new Packet23VehicleSpawn(this.myEntity, 2, 1);
+@@ -457,6 +495,10 @@
+             {
+                 return new Packet23VehicleSpawn(this.myEntity, 72);
+             }
++            else if (this.myEntity instanceof FCEntityCorpseEye)
++            {
++                return new Packet23VehicleSpawn(this.myEntity, FCEntityCorpseEye.GetVehicleSpawnPacketType());
++            }
+             else if (this.myEntity instanceof EntityFireworkRocket)
+             {
+                 return new Packet23VehicleSpawn(this.myEntity, 76);

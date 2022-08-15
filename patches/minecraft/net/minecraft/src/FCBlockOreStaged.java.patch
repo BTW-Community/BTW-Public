@@ -63,7 +63,7 @@
 +		
 +        if ( !world.isRemote )
 +        {
-+    		DropItemsIndividualy( world, i, j, k, FCBetterThanWolves.fcItemStone.itemID, 6, 0, 1F );		
++    		DropItemsIndividualy( world, i, j, k, FCBetterThanWolves.fcItemStone.itemID, 6, GetStrata(iMetadata), 1F );		
 +        }
 +    }
 +    

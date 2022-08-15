@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCItemWindMill.java
-@@ -0,0 +1,77 @@
+@@ -0,0 +1,78 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -59,7 +59,7 @@
 +        			{
 +                        if( world.isRemote )
 +                        {
-+                        	player.addChatMessage( "Wind Mill placement is obstructed by something, or by you" );
++                        	player.addChatMessage( "message.windMill.placementObstructed" );
 +                        }
 +        			}
 +        		}
@@ -67,7 +67,8 @@
 +        		{
 +                    if( world.isRemote )
 +                    {
-+                    	player.addChatMessage( "Not enough room to place Wind Mill (They are friggin HUGE!)" );
++                    	player.addChatMessage( "message.windMill.notEnoughRoom" );
++
 +                    }
 +        		}
 +            }

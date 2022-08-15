@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockStone.java
-@@ -0,0 +1,327 @@
+@@ -0,0 +1,324 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -70,33 +70,34 @@
 +    	
 +        return super.getExplosionResistance( entity, world, i, j, k );
 +    }
-+    
-+    @Override
-+    public int idDropped( int iMetaData, Random random, int iFortuneModifier )
-+    {
-+        return FCBetterThanWolves.fcBlockCobblestoneLoose.blockID;
-+    }
-+    
++
 +	@Override
-+    public void dropBlockAsItemWithChance( World world, int i, int j, int k, int iMetadata, float fChance, int iFortuneModifier )
-+    {
-+		super.dropBlockAsItemWithChance( world, i, j, k, iMetadata, fChance, iFortuneModifier );
-+		
-+        if ( !world.isRemote )
-+        {
-+        	dropBlockAsItem_do( world, i, j, k, new ItemStack( FCBetterThanWolves.fcItemStone ) );
-+        	
-+        	if ( !GetIsCracked( iMetadata ) )
-+        	{
-+            	dropBlockAsItem_do( world, i, j, k, new ItemStack( FCBetterThanWolves.fcItemPileGravel ) );
-+        	}
-+        }
-+    }
++	public int idDropped(int iMetaData, Random random, int iFortuneModifier) {
++		return FCBetterThanWolves.fcBlockCobblestoneLoose.blockID;
++	}
++
++	@Override
++	public int damageDropped(int metadata) {
++		return GetStrata(metadata) << 2; // loose cobblestone uses last 2 bits for strata
++	}
++
++	@Override
++	public void dropBlockAsItemWithChance(World world, int i, int j, int k, int iMetadata, float fChance, int iFortuneModifier) {
++		super.dropBlockAsItemWithChance(world, i, j, k, iMetadata, fChance, iFortuneModifier);
++
++		if (!world.isRemote) {
++			dropBlockAsItem_do(world, i, j, k, new ItemStack(FCBetterThanWolves.fcItemStone, 1, GetStrata(iMetadata)));
++
++			if (!GetIsCracked(iMetadata)) {
++				dropBlockAsItem_do(world, i, j, k, new ItemStack(FCBetterThanWolves.fcItemPileGravel));
++			}
++		}
++	}
 +	
 +	@Override
 +	public boolean DropComponentItemsOnBadBreak( World world, int i, int j, int k, int iMetadata, float fChanceOfDrop )
 +	{
-+		DropItemsIndividualy( world, i, j, k, FCBetterThanWolves.fcItemStone.itemID, 5, 0, fChanceOfDrop );
++		DropItemsIndividualy( world, i, j, k, FCBetterThanWolves.fcItemStone.itemID, 5, GetStrata(iMetadata), fChanceOfDrop );
 +		
 +		int iNumGravel = GetIsCracked( iMetadata ) ? 2 : 3;
 +		
@@ -129,7 +130,7 @@
 +    	        world.playAuxSFX( FCBetterThanWolves.m_iStoneRippedOffAuxFXID, i, j, k, 0 );
 +    	        
 +                FCUtilsItem.EjectStackFromBlockTowardsFacing( world, i, j, k, 
-+                	new ItemStack( FCBetterThanWolves.fcItemStone, 1 ), iFromSide );
++                	new ItemStack( FCBetterThanWolves.fcItemStone, 1, iStrata ), iFromSide );
 +        	}
 +    	}
 +    	else
@@ -145,7 +146,7 @@
 +        	        world.playAuxSFX( FCBetterThanWolves.m_iStoneRippedOffAuxFXID, i, j, k, 0 );
 +	    	        
 +                    FCUtilsItem.EjectStackFromBlockTowardsFacing( world, i, j, k, 
-+                    	new ItemStack( FCBetterThanWolves.fcItemStone, 3 ), iFromSide );
++                    	new ItemStack( FCBetterThanWolves.fcItemStone, 3, iStrata ), iFromSide );
 +                    
 +	                FCUtilsItem.EjectStackFromBlockTowardsFacing( world, i, j, k, 
 +	                	new ItemStack( FCBetterThanWolves.fcItemPileGravel, 1 ), iFromSide );
@@ -164,7 +165,7 @@
 +        	        world.playAuxSFX( FCBetterThanWolves.m_iStoneRippedOffAuxFXID, i, j, k, 0 );
 +	    	        
 +                    FCUtilsItem.EjectStackFromBlockTowardsFacing( world, i, j, k, 
-+                    	new ItemStack( FCBetterThanWolves.fcItemStoneBrick ), iFromSide );
++                    	new ItemStack( FCBetterThanWolves.fcItemStoneBrick, 1, iStrata ), iFromSide );
 +                    
 +	                FCUtilsItem.EjectStackFromBlockTowardsFacing( world, i, j, k, 
 +	                	new ItemStack( FCBetterThanWolves.fcItemPileGravel, 1 ), iFromSide );
@@ -226,17 +227,13 @@
 +    }
 +
 +    @Override
-+    public int getBlockIDOnInfest(EntityLiving entity, int metadata)
-+    {
++    public int getBlockIDOnInfest(EntityLiving entity, int metadata) {
 +    	int strata = GetStrata(metadata);
 +
-+    	if (strata == 1)
-+    	{
++    	if (strata == 1) {
 +    		return FCBetterThanWolves.fcBlockSilverfishStoneSecondStrata.blockID;
 +    	}
-+
-+    	else if (strata == 2)
-+    	{
++    	else if (strata == 2) {
 +    		return FCBetterThanWolves.fcBlockSilverfishStoneThirdStrata.blockID;
 +    	}
 +

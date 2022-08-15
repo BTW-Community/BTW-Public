@@ -1,9 +1,12 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockStep.java
-@@ -0,0 +1,171 @@
+@@ -0,0 +1,206 @@
 +// FCMOD
 +
 +package net.minecraft.src;
++
++import java.util.List;
++import java.util.Random;
 +
 +public class FCBlockStep extends BlockStep
 +{
@@ -19,6 +22,28 @@
 +    public FCBlockStep( int iBlockID, boolean bIsDoubleSlab )
 +    {
 +        super( iBlockID, bIsDoubleSlab );
++    }
++    
++    @Override
++    public int idDropped(int metadata, Random random, int fortune) {
++    	if(metadata == m_iStepTypeStone ) {
++    		return FCBetterThanWolves.fcBlockSmoothStoneSlabSingle.blockID;
++    	}
++    	else if(metadata == m_iStepTypeCobble ) {
++    		return FCBetterThanWolves.fcBlockCobblestoneSlabSingle.blockID;
++    	}
++    	else if(metadata == m_iStepTypeStoneBrick ) {
++    		return FCBetterThanWolves.fcBlockStoneBrickSlabSingle.blockID;
++    	}
++    	else return super.idDropped(metadata, random, fortune);
++    }
++    
++    @Override
++    public int damageDropped(int metadata) {
++    	if(metadata == m_iStepTypeStone || metadata == m_iStepTypeCobble  || metadata == m_iStepTypeStoneBrick  ) {
++    		return 0;
++    	}
++       	else return super.damageDropped(metadata);
 +    }
 +	
 +    @Override
@@ -171,5 +196,15 @@
 +	}
 +	
 +	//----------- Client Side Functionality -----------//
++	
++	@Override
++    public void getSubBlocks(int par1, CreativeTabs par2CreativeTabs, List par3List) {
++        if (par1 != Block.stoneDoubleSlab.blockID) {
++        	 par3List.add(new ItemStack(par1, 1, 1));
++        	 par3List.add(new ItemStack(par1, 1, 4));
++        	 par3List.add(new ItemStack(par1, 1, 6));
++        	 par3List.add(new ItemStack(par1, 1, 7));
++        }
++    }
 +}
 \ No newline at end of file

@@ -1,0 +1,32 @@
+--- /dev/null
++++ b/minecraft_server/net/minecraft/src/FCBlockBedroll.java
+@@ -0,0 +1,28 @@
++// FCMOD
++
++package net.minecraft.src;
++
++import java.util.Iterator;
++import java.util.Random;
++
++public class FCBlockBedroll extends FCBlockBedBase {
++	private static final double BEDROLL_HEIGHT = 0.125D;
++	
++    public FCBlockBedroll(int blockID) {
++		super(blockID);
++
++		this.setStepSound(Block.soundClothFootstep);
++    	
++    	InitBlockBounds(0D, 0D, 0D, 1D, BEDROLL_HEIGHT, 1D);
++	}
++	
++    @Override
++	public boolean blocksHealing() {
++		return true;
++	}
++
++    @Override
++    public int idDropped(int meta, Random rand, int par3) {
++        return isBlockHeadOfBed(meta) ? 0 : FCBetterThanWolves.fcItemBedroll.itemID;
++    }
++}
+\ No newline at end of file

@@ -1,0 +1,18 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCItemBlockSlabWithMetadata.java
+@@ -0,0 +1,15 @@
++package net.minecraft.src;
++
++public class FCItemBlockSlabWithMetadata extends FCItemBlockSlab {
++	
++	    public FCItemBlockSlabWithMetadata( int iItemID )
++	    {
++	        super( iItemID );        
++	    }
++	    
++	    @Override
++	    public int getMetadata(int par1)
++	    {
++	        return par1;
++	    }
++}

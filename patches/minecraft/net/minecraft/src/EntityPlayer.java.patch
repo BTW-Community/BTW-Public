@@ -19,7 +19,19 @@
  public abstract class EntityPlayer extends EntityLiving implements ICommandSender
  {
      /** Inventory of the player */
-@@ -105,7 +114,10 @@
+@@ -54,6 +63,11 @@
+     public float field_71082_cx;
+     public float field_71089_bV;
+ 
++    public int lastDeathLocationX;
++    public int lastDeathLocationY;
++    public int lastDeathLocationZ;
++    public int lastDeathDimension;
++
+     /**
+      * Holds the last coordinate to spawn based on last bed that the player sleep.
+      */
+@@ -105,7 +119,10 @@
      public EntityPlayer(World par1World)
      {
          super(par1World);
@@ -31,7 +43,7 @@
          this.openContainer = this.inventoryContainer;
          this.yOffset = 1.62F;
          ChunkCoordinates var2 = par1World.getSpawnPoint();
-@@ -127,6 +139,20 @@
+@@ -127,6 +144,20 @@
          this.dataWatcher.addObject(16, Byte.valueOf((byte)0));
          this.dataWatcher.addObject(17, Byte.valueOf((byte)0));
          this.dataWatcher.addObject(18, Integer.valueOf(0));
@@ -52,7 +64,7 @@
      }
  
      /**
-@@ -192,17 +218,35 @@
+@@ -192,17 +223,35 @@
       */
      public void onUpdate()
      {
@@ -89,7 +101,7 @@
                  if (--this.itemInUseCount == 0 && !this.worldObj.isRemote)
                  {
                      this.onItemUseFinish();
-@@ -315,6 +359,10 @@
+@@ -315,6 +364,10 @@
          {
              this.foodStats.onUpdate(this);
          }
@@ -100,7 +112,7 @@
      }
  
      /**
-@@ -333,6 +381,10 @@
+@@ -333,6 +386,10 @@
          return 10;
      }
  
@@ -111,7 +123,7 @@
      public void playSound(String par1Str, float par2, float par3)
      {
          this.worldObj.playSoundToNearExcept(this, par1Str, par2, par3);
-@@ -493,7 +545,7 @@
+@@ -493,7 +550,7 @@
              --this.flyToggleTimer;
          }
  
@@ -120,7 +132,7 @@
          {
              this.heal(1);
          }
-@@ -503,6 +555,9 @@
+@@ -503,6 +560,9 @@
          super.onLivingUpdate();
          this.landMovementFactor = this.capabilities.getWalkSpeed();
          this.jumpMovementFactor = this.speedInAir;
@@ -130,7 +142,7 @@
  
          if (this.isSprinting())
          {
-@@ -668,7 +723,7 @@
+@@ -668,7 +728,7 @@
          }
          else
          {
@@ -139,7 +151,7 @@
              var3.delayBeforeCanPickup = 40;
              float var4 = 0.1F;
              float var5;
-@@ -680,6 +735,9 @@
+@@ -680,6 +740,9 @@
                  var3.motionX = (double)(-MathHelper.sin(var6) * var5);
                  var3.motionZ = (double)(MathHelper.cos(var6) * var5);
                  var3.motionY = 0.20000000298023224D;
@@ -149,7 +161,7 @@
              }
              else
              {
-@@ -712,9 +770,19 @@
+@@ -712,9 +775,19 @@
      /**
       * Returns how strong the player is against the specified block at this moment
       */
@@ -169,7 +181,7 @@
  
          if (var3 > 1.0F)
          {
-@@ -725,7 +793,12 @@
+@@ -725,7 +798,12 @@
              {
                  float var6 = (float)(var4 * var4 + 1);
  
@@ -182,7 +194,7 @@
                  {
                      var3 += var6 * 0.08F;
                  }
-@@ -756,16 +829,24 @@
+@@ -756,16 +834,24 @@
              var3 /= 5.0F;
          }
  
@@ -207,7 +219,7 @@
  
      /**
       * (abstract) Protected helper method to read subclass entity data from NBT.
-@@ -803,6 +884,9 @@
+@@ -803,6 +889,9 @@
              NBTTagList var3 = par1NBTTagCompound.getTagList("EnderItems");
              this.theInventoryEnderChest.loadInventoryFromNBT(var3);
          }
@@ -217,7 +229,7 @@
      }
  
      /**
-@@ -831,6 +915,9 @@
+@@ -831,6 +920,9 @@
          this.foodStats.writeNBT(par1NBTTagCompound);
          this.capabilities.writeCapabilitiesToNBT(par1NBTTagCompound);
          par1NBTTagCompound.setTag("EnderItems", this.theInventoryEnderChest.saveInventoryToNBT());
@@ -227,7 +239,7 @@
      }
  
      /**
-@@ -932,6 +1019,14 @@
+@@ -932,6 +1024,14 @@
                      }
  
                      this.addStat(StatList.damageTakenStat, par2);
@@ -242,7 +254,7 @@
                      return super.attackEntityFrom(par1DamageSource, par2);
                  }
              }
-@@ -951,7 +1046,13 @@
+@@ -951,7 +1051,13 @@
       */
      protected void alertWolves(EntityLiving par1EntityLiving, boolean par2)
      {
@@ -257,7 +269,7 @@
          {
              if (par1EntityLiving instanceof EntityWolf)
              {
-@@ -1024,7 +1125,12 @@
+@@ -1024,7 +1130,12 @@
          {
              if (!par1DamageSource.isUnblockable() && this.isBlocking())
              {
@@ -270,7 +282,7 @@
              }
  
              par2 = this.applyArmorCalculations(par1DamageSource, par2);
-@@ -1160,6 +1266,15 @@
+@@ -1160,6 +1271,15 @@
                      ++var3;
                  }
  
@@ -286,7 +298,7 @@
                  if (var2 > 0 || var4 > 0)
                  {
                      boolean var5 = this.fallDistance > 0.0F && !this.onGround && !this.isOnLadder() && !this.isInWater() && !this.isPotionActive(Potion.blindness) && this.ridingEntity == null && par1Entity instanceof EntityLiving;
-@@ -1258,9 +1373,15 @@
+@@ -1258,9 +1378,15 @@
  
                      this.addExhaustion(0.3F);
                  }
@@ -302,28 +314,37 @@
  
      /**
       * Called when the player performs a critical hit on the Entity. Args: entity that was hit critically
-@@ -1303,6 +1424,11 @@
-      */
-     public EnumStatus sleepInBedAt(int par1, int par2, int par3)
-     {
-+    	// FCMOD: Code added
-+        return EnumStatus.OTHER_PROBLEM;
-+        // END FCMOD
-+    	// FCMOD: Code removed
-+        /*
-         if (!this.worldObj.isRemote)
-         {
-             if (this.isPlayerSleeping() || !this.isEntityAlive())
-@@ -1382,6 +1508,8 @@
-         }
+@@ -1418,7 +1544,7 @@
+         ChunkCoordinates var4 = this.playerLocation;
+         ChunkCoordinates var5 = this.playerLocation;
  
-         return EnumStatus.OK;
-+        */
-+        // END FCMOD
+-        if (var4 != null && this.worldObj.getBlockId(var4.posX, var4.posY, var4.posZ) == Block.bed.blockID)
++        if (var4 != null && Block.blocksList[this.worldObj.getBlockId(var4.posX, var4.posY, var4.posZ)] instanceof FCBlockBedBase)
+         {
+             BlockBed.setBedOccupied(this.worldObj, var4.posX, var4.posY, var4.posZ, false);
+             var5 = BlockBed.getNearestEmptyChunkCoordinates(this.worldObj, var4.posX, var4.posY, var4.posZ, 0);
+@@ -1446,19 +1572,14 @@
+         {
+             this.sleepTimer = 100;
+         }
+-
+-        if (par3)
+-        {
+-            this.setSpawnChunk(this.playerLocation, false);
+         }
+-    }
+ 
+     /**
+      * Checks if the player is currently in a bed
+      */
+     private boolean isInBed()
+     {
+-        return this.worldObj.getBlockId(this.playerLocation.posX, this.playerLocation.posY, this.playerLocation.posZ) == Block.bed.blockID;
++        return Block.blocksList[this.worldObj.getBlockId(this.playerLocation.posX, this.playerLocation.posY, this.playerLocation.posZ)] instanceof FCBlockBedBase;
      }
  
-     private void func_71013_b(int par1)
-@@ -1590,6 +1718,10 @@
+     /**
+@@ -1590,6 +1711,10 @@
              this.spawnChunk = null;
              this.spawnForced = false;
          }
@@ -334,7 +355,7 @@
      }
  
      /**
-@@ -1613,6 +1745,8 @@
+@@ -1613,6 +1738,8 @@
          super.jump();
          this.addStat(StatList.jumpStat, 1);
  
@@ -343,7 +364,7 @@
          if (this.isSprinting())
          {
              this.addExhaustion(0.8F);
-@@ -1621,6 +1755,9 @@
+@@ -1621,6 +1748,9 @@
          {
              this.addExhaustion(0.2F);
          }
@@ -353,7 +374,7 @@
      }
  
      /**
-@@ -1658,6 +1795,13 @@
+@@ -1658,6 +1788,13 @@
          {
              int var7;
  
@@ -367,7 +388,7 @@
              if (this.isInsideOfMaterial(Material.water))
              {
                  var7 = Math.round(MathHelper.sqrt_double(par1 * par1 + par3 * par3 + par5 * par5) * 100.0F);
-@@ -1665,7 +1809,12 @@
+@@ -1665,7 +1802,12 @@
                  if (var7 > 0)
                  {
                      this.addStat(StatList.distanceDoveStat, var7);
@@ -380,7 +401,7 @@
                  }
              }
              else if (this.isInWater())
-@@ -1675,7 +1824,12 @@
+@@ -1675,7 +1817,12 @@
                  if (var7 > 0)
                  {
                      this.addStat(StatList.distanceSwumStat, var7);
@@ -393,7 +414,7 @@
                  }
              }
              else if (this.isOnLadder())
-@@ -1699,7 +1853,12 @@
+@@ -1699,7 +1846,12 @@
                      }
                      else
                      {
@@ -406,25 +427,60 @@
                      }
                  }
              }
-@@ -1828,6 +1987,17 @@
-             }
+@@ -1792,45 +1944,21 @@
+     /**
+      * Gets the Icon Index of the item currently held
+      */
+-    public Icon getItemIcon(ItemStack par1ItemStack, int par2)
+-    {
+-        Icon var3 = super.getItemIcon(par1ItemStack, par2);
++    public Icon getItemIcon(ItemStack itemStack, int index) {
++        Icon icon = super.getItemIcon(itemStack, index);
+ 
+-        if (par1ItemStack.itemID == Item.fishingRod.itemID && this.fishEntity != null)
++        if (itemStack.getItem().requiresMultipleRenderPasses())
+         {
+-            var3 = Item.fishingRod.func_94597_g();
++            return itemStack.getItem().getIconFromDamageForRenderPass(itemStack.getItemDamage(), index);
          }
+-        else
+-        {
+-            if (par1ItemStack.getItem().requiresMultipleRenderPasses())
+-            {
+-                return par1ItemStack.getItem().getIconFromDamageForRenderPass(par1ItemStack.getItemDamage(), par2);
+-            }
  
-+        // FCMOD: Code added (client only)
-+        if ( par1ItemStack.itemID == FCBetterThanWolves.fcItemFishingRodBaited.itemID && fishEntity != null )
-+        {
-+        	var3 = ((FCItemFishingRodBaited)FCBetterThanWolves.fcItemFishingRodBaited).GetCastIcon();
-+        }
-+        else if ( isUsingItem() && getItemInUse().itemID == FCBetterThanWolves.fcItemCompositeBow.itemID )
-+        {
-+        	var3 = ((FCItemCompositeBow)FCBetterThanWolves.fcItemCompositeBow).getDrawIcon( getItemInUseDuration() );
-+        }
-+        // END FCMOD
-+
-         return var3;
-     }
+-            if (this.itemInUse != null && par1ItemStack.itemID == Item.bow.itemID)
+-            {
+-                int var4 = par1ItemStack.getMaxItemUseDuration() - this.itemInUseCount;
+-
+-                if (var4 >= 18)
+-                {
+-                    return Item.bow.getItemIconForUseDuration(2);
++        if(itemStack.getItem().getAnimationIcon(this) != null) {
++        	return itemStack.getItem().getAnimationIcon(this);
+                 }
  
-@@ -1905,6 +2075,9 @@
+-                if (var4 > 13)
+-                {
+-                    return Item.bow.getItemIconForUseDuration(1);
++        return icon;
+                 }
+ 
+-                if (var4 > 0)
+-                {
+-                    return Item.bow.getItemIconForUseDuration(0);
+-                }
+-            }
+-        }
+-
+-        return var3;
+-    }
+-
+     public ItemStack getCurrentArmor(int par1)
+     {
+         return this.inventory.armorItemInSlot(par1);
+@@ -1905,6 +2033,9 @@
          {
              if (!this.worldObj.isRemote)
              {
@@ -434,7 +490,7 @@
                  this.foodStats.addExhaustion(par1);
              }
          }
-@@ -1920,6 +2093,12 @@
+@@ -1920,6 +2051,12 @@
  
      public boolean canEat(boolean par1)
      {
@@ -447,7 +503,7 @@
          return (par1 || this.foodStats.needFood()) && !this.capabilities.disableDamage;
      }
  
-@@ -1974,7 +2153,12 @@
+@@ -1974,7 +2111,12 @@
                  {
                      ItemStack var6 = this.getCurrentEquippedItem();
  
@@ -460,7 +516,7 @@
                      {
                          return true;
                      }
-@@ -1987,6 +2171,13 @@
+@@ -1987,6 +2129,13 @@
  
      public boolean canPlayerEdit(int par1, int par2, int par3, int par4, ItemStack par5ItemStack)
      {
@@ -474,7 +530,32 @@
          return this.capabilities.allowEdit ? true : (par5ItemStack != null ? par5ItemStack.func_82835_x() : false);
      }
  
-@@ -2183,4 +2374,1160 @@
+@@ -2038,12 +2187,12 @@
+     }
+ 
+     /**
+-     * Copies the values from the given player into this player if boolean par2 is true. Always clones Ender Chest
++     * Copies the values from the given player into this player if boolean playerLeavingTheEnd is true. Always clones Ender Chest
+      * Inventory.
+      */
+-    public void clonePlayer(EntityPlayer par1EntityPlayer, boolean par2)
++    public void clonePlayer(EntityPlayer par1EntityPlayer, boolean playerLeavingTheEnd )
+     {
+-        if (par2)
++        if (playerLeavingTheEnd)
+         {
+             this.inventory.copyInventory(par1EntityPlayer.inventory);
+             this.health = par1EntityPlayer.health;
+@@ -2063,6 +2212,8 @@
+             this.setScore(par1EntityPlayer.getScore());
+         }
+ 
++        this.deathCount = par1EntityPlayer.deathCount;
++
+         this.theInventoryEnderChest = par1EntityPlayer.theInventoryEnderChest;
+     }
+ 
+@@ -2183,4 +2334,1181 @@
      {
          return ScorePlayerTeam.func_96667_a(this.getTeam(), this.username);
      }
@@ -503,7 +584,9 @@
 +    public int m_iAirRecoveryCountdown = 0;
 +    public int m_iTicksSinceEmoteSound = 0;
 +    
-+	protected float m_fCurrentMiningSpeedModifier = 1F;	
++	protected float m_fCurrentMiningSpeedModifier = 1F;
++	
++	public int deathCount = 0;	
 +    
 +    public static final int m_iGloomCounterBetweenStateChanges = 1200; // 1 minute
 +    
@@ -555,6 +638,16 @@
 +	    {
 +	    	m_iInGloomCounter = tag.getInteger( "fcGloomCounter" );
 +	    }
++	    
++	    if (tag.hasKey("fcDeathCount")) {
++	    	deathCount = tag.getInteger("fcDeathCount");
++	    }
++	 	if (deathCount > 0) {
++	 		lastDeathLocationX = tag.getInteger("fcLastDeathLocationX");
++	 		lastDeathLocationY = tag.getInteger("fcLastDeathLocationY");
++	 		lastDeathLocationZ = tag.getInteger("fcLastDeathLocationZ");
++	 		lastDeathDimension = tag.getInteger("fcLastDeathDimension");
++	 	}
 +    }
 +    
 +    protected void WriteModDataToNBT( NBTTagCompound tag )
@@ -574,6 +667,15 @@
 +	 	
 +	 	tag.setInteger( "fcGloomLevel", GetGloomLevel() );
 +	 	tag.setInteger( "fcGloomCounter", m_iInGloomCounter );
++	 	
++	 	tag.setInteger("fcDeathCount", deathCount);
++	 	
++	 	if (deathCount > 0) {
++	 		tag.setInteger("fcLastDeathLocationX", lastDeathLocationX);
++	 		tag.setInteger("fcLastDeathLocationY", lastDeathLocationY);
++	 		tag.setInteger("fcLastDeathLocationZ", lastDeathLocationZ);
++	 		tag.setInteger("fcLastDeathDimension", lastDeathDimension);
++	 	}
 +    }
 +    
 +    @Override

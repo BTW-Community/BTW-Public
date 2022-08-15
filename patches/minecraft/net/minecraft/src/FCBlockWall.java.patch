@@ -1,10 +1,11 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockWall.java
-@@ -0,0 +1,184 @@
+@@ -0,0 +1,220 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
++import java.util.List;
 +import java.util.Random;
 +
 +public class FCBlockWall extends BlockWall
@@ -165,6 +166,26 @@
 +    }
 +    
 +    //------------- Class Specific Methods ------------//
++	/** normal mossy */
++	public int getStoneType(int metadata) {
++		return metadata & 1;
++	}
++	
++	/**
++	 * returns 0 - 2 regardless of what metadata is used to store strata. 
++	 * BEWARE: different blocks store strata differently
++	 */
++    public int getStrata( IBlockAccess blockAccess, int i, int j, int k ) {
++		return getStrata( blockAccess.getBlockMetadata( i, j, k ) );
++    }
++    
++	/**
++	 * returns 0 - 2 regardless of what metadata is used to store strata. 
++	 * BEWARE: different blocks store strata differently
++	 */
++    public int getStrata( int iMetadata ) {
++    	return ( iMetadata & 12 ) >>> 2;
++    }
 +	
 +	//----------- Client Side Functionality -----------//
 +    
@@ -184,5 +205,20 @@
 +		return m_currentBlockRenderer.ShouldSideBeRenderedBasedOnCurrentBounds( 
 +			iNeighborI, iNeighborJ, iNeighborK, iSide );
 +    }	
++    
++    @Override
++    public void getSubBlocks(int par1, CreativeTabs par2CreativeTabs, List par3List) {
++    	for (int i = 0; i < 3; i++) {
++            par3List.add(new ItemStack(par1, 1, 0 + i << 2));
++            par3List.add(new ItemStack(par1, 1, 1 + (i << 2)));
++    	}
++    }
++    
++    @Override
++    public Icon getIcon(int side, int metadata) {
++    	int strata = getStrata(metadata); // mossy and cobble both save in first 2 bits
++    	int type = getStoneType(metadata);
++        return type == 1 ? Block.cobblestoneMossy.getIcon(side, strata) : Block.cobblestone.getIcon(side, strata);
++    }
 +}
 \ No newline at end of file

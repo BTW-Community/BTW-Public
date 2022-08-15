@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockGroundCover.java
-@@ -0,0 +1,261 @@
+@@ -0,0 +1,265 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -226,12 +226,16 @@
 +    			
 +    			if ( blockAccess.getBlockId( thisBlockPos.i, thisBlockPos.j, thisBlockPos.k ) == blockID )
 +    			{
-+	    			int iBlockBelowID = blockAccess.getBlockId( iNeighborI, iNeighborJ - 1, iNeighborK );
++    				//hiracho added check to see if same id has diff metadata, snow bigger metadata=higher snow and needs sides TODO move to snow? 
++    				if (blockAccess.getBlockMetadata(thisBlockPos.i, thisBlockPos.j, thisBlockPos.k)<= blockAccess.getBlockMetadata(iNeighborI, iNeighborJ, iNeighborK))
++    				{
++    					int iBlockBelowID = blockAccess.getBlockId( iNeighborI, iNeighborJ - 1, iNeighborK );
 +	    			
-+	    			if ( iBlockBelowID != 0 && blocksList[iBlockBelowID].GroundCoverRestingOnVisualOffset( blockAccess, iNeighborI, iNeighborJ - 1, iNeighborK ) > -0.01F )
-+	    			{
-+	    				return false;
-+	    			}
++	    				if ( iBlockBelowID != 0 && blocksList[iBlockBelowID].GroundCoverRestingOnVisualOffset( blockAccess, iNeighborI, iNeighborJ - 1, iNeighborK ) > -0.01F )
++	    				{
++	    					return false;
++	    				}
++    				}
 +    			}
 +    		}
 +    		

@@ -9,7 +9,19 @@
  public abstract class EntityPlayer extends EntityLiving implements ICommandSender
  {
      /** Inventory of the player */
-@@ -100,7 +102,10 @@
+@@ -51,6 +53,11 @@
+     public float field_71079_bU;
+     public float field_71089_bV;
+ 
++    public int lastDeathLocationX;
++    public int lastDeathLocationY;
++    public int lastDeathLocationZ;
++    public int lastDeathDimension;
++
+     /** holds the spawn chunk of the player */
+     private ChunkCoordinates spawnChunk;
+ 
+@@ -100,7 +107,10 @@
      public EntityPlayer(World par1World)
      {
          super(par1World);
@@ -21,7 +33,7 @@
          this.openContainer = this.inventoryContainer;
          this.yOffset = 1.62F;
          ChunkCoordinates var2 = par1World.getSpawnPoint();
-@@ -122,8 +127,29 @@
+@@ -122,8 +132,29 @@
          this.dataWatcher.addObject(16, Byte.valueOf((byte)0));
          this.dataWatcher.addObject(17, Byte.valueOf((byte)0));
          this.dataWatcher.addObject(18, Integer.valueOf(0));
@@ -51,7 +63,7 @@
      /**
       * Checks if the entity is currently using an item (e.g., bow, food, sword) by holding down the useItemButton
       */
-@@ -163,17 +189,35 @@
+@@ -163,17 +194,35 @@
       */
      public void onUpdate()
      {
@@ -88,7 +100,7 @@
                  if (--this.itemInUseCount == 0 && !this.worldObj.isRemote)
                  {
                      this.onItemUseFinish();
-@@ -286,6 +330,10 @@
+@@ -286,6 +335,10 @@
          {
              this.foodStats.onUpdate(this);
          }
@@ -99,7 +111,7 @@
      }
  
      /**
-@@ -304,6 +352,10 @@
+@@ -304,6 +357,10 @@
          return 10;
      }
  
@@ -110,7 +122,7 @@
      public void playSound(String par1Str, float par2, float par3)
      {
          this.worldObj.playSoundToNearExcept(this, par1Str, par2, par3);
-@@ -439,7 +491,7 @@
+@@ -439,7 +496,7 @@
              --this.flyToggleTimer;
          }
  
@@ -119,7 +131,7 @@
          {
              this.heal(1);
          }
-@@ -449,6 +501,9 @@
+@@ -449,6 +506,9 @@
          super.onLivingUpdate();
          this.landMovementFactor = this.capabilities.getWalkSpeed();
          this.jumpMovementFactor = this.speedInAir;
@@ -129,7 +141,7 @@
  
          if (this.isSprinting())
          {
-@@ -614,7 +669,7 @@
+@@ -614,7 +674,7 @@
          }
          else
          {
@@ -138,7 +150,7 @@
              var3.delayBeforeCanPickup = 40;
              float var4 = 0.1F;
              float var5;
-@@ -626,6 +681,9 @@
+@@ -626,6 +686,9 @@
                  var3.motionX = (double)(-MathHelper.sin(var6) * var5);
                  var3.motionZ = (double)(MathHelper.cos(var6) * var5);
                  var3.motionY = 0.20000000298023224D;
@@ -148,7 +160,7 @@
              }
              else
              {
-@@ -658,9 +716,19 @@
+@@ -658,9 +721,19 @@
      /**
       * Returns how strong the player is against the specified block at this moment
       */
@@ -168,7 +180,7 @@
  
          if (var3 > 1.0F)
          {
-@@ -671,7 +739,12 @@
+@@ -671,7 +744,12 @@
              {
                  float var6 = (float)(var4 * var4 + 1);
  
@@ -181,7 +193,7 @@
                  {
                      var3 += var6 * 0.08F;
                  }
-@@ -702,16 +775,24 @@
+@@ -702,16 +780,24 @@
              var3 /= 5.0F;
          }
  
@@ -206,7 +218,7 @@
  
      /**
       * (abstract) Protected helper method to read subclass entity data from NBT.
-@@ -749,6 +830,9 @@
+@@ -749,6 +835,9 @@
              NBTTagList var3 = par1NBTTagCompound.getTagList("EnderItems");
              this.theInventoryEnderChest.loadInventoryFromNBT(var3);
          }
@@ -216,7 +228,7 @@
      }
  
      /**
-@@ -777,6 +861,9 @@
+@@ -777,6 +866,9 @@
          this.foodStats.writeNBT(par1NBTTagCompound);
          this.capabilities.writeCapabilitiesToNBT(par1NBTTagCompound);
          par1NBTTagCompound.setTag("EnderItems", this.theInventoryEnderChest.saveInventoryToNBT());
@@ -226,7 +238,7 @@
      }
  
      /**
-@@ -878,6 +965,14 @@
+@@ -878,6 +970,14 @@
                      }
  
                      this.addStat(StatList.damageTakenStat, par2);
@@ -241,7 +253,7 @@
                      return super.attackEntityFrom(par1DamageSource, par2);
                  }
              }
-@@ -897,7 +992,13 @@
+@@ -897,7 +997,13 @@
       */
      protected void alertWolves(EntityLiving par1EntityLiving, boolean par2)
      {
@@ -256,7 +268,7 @@
          {
              if (par1EntityLiving instanceof EntityWolf)
              {
-@@ -970,6 +1071,10 @@
+@@ -970,6 +1076,10 @@
          {
              if (!par1DamageSource.isUnblockable() && this.isBlocking())
              {
@@ -267,7 +279,7 @@
                  par2 = 1 + par2 >> 1;
              }
  
-@@ -1106,6 +1211,15 @@
+@@ -1106,6 +1216,15 @@
                      ++var3;
                  }
  
@@ -283,7 +295,7 @@
                  if (var2 > 0 || var4 > 0)
                  {
                      boolean var5 = this.fallDistance > 0.0F && !this.onGround && !this.isOnLadder() && !this.isInWater() && !this.isPotionActive(Potion.blindness) && this.ridingEntity == null && par1Entity instanceof EntityLiving;
-@@ -1204,9 +1318,15 @@
+@@ -1204,9 +1323,15 @@
  
                      this.addExhaustion(0.3F);
                  }
@@ -299,28 +311,25 @@
  
      /**
       * Called when the player performs a critical hit on the Entity. Args: entity that was hit critically
-@@ -1247,6 +1367,11 @@
-      */
-     public EnumStatus sleepInBedAt(int par1, int par2, int par3)
-     {
-+    	// FCMOD: Code added
-+        return EnumStatus.OTHER_PROBLEM;
-+        // END FCMOD
-+    	// FCMOD: Code removed
-+        /*
-         if (!this.worldObj.isRemote)
-         {
-             if (this.isPlayerSleeping() || !this.isEntityAlive())
-@@ -1326,6 +1451,8 @@
-         }
+@@ -1362,7 +1487,7 @@
+         ChunkCoordinates var4 = this.playerLocation;
+         ChunkCoordinates var5 = this.playerLocation;
  
-         return EnumStatus.OK;
-+        */
-+        // END FCMOD
+-        if (var4 != null && this.worldObj.getBlockId(var4.posX, var4.posY, var4.posZ) == Block.bed.blockID)
++        if (var4 != null && Block.blocksList[this.worldObj.getBlockId(var4.posX, var4.posY, var4.posZ)] instanceof FCBlockBedBase)
+         {
+             BlockBed.setBedOccupied(this.worldObj, var4.posX, var4.posY, var4.posZ, false);
+             var5 = BlockBed.getNearestEmptyChunkCoordinates(this.worldObj, var4.posX, var4.posY, var4.posZ, 0);
+@@ -1402,7 +1527,7 @@
+      */
+     private boolean isInBed()
+     {
+-        return this.worldObj.getBlockId(this.playerLocation.posX, this.playerLocation.posY, this.playerLocation.posZ) == Block.bed.blockID;
++    	return Block.blocksList[this.worldObj.getBlockId(this.playerLocation.posX, this.playerLocation.posY, this.playerLocation.posZ)] instanceof FCBlockBedBase;
      }
  
-     private void func_71013_b(int par1)
-@@ -1495,6 +1622,10 @@
+     /**
+@@ -1495,6 +1620,10 @@
              this.spawnChunk = null;
              this.spawnForced = false;
          }
@@ -331,7 +340,7 @@
      }
  
      /**
-@@ -1518,6 +1649,8 @@
+@@ -1518,6 +1647,8 @@
          super.jump();
          this.addStat(StatList.jumpStat, 1);
  
@@ -340,7 +349,7 @@
          if (this.isSprinting())
          {
              this.addExhaustion(0.8F);
-@@ -1526,6 +1659,9 @@
+@@ -1526,6 +1657,9 @@
          {
              this.addExhaustion(0.2F);
          }
@@ -350,7 +359,7 @@
      }
  
      /**
-@@ -1563,6 +1699,13 @@
+@@ -1563,6 +1697,13 @@
          {
              int var7;
  
@@ -364,7 +373,7 @@
              if (this.isInsideOfMaterial(Material.water))
              {
                  var7 = Math.round(MathHelper.sqrt_double(par1 * par1 + par3 * par3 + par5 * par5) * 100.0F);
-@@ -1570,7 +1713,12 @@
+@@ -1570,7 +1711,12 @@
                  if (var7 > 0)
                  {
                      this.addStat(StatList.distanceDoveStat, var7);
@@ -377,7 +386,7 @@
                  }
              }
              else if (this.isInWater())
-@@ -1580,7 +1728,12 @@
+@@ -1580,7 +1726,12 @@
                  if (var7 > 0)
                  {
                      this.addStat(StatList.distanceSwumStat, var7);
@@ -390,7 +399,7 @@
                  }
              }
              else if (this.isOnLadder())
-@@ -1604,7 +1757,12 @@
+@@ -1604,7 +1755,12 @@
                      }
                      else
                      {
@@ -403,7 +412,7 @@
                      }
                  }
              }
-@@ -1768,6 +1926,9 @@
+@@ -1768,6 +1924,9 @@
          {
              if (!this.worldObj.isRemote)
              {
@@ -413,7 +422,7 @@
                  this.foodStats.addExhaustion(par1);
              }
          }
-@@ -1783,6 +1944,12 @@
+@@ -1783,6 +1942,12 @@
  
      public boolean canEat(boolean par1)
      {
@@ -426,7 +435,7 @@
          return (par1 || this.foodStats.needFood()) && !this.capabilities.disableDamage;
      }
  
-@@ -1837,7 +2004,12 @@
+@@ -1837,7 +2002,12 @@
                  {
                      ItemStack var6 = this.getCurrentEquippedItem();
  
@@ -439,7 +448,7 @@
                      {
                          return true;
                      }
-@@ -1850,6 +2022,13 @@
+@@ -1850,6 +2020,13 @@
  
      public boolean canPlayerEdit(int par1, int par2, int par3, int par4, ItemStack par5ItemStack)
      {
@@ -453,7 +462,32 @@
          return this.capabilities.allowEdit ? true : (par5ItemStack != null ? par5ItemStack.func_82835_x() : false);
      }
  
-@@ -2026,4 +2205,1118 @@
+@@ -1896,12 +2073,12 @@
+     }
+ 
+     /**
+-     * Copies the values from the given player into this player if boolean par2 is true. Always clones Ender Chest
++     * Copies the values from the given player into this player if boolean playerLeavingTheEnd is true. Always clones Ender Chest
+      * Inventory.
+      */
+-    public void clonePlayer(EntityPlayer par1EntityPlayer, boolean par2)
++    public void clonePlayer(EntityPlayer par1EntityPlayer, boolean playerLeavingTheEnd)
+     {
+-        if (par2)
++        if (playerLeavingTheEnd)
+         {
+             this.inventory.copyInventory(par1EntityPlayer.inventory);
+             this.health = par1EntityPlayer.health;
+@@ -1921,6 +2098,8 @@
+             this.setScore(par1EntityPlayer.getScore());
+         }
+ 
++        this.deathCount = par1EntityPlayer.deathCount;
++
+         this.theInventoryEnderChest = par1EntityPlayer.theInventoryEnderChest;
+     }
+ 
+@@ -2026,4 +2205,1141 @@
      {
          return ScorePlayerTeam.func_96667_a(this.getTeam(), this.username);
      }
@@ -483,6 +517,8 @@
 +    public int m_iTicksSinceEmoteSound = 0;
 +    
 +	protected float m_fCurrentMiningSpeedModifier = 1F;
++
++	public int deathCount = 0;	
 +    
 +    public static final int m_iGloomCounterBetweenStateChanges = 1200; // 1 minute
 +    
@@ -534,6 +570,16 @@
 +	    {
 +	    	m_iInGloomCounter = tag.getInteger( "fcGloomCounter" );
 +	    }
++	    
++	    if (tag.hasKey("fcDeathCount")) {
++	    	deathCount = tag.getInteger("fcDeathCount");
++	    }
++	 	if (deathCount > 0) {
++	 		lastDeathLocationX = tag.getInteger("fcLastDeathLocationX");
++	 		lastDeathLocationY = tag.getInteger("fcLastDeathLocationY");
++	 		lastDeathLocationZ = tag.getInteger("fcLastDeathLocationZ");
++	 		lastDeathDimension = tag.getInteger("fcLastDeathDimension");
++	 	}
 +    }
 +    
 +    protected void WriteModDataToNBT( NBTTagCompound tag )
@@ -553,6 +599,17 @@
 +	 	
 +	 	tag.setInteger( "fcGloomLevel", GetGloomLevel() );
 +	 	tag.setInteger( "fcGloomCounter", m_iInGloomCounter );
++
++	 	tag.setInteger("fcDeathCount", deathCount);
++
++	 	if (deathCount > 0) {
++	 		tag.setInteger("fcLastDeathLocationX", lastDeathLocationX);
++	 		tag.setInteger("fcLastDeathLocationY", lastDeathLocationY);
++	 		tag.setInteger("fcLastDeathLocationZ", lastDeathLocationZ);
++	 		tag.setInteger("fcLastDeathDimension", lastDeathDimension);
++	 	}
++
++	 	tag.setInteger("fcDeathCount", deathCount);
 +    }
 +    
 +    @Override

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockCompanionCube.java
-@@ -0,0 +1,414 @@
+@@ -0,0 +1,431 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -325,6 +325,23 @@
 +				d, d1, d2);
 +        }
 +    }    
++    
++    @Override
++	public boolean canToolStickInBlockSpecialCase(World world, int x, int y, int z, Item toolOrSword) {
++		if (toolOrSword instanceof FCItemSword) {
++			if (!world.isRemote) {
++				if (!GetIsSlab(world, x, y, z)) {
++					world.playSoundEffect((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F, "mob.wolf.whine", 0.5F,
++							2.6F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.8F);
++				}
++			}
++
++			return true;
++		} 
++		else {
++			return false;
++		}
++	}
 +    
 +	//----------- Client Side Functionality -----------//
 +    

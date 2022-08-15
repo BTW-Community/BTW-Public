@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCEntityFallingBlock.java
-@@ -0,0 +1,219 @@
+@@ -0,0 +1,216 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -148,16 +148,13 @@
 +            {
 +                ArrayList entityList = new ArrayList( worldObj.getEntitiesWithinAABBExcludingEntity( this, boundingBox ));
 +                
-+                DamageSource source = blockID == Block.anvil.blockID ? FCDamageSourceCustom.m_DamageSourceDeadWeight : 
-+                	DamageSource.fallingBlock;
-+                
 +                Iterator entityIterator = entityList.iterator();
 +
 +                while ( entityIterator.hasNext() )
 +                {
 +                    Entity tempEntity = (Entity)entityIterator.next();
 +                    
-+                    tempEntity.attackEntityFrom( source, 
++                    tempEntity.attackEntityFrom( DamageSource.fallingBlock, 
 +                    	Math.min( MathHelper.floor_float( (float)iFallDamage * m_fHurtsAmount ), m_fHurtsMaxDamage ) );
 +                }
 +            }

@@ -242,7 +242,7 @@
 +    public static Item bone = new FCItemBone( 96 );
 +    public static Item sugar = ( new Item( 97 ) ).SetBuoyant().SetBellowsBlowDistance( 3 ).SetIncineratedInCrucible().SetFilterableProperties( m_iFilterable_Fine ).setUnlocalizedName( "sugar" ).setCreativeTab( CreativeTabs.tabMaterials );	    
 +    public static Item cake = ( new ItemReed( 98, Block.cake ) ).SetBuoyant().SetIncineratedInCrucible().setMaxStackSize( 1 ).setUnlocalizedName( "cake" ).setCreativeTab( CreativeTabs.tabFood );
-+    public static Item bed = ( new ItemBed( 99 ) ).SetBuoyant().SetIncineratedInCrucible().setMaxStackSize( 1 ).setUnlocalizedName( "bed" );
++    public static Item bed = ( new FCItemBed(99, Block.bed.blockID) ).SetBuoyant().SetIncineratedInCrucible().setMaxStackSize( 1 ).setUnlocalizedName( "bed" );
 +    public static Item redstoneRepeater = new FCItemRedstoneRepeater( 100 );
 +    public static Item cookie = ( new ItemFood( 101, 1, 1F, false ) ).setAlwaysEdible().SetFilterableProperties( m_iFilterable_Small ).setUnlocalizedName( "cookie" );
 +    public static ItemMap map = new FCItemMap( 102 );
@@ -426,7 +426,7 @@
  
      /**
       * Called when item is crafted/smelted. Used only by maps so far.
-@@ -671,4 +696,515 @@
+@@ -671,4 +696,525 @@
      {
          StatList.initStats();
      }
@@ -940,5 +940,15 @@
 +    {
 +    	return null;
 +    }
++    
++	//------- Animated Icon Related Functionality -------//
++
++    /**
++     * Used to change the item icon the player is holding. Used in bow pulling and casting fishing rod 
++     */
++	public Icon getAnimationIcon(EntityPlayer player) {
++		return null;
++	}
++    
 +    // END FCMOD    
 +}

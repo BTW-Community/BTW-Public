@@ -1,11 +1,13 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCUtilsPrimitiveGeometric.java
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,58 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
 +import java.util.List;
++
++import com.prupe.mcpatcher.mal.block.RenderBlocksUtils;
 +
 +public abstract class FCUtilsPrimitiveGeometric
 +{
@@ -37,15 +39,16 @@
 +	
 +	public abstract boolean RenderAsBlockWithColorMultiplier( RenderBlocks renderBlocks, Block block, int i, int j, int k, float fRed, float fGreen, float fBlue );
 +	
-+	public boolean RenderAsBlockWithColorMultiplier( RenderBlocks renderBlocks, Block block, int i, int j, int k )
-+	{
-+        int iColorMultiplier = block.colorMultiplier( renderBlocks.blockAccess, i, j, k );
++	public boolean RenderAsBlockWithColorMultiplier(RenderBlocks renderBlocks, Block block, int x, int y, int z) {
++        int colorMultiplier = block.colorMultiplier(renderBlocks.blockAccess, x, y, z);
 +        
-+        float fRed = (float)(iColorMultiplier >> 16 & 255) / 255F;
-+        float fGreen = (float)(iColorMultiplier >> 8 & 255) / 255F;
-+        float fBlue = (float)(iColorMultiplier & 255) / 255F;
++        float red = (float) (colorMultiplier >> 16 & 255) / 255F;
++        float green = (float) (colorMultiplier >> 8 & 255) / 255F;
++        float blue = (float) (colorMultiplier & 255) / 255F;
 +        
-+        return RenderAsBlockWithColorMultiplier( renderBlocks, block, i, j, k, fRed, fGreen, fBlue );
++        RenderBlocksUtils.setupColorMultiplier(block, renderBlocks.blockAccess, x, y, z, renderBlocks.hasOverrideBlockTexture(), red, green, blue);
++        
++        return RenderAsBlockWithColorMultiplier(renderBlocks, block, x, y, z, red, green, blue);
 +	}
 +	
 +	public abstract boolean RenderAsBlockWithTexture( RenderBlocks renderBlocks, Block block, int i, int j, int k, Icon icon );

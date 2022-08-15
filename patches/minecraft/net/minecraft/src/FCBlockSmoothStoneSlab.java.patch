@@ -1,0 +1,135 @@
+--- /dev/null
++++ b/minecraft/net/minecraft/src/FCBlockSmoothStoneSlab.java
+@@ -0,0 +1,132 @@
++// FCMOD
++
++package net.minecraft.src;
++
++import java.util.List;
++import java.util.Random;
++
++public class FCBlockSmoothStoneSlab extends BlockHalfSlab {
++    public FCBlockSmoothStoneSlab( int iBlockID, boolean bDoubleSlab ) {
++        super( iBlockID, bDoubleSlab, Material.rock );
++        
++        SetPicksEffectiveOn();
++        
++        setHardness(2.0F);
++        setResistance(10.0F);
++        
++        setStepSound(soundStoneFootstep);
++        setUnlocalizedName("stoneSlab");
++        
++        setCreativeTab( CreativeTabs.tabBlock );
++    }
++
++    @Override
++    public int idDropped( int iMetadata, Random rand, int iFortuneModifier ) {
++        return FCBetterThanWolves.fcBlockSmoothStoneSlabSingle.blockID;
++    }
++    
++    @Override
++	public int damageDropped(int metadata) {
++		return getStrata(metadata); 
++	}
++    
++    @Override
++    public String getFullSlabName( int iMetadata ) {
++        return super.getUnlocalizedName() + ".stone";
++    }    
++    
++    @Override
++    protected ItemStack createStackedBlock( int iMetadata ) {
++        return new ItemStack( FCBetterThanWolves.fcBlockSmoothStoneSlabSingle.blockID, 2, getStrata(iMetadata) );
++    }
++    
++    @Override
++    public boolean DropComponentItemsOnBadBreak(World world, int i, int j, int k, int iMetadata, float fChanceOfDrop) {
++    	int numItems = isDoubleSlab ? 2 : 1;
++    	DropItemsIndividualy( world, i, j, k, FCBetterThanWolves.fcBlockCobblestoneLooseSlab.blockID, numItems, getStrata(iMetadata) << 2, fChanceOfDrop );
++
++    	return true;
++    }
++    
++    @Override
++    public int idPicked(World par1World, int par2, int par3, int par4) {
++    	return FCBetterThanWolves.fcBlockSmoothStoneSlabSingle.blockID;
++    }
++    
++    @Override
++    public int getDamageValue(World par1World, int x, int y, int z) {
++        return getStrata(par1World, x, y, z);
++    }
++
++    @Override
++	public boolean HasContactPointToFullFace( IBlockAccess blockAccess, int i, int j, int k, int iFacing ) {
++    	if ( !isDoubleSlab  && iFacing < 2 ) {
++        	boolean bIsUpsideDown = GetIsUpsideDown( blockAccess, i, j, k );
++        	
++        	return bIsUpsideDown == ( iFacing == 1 );
++    	}    	
++    		
++		return true;
++	}
++	
++    @Override
++	public boolean HasContactPointToSlabSideFace( IBlockAccess blockAccess, int i, int j, int k, int iFacing, boolean bIsSlabUpsideDown ) {
++		return isDoubleSlab || bIsSlabUpsideDown == GetIsUpsideDown( blockAccess, i, j, k );
++	}
++	
++	@Override
++	public boolean HasMortar( IBlockAccess blockAccess, int i, int j, int k ) {
++		return true;
++	}
++		
++    //------------- Class Specific Methods ------------//
++	
++	/** returns 0 - 2 regardless of what metadata is used to store strata. BEWARE: different blocks store strata differently */
++    public int getStrata( IBlockAccess blockAccess, int i, int j, int k ) {
++		return getStrata( blockAccess.getBlockMetadata( i, j, k ) );
++    }
++    
++    /** returns 0 - 2 regardless of what metadata is used to store strata. BEWARE: different blocks store strata differently */
++    public int getStrata( int iMetadata ) {
++    	return iMetadata & 3;
++    }
++    
++	//----------- Client Side Functionality -----------//
++    private Icon[] sideIcon = new Icon[3];
++    private Icon[] topIcon = new Icon[3];
++    
++    @Override
++	public void getSubBlocks( int iBlockID, CreativeTabs creativeTabs, List list ) {
++    	
++        if ( !isDoubleSlab ) {
++            for ( int i = 0; i < 3; i++) {
++                list.add( new ItemStack( iBlockID, 1, i) );
++            }
++        }
++    }
++    
++    @Override
++    public void registerIcons( IconRegister register ) {
++
++    	blockIcon = register.registerIcon("stoneslab_top");
++		
++    	topIcon[0] = blockIcon;
++    	topIcon[1] = register.registerIcon("stoneslab_top_1");
++    	topIcon[2] = register.registerIcon("stoneslab_top_2");
++    	
++    	sideIcon[0] = register.registerIcon("stoneslab_side");
++    	sideIcon[1] = register.registerIcon("stoneslab_side_1");
++    	sideIcon[2] = register.registerIcon("stoneslab_side_2");
++    }
++    
++    @Override
++    public Icon getIcon( int side, int metadata ) {
++    	
++        if (this.isDoubleSlab && (metadata & 8) != 0) {
++        	side = 1;
++        }
++    	
++    	return side != 1 && side != 0 ? this.sideIcon[getStrata(metadata)] : this.topIcon[getStrata(metadata)];
++
++    }
++}

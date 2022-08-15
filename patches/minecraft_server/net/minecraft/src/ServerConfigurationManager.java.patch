@@ -151,7 +151,7 @@
  
      /**
       * sends the players inventory to himself
-@@ -1006,4 +1060,164 @@
+@@ -1006,4 +1060,170 @@
          this.mcServer.logInfo(par1Str);
          this.sendPacketToAllPlayers(new Packet3Chat(par1Str));
      }
@@ -253,15 +253,21 @@
 +        
 +        func_72381_a( newPlayer, oldPlayer, newWorldServer ); // initializes the game type
 +        
-+        if ( verifiedRespawnCoords != null )
-+        {
++        if ( verifiedRespawnCoords != null ) {
++        	//player will spawn at soul beacon
 +            newPlayer.setLocationAndAngles((double)((float)verifiedRespawnCoords.posX + 0.5F), (double)((float)verifiedRespawnCoords.posY + 0.1F), (double)((float)verifiedRespawnCoords.posZ + 0.5F), 0.0F, 0.0F);
 +            
 +            bRetainPreviousSpawn = true;
 +            
++            //update death count on every death with a beacon saved.
++        	newPlayer.deathCount++;
++        	newPlayer.lastDeathDimension = oldPlayer.dimension;
++        	newPlayer.lastDeathLocationX = MathHelper.floor_double(oldPlayer.posX);
++        	newPlayer.lastDeathLocationY = MathHelper.floor_double(oldPlayer.boundingBox.minY);
++        	newPlayer.lastDeathLocationZ = MathHelper.floor_double(oldPlayer.posZ);
 +        }
-+        else if ( !bPlayerLeavingTheEnd )
-+        {
++        else if ( !bPlayerLeavingTheEnd ) {
++        	//player will do a hc spawn
 +    		FCUtilsHardcoreSpawn.HandleHardcoreSpawn( mcServer, oldPlayer, newPlayer );
 +        }
 +        

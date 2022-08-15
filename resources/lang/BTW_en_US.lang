@@ -121,6 +121,7 @@ tile.fcBlockSilverfishStoneCracked.name=Infested Cracked Stone Bricks
 tile.fcBlockSilverfishStoneChiseled.name=Infested Chiseled Stone Bricks
 tile.fcBlockClay.name=Clay Ore
 tile.fcBlockGrassSlab.name=Grass Slab
+tile.fcBlockBedroll.name=Bedroll
 
 # BTW Complex Blocks
 
@@ -511,6 +512,8 @@ item.fcItemCarrot.name=Carrot
 item.fcItemCarrotSeeds.name=Carrot Seeds
 item.fcItemDiamondPlate.name=Diamond Armor Plate
 item.fcItemMelonMashed.name=Mashed Melon
+item.fcItemBedroll.name=Bedroll
+item.fcItemCorpseEye.name=Corpse Eye
 
 # BTW Complex Items
 
@@ -559,4 +562,27 @@ entity.addonVillagerLibrarian.name=Librarian
 entity.addonVillagerPriest.name=Priest
 
 # KeyBindings
+
 key.special=Alternative Use
+
+# Chat Messages
+
+item.fcItemWaterWheel.placementObstructed=Water Wheel placement is obstructed by something, or by you
+item.fcItemWaterWheel.notEnoughRoom=Not enough room to place Water Wheel
+message.windMill.placementObstructed=Wind Mill placement is obstructed by something, or by you
+message.windMill.notEnoughRoom=Not enough room to place Wind Mill (They are friggin HUGE!)
+item.fcItemWindMillVertical.tooFewAxles=Too few vertical Axles in column to place Wind Mill here
+tile.beacon.playerBound=You have been bound to this beacon
+tile.bed.sleepImpossible=You are too troubled to rest here
+tile.fcBlockHandCrank.playerExhausted=You're too exhausted for manual labor
+item.enchantedBook.languageUnfamiliar=The language of this text is unfamiliar to you
+
+# Death Messages
+
+death.attack.fcSaw=%1$s rests in pieces
+death.attack.fcChoppingBlock=%1$s was put on the chopping block
+death.attack.fcGroth=%1$s became one with the Groth
+death.attack.fcGrothSpores=%1$s succumbed to the Groth menace
+death.attack.fcMelon=%1$s was smothered in melons
+death.attack.fcPumpkin=%1$s took wearing a pumpkin a bit too far
+death.attack.fcGloom=%1$s was consumed by the darkness

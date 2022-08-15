@@ -1,0 +1,11 @@
+--- a/minecraft/net/minecraft/src/GuiSleepMP.java
++++ b/minecraft/net/minecraft/src/GuiSleepMP.java
+@@ -9,7 +9,7 @@
+     {
+         super.initGui();
+         StringTranslate var1 = StringTranslate.getInstance();
+-        this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height - 40, var1.translateKey("multiplayer.stopSleeping")));
++        this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height - 70, var1.translateKey("multiplayer.stopSleeping")));
+     }
+ 
+     /**

@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCUtilsHardcoreSpawn.java
-@@ -0,0 +1,392 @@
+@@ -0,0 +1,403 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -100,6 +100,8 @@
 +			ReturnPlayerToOriginalSpawn(newWorld, newPlayer);
 +			return;
 +		}
++		
++		newPlayer.deathCount++;
 +
 +		long overworldTime = FCUtilsWorld.GetOverworldTimeServerOnly();
 +		long timeOfLastPlayerSpawnAssignment = oldPlayer.m_lTimeOfLastSpawnAssignment;
@@ -125,6 +127,15 @@
 +			}
 +
 +			newPlayer.foodStats.setFoodLevel(foodLevel);            
++		}
++		
++		if (!softRespawn) {
++			//death location only updates when true HC spawn
++        	newPlayer.deathCount++;
++        	newPlayer.lastDeathDimension = oldPlayer.dimension;
++        	newPlayer.lastDeathLocationX = MathHelper.floor_double(oldPlayer.posX);
++        	newPlayer.lastDeathLocationY = MathHelper.floor_double(oldPlayer.boundingBox.minY);
++        	newPlayer.lastDeathLocationZ = MathHelper.floor_double(oldPlayer.posZ);
 +		}
 +
 +		if (!FCUtilsWorld.GameProgressHasNetherBeenAccessedServerOnly() || FCBetterThanWolves.alwaysSpawnTogether) {

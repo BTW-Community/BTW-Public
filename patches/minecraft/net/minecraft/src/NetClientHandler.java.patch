@@ -20,7 +20,7 @@
      public void handleVehicleSpawn(Packet23VehicleSpawn par1Packet23VehicleSpawn)
      {
          double var2 = (double)par1Packet23VehicleSpawn.xPosition / 32.0D;
-@@ -191,86 +197,114 @@
+@@ -191,86 +197,118 @@
  
              if (var9 instanceof EntityPlayer)
              {
@@ -149,11 +149,15 @@
 +        {
 +        	var8 = EntityList.createEntityOfType(FCEntityRottenArrow.class, worldClient, var2, var4, var6 );
 +        }
++        else if ( par1Packet23VehicleSpawn.type == FCEntityCorpseEye.GetVehicleSpawnPacketType() )
++        {
++        	var8 = EntityList.createEntityOfType(FCEntityCorpseEye.class, worldClient, var2, var4, var6 );
++        }
 +        // END FCMOD
  
          if (var8 != null)
          {
-@@ -296,7 +330,12 @@
+@@ -296,7 +334,12 @@
  
              if (par1Packet23VehicleSpawn.throwerEntityId > 0)
              {
@@ -166,7 +170,7 @@
                  {
                      Entity var13 = this.getEntityByID(par1Packet23VehicleSpawn.throwerEntityId);
  
-@@ -317,7 +356,16 @@
+@@ -317,7 +360,16 @@
       */
      public void handleEntityExpOrb(Packet26EntityExpOrb par1Packet26EntityExpOrb)
      {
@@ -183,7 +187,7 @@
          var2.serverPosX = par1Packet26EntityExpOrb.posX;
          var2.serverPosY = par1Packet26EntityExpOrb.posY;
          var2.serverPosZ = par1Packet26EntityExpOrb.posZ;
-@@ -335,13 +383,23 @@
+@@ -335,13 +387,23 @@
          double var2 = (double)par1Packet71Weather.posX / 32.0D;
          double var4 = (double)par1Packet71Weather.posY / 32.0D;
          double var6 = (double)par1Packet71Weather.posZ / 32.0D;
@@ -207,7 +211,7 @@
          if (var8 != null)
          {
              var8.serverPosX = par1Packet71Weather.posX;
-@@ -359,7 +417,7 @@
+@@ -359,7 +421,7 @@
       */
      public void handleEntityPainting(Packet25EntityPainting par1Packet25EntityPainting)
      {
@@ -216,7 +220,7 @@
          this.worldClient.addEntityToWorld(par1Packet25EntityPainting.entityId, var2);
      }
  
-@@ -396,7 +454,7 @@
+@@ -396,7 +458,7 @@
          double var6 = (double)par1Packet20NamedEntitySpawn.zPosition / 32.0D;
          float var8 = (float)(par1Packet20NamedEntitySpawn.rotation * 360) / 256.0F;
          float var9 = (float)(par1Packet20NamedEntitySpawn.pitch * 360) / 256.0F;
@@ -225,7 +229,7 @@
          var10.prevPosX = var10.lastTickPosX = (double)(var10.serverPosX = par1Packet20NamedEntitySpawn.xPosition);
          var10.prevPosY = var10.lastTickPosY = (double)(var10.serverPosY = par1Packet20NamedEntitySpawn.yPosition);
          var10.prevPosZ = var10.lastTickPosZ = (double)(var10.serverPosZ = par1Packet20NamedEntitySpawn.zPosition);
-@@ -520,8 +578,14 @@
+@@ -520,8 +582,14 @@
              this.mc.thePlayer.prevPosX = this.mc.thePlayer.posX;
              this.mc.thePlayer.prevPosY = this.mc.thePlayer.posY;
              this.mc.thePlayer.prevPosZ = this.mc.thePlayer.posZ;
@@ -240,7 +244,7 @@
          }
      }
  
-@@ -672,7 +736,7 @@
+@@ -672,7 +740,7 @@
                  this.worldClient.playSoundAtEntity(var2, "random.pop", 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
              }
  
@@ -249,7 +253,7 @@
              this.worldClient.removeEntityFromWorld(par1Packet22Collect.collectedEntityId);
          }
      }
-@@ -706,11 +770,11 @@
+@@ -706,11 +774,11 @@
              {
                  if (par1Packet18Animation.animate == 6)
                  {
@@ -263,7 +267,7 @@
                      this.mc.effectRenderer.addEffect(var5);
                  }
                  else if (par1Packet18Animation.animate == 5 && var2 instanceof EntityOtherPlayerMP)
-@@ -819,7 +883,11 @@
+@@ -819,7 +887,11 @@
  
          if (var2 != null)
          {
@@ -276,7 +280,7 @@
          }
      }
  
-@@ -875,6 +943,14 @@
+@@ -875,6 +947,14 @@
              this.mc.thePlayer.dimension = par1Packet9Respawn.respawnDimension;
              this.mc.displayGuiScreen(new GuiDownloadTerrain(this));
          }
@@ -291,7 +295,7 @@
  
          this.mc.setDimensionAndSpawnPlayer(par1Packet9Respawn.respawnDimension);
          this.mc.playerController.setGameType(par1Packet9Respawn.gameType);
-@@ -907,6 +983,7 @@
+@@ -907,6 +987,7 @@
                  break;
  
              case 2:
@@ -299,7 +303,7 @@
                  TileEntityFurnace var4 = new TileEntityFurnace();
  
                  if (par1Packet100OpenWindow.useProvidedWindowTitle)
-@@ -1123,9 +1200,15 @@
+@@ -1123,9 +1204,15 @@
                  {
                      var2.readFromNBT(par1Packet132TileEntityData.customParam1);
                  }
@@ -315,7 +319,7 @@
  
      public void handleUpdateProgressbar(Packet105UpdateProgressbar par1Packet105UpdateProgressbar)
      {
-@@ -1217,7 +1300,13 @@
+@@ -1217,7 +1304,13 @@
          {
              this.worldClient.getWorldInfo().setRaining(true);
              this.worldClient.setRainStrength(0.0F);
@@ -329,7 +333,7 @@
          else if (var3 == 2)
          {
              this.worldClient.getWorldInfo().setRaining(false);
-@@ -1229,6 +1318,14 @@
+@@ -1229,6 +1322,14 @@
          }
          else if (var3 == 4)
          {
@@ -344,7 +348,7 @@
              this.mc.displayGuiScreen(new GuiWinGame());
          }
          else if (var3 == 5)
-@@ -1256,7 +1353,27 @@
+@@ -1256,7 +1357,27 @@
          {
              this.worldClient.playSound(var2.posX, var2.posY + (double)var2.getEyeHeight(), var2.posZ, "random.successful_hit", 0.18F, 0.45F, false);
          }
@@ -372,7 +376,7 @@
  
      /**
       * Contains logic for handling packets containing arbitrary unique item data. Currently this is only for maps.
-@@ -1302,7 +1419,20 @@
+@@ -1302,7 +1423,20 @@
  
          if (var2 instanceof EntityLiving)
          {
@@ -393,7 +397,7 @@
              var3.setPotionDurationMax(par1Packet41EntityEffect.isDurationMax());
              ((EntityLiving)var2).addPotionEffect(var3);
          }
-@@ -1433,7 +1563,13 @@
+@@ -1433,7 +1567,13 @@
                  var7.printStackTrace();
              }
          }
@@ -407,7 +411,7 @@
  
      /**
       * Handle a set objective packet.
-@@ -1580,4 +1716,56 @@
+@@ -1580,4 +1720,56 @@
      {
          return this.netManager;
      }

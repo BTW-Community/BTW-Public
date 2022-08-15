@@ -1,6 +1,6 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockGlowStone.java
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,28 @@
 +// FCMOD
 +
 +package net.minecraft.src;
@@ -22,5 +22,11 @@
 +    	
 +    	setUnlocalizedName( "lightgem" );
 +    }
++    
++    @Override
++	public boolean HasLargeCenterHardPointToFacing( IBlockAccess blockAccess, int i, int j, int k, int iFacing, boolean bIgnoreTransparency )
++	{
++		return bIgnoreTransparency;
++	}
 +}
 \ No newline at end of file

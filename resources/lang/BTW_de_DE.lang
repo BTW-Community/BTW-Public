@@ -559,4 +559,27 @@ entity.addonVillagerLibrarian.name=Bibliothekar
 entity.addonVillagerPriest.name=Priester
 
 # KeyBindings
+
 key.special=Alternative Verwendung
+
+# Chat Messages
+
+item.fcItemWaterWheel.placementObstructed=Die Platzierung des Wasserrades wird durch etwas oder dich behindert
+item.fcItemWaterWheel.notEnoughRoom=Nicht genügend Platz um das Wasserrad zu platzieren
+message.windMill.placementObstructed=Die Platzierung der Windmühle wird durch etwas oder dich behindert
+message.windMill.notEnoughRoom=Nicht genügend Platz um die Windmühle zu platzieren (Die sind RIESIG!)
+item.fcItemWindMillVertical.tooFewAxles=Zu wenige vertikale Achsen, um die Windmühle hier zu platzieren
+tile.beacon.playerBound=Du wurdest and dieses Leuchtfeuer gebunden
+tile.bed.sleepImpossible=Du bist zu aufgewühlt, um dich auszuruhen
+tile.fcBlockHandCrank.playerExhausted=Du bist zu erschöpft für Handarbeit
+item.enchantedBook.languageUnfamiliar=Die Sprache dieses Textes ist dir fremd
+
+# Death Messages
+
+death.attack.fcSaw=%1$s ruht in Stücken
+death.attack.fcChoppingBlock=%1$s wurde auf den Schneideblock gelegt
+death.attack.fcGroth=%1$s wurde eins mit dem Groth
+death.attack.fcGrothSpores=%1$s erlag der Groth-Bedrohung
+death.attack.fcMelon=%1$s wurde in Melonen erstickt
+death.attack.fcPumpkin=%1$s ging mit dem Tragen eines Kürbisses ein bisschen zu weit
+death.attack.fcGloom=%1$s wurde von der Dunkelheit verzehrt

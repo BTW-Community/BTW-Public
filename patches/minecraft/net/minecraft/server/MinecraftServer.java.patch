@@ -1,0 +1,77 @@
+--- a/minecraft/net/minecraft/server/MinecraftServer.java
++++ b/minecraft/net/minecraft/server/MinecraftServer.java
+@@ -9,6 +9,10 @@
+ import java.util.Date;
+ import java.util.Iterator;
+ import java.util.List;
++
++// client only
++import net.minecraft.client.Minecraft;
++
+ import net.minecraft.src.AnvilSaveConverter;
+ import net.minecraft.src.AxisAlignedBB;
+ import net.minecraft.src.CallableIsServerModded;
+@@ -154,6 +158,10 @@
+     private boolean startProfiling;
+     private boolean field_104057_T = false;
+ 
++    // client only
++    private long prevTime;
++    private float lastMult = 1F;
++    
+     public MinecraftServer(File par1File)
+     {
+         mcServer = this;
+@@ -457,7 +465,7 @@
+                     var50 += var7;
+                     var1 = var5;
+ 
+-                    if (this.worldServers[0].areAllPlayersAsleep())
++                    if (this.areAllPlayersAsleep())
+                     {
+                         this.tick();
+                         var50 = 0L;
+@@ -471,6 +479,23 @@
+                         }
+                     }
+ 
++                    // client only
++                    long cTime = Minecraft.getSystemTime();
++                    
++                    if (this.areAllPlayersAsleep()) {
++                        // Smooth it out a bit
++                        float newMult = lastMult * 0.7F + Math.max(50F / (cTime - prevTime), 1) * 0.3F;
++                        Minecraft.getMinecraft().getTimer().timerSpeed = newMult;
++                        lastMult = newMult;
++                    }
++                    else {
++                        lastMult = 1F;
++                        Minecraft.getMinecraft().getTimer().timerSpeed = lastMult;
++                    }
++                    
++                    prevTime = cTime;
++                    // end client only
++                    
+                     Thread.sleep(1L);
+                 }
+             }
+@@ -1323,4 +1348,19 @@
+     {
+         return par0MinecraftServer.serverConfigManager;
+     }
++    
++    public boolean areAllPlayersAsleep() {
++    	boolean allPlayersSleeping = true;
++    	
++    	for (int i = 0; i < this.worldServers.length; i++) {
++    		WorldServer world = this.worldServers[i];
++    		
++    		if (world != null && !world.areAllPlayersAsleep()) {
++    			allPlayersSleeping = false;
++    			break;
+ }
++    	}
++    	
++    	return allPlayersSleeping;
++    }
++}

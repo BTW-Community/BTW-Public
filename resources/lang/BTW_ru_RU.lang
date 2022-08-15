@@ -549,3 +549,25 @@ entity.addonVillagerBlacksmith.name=Кузнец
 entity.addonVillagerButcher.name=Мясник
 entity.addonVillagerLibrarian.name=Библиотекарь
 entity.addonVillagerPriest.name=Священник
+
+# Сообщения игроку
+
+item.fcItemWaterWheel.placementObstructed=Что-то загораживает место для водяного колеса - возможно, вы сами
+item.fcItemWaterWheel.notEnoughRoom=Недостаточно места для водяного колеса
+message.windMill.placementObstructed=Что-то загораживает место для ветряка - возможно, вы сами
+message.windMill.notEnoughRoom=Недостаточно места для ветряка (Эти штуки ОГРОМНЫ!)
+item.fcItemWindMillVertical.tooFewAxles=Недостаточно вертикальных валов для установки ветряка
+tile.beacon.playerBound=Вы привязались к этому маяку
+tile.bed.sleepImpossible=Вы слишком встревожены, чтобы отдыхать
+tile.fcBlockHandCrank.playerExhausted=Вы слишком измотаны для ручного труда
+item.enchantedBook.languageUnfamiliar=Язык этого текста вам незнаком
+
+# Сообщения о смерти
+
+death.attack.fcSaw=%1$s нашинкован пилой
+death.attack.fcChoppingBlock=%1$s положен на плаху
+death.attack.fcGroth=%1$s стал единым целым с желвью
+death.attack.fcGrothSpores=Иммунитет %1$s не справился со спорами желви
+death.attack.fcMelon=%1$s раздавлен арбузом
+death.attack.fcPumpkin=%1$s слишком буквально воспринял предложение надеть тыкву на голову
+death.attack.fcGloom=%1$s поглощён тьмой

@@ -1,3 +1,58 @@
+## Version 1.4.0 ##
+Thanks to the following people who contributed to this release!
+- Hiracho
+- Dawnraider
+- Quanteus
+- Sockthing
+
+/--General--/
+- Changed several hardcoded message strings to be exposed to translation files:
+	- Steel beacon binding messages
+	- Death messages
+	- Cannot sleep in bed message
+	- Too exhausted to hand crank message
+	- Wind mill and water wheel placement error messages
+	- Ancient manuscript use message
+- Updated some entries of the German translation.
+- Updated some entries of the Russian translation.
+- Fixed an issue sometimes causing the insides of hampers, ovens, and other blocks to render completely black.
+
+/--Gameplay--/
+-= General =-
+- Added the ability to stick swords into companion cubes.
+- Added strata variants for stone products (cobblestone, stone bricks, etc).
+- Fixed an issue where piston packing was ignoring metadata in recipes.
+- Fixed an issue where glowstone could not support falling blocks.
+- Fixed an issue where flowering carrots did not render weeds.
+- Fixed an issue where healing still hadn't actually been made faster.
+
+-= Beds =-
+- Re-enabled beds. Yes really. Beds now simulate the world instead of skipping time. Thanks to Arminias for originally writing the code for this through his bed addon!
+- Added bedrolls as a new type of bed, crafted shapelessly with two wool knit and a string. Note that you will not regenerate health while sleeping in a bedroll.
+- Changed beds to no longer drop themselves when broken, instead dropping some of the components used in crafting it. However, health will regenerate while sleeping in a bed.
+- Changed beds to no longer explode in the nether or end, and instead simply prevent you from sleeping.
+- Changed beds to no longer set your spawn point. Steel beacons are still the only way to do this.
+
+-= Candles =-
+- Added a new candle item and block which functions the same as vanilla's candles. Up to 4 candles may be placed in a single block, with the light level emitted increasing with the number of candles present.
+- Changed candles to be made with only a single piece of tallow, producing 4. This keeps the cost per light level the same as before, since candles now individually put off much less light unless combined.
+- Changed old candles to drop 4 new candles for consistency.
+- Removed the light output from redstone torches, repeaters, and comparators as rapid lighting updates in redstone circuits can severely impact performance. Note that redstone blocks will still output light for an early game option, and candles now provide new aesthetic low light options.
+
+-= Death =-
+- Added the Corpse Eye, crafted with a soul urn, an ender pearl, and a piece of mystery meat, which functions similarly to an eye of ender, but instead points to the location of the player's last death.
+- Changed items dropped on death to last indefinitely, as long as you do not die again. If you die a second time, not counting soft respawns which put you at the same HCS, your items from your previous death will be lost.
+- Changed zombie villagers to drop mystery meat on death.
+
+-= Snow =-
+- Added the ability for snow layers to be stacked.
+- Added the ability for snow to collect over time during a storm, increasing in depth to follow the terrain.
+- Changed snow to slow you by an amount based on the depth of the snow.
+
+/--Addon API--/
+- Added a hook to define item textures based on state (like the bow drawing animation).
+- Added a hook to allow special-casing sticking tools into blocks they otherwise would not be able to be placed in.
+
 ## Version 1.3.10b ##
 /--General--/
 - Changed server version checking to ignore lettered versions. This means that future versions with the same number and only differing in the ending letter will be treated as server compatible. Do note that this does not apply to 1.3.10. While 1.3.10 clients can connect to a 1.3.10b server without issue, they will still receive a warning when joining.
@@ -10,7 +65,7 @@
 - Fixed an issue where the addon loader was percent encoding file URIs leading to it looking for files in the wrong location.
 
 ## Version 1.3.9 ##
-Thanks to the following people who have contributed to this release!
+Thanks to the following people who contributed to this release!
 - Dawnraider
 - Zhil
 - Hiracho

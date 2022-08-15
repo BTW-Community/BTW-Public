@@ -1,35 +1,31 @@
 --- /dev/null
 +++ b/minecraft/net/minecraft/src/FCBlockBed.java
-@@ -0,0 +1,51 @@
+@@ -0,0 +1,52 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
-+public class FCBlockBed extends BlockBed
++import java.util.Iterator;
++
++public class FCBlockBed extends FCBlockBedBase
 +{
-+    public FCBlockBed( int iBlockID )
-+    {
-+    	super( iBlockID );
++    public FCBlockBed(int blockID) {
++		super(blockID);
 +    	
-+    	InitBlockBounds( 0D, 0D, 0D, 1D, 0.5625D, 1D );
-+    }
-+    
-+	@Override
-+    public boolean onBlockActivated( World world, int i, int j, int k, EntityPlayer player, int iFacing, float fXClick, float fYClick, float fZClick )
-+	{
-+        if ( world.isRemote )
-+        {
-+            player.addChatMessage( "You are too troubled to rest.");            
-+        }
-+        
-+        return true;
++		this.setStepSound(Block.soundClothFootstep);
++		this.SetBlockMaterial(FCBetterThanWolves.fcMaterialPlanks);
++		
++    	InitBlockBounds(0D, 0D, 0D, 1D, 0.5625D, 1D);
 +	}
-+    
++	
 +	@Override
-+    public void setBlockBoundsBasedOnState( IBlockAccess blockAccess, int i, int j, int k )
-+    {
-+    	// override to deprecate parent
-+    }
++	public boolean DropComponentItemsOnBadBreak(World world, int x, int y, int z, int iMetadata, float chanceOfDrop) {
++		DropItemsIndividualy(world, x, y, z, FCBetterThanWolves.fcItemSawDust.itemID, 3, 0, chanceOfDrop);
++		DropItemsIndividualy(world, x, y, z, Item.stick.itemID, 1, 0, chanceOfDrop);
++		DropItemsIndividualy(world, x, y, z, FCBetterThanWolves.fcItemPadding.itemID, 2, 0, chanceOfDrop);
++		
++		return true;
++	}
 +	
 +    //------------- Class Specific Methods ------------//
 +	
@@ -50,6 +46,11 @@
 +    {
 +		return m_currentBlockRenderer.ShouldSideBeRenderedBasedOnCurrentBounds( 
 +			iNeighborI, iNeighborJ, iNeighborK, iSide );
++    }
++	
++	@Override
++    public int idPicked(World world, int x, int y, int z) {
++        return Item.bed.itemID;
 +    }
 +}
 \ No newline at end of file

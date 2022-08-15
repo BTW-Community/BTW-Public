@@ -137,3 +137,14 @@
          if (this.trackedEntity instanceof EntityItem)
          {
              return new Packet23VehicleSpawn(this.trackedEntity, 2, 1);
+@@ -454,6 +493,10 @@
+             {
+                 return new Packet23VehicleSpawn(this.trackedEntity, 72);
+             }
++            else if (this.trackedEntity instanceof FCEntityCorpseEye)
++            {
++                return new Packet23VehicleSpawn(this.trackedEntity, FCEntityCorpseEye.GetVehicleSpawnPacketType());
++            }
+             else if (this.trackedEntity instanceof EntityFireworkRocket)
+             {
+                 return new Packet23VehicleSpawn(this.trackedEntity, 76);

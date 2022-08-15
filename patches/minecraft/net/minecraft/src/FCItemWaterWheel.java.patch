@@ -61,7 +61,7 @@
 +        			{
 +                        if( world.isRemote )
 +                        {
-+                        	player.addChatMessage( "Water Wheel placement is obstructed by something, or by you" );
++                        	player.addChatMessage( this.getUnlocalizedName() + ".placementObstructed" );
 +                        }
 +        			}
 +        		}
@@ -69,7 +69,7 @@
 +        		{
 +                    if( world.isRemote )
 +                    {
-+                    	player.addChatMessage( "Not enough room to place Water Wheel" );
++                    	player.addChatMessage( this.getUnlocalizedName() + ".notEnoughRoom" );
 +                    }
 +        		}
 +        	}

@@ -73,7 +73,7 @@
 +    					if ( world.getWorldTime() < player.m_lRespawnAssignmentCooldownTimer || 
 +    						world.getWorldTime() - player.m_lRespawnAssignmentCooldownTimer > m_lRespawnCooldownDuration )
 +    					{    					
-+	    					player.AddRawChatMessage( "You have been bound to this beacon" );
++    						player.addChatMessage( this.getUnlocalizedName() + ".playerBound" );
 +	    					
 +	    					ChunkCoordinates newSpawnPos = new ChunkCoordinates( i, j, k );
 +	    					

@@ -18,7 +18,18 @@
          else if (par1Entity instanceof EntityFishHook)
          {
              this.trackEntity(par1Entity, 64, 5, true);
-@@ -98,15 +109,24 @@
+@@ -70,6 +81,10 @@
+         {
+             this.trackEntity(par1Entity, 64, 4, true);
+         }
++        else if (par1Entity instanceof FCEntityCorpseEye)
++        {
++            this.trackEntity(par1Entity, 64, 4, true);
++        }
+         else if (par1Entity instanceof EntityEgg)
+         {
+             this.trackEntity(par1Entity, 64, 10, true);
+@@ -98,15 +113,24 @@
          {
              this.trackEntity(par1Entity, 80, 3, true);
          }

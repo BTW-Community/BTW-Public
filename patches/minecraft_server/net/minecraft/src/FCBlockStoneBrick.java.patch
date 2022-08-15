@@ -1,57 +1,55 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockStoneBrick.java
-@@ -0,0 +1,117 @@
+@@ -0,0 +1,143 @@
 +// FCMOD
 +
 +package net.minecraft.src;
 +
 +import java.util.Random;
 +
-+public class FCBlockStoneBrick extends BlockStoneBrick
-+{
-+    public FCBlockStoneBrick( int iBlockID )
-+    {
-+    	super( iBlockID );
-+    	
-+    	setHardness( 2.25F );
-+    	setResistance( 10F );
-+    	
-+        SetPicksEffectiveOn();
-+    	
-+    	setStepSound( soundStoneFootstep );
-+    	
-+    	setUnlocalizedName( "stonebricksmooth" );
-+    	
-+        setTickRandomly( true );
-+    }
++public class FCBlockStoneBrick extends BlockStoneBrick {
++    public static final String[] STONE_BRICK_TYPES_STRATIFIED = new String[] {
++    		"default", "mossy", "cracked", "chiseled",
++    		"default", "mossy", "cracked", "chiseled",
++    		"default", "mossy", "cracked", "chiseled"
++    		};
++
++	public FCBlockStoneBrick( int iBlockID ) {
++		super( iBlockID );
++
++		setHardness( 2.25F );
++		setResistance( 10F );
++
++		SetPicksEffectiveOn();
++
++		setStepSound( soundStoneFootstep );
++
++		setUnlocalizedName( "stonebricksmooth" );
++
++		setTickRandomly( true );
++	}
++
 +    
 +	@Override
-+    public void updateTick( World world, int i, int j, int k, Random random )
-+    {
++    public void updateTick( World world, int i, int j, int k, Random random ) {
 +		int iMetadata = world.getBlockMetadata( i, j, k );
-+		
-+		if ( iMetadata == 0 )
-+		{
-+			// check for drip conditions
-+			
-+			if ( !world.getBlockMaterial( i, j - 1, k ).blocksMovement() )
-+			{
++		int strataOffset = getStrata(iMetadata) << 2;
++
++		if ( getStoneType(iMetadata) == 0 ) {
++			// check for drip conditions	
++			if ( !world.getBlockMaterial( i, j - 1, k ).blocksMovement() ) {
 +				int iBlockAboveID = world.getBlockId( i, j + 1, k );
 +				
-+				if ( iBlockAboveID == Block.waterMoving.blockID || iBlockAboveID == Block.waterStill.blockID )
-+				{
-+					if ( random.nextInt( 15 ) == 0 )
-+					{
-+						world.setBlockMetadataWithNotify( i, j, k, 1 );
++				if ( iBlockAboveID == Block.waterMoving.blockID || iBlockAboveID == Block.waterStill.blockID ) {
++					if ( random.nextInt( 15 ) == 0 ) {
++						world.setBlockMetadataWithNotify( i, j, k, 1 + strataOffset );
 +						
 +						world.markBlockRangeForRenderUpdate( i, j, k, i, j, k );
 +					}
 +				}
-+				else if ( iBlockAboveID == Block.lavaMoving.blockID || iBlockAboveID == Block.lavaStill.blockID )
-+				{
-+					if ( random.nextInt( 15 ) == 0 )
-+					{
-+						world.setBlockMetadataWithNotify( i, j, k, 2 );
++				else if ( iBlockAboveID == Block.lavaMoving.blockID || iBlockAboveID == Block.lavaStill.blockID ) {
++					if ( random.nextInt( 15 ) == 0 ) {
++						world.setBlockMetadataWithNotify( i, j, k, 2 + strataOffset );
 +						
 +						world.markBlockRangeForRenderUpdate( i, j, k, i, j, k );
 +					}
@@ -61,24 +59,20 @@
 +    }
 +	
 +    @Override
-+    public int idDropped( int iMetadata, Random rand, int iFortuneModifier )
-+    {
-+        return FCBetterThanWolves.fcBlockStoneBrickLoose.blockID;
-+    }
-+    
++    public int idDropped( int iMetadata, Random rand, int iFortuneModifier ) {
++		return FCBetterThanWolves.fcBlockStoneBrickLoose.blockID;
++	}
++
 +	@Override
-+	public int damageDropped( int iMetadata )
-+    {
-+		// override vanilla class that drops full blocks of various subtypes (mossy, cracked, etc.)
-+		
-+        return 0;
-+    }    
-+    
-+    @Override
-+    public void OnBlockDestroyedWithImproperTool( World world, EntityPlayer player, int i, int j, int k, int iMetadata )
-+    {
-+        dropBlockAsItem( world, i, j, k, iMetadata, 0 );
-+    }
++	public int damageDropped( int iMetadata ) {
++		return getStrata(iMetadata) << 2; // loose stone brick uses last 2 metadata
++	}    
++
++	@Override
++	public void OnBlockDestroyedWithImproperTool( World world, EntityPlayer player, int i, int j, int k, int iMetadata ) {
++		dropBlockAsItem( world, i, j, k, iMetadata, 0 );
++	}
++
 +    
 +	@Override
 +	public boolean HasMortar( IBlockAccess blockAccess, int i, int j, int k )
@@ -93,29 +87,61 @@
 +	}
 +
 +	@Override
-+	public int getBlockIDOnInfest(EntityLiving entity, int metadata)
-+	{
-+
-+		if (metadata == 1)
-+		{
++	public int getBlockIDOnInfest(EntityLiving entity, int metadata) {
++		switch(metadata) {
++		case 0:
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricks.blockID;
++		case 1:
 +			return FCBetterThanWolves.fcBlockSilverfishStoneBricksMossy.blockID;
-+		}
-+
-+		if (metadata == 2)
-+		{
++		case 2:
 +			return FCBetterThanWolves.fcBlockSilverfishStoneBricksCracked.blockID;
-+		}
-+
-+		if (metadata == 3)
-+		{
++		case 3:
 +			return FCBetterThanWolves.fcBlockSilverfishStoneBricksChiseled.blockID;
++		case 4:
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksMidStrata.blockID;
++		case 5:
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksMossyMidStrata.blockID;
++		case 6:
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksCrackedMidStrata.blockID;
++		case 7:
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksChiseledMidStrata.blockID;
++		case 8:
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksDeepStrata.blockID;
++		case 9:
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksMossyDeepStrata.blockID;
++		case 10:
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksCrackedDeepStrata.blockID;
++		case 11:
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricksChiseledDeepStrata.blockID; 
++		default:
++			return FCBetterThanWolves.fcBlockSilverfishStoneBricks.blockID;
 +		}
-+
-+		return FCBetterThanWolves.fcBlockSilverfishStoneBricks.blockID;
 +	}
 +
 +    //------------- Class Specific Methods ------------//    
-+    
++
++		/** normal mossy cracked chiseled */
++		public int getStoneType(int metadata) {
++			return metadata & 3;
++		}
++
++		/**
++		 * returns 0 - 2 regardless of what metadata is used to store strata. 
++		 * BEWARE: different blocks store strata differently
++		 */
++	    public int getStrata( IBlockAccess blockAccess, int i, int j, int k ) {
++			return getStrata( blockAccess.getBlockMetadata( i, j, k ) );
++	    }
++
++		/**
++		 * returns 0 - 2 regardless of what metadata is used to store strata. 
++		 * BEWARE: different blocks store strata differently
++		 */
++	    public int getStrata( int iMetadata ) {
++	    	return ( iMetadata & 12 ) >>> 2;
++	    }
++
++
 +	//----------- Client Side Functionality -----------//
 +}
 \ No newline at end of file

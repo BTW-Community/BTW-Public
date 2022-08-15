@@ -45,7 +45,17 @@
      }
  
      /**
-@@ -238,6 +257,14 @@
+@@ -172,6 +191,9 @@
+             {
+                 return false;
+             }
++			else if (!var3.getItem().getHasSubtypes() && (var3.getItemDamage() > 0 || var2.getItemDamage() > 0 )){
++				return false;
++			}
+             else if (var3.stackSize < var2.stackSize)
+             {
+                 return par1EntityItem.combineItems(this);
+@@ -238,6 +260,14 @@
          else
          {
              this.setBeenAttacked();
@@ -60,7 +70,7 @@
              this.health -= par2;
  
              if (this.health <= 0)
-@@ -261,6 +288,10 @@
+@@ -261,6 +291,12 @@
          {
              par1NBTTagCompound.setCompoundTag("Item", this.getEntityItem().writeToNBT(new NBTTagCompound()));
          }
@@ -68,10 +78,12 @@
 +        // FCMOD: Code added
 +        par1NBTTagCompound.setLong( "fcDespawnTime", m_lAbsoluteItemDespawnTime );
 +	    // END FCMOD    
++		par1NBTTagCompound.setString("fcDroppingPlayerName", droppingPlayerName);
++		par1NBTTagCompound.setInteger("fcDroppingPlayerDeathsOnDrop", droppingPlayerDeathsOnDrop);
      }
  
      /**
-@@ -273,10 +304,18 @@
+@@ -273,10 +309,26 @@
          NBTTagCompound var2 = par1NBTTagCompound.getCompoundTag("Item");
          this.setEntityItemStack(ItemStack.loadItemStackFromNBT(var2));
  
@@ -80,8 +92,16 @@
 +	    {
 +	    	m_lAbsoluteItemDespawnTime = par1NBTTagCompound.getLong( "fcDespawnTime" );
 +	    }
-+	    // END FCMOD	    
-+        
++	    // END FCMOD	   
++	    
++		if (par1NBTTagCompound.hasKey("fcDroppingPlayerName")) {
++			droppingPlayerName = par1NBTTagCompound.getString("fcDroppingPlayerName");
++		}
++
++		if (par1NBTTagCompound.hasKey("fcDroppingPlayerDeathsOnDrop")) {
++			droppingPlayerDeathsOnDrop = par1NBTTagCompound.getInteger("fcDroppingPlayerDeathsOnDrop");
++		}
++	    
          if (this.getEntityItem() == null)
          {
              this.setDead();
@@ -90,15 +110,27 @@
      }
  
      /**
-@@ -382,4 +421,344 @@
+@@ -382,4 +434,386 @@
          this.getDataWatcher().updateObject(10, par1ItemStack);
          this.getDataWatcher().setObjectWatched(10);
      }
 +
 +    // FCMOD: Code added    
 +    private long m_lAbsoluteItemDespawnTime = 0;
++
++    private String droppingPlayerName = "";
++    private int droppingPlayerDeathsOnDrop = -1;
++    private static int deathsBeforeDisappear = 1;
 +    
-+    private void UpdateHardcoreBuoy()
++    public static int getDeathsBeforeDisappear() {
++		return deathsBeforeDisappear;
+ }
++
++	public static void setDeathsBeforeDisappear(int respawnsBeforeDisappear) {
++		EntityItem.deathsBeforeDisappear = respawnsBeforeDisappear;
++	}
++
++	private void UpdateHardcoreBuoy()
 +    {
 +        if ( FCBetterThanWolves.IsHardcoreBuoyEnabled( worldObj ) )
 +        {
@@ -116,7 +148,7 @@
 +	            if ( worldObj.isAABBInMaterial( axisalignedbb, Material.water ) )
 +	            {
 +	                d += 1.0D / (double)numDepthChecks;
- }
++	            }
 +	            else 
 +	            {
 +	            	break;
@@ -394,41 +426,71 @@
 +    {
 +    	return false;
 +    }
-+    
-+    private void CheckForItemDespawn()
-+    {
-+        if ( !worldObj.isRemote )
-+        {
-+	        if ( m_lAbsoluteItemDespawnTime > 0 )
-+	        {
-+	        	// using getTotalWorldTime() here so that /time commands and time advancement due to HC Spawn don't affect it
-+	        	
++
++	private void CheckForItemDespawn() {
++		if (!worldObj.isRemote) {
++			if (droppingPlayerDeathsOnDrop > -1) {
++				if (age >= 6000) {
++					age = 0;
++				}
++				// grace timer, only continue if this timer has passed
++				if (MinecraftServer.getServer().worldServers[0].getTotalWorldTime() >= m_lAbsoluteItemDespawnTime) {
++					EntityPlayer player = MinecraftServer.getServer().worldServers[0].getPlayerEntityByName(droppingPlayerName);
++
++					if (player == null) {
++						// props to Yani for this check!
++						NBTTagCompound nbt = ((SaveHandler) MinecraftServer.getServer().worldServers[0].getSaveHandler()).getPlayerData(droppingPlayerName);
++
++						if (nbt == null) {
++							System.out.println("NBT tag not found checking dropped item owner, player was deleted??");
++							setDead();
++						}
++						else if (nbt.hasKey("fcDeathCount") && nbt.getInteger("fcDeathCount") > droppingPlayerDeathsOnDrop + deathsBeforeDisappear) {
++							setDead();
++						}
++					}
++					else {
++						if (player.deathCount > droppingPlayerDeathsOnDrop + deathsBeforeDisappear) {
++							setDead();
++						}
++					}
++				}
++			}
++			else if (m_lAbsoluteItemDespawnTime > 0) {
++				// Legacy item despawn timer, left in for items in world that were still using
++				// this
 +				long lOverworldTime = MinecraftServer.getServer().worldServers[0].getTotalWorldTime();
-+				
-+				if ( lOverworldTime >= m_lAbsoluteItemDespawnTime  )
-+				{
++
++				if (lOverworldTime >= m_lAbsoluteItemDespawnTime) {
 +					setDead();
-+				}				
-+	        }
-+	        else
-+	        {
-+		        if ( age >= 6000 )
-+		        {
-+		            setDead();
-+		        }
-+	        }
-+        }
-+    }
-+    
-+    public void SetEntityItemAsDroppedOnPlayerDeath(EntityPlayer player) {
-+    	// set items dropped on player death to despawn 1 Minecraft day (20 minutes) later
-+    	// using getTotalWorldTime() here so that /time commands and time advancement due to HC Spawn don't affect it
-+    	
-+    	if (!worldObj.isRemote) {
-+    		m_lAbsoluteItemDespawnTime = MinecraftServer.getServer().worldServers[0].getTotalWorldTime() + 24000L;
-+    	}
-+    }
-+    
++				}
++			}
++			else {
++				if (age >= 6000) {
++					setDead();
++				}
++			}
++		}
++	}
++
++	public void SetEntityItemAsDroppedOnPlayerDeath(EntityPlayer player) {
++		if (!worldObj.isRemote) {
++			long overworldTime = MinecraftServer.getServer().worldServers[0].getTotalWorldTime();
++			long deltaSinceLastRespawn = overworldTime - player.m_lTimeOfLastSpawnAssignment;
++			long maxGraceTime = FCUtilsHardcoreSpawn.m_iHardcoreSpawnTimeBetweenReassignments;
++
++			// subtract time from grace time if dying within 9minutes (TODO possibly only
++			// works for HC spawn, but that's okay
++			if (deltaSinceLastRespawn < maxGraceTime) {
++				maxGraceTime -= deltaSinceLastRespawn;
++			}
++
++			m_lAbsoluteItemDespawnTime = overworldTime + maxGraceTime;
++			droppingPlayerName = player.username;
++			droppingPlayerDeathsOnDrop = player.deathCount;
++		}
++	}
++
 +    static public boolean InstallationIntegrityTestEntityItem()
 +    {
 +    	return true;

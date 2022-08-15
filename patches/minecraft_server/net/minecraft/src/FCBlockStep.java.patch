@@ -1,9 +1,11 @@
 --- /dev/null
 +++ b/minecraft_server/net/minecraft/src/FCBlockStep.java
-@@ -0,0 +1,171 @@
+@@ -0,0 +1,195 @@
 +// FCMOD
 +
 +package net.minecraft.src;
++
++import java.util.Random;
 +
 +public class FCBlockStep extends BlockStep
 +{
@@ -19,6 +21,28 @@
 +    public FCBlockStep( int iBlockID, boolean bIsDoubleSlab )
 +    {
 +        super( iBlockID, bIsDoubleSlab );
++    }
++    
++    @Override
++    public int idDropped(int metadata, Random random, int fortune) {
++    	if(metadata == m_iStepTypeStone ) {
++    		return FCBetterThanWolves.fcBlockSmoothStoneSlabSingle.blockID;
++    	}
++    	else if(metadata == m_iStepTypeCobble ) {
++    		return FCBetterThanWolves.fcBlockCobblestoneSlabSingle.blockID;
++    	}
++    	else if(metadata == m_iStepTypeStoneBrick ) {
++    		return FCBetterThanWolves.fcBlockStoneBrickSlabSingle.blockID;
++    	}
++    	else return super.idDropped(metadata, random, fortune);
++    }
++
++    @Override
++    public int damageDropped(int metadata) {
++    	if(metadata == m_iStepTypeStone || metadata == m_iStepTypeCobble  || metadata == m_iStepTypeStoneBrick  ) {
++    		return 0;
++    	}
++       	else return super.damageDropped(metadata);
 +    }
 +	
 +    @Override

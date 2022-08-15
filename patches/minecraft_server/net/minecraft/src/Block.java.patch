@@ -104,7 +104,7 @@
 +	public static Block dispenser = new FCBlockDispenserVanilla( 23 );
 +	public static Block sandStone = new FCBlockSandStone( 24 );
 +	public static Block music = new FCBlockNote( 25 );
-+	public static Block bed = (new FCBlockBed(26)).setHardness(0.2F).SetBuoyant().setUnlocalizedName("bed").disableStats();
++	public static Block bed = (new FCBlockBed(26)).setHardness(1F).SetBuoyant().setUnlocalizedName("bed").disableStats();
 +	public static Block railPowered = (new BlockRailPowered(27)).SetPicksEffectiveOn().setHardness(0.7F).setStepSound(soundMetalFootstep).setUnlocalizedName("goldenRail");
 +	public static Block railDetector = (new FCBlockDetectorRail(28)).setHardness(0.7F).setStepSound(soundMetalFootstep).setUnlocalizedName("detectorRail");
 +	public static BlockPistonBase pistonStickyBase = (BlockPistonBase)(new FCBlockPistonBase(29, true)).setUnlocalizedName("pistonStickyBase");
@@ -145,7 +145,7 @@
 +	public static Block doorWood = new FCBlockDoorWood( 64 );
 +	public static Block ladder = new FCBlockLegacyLadder( 65 );
 +	public static Block rail = new FCBlockRailRegular( 66 );
-+	public static Block stairsCobblestone = new FCBlockStairsCobblestone( 67 );
++	public static Block stairsCobblestone = new FCBlockStairsCobblestone( 67, 0);
 +	public static Block signWall = new FCBlockSignWall( 68 );
 +	public static Block lever = (new FCBlockLever(69)).setHardness(0.5F).setStepSound(soundWoodFootstep).setUnlocalizedName("lever");
 +	public static Block pressurePlateStone = new FCBlockPressurePlateStone( 70 );
@@ -154,7 +154,7 @@
 +	public static Block oreRedstone = (new FCBlockRedstoneOre(73, false)).setHardness(3.0F).setResistance(5.0F).setStepSound(soundStoneFootstep).setUnlocalizedName("oreRedstone").setCreativeTab(CreativeTabs.tabBlock);
 +	public static Block oreRedstoneGlowing = (new FCBlockRedstoneOre(74, true)).setLightValue(0.625F).setHardness(3.0F).setResistance(5.0F).setStepSound(soundStoneFootstep).setUnlocalizedName("oreRedstone").setCreativeTab(null);
 +	public static Block torchRedstoneIdle = (new BlockRedstoneTorch( 75, false )).setUnlocalizedName("notGate");
-+	public static Block torchRedstoneActive = (new BlockRedstoneTorch( 76, true )).setLightValue(0.5F).setUnlocalizedName("notGate").setCreativeTab(CreativeTabs.tabRedstone);
++	public static Block torchRedstoneActive = (new BlockRedstoneTorch( 76, true )).setUnlocalizedName("notGate").setCreativeTab(CreativeTabs.tabRedstone);
 +	public static Block stoneButton = (new FCBlockButtonStone(77)).setHardness(0.5F).setStepSound(soundStoneFootstep).setUnlocalizedName("button");
 +	public static Block snow = new FCBlockSnowCover( 78 );
 +	public static Block ice = (new FCBlockIce(79)).setHardness(0.5F).SetBuoyant().setLightOpacity(3).setStepSound(soundGlassFootstep).setUnlocalizedName("ice");
@@ -313,7 +313,7 @@
 +	public static Block vine = new FCBlockVine( 106 );
 +	public static Block fenceGate = new FCBlockFenceGate( 107 );
 +	public static Block stairsBrick = (new FCBlockStairsBrick(108)).setUnlocalizedName("stairsBrick");
-+	public static Block stairsStoneBrick = new FCBlockStairsStoneBrick( 109 );
++	public static Block stairsStoneBrick = new FCBlockStairsStoneBrick( 109, 0 );
 +	public static BlockMycelium mycelium = new FCBlockMycelium( 110 );
 +	public static Block waterlily = (new FCBlockLilyPad(111)).setHardness(0.0F).setStepSound(soundGrassFootstep).setUnlocalizedName("waterlily");
 +	public static Block netherBrick = new FCBlockNetherBrick( 112 );
@@ -354,7 +354,7 @@
 +	public static Block pressurePlateGold = new FCBlockStub( 147 ).setUnlocalizedName( "weightedPlate_light" );
 +	public static Block pressurePlateIron = new FCBlockStub( 148 ).setUnlocalizedName( "weightedPlate_heavy" );
 +	public static BlockComparator redstoneComparatorIdle = (BlockComparator)(new FCBlockComparator(149, false)).setHardness(0.0F).setStepSound(soundWoodFootstep).setUnlocalizedName("comparator").disableStats();
-+	public static BlockComparator redstoneComparatorActive = (BlockComparator)(new FCBlockComparator(150, true)).setHardness(0.0F).setLightValue(0.625F).setStepSound(soundWoodFootstep).setUnlocalizedName("comparator").disableStats();
++	public static BlockComparator redstoneComparatorActive = (BlockComparator)(new FCBlockComparator(150, true)).setHardness(0.0F).setStepSound(soundWoodFootstep).setUnlocalizedName("comparator").disableStats();
 +	public static BlockDaylightDetector daylightSensor = (BlockDaylightDetector)(new FCBlockDaylightDetector(151)).setHardness(0.2F).setStepSound(soundWoodFootstep).setUnlocalizedName("daylightDetector");
 +	public static Block blockRedstone = (new BlockPoweredOre(152)).setHardness(5.0F).setResistance(10.0F).setStepSound(soundMetalFootstep).setUnlocalizedName("blockRedstone").setLightValue(0.75F);
 +	public static Block oreNetherQuartz = new FCBlockNetherQuartzOre( 153 );
@@ -707,6 +707,15 @@
      /**
       * Sets the CreativeTab to display this block on.
       */
+@@ -1148,7 +1206,7 @@
+         Item.itemsList[wood.blockID] = (new ItemMultiTextureTile(wood.blockID - 256, wood, BlockLog.woodType)).setUnlocalizedName("log");
+         Item.itemsList[planks.blockID] = (new ItemMultiTextureTile(planks.blockID - 256, planks, BlockWood.woodType)).setUnlocalizedName("wood");
+         Item.itemsList[silverfish.blockID] = (new ItemMultiTextureTile(silverfish.blockID - 256, silverfish, BlockSilverfish.silverfishStoneTypes)).setUnlocalizedName("monsterStoneEgg");
+-        Item.itemsList[stoneBrick.blockID] = (new ItemMultiTextureTile(stoneBrick.blockID - 256, stoneBrick, BlockStoneBrick.STONE_BRICK_TYPES)).setUnlocalizedName("stonebricksmooth");
++		Item.itemsList[stoneBrick.blockID] = (new ItemMultiTextureTile(stoneBrick.blockID - 256, stoneBrick, FCBlockStoneBrick.STONE_BRICK_TYPES_STRATIFIED)).setUnlocalizedName("stonebricksmooth");
+         Item.itemsList[sandStone.blockID] = (new ItemMultiTextureTile(sandStone.blockID - 256, sandStone, BlockSandStone.SAND_STONE_TYPES)).setUnlocalizedName("sandStone");
+         Item.itemsList[blockNetherQuartz.blockID] = (new ItemMultiTextureTile(blockNetherQuartz.blockID - 256, blockNetherQuartz, BlockQuartz.quartzBlockTypes)).setUnlocalizedName("quartzBlock");
+         Item.itemsList[stoneSingleSlab.blockID] = (new ItemSlab(stoneSingleSlab.blockID - 256, stoneSingleSlab, stoneDoubleSlab, false)).setUnlocalizedName("stoneSlab");
 @@ -1176,8 +1234,12 @@
                      blocksList[var0].initializeBlock();
                  }
@@ -720,7 +729,7 @@
                  if (var0 > 0 && blocksList[var0].getRenderType() == 10)
                  {
                      var1 = true;
-@@ -1204,10 +1266,2111 @@
+@@ -1204,10 +1266,2114 @@
                  }
  
                  useNeighborBrightness[var0] = var1;
@@ -1775,7 +1784,10 @@
 +	{
 +		return true;
 +	}
-+
++	
++	public boolean canToolStickInBlockSpecialCase(World world, int x, int y, int z, Item toolOrSword) {
++		return false;
++	}
 +	//------------- Buoyancy related functionality ------------//
 +
 +	private float m_fBuoyancy = -1.0F;
