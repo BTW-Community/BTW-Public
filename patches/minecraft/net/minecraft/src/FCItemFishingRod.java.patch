@@ -55,11 +55,11 @@
 +        return func_94597_g();
 +    }
 +    
-+	@Override
-+	public Icon getAnimationIcon(EntityPlayer player) {
-+		if (player.getHeldItem().itemID == this.itemID && player.fishEntity != null) {
-+			return GetCastIcon();
-+		}
-+		else return itemIcon;
-+	}
++    @Override
++    public Icon getAnimationIcon(EntityPlayer player) {
++    	if (player.getHeldItem() != null && player.getHeldItem().itemID == this.itemID && player.fishEntity != null) {
++    		return GetCastIcon();
++    	}
++    	else return itemIcon;
++    }
 +}

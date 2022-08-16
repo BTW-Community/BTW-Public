@@ -1,3 +1,13 @@
+## Version 1.4.1 ##
+Thanks to the following people who contributed to this release!
+- Dawnraider
+- Sockthing
+
+/--Gameplay--/
+- Fixed an issue where the game would crash when fishing
+- Fixed an issue where beds did not properly speed up time
+- Fixed an issue where the corpse eye was missing its texture
+
 ## Version 1.4.0 ##
 Thanks to the following people who contributed to this release!
 - Hiracho

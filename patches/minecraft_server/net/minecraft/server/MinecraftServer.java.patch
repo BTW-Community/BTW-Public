@@ -16,16 +16,16 @@
 +    
 +    public boolean areAllPlayersAsleep() {
 +    	boolean allPlayersSleeping = true;
-+
++    	
 +    	for (int i = 0; i < this.worldServers.length; i++) {
 +    		WorldServer world = this.worldServers[i];
-+
-+    		if (world != null && !world.areAllPlayersAsleep()) {
++    		
++    		if (world != null && !world.areAllPlayersAsleep() && !world.playerEntities.isEmpty()) {
 +    			allPlayersSleeping = false;
 +    			break;
  }
 +    	}
-+
++    	
 +    	return allPlayersSleeping;
 +    }
 +}
