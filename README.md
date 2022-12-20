@@ -18,13 +18,14 @@ Better Than Wolves is trying to keep that old survival feel of versions past and
 
 The Community Edition team would like to express its gratitude to all the people that have kept this community alive all these years:
 - **FlowerChild**, for making BTW
-- **Dawnraider**, for spreadheading the Community Edition effort
+- **Dawnraider**, for spearheading the Community Edition effort
 - **Sargunster**, for keeping the forums and wiki online all these years
 - **Sarudak**, for moderating the forums
 - **Zhil**, for organizing the extended community and creating many of the build tools for CE
+- **Arminias**, for contributing architectural upgrades such as moving to fabric
+- **Hiracho**, for contributing significant work on design, features, and bugfixes
 
 As well as a thanks the following people who have contributed time and effort to the community edition:
-- Hiracho
 - yany
 - IssaMe
 - rockoutwill
@@ -66,6 +67,8 @@ A note from FlowerChild about licensing:
 
 ## 🗜️ How do I obtain the source code?
 
+Note: This only applies to version 1.4.1 and below! We are working on a more available solution to versions 2.0 and above. For now, if you would like access to the source code, ask on discord and we can add you.
+
 - [Download Minecraft Coder Pack (MCP) for 1.5.2](http://www.mediafire.com/file/95vlzp1a4n4wjqw/mcp751.zip/file)
 - Download the source code for a specific version from the releases page
 - Unpack the source code in a folder
@@ -80,7 +83,7 @@ Because of the extremely large scope of Better than Wolves, it is monumentally u
 
 However, for those looking to expand their options beyond just BTW, there is a lively community of addon creators over on discord and the forums. These addons are designed to work with BTW and enhance the experience.
 
-Anyone wishing to create an addon for BTW is free to do so. BTW CE has a built in addon API which will continue to be expanded in future releases.
+Anyone wishing to create an addon for BTW is free to do so. BTW CE has a built in addon API which will continue to be expanded in future releases. It is also built upon the legacy fabric loader, which additionally allows for mixins and access transformers. Note that this does not include the fabric API, so other fabric mods are not compatible.
 
 ## 💃 FlowerChild's Final Message to the Community
 
