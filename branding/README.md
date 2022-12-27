@@ -6,7 +6,7 @@ The images in this folder represent the official branding for Better Than Wolves
 ## Credits
 
 * Original BTW logo created by FlowerChild
-* High resolution version created by Sockthing
+* High resolution version and pixel logo created by Sockthing
 * Banner image created by Tekei?
 * Community Edition hero banner created by Zhil
 * Pride logos adapted by Zhil
