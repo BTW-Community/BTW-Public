@@ -55,7 +55,7 @@ In short, Better Than Wolves is a vision of what Minecraft could have been, desi
 
 ## 🌐 What Does Community Edition Mean?
 
-Community Edition is the successor to FlowerChild's original mod. It is a direct continuation using FC's source code, developed by the community, and following FC's original vision for the mod. The primary focuses of CE are fixing some of the features and systems FlowerChild left incomplete when he left the mod, as well as providing bugfixes and quality of life improvements.
+Community Edition is the successor to FlowerChild's original mod. It is a direct continuation using FC's source code, developed by the community, and following FC's original vision for the mod. CE aims to modernize BTW, finish the systems left unfinished by FC, fix many bugs, and even add new features.
 
 ## 📝 License
 
