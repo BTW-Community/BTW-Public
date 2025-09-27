@@ -5,43 +5,45 @@ This is a continuation of FlowerChild's Better than Wolves total conversion Mine
 
 Better Than Wolves is trying to keep that old survival feel of versions past and therefore uses an old version of Minecraft: 1.5.2. This means that the installation is a bit different from most mods. Check out [the wiki](https://github.com/BTW-Community/BTW-Public/wiki) for installation instructions.
 
+## 3.0 Beta
+
+For the past few years, we have been tirelessly at work updating the mod to 1.6.4. At this point, this beta version is much more stable than the 2.x versions. For now, you have to join the Discord to get it, until we release it publicly (hopefully soon). This is likely the version you are looking for and want to download.
+
 ## 🔗 Links
 
-* [Download](https://github.com/BTW-Community/BTW-Public/releases) — [Installation](https://github.com/BTW-Community/BTW-Public/wiki)
+* [Download](https://github.com/BTW-Community/BTW-Public/releases) — [Installation](https://wiki.btwce.com/view/Installation)
 * [Report a bug](https://github.com/BTW-Community/BTW-Public/issues)
 * [MCForum Thread](https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/minecraft-mods/3117153-1-5-2-better-than-wolves-community-edition-v1-0-1)
-* [Forums](http://www.sargunster.com/btwforum/) — [Wiki](https://www.sargunster.com/btw/) — [Discord](https://discord.gg/fhMK5kx)
+* [Forums](https://forum.btwce.com/) — [Wiki](https://wiki.btwce.com/) — [Discord](https://discord.gg/fhMK5kx)
 * [Original Wolves Are a Bad Idea Thread](https://www.minecraftforum.net/forums/minecraft-java-edition/survival-mode/220651-notch-wolves-are-a-bad-idea)
 * [Original Better Than Wolves Thread](https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/minecraft-mods/1272992-better-than-wolves-total-conversion)
 
 ## 💜 A word of gratitude
 
 The Community Edition team would like to express its gratitude to all the people that have kept this community alive all these years:
-- **FlowerChild**, for making BTW
+- **FlowerChild**, for making BTW, may you rest in peace
 - **Dawnraider**, for spearheading the Community Edition effort
+- **Zhil**, for organizing the extended community
 - **Sargunster**, for keeping the forums and wiki online all these years
 - **Sarudak**, for moderating the forums
-- **Zhil**, for organizing the extended community and creating many of the build tools for CE
 - **Arminias**, for contributing architectural upgrades such as moving to fabric
 - **Hiracho**, for contributing significant work on design, features, and bugfixes
+- **Battosay**, for his tireless work on the wiki
+- **Professor Ion**, for hosting all our multiplayer servers
 
-As well as a thanks the following people who have contributed time and effort to the community edition:
-- yany
-- IssaMe
-- rockoutwill
-- ExpHP
-- AnaRchX
-- Sockthing
-- cocona20xx
+We'd also like to thank all the people that have provided contributions to BTW over the years, we couldn't do this without you.
 
-Furthermore, thanks to the following people who have provided translations for BTW:
-- Quanteus: Russian
-- Peakstep: Simplified Chinese
-- Sockthing: German
-- slzei: Turkish
+## 💜 Dawnraider's Eulogy for FlowerChild
 
-Code and/or assets have also been used from the following sources:
-- MCPatcher by Kahr: Public Domain
+It is with a heavy heart that I share this news with you all. We were informed that FlowerChild, the original author of BTW from 2011-2020, passed away.
+
+As the creator of this mod, and the founder of the community, we all owe so much to him. I personally got my start as a programmer thanks to BTW and FC, and have met several friends I never would have otherwise. 
+
+He was a retired veteran from the game industry who saw, like we all did, the incredible potential that this new little game called Minecraft had. He spent a decade refining his vision, applying everything he knew about game design, and teaching us along the way. He was a phenomenal game designer, and gave so much of his knowledge and humor back to the community.
+
+Given FlowerChild's preference for privacy, we initially chose not to share this news widely. However, after much thought and discussion, we believe it is important for our community to know, and to honor his memory together. Out of respect for his wishes, we will not be sharing any personal details.
+
+Let us remember FlowerChild for the inspiration he was and the community he built. His spirit will forever be a part of our shared journey.
 
 ## 🐺 What is Better Than Wolves?
 
@@ -67,7 +69,7 @@ A note from FlowerChild about licensing:
 
 ## 🗜️ How do I obtain the source code?
 
-Note: This only applies to version 1.4.1 and below! We are working on a more available solution to versions 2.0 and above. For now, if you would like access to the source code, ask on discord and we can add you.
+Note: This only applies to version 1.4.1 and below! We are working on a more available solution to versions 2.0 and above. For now, if you would like access to the source code, ask for help on discord.
 
 - [Download Minecraft Coder Pack (MCP) for 1.5.2](http://www.mediafire.com/file/95vlzp1a4n4wjqw/mcp751.zip/file)
 - Download the source code for a specific version from the releases page
