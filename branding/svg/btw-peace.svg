@@ -23,11 +23,11 @@
                     translate(-50,-6)
                 "/> -->
             <rect fill="white"
-                x="0" y="0" width="12" height="50"
+                x="0" y="0" width="12" height="100"
                 transform="
                     translate(50,50)
                     rotate(180)
-                    translate(-6,0)
+                    translate(-6,-50)
                 "/>
             <rect fill="white"
                 x="0" y="0" width="12" height="50"
